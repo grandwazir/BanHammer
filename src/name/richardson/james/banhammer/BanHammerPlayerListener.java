@@ -29,7 +29,7 @@ public class BanHammerPlayerListener extends PlayerListener {
 				String expiryDateString = dateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")"; 
 				message = "You have been banned until " + expiryDateString;
 			} else {
-				message = "You have permanently banned. Reason: " + ban.getReason();
+				message = "You have been permanently banned. Reason: " + ban.getReason();
 			}
 			event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message);
 		}
