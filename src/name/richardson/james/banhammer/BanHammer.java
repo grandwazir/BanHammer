@@ -411,9 +411,10 @@ public class BanHammer extends JavaPlugin {
 		String createdBy = ChatColor.RED + ban.getCreatedBy() + ChatColor.YELLOW;
 		long banLength = ban.getExpiresAt() - ban.getCreatedAt();
 		String banTime = ChatColor.RED + BanHammerTime.millisToLongDHMS(banLength) + ChatColor.YELLOW;
-		if (banTime.equalsIgnoreCase("0 second"))
-			banTime = ChatColor.RED + "permanently" + ChatColor.YELLOW;
-		sender.sendMessage(ChatColor.YELLOW + "- " + createdOn + " by " + createdBy + " for " + banTime);
+		if (banTime.contains("0 second"))
+			banTime = ChatColor.RED + "permanent" + ChatColor.YELLOW;
+		sender.sendMessage(ChatColor.YELLOW + "- " + createdOn + " by " + createdBy);
+		sender.sendMessage(ChatColor.YELLOW + "-- Ban length: " + banTime);
 		sender.sendMessage(ChatColor.YELLOW + "-- Reason: " + ChatColor.RED + ban.getReason());
 	}
 	
