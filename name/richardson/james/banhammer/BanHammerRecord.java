@@ -11,6 +11,8 @@ import com.avaje.ebean.validation.NotNull;
 
 public class BanHammerRecord {
 
+	private static BanHammer plugin;
+	
 	@Id
     private long createdAt;
 	
@@ -64,6 +66,14 @@ public class BanHammerRecord {
 
 	public long getExpiresAt() {
 		return expiresAt;
+	}
+	
+	static public void setPlugin(BanHammer plugin) {
+		BanHammerRecord.plugin = plugin;
+	}
+	
+	static public void find(String player) {
+		return;
 	}
 	
 }
