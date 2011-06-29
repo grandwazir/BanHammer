@@ -62,15 +62,22 @@ public class BanHammerPlugin extends JavaPlugin {
 		setupDatabase();
 		
 		// Load banned players
-		getBannedPlayerList();
-		log.info("[BANHAMMER] - " + Integer.toString(permenantBans.size() + temporaryBans.size()) + " banned players loaded into memory");
+		BanHammerRecord.setup(this);
+		for(BanHammerRecord ban : BanHammerRecord.findPermenantBans())
+			permenantBans.add(ban.getPlayer());
+		for(BanHammerRecord ban : BanHammerRecord.findTemporaryBans())
+			temporaryBans.put(ban.getPlayer(), ban.getExpiresAt());
+		log.info("[BANHAMMER] - " + Integer.toString(permenantBans.size()) + " permenant ban(s) found");
+		log.info("[BANHAMMER] - " + Integer.toString(temporaryBans.size()) + " temporary ban(s) found");
 		
 		// Setup permissions
 		setupPermissions();
 		
+		
 		// register events
 		PluginManager pm = this.getServer().getPluginManager();
 		pm.registerEvent(Event.Type.PLAYER_LOGIN, PlayerListener, Event.Priority.Highest, this);
+		
 	}
  
 	private void addBan(BanHammerRecord record) {
@@ -208,17 +215,6 @@ public class BanHammerPlugin extends JavaPlugin {
 		}
 		
 		return true;
-	}
-
-	private void getBannedPlayerList() {
-		long time = System.currentTimeMillis();
-		// Get permanent bans
-		List<BanHammerRecord> bans = this.getDatabase().find(BanHammerRecord.class).where().ieq("expires_at", "0").findList();
-		for(BanHammerRecord record : bans)
-			permenantBans.add(record.getPlayer());
-		bans = this.getDatabase().find(BanHammerRecord.class).where().between("expires_at", time, "9999999999999").findList();
-		for(BanHammerRecord record : bans)
-			temporaryBans.put(record.getPlayer(), record.getExpiresAt());
 	}
 
 	@Override

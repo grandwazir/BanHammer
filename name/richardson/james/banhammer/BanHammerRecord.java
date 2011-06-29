@@ -1,79 +1,101 @@
 package name.richardson.james.banhammer;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.avaje.ebean.EbeanServer;
+import com.avaje.ebean.ExampleExpression;
+import com.avaje.ebean.LikeType;
 import com.avaje.ebean.validation.NotNull;
 
 @Entity()
 @Table(name = "bh_bans")
-
 public class BanHammerRecord {
+	private static EbeanServer database;
+	// private static Server server;
 
-	private static BanHammerPlugin plugin;
-	
-	@Id
-    private long createdAt;
-	
-	@NotNull
-    private String player;
-    
-    @NotNull
-    private String createdBy;
-
-    @NotNull
-    private String reason;
-    
-    @NotNull
-    private long expiresAt;
-
-	public void setCreatedAt(long createdAt) {
-		this.createdAt = createdAt;
+	static public List<BanHammerRecord> find(String player) {
+		// create the example
+		BanHammerRecord example = new BanHammerRecord();
+		example.setPlayer(player);
+		// create the example expression
+		ExampleExpression expression = database.getExpressionFactory().exampleLike(example, true, LikeType.EQUAL_TO);
+		// find and return all bans that match the expression
+		return database.find(BanHammerRecord.class).where().add(expression).findList();
 	}
+	
+	static public List<BanHammerRecord> findPermenantBans() {
+		// find and return all bans that have an expiry time of 0
+		return database.find(BanHammerRecord.class).where().eq("expiresAt", 0).findList();
+	}
+	
+	static public List<BanHammerRecord> findTemporaryBans() {
+		// find and return all bans that are temporary (time_now > expiresAt)
+		return database.find(BanHammerRecord.class).where().between("expiresAt", System.currentTimeMillis(), "9999999999999").findList();
+	}
+
+	static public void setup(BanHammerPlugin plugin) {
+		BanHammerRecord.database = plugin.getDatabase();
+		// BanHammerRecord.server = plugin.getServer();
+		// add permanent bans to memory
+	}
+
+	@Id
+	private long createdAt;
+
+	@NotNull
+	private String player;
+
+	@NotNull
+	private String createdBy;
+
+	@NotNull
+	private String reason;
+
+	@NotNull
+	private long expiresAt;
 
 	public long getCreatedAt() {
-		return createdAt;
+		return this.createdAt;
 	}
 
-	public void setPlayer(String player) {
-		this.player = player;
+	public String getCreatedBy() {
+		return this.createdBy;
+	}
+
+	public long getExpiresAt() {
+		return this.expiresAt;
 	}
 
 	public String getPlayer() {
-		return player;
+		return this.player;
+	}
+
+	public String getReason() {
+		return this.reason;
+	}
+
+	public void setCreatedAt(long createdAt) {
+		this.createdAt = createdAt;
 	}
 
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
 
-	public String getCreatedBy() {
-		return createdBy;
+	public void setExpiresAt(long expiresAt) {
+		this.expiresAt = expiresAt;
+	}
+
+	public void setPlayer(String player) {
+		this.player = player;
 	}
 
 	public void setReason(String reason) {
 		this.reason = reason;
 	}
 
-	public String getReason() {
-		return reason;
-	}
-
-	public void setExpiresAt(long expiresAt) {
-		this.expiresAt = expiresAt;
-	}
-
-	public long getExpiresAt() {
-		return expiresAt;
-	}
-	
-	static public void setPlugin(BanHammerPlugin plugin) {
-		BanHammerRecord.plugin = plugin;
-	}
-	
-	static public void find(String player) {
-		return;
-	}
-	
 }
