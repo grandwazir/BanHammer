@@ -24,9 +24,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
-public class BanHammer extends JavaPlugin {
+public class BanHammerPlugin extends JavaPlugin {
 	
-	final BanHammer plugin = this;
+	final BanHammerPlugin plugin = this;
 	private Logger log = Logger.getLogger("Minecraft");
 	// PluginDescriptionFile pluginInfo = this.getDescription();
 	static ArrayList<String> permenantBans = new ArrayList<String>();

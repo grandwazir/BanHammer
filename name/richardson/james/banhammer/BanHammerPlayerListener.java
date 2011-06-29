@@ -5,15 +5,15 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import name.richardson.james.banhammer.BanHammer;
+import name.richardson.james.banhammer.BanHammerPlugin;
 
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 public class BanHammerPlayerListener extends PlayerListener {
-	private BanHammer plugin;
+	private BanHammerPlugin plugin;
 	
-	public BanHammerPlayerListener(BanHammer plugin) {
+	public BanHammerPlayerListener(BanHammerPlugin plugin) {
 		this.plugin = plugin;
 	}
 	
