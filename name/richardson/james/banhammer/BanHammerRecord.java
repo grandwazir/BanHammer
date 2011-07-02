@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import sun.rmi.runtime.Log;
+
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.ExampleExpression;
 import com.avaje.ebean.LikeType;
@@ -17,6 +19,23 @@ public class BanHammerRecord {
 	private static EbeanServer database;
 	// private static Server server;
 
+	static public void create(String playerName, String senderName, Long Expiry, String banReason) {
+		BanHammerRecord ban = new BanHammerRecord();
+		ban.player = playerName;
+		ban.createdBy = senderName;
+		ban.createdAt = System.currentTimeMillis();
+		ban.expiresAt = Expiry;
+		ban.reason = banReason;
+		database.save(ban);
+		BanHammerPlugin.log.info(String.format("[BanHammer] %s was banned by %s", playerName, senderName));
+	}
+	
+	static public void remove(List<BanHammerRecord> bans, String senderName) {
+		for (BanHammerRecord ban : bans)
+			database.delete(ban);
+		BanHammerPlugin.log.info(String.format("[BanHammer] %s ban(s) were deleted by %s", Integer.toString(bans.size()), senderName));
+	}
+	
 	static public List<BanHammerRecord> find(String player) {
 		// create the example
 		BanHammerRecord example = new BanHammerRecord();
