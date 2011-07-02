@@ -78,6 +78,7 @@ public class BanHammerPlugin extends JavaPlugin {
 		if (commands.contains(command)) {
 			if (!playerHasPermission(sender, "bh." + cmd.getName())) return true;
 			if (command.equalsIgnoreCase("ban")) return banPlayer(sender, args);
+			if (command.equalsIgnoreCase("tempban")) return tempBanPlayer(sender, args);
 			if (command.equalsIgnoreCase("kick")) return kickPlayer(sender, args);
 			if (command.equalsIgnoreCase("pardon")) return pardonPlayer(sender, args);
 		}
@@ -95,16 +96,24 @@ public class BanHammerPlugin extends JavaPlugin {
 	}
 	
 	private boolean banPlayer(CommandSender sender, String[] args) {
-			
-		// Check to see we have enough arguments
-		if (args.length < 4) return false;
-		
-		// Create arguments.
+		boolean banOfflinePlayers = false;
+		long expiresAt = 0;
+		String playerName;
 		String senderName = plugin.getName(sender);
-		String commandOptions = args[1];
-		String playerName = args[2];
-		String reason = "No reason provided";
-		long banTime = 0;
+		String reason;
+		
+		// Check to see we have enough arguments
+		if (args.length < 3) return false;
+		
+		// Create attributes.
+		if (args[0].equalsIgnoreCase("-f")) {
+			banOfflinePlayers = true;
+			playerName = args[1];
+			reason = combineString(1, args, " ");
+		} else {
+			playerName = args[0];
+			reason = combineString(0, args, " ");
+		}
 		
 		// Check to see if the player is already banned
 		if (BanHammerRecord.isBanned(playerName)) {
@@ -113,43 +122,15 @@ public class BanHammerPlugin extends JavaPlugin {
 		} 
 		
 		// Check to see if the player is on the server
-		if (!MatchPlayer(playerName) && !commandOptions.contains("f")) {
+		if (!MatchPlayer(playerName) && !banOfflinePlayers) {
 			sender.sendMessage(ChatColor.RED + "No matching player.");
 			sender.sendMessage(ChatColor.YELLOW + "To ban offline players use -f"); 
 			return true;
-		} 
-		
-		// Prepare the right sort of ban
-		if (commandOptions.contains("p")) {
-				reason = combineString(3, args, " ");
-		} else if (commandOptions.contains("t")) {
-			try {
-				banTime = (parseTimeSpec(args[2], args[3]) + System.currentTimeMillis());
-				if (args.length >= 6)
-					reason = combineString(5, args, " ");
-			} catch (ArrayIndexOutOfBoundsException e) {
-				sender.sendMessage(ChatColor.RED + "No time provided!");
-				sender.sendMessage(ChatColor.YELLOW + "/ban -t [name] [time] [unit] <reason>");
-				return true;
-			}
-		} else {
-			sender.sendMessage(ChatColor.RED + "You did not specific a ban type!");
-			sender.sendMessage(ChatColor.YELLOW + "Choose -p for permenant, or -t for temporary.");
-			return true;
-		}
-		
-		// Create the ban
-		BanHammerRecord ban = new BanHammerRecord();
-		ban.setPlayer(playerName);
-		ban.setCreatedBy(senderName);
-		ban.setCreatedAt(System.currentTimeMillis());
-		ban.setExpiresAt(banTime);
-		ban.setReason(reason);
+		} 		
 			
 		// Ban the player
-		BanHammerRecord.create(playerName, senderName, banTime, reason);
-		if (banTime == 0) permenantBans.add(playerName);
-		else temporaryBans.put(playerName, banTime);
+		BanHammerRecord.create(playerName, senderName, expiresAt, reason);
+		permenantBans.add(playerName);
 		String banNotification = ChatColor.RED + playerName + ChatColor.YELLOW + " has been banned";
 		String banReason = ChatColor.YELLOW + "Reason: " + ChatColor.RED + reason;
 		
@@ -163,6 +144,56 @@ public class BanHammerPlugin extends JavaPlugin {
 		return true;	
 	}
 	
+	private boolean tempBanPlayer(CommandSender sender, String[] args) {
+		boolean banOfflinePlayers = false;
+		long expiresAt = 0;
+		String playerName;
+		String senderName = plugin.getName(sender);
+		String reason;
+		
+		// Check to see we have enough arguments
+		if (args.length < 5) return false;
+		
+		// Create attributes.
+		if (args[0].equalsIgnoreCase("-f")) {
+			banOfflinePlayers = true;
+			playerName = args[1];
+			expiresAt = (parseTimeSpec(args[2], args[3]) + System.currentTimeMillis());
+			reason = combineString(3, args, " ");
+		} else {
+			playerName = args[0];
+			expiresAt = (parseTimeSpec(args[1], args[2]) + System.currentTimeMillis());
+			reason = combineString(2, args, " ");
+		}
+		
+		// Check to see if the player is already banned
+		if (BanHammerRecord.isBanned(playerName)) {
+			sender.sendMessage(ChatColor.RED + playerName + " is already banned");
+			return true;
+		} 
+		
+		// Check to see if the player is on the server
+		if (!MatchPlayer(playerName) && !banOfflinePlayers) {
+			sender.sendMessage(ChatColor.RED + "No matching player.");
+			sender.sendMessage(ChatColor.YELLOW + "To ban offline players use -f"); 
+			return true;
+		} 		
+			
+		// Ban the player
+		BanHammerRecord.create(playerName, senderName, expiresAt, reason);
+		temporaryBans.put(playerName, expiresAt);
+		String banNotification = ChatColor.RED + playerName + ChatColor.YELLOW + " has been temporarily banned";
+		String banReason = ChatColor.YELLOW + "Reason: " + ChatColor.RED + reason;
+		
+		// Kick the player (if they are on the server)
+		if (MatchPlayer(playerName))
+			getPlayerFromName(playerName).kickPlayer("Banned: " + reason);
+		
+		// Notify players
+		notifyPlayers(sender, banNotification);
+		notifyPlayers(sender, banReason);
+		return true;	
+	}
 	
 	
 	
