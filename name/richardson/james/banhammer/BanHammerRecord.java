@@ -6,8 +6,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import sun.rmi.runtime.Log;
-
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.ExampleExpression;
 import com.avaje.ebean.LikeType;

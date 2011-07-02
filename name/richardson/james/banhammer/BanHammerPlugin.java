@@ -47,7 +47,6 @@ public class BanHammerPlugin extends JavaPlugin {
 
 	public void onEnable(){
 		info = this.getDescription();
-		final BanHammerPlugin plugin = this;
 		log.info(String.format("[BanHammer] %s is enabled!", info.getFullName()));
 		
 		// Setup Environment
@@ -108,7 +107,7 @@ public class BanHammerPlugin extends JavaPlugin {
 		long banTime = 0;
 		
 		// Check to see if the player is already banned
-		if (this.isPlayerBanned(playerName)) {
+		if (BanHammerRecord.isBanned(playerName)) {
 			sender.sendMessage(ChatColor.RED + playerName + " is already banned");
 			return true;
 		} 
@@ -120,16 +119,14 @@ public class BanHammerPlugin extends JavaPlugin {
 			return true;
 		} 
 		
-		// Set ban type
+		// Prepare the right sort of ban
 		if (commandOptions.contains("p")) {
-			// create a permanent ban
-			if (args.length >= 3)
-				reason = combineString(2, args, " ");
+				reason = combineString(3, args, " ");
 		} else if (commandOptions.contains("t")) {
 			try {
 				banTime = (parseTimeSpec(args[2], args[3]) + System.currentTimeMillis());
-				if (args.length >= 5)
-					reason = combineString(4, args, " ");
+				if (args.length >= 6)
+					reason = combineString(5, args, " ");
 			} catch (ArrayIndexOutOfBoundsException e) {
 				sender.sendMessage(ChatColor.RED + "No time provided!");
 				sender.sendMessage(ChatColor.YELLOW + "/ban -t [name] [time] [unit] <reason>");
@@ -141,7 +138,7 @@ public class BanHammerPlugin extends JavaPlugin {
 			return true;
 		}
 		
-		// Set attributes
+		// Create the ban
 		BanHammerRecord ban = new BanHammerRecord();
 		ban.setPlayer(playerName);
 		ban.setCreatedBy(senderName);
@@ -150,36 +147,23 @@ public class BanHammerPlugin extends JavaPlugin {
 		ban.setReason(reason);
 			
 		// Ban the player
-		addBan(ban);
+		BanHammerRecord.create(playerName, senderName, banTime, reason);
+		if (banTime == 0) permenantBans.add(playerName);
+		else temporaryBans.put(playerName, banTime);
 		String banNotification = ChatColor.RED + playerName + ChatColor.YELLOW + " has been banned";
 		String banReason = ChatColor.YELLOW + "Reason: " + ChatColor.RED + reason;
 		
-		// Kick the player
+		// Kick the player (if they are on the server)
 		if (MatchPlayer(playerName))
 			getPlayerFromName(playerName).kickPlayer("Banned: " + reason);
 		
 		// Notify players
 		notifyPlayers(sender, banNotification);
 		notifyPlayers(sender, banReason);
-		
-		// Log in Console
-		log.info("[BANHAMMER] " + playerName + " banned by " + senderName);
-		return true;
-		
+		return true;	
 	}
 	
 	
- 
-	private void addBan(BanHammerRecord record) {
-		String playerName = record.getPlayer();
-		if (record.getExpiresAt() == 0) {
-			permenantBans.add(playerName);
-		} else {
-			temporaryBans.put(playerName, record.getExpiresAt());
-		}
-		getDatabase().save(record);
-	}
-
 	
 	
 	// Borrowed from KiwiAdmin
