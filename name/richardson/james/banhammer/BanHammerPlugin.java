@@ -3,6 +3,7 @@ package name.richardson.james.banhammer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.nijiko.permissions.PermissionHandler;
@@ -27,81 +29,81 @@ import com.nijikokun.bukkit.Permissions.Permissions;
 public class BanHammerPlugin extends JavaPlugin {
 	
 	final BanHammerPlugin plugin = this;
-	private Logger log = Logger.getLogger("Minecraft");
-	// PluginDescriptionFile pluginInfo = this.getDescription();
+	static Logger log = Logger.getLogger("Minecraft");
+	static PermissionHandler CurrentPermissions = null;
+	static PluginDescriptionFile info = null;
+	
+	// Command lists
+	static final List<String> commands = Arrays.asList("kick", "pardon", "ban");
+	static final List<String> subCommands = Arrays.asList("check", "history");
+	
+	// Banned players
 	static ArrayList<String> permenantBans = new ArrayList<String>();
 	static Map<String,Long> temporaryBans = new HashMap<String,Long>();
-	
-	static PermissionHandler CurrentPermissions = null;
 	
 	// Listeners
 	private final BanHammerPlayerListener PlayerListener = new BanHammerPlayerListener(this);
 	private static final boolean broadcastActions = true;
 
-	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
-		String[] trimmedArgs = args;
-		if (cmd.getName().equalsIgnoreCase("kick")) {
-			return KickPlayer(sender, trimmedArgs);
-		} else if (cmd.getName().equalsIgnoreCase("ban")) {
-			return BanPlayer(sender, trimmedArgs);
-		} else if (cmd.getName().equalsIgnoreCase("pardon")) {
-			return PardonPlayer(sender, trimmedArgs);
-		}  else if (cmd.getName().equalsIgnoreCase("banhistory")) {
-			return getBanHistory(sender, trimmedArgs);
-		}
-		return false; 
-	}
-	
-	public void onDisable(){
-		log.info("Banhammer has been disabled.");
-	}
-	
 	public void onEnable(){
-		log.info("[BANHAMMER] Banhammer is enabled!");
-		// Setup our database
+		info = this.getDescription();
+		final BanHammerPlugin plugin = this;
+		log.info(String.format("[BanHammer] %s is enabled!", info.getFullName()));
+		
+		// Setup Environment
 		setupDatabase();
+		setupPermissions();
+		
+		// Register events
+		PluginManager pm = this.getServer().getPluginManager();
+		pm.registerEvent(Event.Type.PLAYER_LOGIN, PlayerListener, Event.Priority.Highest, this);
 		
 		// Load banned players
 		BanHammerRecord.setup(this);
 		for(BanHammerRecord ban : BanHammerRecord.findPermenantBans())
 			permenantBans.add(ban.getPlayer());
+		log.info("[BanHammer] - " + Integer.toString(temporaryBans.size()) + " temporary ban(s) found");
 		for(BanHammerRecord ban : BanHammerRecord.findTemporaryBans())
 			temporaryBans.put(ban.getPlayer(), ban.getExpiresAt());
-		log.info("[BANHAMMER] - " + Integer.toString(permenantBans.size()) + " permenant ban(s) found");
-		log.info("[BANHAMMER] - " + Integer.toString(temporaryBans.size()) + " temporary ban(s) found");
-		
-		// Setup permissions
-		setupPermissions();
-		
-		
-		// register events
-		PluginManager pm = this.getServer().getPluginManager();
-		pm.registerEvent(Event.Type.PLAYER_LOGIN, PlayerListener, Event.Priority.Highest, this);
-		
+		log.info("[BanHammer] - " + Integer.toString(permenantBans.size()) + " permenant ban(s) found");
 	}
- 
-	private void addBan(BanHammerRecord record) {
-		String playerName = record.getPlayer();
-		if (record.getExpiresAt() == 0) {
-			permenantBans.add(playerName);
-		} else {
-			temporaryBans.put(playerName, record.getExpiresAt());
+	
+	public void onDisable(){
+		log.info(String.format("[BanHammer] %s is disabled!", info.getName()));
+	}
+	
+	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+		final String command = cmd.getName();
+		
+		// Handle root commands
+		if (commands.contains(command)) {
+			if (!playerHasPermission(sender, "bh." + cmd.getName())) return true;
+			if (command.equalsIgnoreCase("ban")) return banPlayer(sender, args);
+			if (command.equalsIgnoreCase("kick")) return kickPlayer(sender, args);
+			if (command.equalsIgnoreCase("pardon")) return pardonPlayer(sender, args);
 		}
-		getDatabase().save(record);
-	}
-
-	private boolean BanPlayer(CommandSender sender, String[] args) {
 		
-		// Check permissions
-		if (!this.playerHasPermission(sender, "banhammer.ban")) return true;
+		// Handle sub commands commands
+		if (command.equalsIgnoreCase("bh")) {
+			if (args.length == 0) return false;
+			final String subCommand = args[0];
+			if (!subCommands.contains(command)) return false;
+			if (!playerHasPermission(sender, "bh." + subCommand)) return true;
+			// if (command.equalsIgnoreCase("check")) return checkPlayer(sender, args);
+			if (command.equalsIgnoreCase("history")) return getBanHistory(sender, args);
+		}
+		return false;
+	}
+	
+	private boolean banPlayer(CommandSender sender, String[] args) {
 			
 		// Check to see we have enough arguments
-		if (args.length < 2) return false;
+		if (args.length < 4) return false;
 		
 		// Create arguments.
 		String senderName = plugin.getName(sender);
-		String commandOptions = args[0];
-		String playerName = args[1];
+		String commandOptions = args[1];
+		String playerName = args[2];
 		String reason = "No reason provided";
 		long banTime = 0;
 		
@@ -165,6 +167,20 @@ public class BanHammerPlugin extends JavaPlugin {
 		return true;
 		
 	}
+	
+	
+ 
+	private void addBan(BanHammerRecord record) {
+		String playerName = record.getPlayer();
+		if (record.getExpiresAt() == 0) {
+			permenantBans.add(playerName);
+		} else {
+			temporaryBans.put(playerName, record.getExpiresAt());
+		}
+		getDatabase().save(record);
+	}
+
+	
 	
 	// Borrowed from KiwiAdmin
 	private String combineString(int startIndex, String[] args, String seperator) {
@@ -267,7 +283,7 @@ public class BanHammerPlugin extends JavaPlugin {
 		return false;
 	}
 
-	private boolean KickPlayer(CommandSender sender, String[] args) {
+	private boolean kickPlayer(CommandSender sender, String[] args) {
 		
 		// Check permissions
 		if (!this.playerHasPermission(sender, "banhammer.kick")) return true;
@@ -324,7 +340,7 @@ public class BanHammerPlugin extends JavaPlugin {
 	
 	
 	
-	private boolean PardonPlayer(CommandSender sender, String[] args) {
+	private boolean pardonPlayer(CommandSender sender, String[] args) {
 		
 		// Check permissions
 		if (!this.playerHasPermission(sender, "banhammer.pardon")) return true;

@@ -43,6 +43,16 @@ public class BanHammerRecord {
 		// add permanent bans to memory
 	}
 
+	static public boolean isBanned(String player) {
+		final List<BanHammerRecord> bans = BanHammerRecord.find(player);
+		// check to see if the player is banned
+		for (BanHammerRecord ban : bans) {
+			if (ban.expiresAt == 0) return true;
+			if (ban.expiresAt > System.currentTimeMillis()) return true;
+		}
+		return false;
+	}
+	
 	@Id
 	private long createdAt;
 
