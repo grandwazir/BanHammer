@@ -18,18 +18,18 @@ public class BanHammerPlayerListener extends PlayerListener {
 	}
 	
 	public void onPlayerLogin(PlayerLoginEvent event) {
-		String playerName = event.getPlayer().getDisplayName();
-		if (plugin.isPlayerBanned(playerName)) {
-			String message = "You have been banned";
-			BanHammerRecord ban = plugin.getPlayerBan(playerName);
-			if (ban.getExpiresAt() > 0) {
+		String playerName = event.getPlayer().getDisplayName().toLowerCase();
+		if (BanHammerPlugin.permenantBans.contains(playerName) || BanHammerPlugin.temporaryBans.containsKey(playerName)) {
+			BanHammerRecord banHammerRecord = plugin.getPlayerBan(playerName);
+			String message;
+			if (banHammerRecord.getExpiresAt() > 0) {
 				// Create the message
-				Date expiryDate = new Date(ban.getExpiresAt());
+				Date expiryDate = new Date(banHammerRecord.getExpiresAt());
 				DateFormat dateFormat = new SimpleDateFormat("MMM d H:mm a ");
 				String expiryDateString = dateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")"; 
 				message = "You have been banned until " + expiryDateString;
 			} else {
-				message = "You have been permanently banned. Reason: " + ban.getReason();
+				message = "You have been permanently banned. Reason: " + banHammerRecord.getReason();
 			}
 			event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message);
 		}

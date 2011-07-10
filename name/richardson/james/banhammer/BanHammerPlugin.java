@@ -32,38 +32,32 @@ public class BanHammerPlugin extends JavaPlugin {
 	static Logger log = Logger.getLogger("Minecraft");
 	static PermissionHandler CurrentPermissions = null;
 	static PluginDescriptionFile info = null;
-	
 	// Command lists
 	static final List<String> commands = Arrays.asList("kick", "pardon", "ban");
 	static final List<String> subCommands = Arrays.asList("check", "history");
-	
 	// Banned players
 	static ArrayList<String> permenantBans = new ArrayList<String>();
 	static Map<String,Long> temporaryBans = new HashMap<String,Long>();
-	
 	// Listeners
-	private final BanHammerPlayerListener PlayerListener = new BanHammerPlayerListener(this);
+	private final BanHammerPlayerListener BanHammerPlayerListener = new BanHammerPlayerListener(this);
 	private static final boolean broadcastActions = true;
 
 	public void onEnable(){
 		info = this.getDescription();
 		log.info(String.format("[BanHammer] %s is enabled!", info.getFullName()));
-		
 		// Setup Environment
 		setupDatabase();
 		setupPermissions();
-		
 		// Register events
 		PluginManager pm = this.getServer().getPluginManager();
-		pm.registerEvent(Event.Type.PLAYER_LOGIN, PlayerListener, Event.Priority.Highest, this);
-		
+		pm.registerEvent(Event.Type.PLAYER_LOGIN, BanHammerPlayerListener, Event.Priority.Highest, this);
 		// Load banned players
 		BanHammerRecord.setup(this);
-		for(BanHammerRecord ban : BanHammerRecord.findPermenantBans())
-			permenantBans.add(ban.getPlayer());
+		for(BanHammerRecord banHammerRecord : BanHammerRecord.findPermenantBans())
+			permenantBans.add(banHammerRecord.getPlayer());
 		log.info("[BanHammer] - " + Integer.toString(temporaryBans.size()) + " temporary ban(s) found");
-		for(BanHammerRecord ban : BanHammerRecord.findTemporaryBans())
-			temporaryBans.put(ban.getPlayer(), ban.getExpiresAt());
+		for(BanHammerRecord banHammerRecord : BanHammerRecord.findTemporaryBans())
+			temporaryBans.put(banHammerRecord.getPlayer(), banHammerRecord.getExpiresAt());
 		log.info("[BanHammer] - " + Integer.toString(permenantBans.size()) + " permenant ban(s) found");
 	}
 	
@@ -73,7 +67,6 @@ public class BanHammerPlugin extends JavaPlugin {
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		final String command = cmd.getName();
-		
 		// Handle root commands
 		if (commands.contains(command)) {
 			if (!playerHasPermission(sender, "bh." + cmd.getName())) return true;
@@ -82,7 +75,6 @@ public class BanHammerPlugin extends JavaPlugin {
 			if (command.equalsIgnoreCase("kick")) return kickPlayer(sender, args);
 			if (command.equalsIgnoreCase("pardon")) return pardonPlayer(sender, args);
 		}
-		
 		// Handle sub commands commands
 		if (command.equalsIgnoreCase("bh")) {
 			if (args.length == 0) return false;
@@ -101,10 +93,8 @@ public class BanHammerPlugin extends JavaPlugin {
 		String playerName;
 		String senderName = plugin.getName(sender);
 		String reason;
-		
 		// Check to see we have enough arguments
 		if (args.length < 3) return false;
-		
 		// Create attributes.
 		if (args[0].equalsIgnoreCase("-f")) {
 			banOfflinePlayers = true;
@@ -127,17 +117,16 @@ public class BanHammerPlugin extends JavaPlugin {
 			sender.sendMessage(ChatColor.YELLOW + "To ban offline players use -f"); 
 			return true;
 		} 		
-			
+		
+		
 		// Ban the player
 		BanHammerRecord.create(playerName, senderName, expiresAt, reason);
 		permenantBans.add(playerName);
 		String banNotification = ChatColor.RED + playerName + ChatColor.YELLOW + " has been banned";
 		String banReason = ChatColor.YELLOW + "Reason: " + ChatColor.RED + reason;
-		
 		// Kick the player (if they are on the server)
 		if (MatchPlayer(playerName))
 			getPlayerFromName(playerName).kickPlayer("Banned: " + reason);
-		
 		// Notify players
 		notifyPlayers(sender, banNotification);
 		notifyPlayers(sender, banReason);
@@ -150,10 +139,8 @@ public class BanHammerPlugin extends JavaPlugin {
 		String playerName;
 		String senderName = plugin.getName(sender);
 		String reason;
-		
 		// Check to see we have enough arguments
 		if (args.length < 5) return false;
-		
 		// Create attributes.
 		if (args[0].equalsIgnoreCase("-f")) {
 			banOfflinePlayers = true;
@@ -184,17 +171,14 @@ public class BanHammerPlugin extends JavaPlugin {
 		temporaryBans.put(playerName, expiresAt);
 		String banNotification = ChatColor.RED + playerName + ChatColor.YELLOW + " has been temporarily banned";
 		String banReason = ChatColor.YELLOW + "Reason: " + ChatColor.RED + reason;
-		
 		// Kick the player (if they are on the server)
 		if (MatchPlayer(playerName))
 			getPlayerFromName(playerName).kickPlayer("Banned: " + reason);
-		
 		// Notify players
 		notifyPlayers(sender, banNotification);
 		notifyPlayers(sender, banReason);
 		return true;	
 	}
-	
 	
 	
 	// Borrowed from KiwiAdmin
@@ -214,8 +198,8 @@ public class BanHammerPlugin extends JavaPlugin {
 
 	List<BanHammerRecord> getAllPlayerBans(String playerName) {
 		@SuppressWarnings("unused")
-		List<BanHammerRecord> bans;
-		return bans = getDatabase().find(BanHammerRecord.class).where().ieq("player", playerName).findList();
+		List<BanHammerRecord> banHammerRecords;
+		return banHammerRecords = getDatabase().find(BanHammerRecord.class).where().ieq("player", playerName).findList();
 	}
 
 	private boolean getBanHistory(CommandSender sender, String[] args) {
@@ -237,12 +221,12 @@ public class BanHammerPlugin extends JavaPlugin {
 		
 		// List bans
 		if (commandOptions.contains("a") && this.isPlayerBanned(playerName)) {
-			BanHammerRecord ban = this.getPlayerBan(playerName);
-			printBanDetails(sender, ban);
+			BanHammerRecord banHammerRecord = this.getPlayerBan(playerName);
+			printBanDetails(sender, banHammerRecord);
 		} else if (commandOptions.contains("A")) {
 			sender.sendMessage(ChatColor.LIGHT_PURPLE + "Previous bans:");
-			for(BanHammerRecord ban : this.getAllPlayerBans(playerName))
-				printBanDetails(sender, ban);
+			for(BanHammerRecord banHammerRecord : this.getAllPlayerBans(playerName))
+				printBanDetails(sender, banHammerRecord);
 		}
 		
 		return true;
@@ -268,16 +252,16 @@ public class BanHammerPlugin extends JavaPlugin {
 	BanHammerRecord getPlayerBan(String playerName) {
 		long time = System.currentTimeMillis();
 		// Check for a temporary ban
-		List<BanHammerRecord> bans = getDatabase().find(BanHammerRecord.class).where().ieq("player", playerName).between("expires_at", time, "9999999999999").findList();
-		if (bans.size() > 1)
-			log.warning("[BANHAMMER] Expecting to find 1 ban but actually got " + Integer.toString(bans.size()));
-		if (bans.size() >= 1)
-			return bans.get(0);
+		List<BanHammerRecord> banHammerRecords = getDatabase().find(BanHammerRecord.class).where().ieq("player", playerName).between("expires_at", time, "9999999999999").findList();
+		if (banHammerRecords.size() > 1)
+			log.warning("[BANHAMMER] Expecting to find 1 ban but actually got " + Integer.toString(banHammerRecords.size()));
+		if (banHammerRecords.size() >= 1)
+			return banHammerRecords.get(0);
 		// Check for a permanent ban
-		bans = getDatabase().find(BanHammerRecord.class).where().ieq("player", playerName).ieq("expires_at", "0").findList();
-		if (bans.size() > 1)
-			log.warning("[BANHAMMER] Expecting to find 1 ban but actually got " + Integer.toString(bans.size()));
-		return bans.get(0);
+		banHammerRecords = getDatabase().find(BanHammerRecord.class).where().ieq("player", playerName).ieq("expires_at", "0").findList();
+		if (banHammerRecords.size() > 1)
+			log.warning("[BANHAMMER] Expecting to find 1 ban but actually got " + Integer.toString(banHammerRecords.size()));
+		return banHammerRecords.get(0);
 	}
 
 	private Player getPlayerFromName(String playerName) {
@@ -298,11 +282,7 @@ public class BanHammerPlugin extends JavaPlugin {
 		return false;
 	}
 
-	private boolean kickPlayer(CommandSender sender, String[] args) {
-		
-		// Check permissions
-		if (!this.playerHasPermission(sender, "banhammer.kick")) return true;
-		
+	private boolean kickPlayer(CommandSender sender, String[] args) {	
 		// Check to see we have enough arguments
 		if (args.length < 1) return false;
 		String playerName = args[0];
@@ -314,24 +294,20 @@ public class BanHammerPlugin extends JavaPlugin {
 				
 		// Prepare to kick player
 		Player player = getPlayerFromName(args[0]);
-		String senderName = plugin.getName(sender);
-		
+		String senderName = player.getName();
 		// Create kick reason
 		String reason = "No reason provided.";
 		if (args.length > 1)
 			reason = combineString(1, args, " ");
-		
 		// Kick player
 		player.kickPlayer("Kicked: " + reason);
 		String kickNotification = ChatColor.RED + playerName + ChatColor.YELLOW + " has been kicked";
 		String kickReason = ChatColor.YELLOW + "Reason: " + ChatColor.RED + reason;
-		
 		// Notify players
 		notifyPlayers(sender, kickNotification);
 		notifyPlayers(sender, kickReason);
-		
 		// Log in Console
-		log.info("[BANHAMMER] " + playerName + " kicked by " + senderName);
+		log.info("[BanHammer] " + playerName + " kicked by " + senderName);
 		return true;
 	}
 
@@ -357,9 +333,6 @@ public class BanHammerPlugin extends JavaPlugin {
 	
 	private boolean pardonPlayer(CommandSender sender, String[] args) {
 		
-		// Check permissions
-		if (!this.playerHasPermission(sender, "banhammer.pardon")) return true;
-		
 		// Check to see we have enough arguments
 		if (args.length < 2) return false;
 		
@@ -371,13 +344,13 @@ public class BanHammerPlugin extends JavaPlugin {
 		// Remove Bans
 		if (commandOptions.contains("a")) {
 			if (permenantBans.contains(playerName)) {
-				BanHammerRecord ban = this.getPlayerBan(playerName);
-				removeBan(ban);
+				BanHammerRecord banHammerRecord = this.getPlayerBan(playerName);
+				removeBan(banHammerRecord);
 			}
 		} else if (commandOptions.contains("A")) {
 			log.info("[BANHAMMER] Removing all bans for " + playerName);
-			List<BanHammerRecord> bans = this.getAllPlayerBans(playerName);
-			for (BanHammerRecord record : bans)
+			List<BanHammerRecord> banHammerRecords = this.getAllPlayerBans(playerName);
+			for (BanHammerRecord record : banHammerRecords)
 				removeBan(record);
 		} else {
 			sender.sendMessage(ChatColor.RED + "You did not specific what bans to pardon");
@@ -432,17 +405,17 @@ public class BanHammerPlugin extends JavaPlugin {
 		return sec*1000;
 	}
 	
-	private void printBanDetails(CommandSender sender, BanHammerRecord ban) {
+	private void printBanDetails(CommandSender sender, BanHammerRecord banHammerRecord) {
 		DateFormat dateFormat = new SimpleDateFormat("MMM d");
-		String createdOn = ChatColor.RED + dateFormat.format(ban.getCreatedAt()) + ChatColor.YELLOW;
-		String createdBy = ChatColor.RED + ban.getCreatedBy() + ChatColor.YELLOW;
-		long banLength = ban.getExpiresAt() - ban.getCreatedAt();
+		String createdOn = ChatColor.RED + dateFormat.format(banHammerRecord.getCreatedAt()) + ChatColor.YELLOW;
+		String createdBy = ChatColor.RED + banHammerRecord.getCreatedBy() + ChatColor.YELLOW;
+		long banLength = banHammerRecord.getExpiresAt() - banHammerRecord.getCreatedAt();
 		String banTime = ChatColor.RED + BanHammerTime.millisToLongDHMS(banLength) + ChatColor.YELLOW;
 		if (banTime.contains("0 second"))
 			banTime = ChatColor.RED + "permanent" + ChatColor.YELLOW;
 		sender.sendMessage(ChatColor.YELLOW + "- " + createdOn + " by " + createdBy);
 		sender.sendMessage(ChatColor.YELLOW + "-- Ban length: " + banTime);
-		sender.sendMessage(ChatColor.YELLOW + "-- Reason: " + ChatColor.RED + ban.getReason());
+		sender.sendMessage(ChatColor.YELLOW + "-- Reason: " + ChatColor.RED + banHammerRecord.getReason());
 	}
 	
 	private void removeBan(BanHammerRecord record) {

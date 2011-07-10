@@ -18,20 +18,20 @@ public class BanHammerRecord {
 	// private static Server server;
 
 	static public void create(String playerName, String senderName, Long Expiry, String banReason) {
-		BanHammerRecord ban = new BanHammerRecord();
-		ban.player = playerName;
-		ban.createdBy = senderName;
-		ban.createdAt = System.currentTimeMillis();
-		ban.expiresAt = Expiry;
-		ban.reason = banReason;
-		database.save(ban);
+		BanHammerRecord banHammerRecord = new BanHammerRecord();
+		banHammerRecord.player = playerName;
+		banHammerRecord.createdBy = senderName;
+		banHammerRecord.createdAt = System.currentTimeMillis();
+		banHammerRecord.expiresAt = Expiry;
+		banHammerRecord.reason = banReason;
+		database.save(banHammerRecord);
 		BanHammerPlugin.log.info(String.format("[BanHammer] %s was banned by %s", playerName, senderName));
 	}
 	
-	static public void remove(List<BanHammerRecord> bans, String senderName) {
-		for (BanHammerRecord ban : bans)
-			database.delete(ban);
-		BanHammerPlugin.log.info(String.format("[BanHammer] %s ban(s) were deleted by %s", Integer.toString(bans.size()), senderName));
+	static public void remove(List<BanHammerRecord> banHammerRecords, String senderName) {
+		for (BanHammerRecord banHammerRecord : banHammerRecords)
+			database.delete(banHammerRecord);
+		BanHammerPlugin.log.info(String.format("[BanHammer] %s ban(s) were deleted by %s", Integer.toString(banHammerRecords.size()), senderName));
 	}
 	
 	static public List<BanHammerRecord> find(String player) {
@@ -61,11 +61,11 @@ public class BanHammerRecord {
 	}
 
 	static public boolean isBanned(String player) {
-		final List<BanHammerRecord> bans = BanHammerRecord.find(player);
+		final List<BanHammerRecord> banHammerRecords = BanHammerRecord.find(player);
 		// check to see if the player is banned
-		for (BanHammerRecord ban : bans) {
-			if (ban.expiresAt == 0) return true;
-			if (ban.expiresAt > System.currentTimeMillis()) return true;
+		for (BanHammerRecord banHammerRecord : banHammerRecords) {
+			if (banHammerRecord.expiresAt == 0) return true;
+			if (banHammerRecord.expiresAt > System.currentTimeMillis()) return true;
 		}
 		return false;
 	}
