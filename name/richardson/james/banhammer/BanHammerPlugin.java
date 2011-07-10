@@ -396,7 +396,8 @@ public class BanHammerPlugin extends JavaPlugin {
 		// Remove all bans
 		if (isPlayerBanned(playerName)) {
 			List<BanHammerRecord> bans = BanHammerRecord.find(playerName);
-			BanHammerRecord.destroy(bans);
+			for (BanHammerRecord ban : bans)
+				removeBan(ban);
 			log.info("[BanHammer] " + senderName + " has removed all bans associated with " + playerName);
 			sender.sendMessage(ChatColor.GREEN + "All bans associated with " + playerName + " have been deleted");
 		} else {
