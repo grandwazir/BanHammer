@@ -54,10 +54,10 @@ public class BanHammerPlugin extends JavaPlugin {
 		// Load banned players
 		BanHammerRecord.setup(this);
 		for(BanHammerRecord banHammerRecord : BanHammerRecord.findPermenantBans())
-			permenantBans.add(banHammerRecord.getPlayer());
+			permenantBans.add(banHammerRecord.getPlayer().toLowerCase());
 		log.info("[BanHammer] - " + Integer.toString(temporaryBans.size()) + " temporary ban(s) found");
 		for(BanHammerRecord banHammerRecord : BanHammerRecord.findTemporaryBans())
-			temporaryBans.put(banHammerRecord.getPlayer(), banHammerRecord.getExpiresAt());
+			temporaryBans.put(banHammerRecord.getPlayer().toLowerCase(), banHammerRecord.getExpiresAt());
 		log.info("[BanHammer] - " + Integer.toString(permenantBans.size()) + " permenant ban(s) found");
 	}
 	
