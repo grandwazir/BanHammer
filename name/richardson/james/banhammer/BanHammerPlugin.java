@@ -69,7 +69,7 @@ public class BanHammerPlugin extends JavaPlugin {
 		final String command = cmd.getName();
 		// Handle root commands
 		if (commands.contains(command)) {
-			if (!playerHasPermission(sender, "bh." + cmd.getName())) return true;
+			if (!playerHasPermission(sender, "banhammer." + cmd.getName())) return true;
 			if (command.equalsIgnoreCase("ban")) return banPlayer(sender, args);
 			if (command.equalsIgnoreCase("tempban")) return tempBanPlayer(sender, args);
 			if (command.equalsIgnoreCase("kick")) return kickPlayer(sender, args);
@@ -80,7 +80,7 @@ public class BanHammerPlugin extends JavaPlugin {
 			if (args.length == 0) return false;
 			final String subCommand = args[0];
 			if (!subCommands.contains(subCommand)) return false;
-			if (!playerHasPermission(sender, "bh." + subCommand)) return false;
+			if (!playerHasPermission(sender, "banhammer." + subCommand)) return false;
 			if (subCommand.equalsIgnoreCase("check")) return checkPlayer(sender, args);
 			if (subCommand.equalsIgnoreCase("history")) return getBanHistory(sender, args);
 			if (subCommand.equalsIgnoreCase("purge")) return purgeBanHistory(sender, args);
