@@ -33,7 +33,7 @@ public class BanHammerPlugin extends JavaPlugin {
 	static PermissionHandler CurrentPermissions = null;
 	static PluginDescriptionFile info = null;
 	// Command lists
-	static final List<String> commands = Arrays.asList("kick", "pardon", "ban");
+	static final List<String> commands = Arrays.asList("kick", "pardon", "ban", "tempban");
 	static final List<String> subCommands = Arrays.asList("check", "history");
 	// Banned players
 	static ArrayList<String> permenantBans = new ArrayList<String>();
@@ -99,10 +99,10 @@ public class BanHammerPlugin extends JavaPlugin {
 		if (args[0].equalsIgnoreCase("-f")) {
 			banOfflinePlayers = true;
 			playerName = args[1];
-			reason = combineString(1, args, " ");
+			reason = combineString(3, args, " ");
 		} else {
 			playerName = args[0];
-			reason = combineString(0, args, " ");
+			reason = combineString(2, args, " ");
 		}
 		
 		// Check to see if the player is already banned
@@ -139,18 +139,23 @@ public class BanHammerPlugin extends JavaPlugin {
 		String playerName;
 		String senderName = plugin.getName(sender);
 		String reason;
-		// Check to see we have enough arguments
-		if (args.length < 5) return false;
+		log.info("Arghghgfrh");
+		log.info(Integer.toString(args.length));
+		
+		// check we have enough arguments
+		if (args.length < 3) return false;
+		
 		// Create attributes.
 		if (args[0].equalsIgnoreCase("-f")) {
+			if (args.length < 4) return false;
 			banOfflinePlayers = true;
 			playerName = args[1];
 			expiresAt = (parseTimeSpec(args[2], args[3]) + System.currentTimeMillis());
-			reason = combineString(3, args, " ");
+			reason = combineString(4, args, " ");
 		} else {
 			playerName = args[0];
 			expiresAt = (parseTimeSpec(args[1], args[2]) + System.currentTimeMillis());
-			reason = combineString(2, args, " ");
+			reason = combineString(3, args, " ");
 		}
 		
 		// Check to see if the player is already banned
