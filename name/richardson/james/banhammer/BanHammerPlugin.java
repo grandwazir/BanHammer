@@ -124,7 +124,7 @@ public class BanHammerPlugin extends JavaPlugin {
 		
 		// Ban the player
 		BanHammerRecord.create(playerName, senderName, expiresAt, reason);
-		permenantBans.add(playerName);
+		permenantBans.add(playerName.toLowerCase());
 		String banNotification = ChatColor.RED + playerName + ChatColor.YELLOW + " has been banned";
 		String banReason = ChatColor.YELLOW + "Reason: " + ChatColor.RED + reason;
 		// Kick the player (if they are on the server)
@@ -280,14 +280,15 @@ public class BanHammerPlugin extends JavaPlugin {
 		return possiblePlayers.get(0);
 	}
 	
-	 boolean isPlayerBanned(String PlayerName) {
-		if (permenantBans.contains(PlayerName))
+	 boolean isPlayerBanned(String playerName) {
+		playerName = playerName.toLowerCase();
+		if (permenantBans.contains(playerName))
 			return true;
-		if (temporaryBans.containsKey(PlayerName)) {
-			if (temporaryBans.get(PlayerName) > System.currentTimeMillis()) {
+		if (temporaryBans.containsKey(playerName)) {
+			if (temporaryBans.get(playerName) > System.currentTimeMillis()) {
 				return true;
 			} else {
-				temporaryBans.remove(PlayerName);
+				temporaryBans.remove(playerName);
 			}	
 		}
 		return false;
@@ -301,6 +302,9 @@ public class BanHammerPlugin extends JavaPlugin {
 		if (!isPlayerOnline(playerName)) {
 			sender.sendMessage(ChatColor.RED + "No matching player.");
 			return true;
+		} else {
+			// if they are match the name to the player
+			playerName = getServer().matchPlayer(playerName).get(0).getDisplayName();
 		}
 				
 		// Prepare to kick player

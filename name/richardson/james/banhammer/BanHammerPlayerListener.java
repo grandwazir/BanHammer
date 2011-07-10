@@ -18,8 +18,8 @@ public class BanHammerPlayerListener extends PlayerListener {
 	}
 	
 	public void onPlayerLogin(PlayerLoginEvent event) {
-		String playerName = event.getPlayer().getDisplayName().toLowerCase();
-		if (BanHammerPlugin.permenantBans.contains(playerName) || BanHammerPlugin.temporaryBans.containsKey(playerName)) {
+		String playerName = event.getPlayer().getDisplayName();
+		if (plugin.isPlayerBanned(playerName)) {
 			BanHammerRecord banHammerRecord = plugin.getPlayerBan(playerName);
 			String message;
 			if (banHammerRecord.getExpiresAt() > 0) {
