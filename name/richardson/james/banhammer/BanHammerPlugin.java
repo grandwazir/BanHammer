@@ -271,7 +271,7 @@ public class BanHammerPlugin extends JavaPlugin {
 		// Check for a permanent ban
 		banHammerRecords = getDatabase().find(BanHammerRecord.class).where().ieq("player", playerName).ieq("expires_at", "0").findList();
 		if (banHammerRecords.size() > 1)
-			log.warning("[BANHAMMER] Expecting to find 1 ban but actually got " + Integer.toString(banHammerRecords.size()));
+			log.warning("[BanHammer] Expecting to find 1 ban but actually got " + Integer.toString(banHammerRecords.size()));
 		return banHammerRecords.get(0);
 	}
 
@@ -364,7 +364,7 @@ public class BanHammerPlugin extends JavaPlugin {
 				removeBan(record);
 			}
 		} else if (commandOptions.contains("A")) {
-			log.info("[BANHAMMER] Removing all bans for " + playerName);
+			log.info("[BanHammer] Removing all bans for " + playerName);
 			List<BanHammerRecord> banHammerRecords = this.getAllPlayerBans(playerName);
 			for (BanHammerRecord record : banHammerRecords)
 				removeBan(record);
@@ -378,7 +378,7 @@ public class BanHammerPlugin extends JavaPlugin {
 		notifyPlayers(sender, ChatColor.GREEN + playerName + " has been pardoned");
 		
 		// Log to console
-		log.info("[BANHAMMER] " + senderName + " has pardoned " + playerName);
+		log.info("[BanHammer] " + senderName + " has pardoned " + playerName);
 		
 		return true;
 	}
@@ -460,12 +460,12 @@ public class BanHammerPlugin extends JavaPlugin {
 		Plugin permissionsPlugin = this.getServer().getPluginManager().getPlugin("Permissions");
 		    
 		if (permissionsPlugin == null) {
-			log.warning("[BANHAMMER] - Permission system not detected, defaulting to OP");
+			log.warning("[BanHammer] - Permission system not detected, defaulting to OP");
 		    return;
 		}
 		    
 		CurrentPermissions = ((Permissions) permissionsPlugin).getHandler();
-		log.info("[BANHAMMER] - Found and will use plugin "+((Permissions)permissionsPlugin).getDescription().getFullName());
+		log.info("[BanHammer] - Permission system found: "+((Permissions)permissionsPlugin).getDescription().getFullName());
 	}
 
 }
