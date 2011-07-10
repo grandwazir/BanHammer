@@ -354,13 +354,13 @@ public class BanHammerPlugin extends JavaPlugin {
 		// Create arguments.
 		String senderName = plugin.getName(sender);
 		String commandOptions = args[0];
-		String playerName = args[1];
+		String playerName = args[1].toLowerCase();
 		
 		// Remove Bans
 		if (commandOptions.contains("a")) {
 			if (permenantBans.contains(playerName)) {
-				BanHammerRecord banHammerRecord = this.getPlayerBan(playerName);
-				removeBan(banHammerRecord);
+				BanHammerRecord record = this.getPlayerBan(playerName);
+				removeBan(record);
 			}
 		} else if (commandOptions.contains("A")) {
 			log.info("[BANHAMMER] Removing all bans for " + playerName);
@@ -434,7 +434,7 @@ public class BanHammerPlugin extends JavaPlugin {
 	}
 	
 	private void removeBan(BanHammerRecord record) {
-		String playerName = record.getPlayer();
+		String playerName = record.getPlayer().toLowerCase();
 		if (record.getExpiresAt() == 0) {
 			if (permenantBans.contains(playerName)) permenantBans.remove(playerName);
 		} else {
