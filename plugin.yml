@@ -11,7 +11,7 @@ commands:
     usage: '/ban <-tpf> [player] <reason>'
   tempban:
     description: 'Bans a specified player for a specified amount of time.'
-    usage: '/ban <-f> [player] [time] [unit] <reason>'
+    usage: '/tempban <-f> [player] [time] [unit] <reason>'
   pardon:
     description: 'Pardons a specified player'
     usage: '/pardon <-aA> [player]'
