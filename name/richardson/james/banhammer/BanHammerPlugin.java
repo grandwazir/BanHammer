@@ -112,11 +112,14 @@ public class BanHammerPlugin extends JavaPlugin {
 		} 
 		
 		// Check to see if the player is on the server
-		if (!MatchPlayer(playerName) && !banOfflinePlayers) {
+		if (!isPlayerOnline(playerName) && !banOfflinePlayers) {
 			sender.sendMessage(ChatColor.RED + "No matching player.");
 			sender.sendMessage(ChatColor.YELLOW + "To ban offline players use -f"); 
 			return true;
-		} 		
+		} else {
+			// if they are match the name to the player
+			playerName = getServer().matchPlayer(playerName).get(0).getDisplayName();
+		}		
 		
 		
 		// Ban the player
@@ -125,7 +128,7 @@ public class BanHammerPlugin extends JavaPlugin {
 		String banNotification = ChatColor.RED + playerName + ChatColor.YELLOW + " has been banned";
 		String banReason = ChatColor.YELLOW + "Reason: " + ChatColor.RED + reason;
 		// Kick the player (if they are on the server)
-		if (MatchPlayer(playerName))
+		if (isPlayerOnline(playerName))
 			getPlayerFromName(playerName).kickPlayer("Banned: " + reason);
 		// Notify players
 		notifyPlayers(sender, banNotification);
@@ -165,19 +168,22 @@ public class BanHammerPlugin extends JavaPlugin {
 		} 
 		
 		// Check to see if the player is on the server
-		if (!MatchPlayer(playerName) && !banOfflinePlayers) {
+		if (!isPlayerOnline(playerName) && !banOfflinePlayers) {
 			sender.sendMessage(ChatColor.RED + "No matching player.");
 			sender.sendMessage(ChatColor.YELLOW + "To ban offline players use -f"); 
 			return true;
-		} 		
+		} else {
+			// if they are match the name to the player
+			playerName = getServer().matchPlayer(playerName).get(0).getDisplayName();
+		}
 			
 		// Ban the player
 		BanHammerRecord.create(playerName, senderName, expiresAt, reason);
-		temporaryBans.put(playerName, expiresAt);
+		temporaryBans.put(playerName.toLowerCase(), expiresAt);
 		String banNotification = ChatColor.RED + playerName + ChatColor.YELLOW + " has been temporarily banned";
 		String banReason = ChatColor.YELLOW + "Reason: " + ChatColor.RED + reason;
 		// Kick the player (if they are on the server)
-		if (MatchPlayer(playerName))
+		if (isPlayerOnline(playerName))
 			getPlayerFromName(playerName).kickPlayer("Banned: " + reason);
 		// Notify players
 		notifyPlayers(sender, banNotification);
@@ -292,7 +298,7 @@ public class BanHammerPlugin extends JavaPlugin {
 		if (args.length < 1) return false;
 		String playerName = args[0];
 		// Check to see if the player is on the server
-		if (!MatchPlayer(playerName)) {
+		if (!isPlayerOnline(playerName)) {
 			sender.sendMessage(ChatColor.RED + "No matching player.");
 			return true;
 		}
@@ -316,7 +322,7 @@ public class BanHammerPlugin extends JavaPlugin {
 		return true;
 	}
 
-	private boolean MatchPlayer(String playerName) {
+	private boolean isPlayerOnline(String playerName) {
 		List<Player> possiblePlayers = getServer().matchPlayer(playerName);
 		if (possiblePlayers.size() == 1) {
 			return true;
