@@ -94,15 +94,17 @@ public class BanHammerPlugin extends JavaPlugin {
 		String senderName = plugin.getName(sender);
 		String reason;
 		// Check to see we have enough arguments
-		if (args.length < 3) return false;
+		if (args.length < 2) return false;
+		
 		// Create attributes.
 		if (args[0].equalsIgnoreCase("-f")) {
+			if (args.length < 3) return false;
 			banOfflinePlayers = true;
 			playerName = args[1];
-			reason = combineString(3, args, " ");
+			reason = combineString(2, args, " ");
 		} else {
 			playerName = args[0];
-			reason = combineString(2, args, " ");
+			reason = combineString(1, args, " ");
 		}
 		
 		// Check to see if the player is already banned
@@ -116,7 +118,7 @@ public class BanHammerPlugin extends JavaPlugin {
 			sender.sendMessage(ChatColor.RED + "No matching player.");
 			sender.sendMessage(ChatColor.YELLOW + "To ban offline players use -f"); 
 			return true;
-		} else {
+		} else if (!banOfflinePlayers) {
 			// if they are match the name to the player
 			playerName = getServer().matchPlayer(playerName).get(0).getDisplayName();
 		}		
@@ -142,15 +144,13 @@ public class BanHammerPlugin extends JavaPlugin {
 		String playerName;
 		String senderName = plugin.getName(sender);
 		String reason;
-		log.info("Arghghgfrh");
-		log.info(Integer.toString(args.length));
 		
 		// check we have enough arguments
-		if (args.length < 3) return false;
+		if (args.length < 4) return false;
 		
 		// Create attributes.
 		if (args[0].equalsIgnoreCase("-f")) {
-			if (args.length < 4) return false;
+			if (args.length < 5) return false;
 			banOfflinePlayers = true;
 			playerName = args[1];
 			expiresAt = (parseTimeSpec(args[2], args[3]) + System.currentTimeMillis());
@@ -172,7 +172,7 @@ public class BanHammerPlugin extends JavaPlugin {
 			sender.sendMessage(ChatColor.RED + "No matching player.");
 			sender.sendMessage(ChatColor.YELLOW + "To ban offline players use -f"); 
 			return true;
-		} else {
+		} else if (!banOfflinePlayers) {
 			// if they are match the name to the player
 			playerName = getServer().matchPlayer(playerName).get(0).getDisplayName();
 		}
@@ -337,11 +337,12 @@ public class BanHammerPlugin extends JavaPlugin {
 	
 	private void notifyPlayers(CommandSender sender, String notification) {
 		if (broadcastActions) {
+			if (getName(sender).equalsIgnoreCase("console"))
+				sender.sendMessage(notification);
 			getServer().broadcastMessage(notification);
 		} else {
 			sender.sendMessage(notification);
-		}
-		
+		}	
 	}
 	
 	
