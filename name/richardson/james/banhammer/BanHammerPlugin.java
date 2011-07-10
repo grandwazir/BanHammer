@@ -91,6 +91,7 @@ public class BanHammerPlugin extends JavaPlugin {
 	private boolean banPlayer(CommandSender sender, String[] args) {
 		boolean banOfflinePlayers = false;
 		long expiresAt = 0;
+		long createdAt = System.currentTimeMillis();
 		String playerName;
 		String senderName = plugin.getName(sender);
 		String reason;
@@ -126,7 +127,7 @@ public class BanHammerPlugin extends JavaPlugin {
 		
 		
 		// Ban the player
-		BanHammerRecord.create(playerName, senderName, expiresAt, reason);
+		BanHammerRecord.create(playerName, senderName, expiresAt, createdAt, reason);
 		permenantBans.add(playerName.toLowerCase());
 		String banNotification = ChatColor.RED + playerName + ChatColor.YELLOW + " has been banned";
 		String banReason = ChatColor.YELLOW + "Reason: " + ChatColor.RED + reason;
@@ -143,6 +144,7 @@ public class BanHammerPlugin extends JavaPlugin {
 		boolean banOfflinePlayers = false;
 		long banTime = 0;
 		long expiresAt = 0;
+		long createdAt = System.currentTimeMillis();
 		String playerName;
 		String senderName = plugin.getName(sender);
 		String reason;
@@ -163,7 +165,7 @@ public class BanHammerPlugin extends JavaPlugin {
 			reason = combineString(3, args, " ");
 		}
 		
-		expiresAt = banTime + System.currentTimeMillis();
+		expiresAt = banTime + createdAt;
 		
 		// Check to see if the player is already banned
 		if (BanHammerRecord.isBanned(playerName)) {
@@ -182,8 +184,8 @@ public class BanHammerPlugin extends JavaPlugin {
 		}
 			
 		// Ban the player
-		BanHammerRecord.create(playerName, senderName, expiresAt, reason);
-		temporaryBans.put(playerName.toLowerCase(), (banTime + System.currentTimeMillis()));
+		BanHammerRecord.create(playerName, senderName, expiresAt, createdAt, reason);
+		temporaryBans.put(playerName.toLowerCase(), (expiresAt));
 		String banNotification = ChatColor.RED + playerName + ChatColor.YELLOW + " has been temporarily banned";
 		String banReason = ChatColor.YELLOW + "Reason: " + ChatColor.RED + reason;
 		String banLength = ChatColor.YELLOW + "Time: " + ChatColor.RED + BanHammerTime.millisToLongDHMS(banTime);

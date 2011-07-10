@@ -17,11 +17,11 @@ public class BanHammerRecord {
 	private static EbeanServer database;
 	// private static Server server;
 
-	static public void create(String playerName, String senderName, Long Expiry, String banReason) {
+	static public void create(String playerName, String senderName, Long Expiry, Long creationTime, String banReason) {
 		BanHammerRecord banHammerRecord = new BanHammerRecord();
 		banHammerRecord.player = playerName;
 		banHammerRecord.createdBy = senderName;
-		banHammerRecord.createdAt = System.currentTimeMillis();
+		banHammerRecord.createdAt = creationTime;
 		banHammerRecord.expiresAt = Expiry;
 		banHammerRecord.reason = banReason;
 		database.save(banHammerRecord);
@@ -29,7 +29,9 @@ public class BanHammerRecord {
 	}
 	
 	static public void destroy(List<BanHammerRecord> banHammerRecords) {
-		database.delete(BanHammerRecord.class, banHammerRecords);
+		for(BanHammerRecord ban : banHammerRecords) {
+			database.delete(ban);
+		}
 	}
 	
 	public void destroy() {
