@@ -34,7 +34,7 @@ public class BanHammerPlugin extends JavaPlugin {
 	static PluginDescriptionFile info = null;
 	// Command lists
 	static final List<String> commands = Arrays.asList("kick", "pardon", "ban", "tempban");
-	static final List<String> subCommands = Arrays.asList("check", "history");
+	static final List<String> subCommands = Arrays.asList("check", "history", "purge");
 	// Banned players
 	static ArrayList<String> permenantBans = new ArrayList<String>();
 	static Map<String,Long> temporaryBans = new HashMap<String,Long>();
@@ -79,10 +79,11 @@ public class BanHammerPlugin extends JavaPlugin {
 		if (command.equalsIgnoreCase("bh")) {
 			if (args.length == 0) return false;
 			final String subCommand = args[0];
-			if (!subCommands.contains(command)) return false;
-			if (!playerHasPermission(sender, "bh." + subCommand)) return true;
-			// if (command.equalsIgnoreCase("check")) return checkPlayer(sender, args);
-			if (command.equalsIgnoreCase("history")) return getBanHistory(sender, args);
+			if (!subCommands.contains(subCommand)) return false;
+			if (!playerHasPermission(sender, "bh." + subCommand)) return false;
+			if (subCommand.equalsIgnoreCase("check")) return checkPlayer(sender, args);
+			if (subCommand.equalsIgnoreCase("history")) return getBanHistory(sender, args);
+			if (subCommand.equalsIgnoreCase("purge")) return purgeBanHistory(sender, args);
 		}
 		return false;
 	}
@@ -211,40 +212,47 @@ public class BanHammerPlugin extends JavaPlugin {
 			return "No reason provided";
 		}
 	}
+	
+	private boolean checkPlayer(CommandSender sender, String[] args) {
 
-	List<BanHammerRecord> getAllPlayerBans(String playerName) {
-		@SuppressWarnings("unused")
-		List<BanHammerRecord> banHammerRecords;
-		return banHammerRecords = getDatabase().find(BanHammerRecord.class).where().ieq("player", playerName).findList();
-	}
-
-	private boolean getBanHistory(CommandSender sender, String[] args) {
+		if (args.length != 2) {
+			sender.sendMessage(ChatColor.RED + "No player specified!");
+			return true;
+		}
 		
-		// Check permissions
-		if (!this.playerHasPermission(sender, "banhammer.history")) return true;
-		
-		if (args.length < 2) return false;
-		
-		// Create arguments.
-		String commandOptions = args[0];
-		String playerName = args[1];
-		
-		if (this.isPlayerBanned(playerName)) {
-			sender.sendMessage(ChatColor.RED + playerName + " currently banned");
+		// notify the player if they are banned or not
+		String playerName =  args[1];
+		if (isPlayerBanned(playerName)) {
+			sender.sendMessage(ChatColor.RED + playerName + " is currently banned");
+			List<BanHammerRecord> bans = BanHammerRecord.find(playerName);
+			printBanDetails(sender, bans.get(0));
 		} else {
 			sender.sendMessage(ChatColor.GREEN + playerName + " is not banned");
 		}
+		return true;
 		
-		// List bans
-		if (commandOptions.contains("a") && this.isPlayerBanned(playerName)) {
-			BanHammerRecord banHammerRecord = this.getPlayerBan(playerName);
-			printBanDetails(sender, banHammerRecord);
-		} else if (commandOptions.contains("A")) {
-			sender.sendMessage(ChatColor.LIGHT_PURPLE + "Previous bans:");
-			for(BanHammerRecord banHammerRecord : this.getAllPlayerBans(playerName))
-				printBanDetails(sender, banHammerRecord);
+	}
+		
+	private boolean getBanHistory(CommandSender sender, String[] args) {
+
+		if (args.length != 2) {
+			sender.sendMessage(ChatColor.RED + "No player specified!");
+			return true;
 		}
 		
+		// get the list of bans and return if we have none.
+		String playerName = args[1];
+		sender.sendMessage(ChatColor.LIGHT_PURPLE + "Ban history for " + playerName);
+		List<BanHammerRecord> bans = BanHammerRecord.find(playerName);
+		if (bans.isEmpty()) {
+			sender.sendMessage(ChatColor.GREEN + playerName + " has no bans on record");
+			return true;
+		}
+		
+		// else print all the bans
+		sender.sendMessage(ChatColor.LIGHT_PURPLE + Integer.toString(bans.size()) + " ban(s) on record");
+		for(BanHammerRecord ban : bans)
+			printBanDetails(sender, ban);
 		return true;
 	}
 
@@ -355,38 +363,48 @@ public class BanHammerPlugin extends JavaPlugin {
 	private boolean pardonPlayer(CommandSender sender, String[] args) {
 		
 		// Check to see we have enough arguments
-		if (args.length < 2) return false;
+		if (args.length != 1) return false;
 		
 		// Create arguments.
 		String senderName = plugin.getName(sender);
-		String commandOptions = args[0];
-		String playerName = args[1].toLowerCase();
+		String playerName = args[0].toLowerCase();
 		
-		// Remove Bans
-		if (commandOptions.contains("a")) {
-			if (permenantBans.contains(playerName)) {
-				BanHammerRecord record = this.getPlayerBan(playerName);
-				removeBan(record);
-			}
-		} else if (commandOptions.contains("A")) {
-			log.info("[BanHammer] Removing all bans for " + playerName);
-			List<BanHammerRecord> banHammerRecords = this.getAllPlayerBans(playerName);
-			for (BanHammerRecord record : banHammerRecords)
-				removeBan(record);
+		// Remove the current active ban
+		if (isPlayerBanned(playerName)) {
+			List<BanHammerRecord> bans = BanHammerRecord.find(playerName);
+			removeBan(bans.get(0));
+			notifyPlayers(sender, ChatColor.GREEN + playerName + " has been pardoned");
+			log.info("[BanHammer] " + senderName + " has pardoned " + playerName);
 		} else {
-			sender.sendMessage(ChatColor.RED + "You did not specific what bans to pardon");
-			sender.sendMessage(ChatColor.YELLOW + "Choose -a for active bans or -A for all.");
-			return true;
+			sender.sendMessage(ChatColor.YELLOW + playerName + " is not banned");
 		}
-		
-		// Notify players
-		notifyPlayers(sender, ChatColor.GREEN + playerName + " has been pardoned");
-		
-		// Log to console
-		log.info("[BanHammer] " + senderName + " has pardoned " + playerName);
 		
 		return true;
 	}
+	
+	private boolean purgeBanHistory(CommandSender sender, String[] args) {
+		
+		// Check to see we have enough arguments
+		if (args.length != 2) { sender.sendMessage(ChatColor.RED + "No player specified!"); return true; };
+		
+		// Create arguments.
+		String senderName = plugin.getName(sender);
+		String playerName = args[1].toLowerCase();
+		
+		// Remove all bans
+		if (isPlayerBanned(playerName)) {
+			List<BanHammerRecord> bans = BanHammerRecord.find(playerName);
+			BanHammerRecord.destroy(bans);
+			log.info("[BanHammer] " + senderName + " has removed all bans associated with " + playerName);
+			sender.sendMessage(ChatColor.GREEN + "All bans associated with " + playerName + " have been deleted");
+		} else {
+			sender.sendMessage(ChatColor.YELLOW + playerName + " does not have any bans on record");
+		}
+		
+		return true;
+	}
+	
+
 	
 	private boolean playerHasPermission(CommandSender sender, String node) {
 		String playerName = this.getName(sender);
@@ -435,9 +453,10 @@ public class BanHammerPlugin extends JavaPlugin {
 		if (banTime.contains("0 second"))
 			banTime = ChatColor.RED + "permanent" + ChatColor.YELLOW;
 		sender.sendMessage(ChatColor.YELLOW + "- " + createdOn + " by " + createdBy);
-		sender.sendMessage(ChatColor.YELLOW + "-- Ban length: " + banTime);
 		sender.sendMessage(ChatColor.YELLOW + "-- Reason: " + ChatColor.RED + banHammerRecord.getReason());
+		sender.sendMessage(ChatColor.YELLOW + "-- Ban length: " + banTime);
 	}
+	
 	
 	private void removeBan(BanHammerRecord record) {
 		String playerName = record.getPlayer().toLowerCase();
@@ -446,7 +465,7 @@ public class BanHammerPlugin extends JavaPlugin {
 		} else {
 			if (temporaryBans.containsKey(playerName)) temporaryBans.remove(playerName);
 		}
-		getDatabase().delete(record);
+		record.destroy();
 	}
 	
 	private void setupDatabase() {

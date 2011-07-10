@@ -16,5 +16,5 @@ commands:
     description: 'Pardons a specified player'
     usage: '/pardon <-aA> [player]'
   bh:
-  	description: 'Additional ban commands'
-    usage: '/bh [history|check|recent]'
+    description: 'Additional ban commands'
+    usage: '/bh [history|check|purge]'

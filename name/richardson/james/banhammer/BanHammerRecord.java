@@ -28,10 +28,12 @@ public class BanHammerRecord {
 		BanHammerPlugin.log.info(String.format("[BanHammer] %s was banned by %s", playerName, senderName));
 	}
 	
-	static public void remove(List<BanHammerRecord> banHammerRecords, String senderName) {
-		for (BanHammerRecord banHammerRecord : banHammerRecords)
-			database.delete(banHammerRecord);
-		BanHammerPlugin.log.info(String.format("[BanHammer] %s ban(s) were deleted by %s", Integer.toString(banHammerRecords.size()), senderName));
+	static public void destroy(List<BanHammerRecord> banHammerRecords) {
+		database.delete(BanHammerRecord.class, banHammerRecords);
+	}
+	
+	public void destroy() {
+		database.delete(this);
 	}
 	
 	static public List<BanHammerRecord> find(String player) {
