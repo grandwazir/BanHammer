@@ -15,81 +15,75 @@ import com.avaje.ebean.validation.NotNull;
 
 @Entity()
 @Table(name = "bh_bans")
-public class BanHammerRecord {
-	private static EbeanServer database;
-	// private static Server server;
+public class BanRecord {
+	public enum type {
+		PERMENANT, TEMPORARY
+	}
 
-	static public void create(String playerName, String senderName, Long Expiry, Long creationTime, String banReason) {
-		BanHammerRecord banHammerRecord = new BanHammerRecord();
+	private static EbeanServer database = BanHammer.getDb();
+
+	static public void create(String playerName, String senderName, Long Expiry,
+			Long creationTime, String banReason) {
+		BanRecord banHammerRecord = new BanRecord();
 		banHammerRecord.player = playerName;
 		banHammerRecord.createdBy = senderName;
 		banHammerRecord.createdAt = creationTime;
 		banHammerRecord.expiresAt = Expiry;
 		banHammerRecord.reason = banReason;
 		database.save(banHammerRecord);
-		// BanHammer.log.info(String.format("[BanHammer] %s was banned by %s", playerName, senderName));
+		// BanHammer.log.info(String.format("[BanHammer] %s was banned by %s",
+		// playerName, senderName));
 	}
-	
-	static public void destroy(List<BanHammerRecord> banHammerRecords) {
-		for(BanHammerRecord ban : banHammerRecords) {
+
+	static public void destroy(List<BanRecord> banHammerRecords) {
+		for (BanRecord ban : banHammerRecords) {
 			database.delete(ban);
 		}
 	}
-	
-	public void destroy() {
-		database.delete(this);
-	}
-	
-	static public List<BanHammerRecord> find(String player) {
+
+	static public List<BanRecord> find(String player) {
 		// create the example
-		BanHammerRecord example = new BanHammerRecord();
+		BanRecord example = new BanRecord();
 		example.setPlayer(player);
 		// create the example expression
-		ExampleExpression expression = database.getExpressionFactory().exampleLike(example, true, LikeType.EQUAL_TO);
+		ExampleExpression expression = database.getExpressionFactory().exampleLike(
+				example, true, LikeType.EQUAL_TO);
 		// find and return all bans that match the expression
-		return database.find(BanHammerRecord.class).where().add(expression).findList();
-	}
-	
-	static public List<BanHammerRecord> findPermenantBans() {
-		// find and return all bans that have an expiry time of 0
-		return database.find(BanHammerRecord.class).where().eq("expiresAt", 0).findList();
-	}
-	
-	static public List<BanHammerRecord> findTemporaryBans() {
-		// find and return all bans that are temporary (time_now > expiresAt)
-		return database.find(BanHammerRecord.class).where().between("expiresAt", System.currentTimeMillis(), "9999999999999").findList();
-	}
-
-	static public void setup(BanHammer plugin) {
-		BanHammerRecord.database = plugin.getDatabase();
-		// BanHammerRecord.server = plugin.getServer();
-		// add permanent bans to memory
+		return database.find(BanRecord.class).where().add(expression).findList();
 	}
 
 	static public boolean isBanned(String player) {
-		final List<BanHammerRecord> banHammerRecords = BanHammerRecord.find(player);
+		final List<BanRecord> banHammerRecords = BanRecord.find(player);
 		// check to see if the player is banned
-		for (BanHammerRecord banHammerRecord : banHammerRecords) {
+		for (BanRecord banHammerRecord : banHammerRecords) {
 			if (banHammerRecord.expiresAt == 0) return true;
 			if (banHammerRecord.expiresAt > System.currentTimeMillis()) return true;
 		}
 		return false;
 	}
-	
+
+	static public List<BanRecord> list() {
+		return database.find(BanRecord.class).findList();
+	}
+
 	@Id
 	private long createdAt;
-
-	@NotNull
-	private String player;
 
 	@NotNull
 	private String createdBy;
 
 	@NotNull
-	private String reason;
+	private long expiresAt;
 
 	@NotNull
-	private long expiresAt;
+	private String player;
+
+	@NotNull
+	private String reason;
+
+	public void destroy() {
+		database.delete(this);
+	}
 
 	public long getCreatedAt() {
 		return this.createdAt;
@@ -109,6 +103,14 @@ public class BanHammerRecord {
 
 	public String getReason() {
 		return this.reason;
+	}
+
+	public BanRecord.type getType() {
+		if (this.expiresAt == 0)
+			return BanRecord.type.PERMENANT;
+		else {
+			return BanRecord.type.TEMPORARY;
+		}
 	}
 
 	public void setCreatedAt(long createdAt) {

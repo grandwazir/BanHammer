@@ -1,5 +1,5 @@
 name: BanHammer
-main: name.richardson.james.banhammer.BanHammerPlugin
+main: name.richardson.james.banhammer.BanHammer
 version: 1.1.1
 database: true
 commands:

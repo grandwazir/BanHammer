@@ -6,7 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import name.richardson.james.banhammer.BanHammer;
-import name.richardson.james.banhammer.persistant.BanHammerRecord;
+import name.richardson.james.banhammer.persistant.BanRecord;
 
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerLoginEvent;
