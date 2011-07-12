@@ -1,22 +1,18 @@
-package name.richardson.james.banhammer;
+package name.richardson.james.banhammer.listeners;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import name.richardson.james.banhammer.BanHammerPlugin;
+import name.richardson.james.banhammer.BanHammer;
+import name.richardson.james.banhammer.persistant.BanHammerRecord;
 
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 public class BanHammerPlayerListener extends PlayerListener {
-	private BanHammerPlugin plugin;
-	
-	public BanHammerPlayerListener(BanHammerPlugin plugin) {
-		this.plugin = plugin;
-	}
-	
+	/*
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		String playerName = event.getPlayer().getDisplayName();
 		if (plugin.isPlayerBanned(playerName)) {
@@ -34,4 +30,5 @@ public class BanHammerPlayerListener extends PlayerListener {
 			event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message);
 		}
 	}
+	*/
 }

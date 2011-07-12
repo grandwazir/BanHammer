@@ -1,10 +1,12 @@
-package name.richardson.james.banhammer;
+package name.richardson.james.banhammer.persistant;
 
 import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import name.richardson.james.banhammer.BanHammer;
 
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.ExampleExpression;
@@ -25,7 +27,7 @@ public class BanHammerRecord {
 		banHammerRecord.expiresAt = Expiry;
 		banHammerRecord.reason = banReason;
 		database.save(banHammerRecord);
-		BanHammerPlugin.log.info(String.format("[BanHammer] %s was banned by %s", playerName, senderName));
+		// BanHammer.log.info(String.format("[BanHammer] %s was banned by %s", playerName, senderName));
 	}
 	
 	static public void destroy(List<BanHammerRecord> banHammerRecords) {
@@ -58,7 +60,7 @@ public class BanHammerRecord {
 		return database.find(BanHammerRecord.class).where().between("expiresAt", System.currentTimeMillis(), "9999999999999").findList();
 	}
 
-	static public void setup(BanHammerPlugin plugin) {
+	static public void setup(BanHammer plugin) {
 		BanHammerRecord.database = plugin.getDatabase();
 		// BanHammerRecord.server = plugin.getServer();
 		// add permanent bans to memory
