@@ -6,29 +6,33 @@ import java.util.Calendar;
 import java.util.Date;
 
 import name.richardson.james.banhammer.BanHammer;
+import name.richardson.james.banhammer.cache.CachedBan;
 import name.richardson.james.banhammer.persistant.BanRecord;
 
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 public class BanHammerPlayerListener extends PlayerListener {
-	/*
+	
 	public void onPlayerLogin(PlayerLoginEvent event) {
-		String playerName = event.getPlayer().getDisplayName();
-		if (plugin.isPlayerBanned(playerName)) {
-			BanHammerRecord banHammerRecord = plugin.getPlayerBan(playerName);
-			String message;
-			if (banHammerRecord.getExpiresAt() > 0) {
-				// Create the message
-				Date expiryDate = new Date(banHammerRecord.getExpiresAt());
-				DateFormat dateFormat = new SimpleDateFormat("MMM d H:mm a ");
-				String expiryDateString = dateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")"; 
-				message = "You have been banned until " + expiryDateString;
+		String playerName = event.getPlayer().getDisplayName().toLowerCase();
+		String message;
+		
+		if (BanHammer.cache.contains(playerName)) {
+			CachedBan ban = BanHammer.cache.get(playerName);
+			if (!ban.hasExpired()) {
+				if (ban.getType().equals(BanRecord.type.PERMENANT)) {
+					message = String.format(BanHammer.messages.getString("disallowLoginPermanently"), ban.getReason());
+				} else {
+					Date expiryDate = new Date(ban.getExpiresAt());
+					DateFormat dateFormat = new SimpleDateFormat("MMM d H:mm a ");
+					String expiryDateString = dateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")"; 
+					message = String.format(BanHammer.messages.getString("disallowLoginTemporarily"), expiryDateString);
+				}
+				event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message);	
 			} else {
-				message = "You have been permanently banned. Reason: " + banHammerRecord.getReason();
+				BanHammer.cache.remove(playerName);
 			}
-			event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message);
 		}
 	}
-	*/
 }

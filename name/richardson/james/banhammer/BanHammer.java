@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import javax.persistence.PersistenceException;
 
+import name.richardson.james.banhammer.cache.CachedList;
 import name.richardson.james.banhammer.listeners.BanHammerPlayerListener;
 import name.richardson.james.banhammer.persistant.BanRecord;
 
@@ -25,16 +26,16 @@ import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class BanHammer extends JavaPlugin {
 
+	public static CachedList cache;
+	public static ResourceBundle messages;
+	
 	static Map<String, Long> bans = new HashMap<String, Long>();
-	static BanCache cache;
 
 	private static EbeanServer db;
 	private static BanHammer instance;
 
 	private final static Locale locale = Locale.getDefault();
 	private final static Logger logger = Logger.getLogger("Minecraft");
-
-	static ResourceBundle messages;
 
 	static PermissionHandler permissions;
 	
@@ -72,7 +73,7 @@ public class BanHammer extends JavaPlugin {
 		pm = getServer().getPluginManager();
 
 		setupDatabase();
-		cache = new BanCache();
+		cache = new CachedList();
 
 		setupPermissions();
 

@@ -51,6 +51,17 @@ public class BanRecord {
 		// find and return all bans that match the expression
 		return database.find(BanRecord.class).where().add(expression).findList();
 	}
+	
+	static public BanRecord findFirst(String player) {
+		// create the example
+		BanRecord example = new BanRecord();
+		example.setPlayer(player);
+		// create the example expression
+		ExampleExpression expression = database.getExpressionFactory().exampleLike(
+				example, true, LikeType.EQUAL_TO);
+		// find and return all bans that match the expression
+		return database.find(BanRecord.class).where().add(expression).orderBy("createdAt DESC").findList().get(0);
+	}
 
 	static public boolean isBanned(String player) {
 		final List<BanRecord> banHammerRecords = BanRecord.find(player);
