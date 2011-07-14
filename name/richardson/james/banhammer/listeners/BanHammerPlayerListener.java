@@ -20,7 +20,7 @@ public class BanHammerPlayerListener extends PlayerListener {
 		
 		if (BanHammer.cache.contains(playerName)) {
 			CachedBan ban = BanHammer.cache.get(playerName);
-			if (!ban.hasExpired()) {
+			if (!ban.isActive()) {
 				if (ban.getType().equals(BanRecord.type.PERMENANT)) {
 					message = String.format(BanHammer.messages.getString("disallowLoginPermanently"), ban.getReason());
 				} else {

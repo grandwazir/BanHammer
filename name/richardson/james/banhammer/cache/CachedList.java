@@ -1,14 +1,13 @@
 package name.richardson.james.banhammer.cache;
 
 import java.util.HashMap;
-import java.util.logging.Level;
 
 import name.richardson.james.banhammer.persistant.BanRecord;
 
 public class CachedList {
-	private HashMap<String, BanRecord.type> list;
-	private HashMap<String, String> permenant;
-	private HashMap<String, Long> temporary;
+	private HashMap<String, BanRecord.type> list = new HashMap<String, BanRecord.type>();
+	private HashMap<String, String> permenant = new HashMap<String, String>();
+	private HashMap<String, Long> temporary = new HashMap<String, Long>();
 	
 	public CachedList() {
 		this.load();
@@ -55,6 +54,17 @@ public class CachedList {
 		list.remove(playerName);
 		permenant.remove(playerName);
 		temporary.remove(playerName);
+	}
+	
+	public int size() {
+		return list.size();
+	}
+	
+	public HashMap<String, Integer> stats() {
+		HashMap<String, Integer> stats = new HashMap<String, Integer>();
+		stats.put("permenant", permenant.size());
+		stats.put("temporary", temporary.size());
+		return stats;
 	}
 	
 	public void unload() {

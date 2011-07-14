@@ -8,7 +8,6 @@ import javax.persistence.Table;
 
 import name.richardson.james.banhammer.BanHammer;
 
-import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.ExampleExpression;
 import com.avaje.ebean.LikeType;
 import com.avaje.ebean.validation.NotNull;
@@ -20,8 +19,6 @@ public class BanRecord {
 		PERMENANT, TEMPORARY
 	}
 
-	private static EbeanServer database = BanHammer.getDb();
-
 	static public void create(String playerName, String senderName, Long Expiry,
 			Long creationTime, String banReason) {
 		BanRecord banHammerRecord = new BanRecord();
@@ -30,14 +27,14 @@ public class BanRecord {
 		banHammerRecord.createdAt = creationTime;
 		banHammerRecord.expiresAt = Expiry;
 		banHammerRecord.reason = banReason;
-		database.save(banHammerRecord);
+		BanHammer.getDb().save(banHammerRecord);
 		// BanHammer.log.info(String.format("[BanHammer] %s was banned by %s",
 		// playerName, senderName));
 	}
 
 	static public void destroy(List<BanRecord> banHammerRecords) {
 		for (BanRecord ban : banHammerRecords) {
-			database.delete(ban);
+			BanHammer.getDb().delete(ban);
 		}
 	}
 
@@ -46,10 +43,10 @@ public class BanRecord {
 		BanRecord example = new BanRecord();
 		example.setPlayer(player);
 		// create the example expression
-		ExampleExpression expression = database.getExpressionFactory().exampleLike(
+		ExampleExpression expression = BanHammer.getDb().getExpressionFactory().exampleLike(
 				example, true, LikeType.EQUAL_TO);
 		// find and return all bans that match the expression
-		return database.find(BanRecord.class).where().add(expression).findList();
+		return BanHammer.getDb().find(BanRecord.class).where().add(expression).findList();
 	}
 	
 	static public BanRecord findFirst(String player) {
@@ -57,10 +54,10 @@ public class BanRecord {
 		BanRecord example = new BanRecord();
 		example.setPlayer(player);
 		// create the example expression
-		ExampleExpression expression = database.getExpressionFactory().exampleLike(
+		ExampleExpression expression = BanHammer.getDb().getExpressionFactory().exampleLike(
 				example, true, LikeType.EQUAL_TO);
 		// find and return all bans that match the expression
-		return database.find(BanRecord.class).where().add(expression).orderBy("createdAt DESC").findList().get(0);
+		return BanHammer.getDb().find(BanRecord.class).where().add(expression).orderBy("createdAt DESC").findList().get(0);
 	}
 
 	static public boolean isBanned(String player) {
@@ -74,7 +71,7 @@ public class BanRecord {
 	}
 
 	static public List<BanRecord> list() {
-		return database.find(BanRecord.class).findList();
+		return BanHammer.getDb().find(BanRecord.class).findList();
 	}
 
 	@Id
@@ -93,7 +90,7 @@ public class BanRecord {
 	private String reason;
 
 	public void destroy() {
-		database.delete(this);
+		BanHammer.getDb().delete(this);
 	}
 
 	public long getCreatedAt() {

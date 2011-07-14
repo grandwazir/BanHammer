@@ -2,8 +2,6 @@ package name.richardson.james.banhammer.cache;
 
 import name.richardson.james.banhammer.persistant.BanRecord;
 
-import com.avaje.ebean.validation.NotNull;
-
 public class CachedBan {
 
 	private long expiresAt;
@@ -36,10 +34,10 @@ public class CachedBan {
 		}
 	}
 	
-	public boolean hasExpired() {
+	public boolean isActive() {
 		if (expiresAt == 0) {
-			return false;
-		} else if (expiresAt < System.currentTimeMillis() && expiresAt != 0) {
+			return true;
+		} else if (expiresAt < System.currentTimeMillis()) {
 			return true;
 		} else {
 		  return false;
