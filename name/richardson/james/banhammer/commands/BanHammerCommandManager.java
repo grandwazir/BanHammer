@@ -2,6 +2,7 @@ package name.richardson.james.banhammer.commands;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
 import name.richardson.james.banhammer.BanHammer;
 import name.richardson.james.banhammer.exceptions.NoMatchingPlayer;
@@ -9,6 +10,7 @@ import name.richardson.james.banhammer.exceptions.NotEnoughArguments;
 import name.richardson.james.banhammer.exceptions.PlayerAlreadyBanned;
 import name.richardson.james.banhammer.exceptions.PlayerNotAuthorised;
 import name.richardson.james.banhammer.persistant.BanRecord;
+import name.richardson.james.banhammer.utilities.BanHammerTime;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -54,7 +56,7 @@ public class BanHammerCommandManager implements CommandExecutor {
 			sender.sendMessage(ChatColor.RED + BanHammer.messages.getString("notEnoughArguments"));
 			sender.sendMessage(ChatColor.YELLOW + e.getUsage());
 		} catch (PlayerAlreadyBanned e ) {
-			sender.sendMessage(ChatColor.RED + BanHammer.messages.getString("playerNotAlreadyBanned"));
+			sender.sendMessage(ChatColor.RED + BanHammer.messages.getString("playerAlreadyBanned"));
 		}
 		return true;
 	}
@@ -72,7 +74,7 @@ public class BanHammerCommandManager implements CommandExecutor {
 			playerName = args[1];
 			reason = combineString(2, args, " ");
 		} else {
-			player = BanHammer.getInstance().matchPlayerExactly(args[0]);
+			player = BanHammer.getInstance().matchPlayer(args[0]);
 			playerName = player.getDisplayName();
 			reason = combineString(1, args, " ");
 		}
@@ -83,6 +85,7 @@ public class BanHammerCommandManager implements CommandExecutor {
 			BanRecord.create(playerName, senderName, new Long(0), System.currentTimeMillis(), reason);
 			BanHammer.cache.add(playerName);
 			if (player != null) player.kickPlayer(reason);
+			BanHammer.log(Level.INFO, String.format(BanHammer.messages.getString("logPlayerBanned"), senderName, playerName));
 			return true;
 		}
 	}
@@ -112,18 +115,19 @@ public class BanHammerCommandManager implements CommandExecutor {
 			reason = combineString(4, args, " ");
 			banTime = parseTimeSpec(args[2], args[3]);
 		} else {
-			player = BanHammer.getInstance().matchPlayerExactly(args[0]);
+			player = BanHammer.getInstance().matchPlayer(args[0]);
 			playerName = player.getDisplayName();
 			reason = combineString(3, args, " ");
 			banTime = parseTimeSpec(args[1], args[2]);
 		}
-	
+		
 		if (BanHammer.cache.contains(playerName)) {
 			throw new PlayerAlreadyBanned();
 		} else {
-			BanRecord.create(playerName, senderName, banTime, System.currentTimeMillis(), reason);
+			BanRecord.create(playerName, senderName, (banTime + System.currentTimeMillis()), System.currentTimeMillis(), reason);
 			BanHammer.cache.add(playerName);
 			if (player != null) player.kickPlayer(reason);
+			BanHammer.log(Level.INFO, String.format(BanHammer.messages.getString("logPlayerTempBanned"), senderName, playerName, BanHammerTime.millisToLongDHMS(banTime)));
 			return true;
 		}
 		
@@ -135,9 +139,9 @@ public class BanHammerCommandManager implements CommandExecutor {
 		if (BanHammer.cache.contains(args[0])) {
 			BanHammer.cache.remove(args[0]);
 			BanRecord.findFirst(args[0]).destroy();
-			sender.sendMessage(String.format(BanHammer.messages.getString("playerPardoned"), args[0]));
+			plugin.notifyPlayers((String.format(ChatColor.GREEN + BanHammer.messages.getString("playerPardoned"), args[0])), sender);
 		} else {
-			sender.sendMessage(String.format(BanHammer.messages.getString("unableToPardonPlayer"), args[0]));
+			sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.messages.getString("unableToPardonPlayer"), args[0]));
 		}
 		return true;
 	}
@@ -185,7 +189,7 @@ public class BanHammerCommandManager implements CommandExecutor {
 				 sec *= 1;
 			 else if (unit.startsWith("sec"))
 				 sec /= 60;
-			 return sec*100;
+			 return sec*1000;
 		 } catch (NumberFormatException ex) {
 			 return 0;
 		 }

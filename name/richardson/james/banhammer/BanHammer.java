@@ -90,6 +90,7 @@ public class BanHammer extends JavaPlugin {
 		getCommand("kick").setExecutor(commands);
 		getCommand("pardon").setExecutor(commands);
 		getCommand("tempban").setExecutor(commands);
+		getCommand("bh").setExecutor(commands);
 		
 		// Create cache
 		cache = new CachedList();
@@ -151,8 +152,9 @@ public class BanHammer extends JavaPlugin {
 	
 	public void notifyPlayers(String message, CommandSender sender) {
 		if (notifyPlayers) {
-			for (Player player : getServer().getOnlinePlayers())
-				player.sendMessage(message);
+			if (getSenderName(sender).equals("console"))
+				sender.sendMessage(message);
+			getServer().broadcastMessage(message);
 		} else {
 			sender.sendMessage(message);
 		}

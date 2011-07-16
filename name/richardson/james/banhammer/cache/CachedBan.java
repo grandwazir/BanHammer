@@ -37,7 +37,7 @@ public class CachedBan {
 	public boolean isActive() {
 		if (expiresAt == 0) {
 			return true;
-		} else if (expiresAt < System.currentTimeMillis()) {
+		} else if (expiresAt > System.currentTimeMillis()) {
 			return true;
 		} else {
 		  return false;

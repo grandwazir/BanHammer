@@ -140,5 +140,16 @@ public class BanRecord {
 	public void setReason(String reason) {
 		this.reason = reason;
 	}
+	
+	
+	public boolean isActive() {
+		if (expiresAt == 0) {
+			return true;
+		} else if (expiresAt > System.currentTimeMillis()) {
+			return true;
+		} else {
+		  return false;
+		}
+	}
 
 }

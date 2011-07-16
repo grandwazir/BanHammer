@@ -14,6 +14,7 @@ public class CachedList {
 	}
 	
 	public void add(String playerName) {
+		playerName = playerName.toLowerCase();
 		BanRecord ban = BanRecord.findFirst(playerName);
 		list.put(playerName, ban.getType());
 		if (ban.getType().equals(BanRecord.type.PERMENANT)) {
@@ -24,11 +25,16 @@ public class CachedList {
 	}
 	
 	public boolean contains(String playerName) {
-		if (list.containsKey(playerName)) return true;
-		return false;
+		playerName = playerName.toLowerCase();
+		if (list.containsKey(playerName)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public CachedBan get(String playerName) {
+		playerName = playerName.toLowerCase();
 		BanRecord.type type = list.get(playerName);
 		if (type.equals(BanRecord.type.PERMENANT)) {
 			if (!permenant.containsKey(playerName)) add(playerName);
@@ -41,7 +47,9 @@ public class CachedList {
 	
 	public void load () {
 		for (BanRecord ban : BanRecord.list()) {
-				list.put(ban.getPlayer().toLowerCase(), ban.getType());
+				if(ban.isActive()) {
+					list.put(ban.getPlayer().toLowerCase(), ban.getType());
+				}
 		}
 	}
 	
@@ -51,6 +59,7 @@ public class CachedList {
 	}
 	
 	public void remove(String playerName) {
+		playerName = playerName.toLowerCase();
 		list.remove(playerName);
 		permenant.remove(playerName);
 		temporary.remove(playerName);
