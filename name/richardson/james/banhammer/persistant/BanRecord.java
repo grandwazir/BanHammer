@@ -19,8 +19,7 @@ public class BanRecord {
 		PERMENANT, TEMPORARY
 	}
 
-	static public void create(String playerName, String senderName, Long Expiry,
-			Long creationTime, String banReason) {
+	static public void create(String playerName, String senderName, Long Expiry, Long creationTime, String banReason) {
 		BanRecord banHammerRecord = new BanRecord();
 		banHammerRecord.player = playerName;
 		banHammerRecord.createdBy = senderName;
@@ -28,8 +27,6 @@ public class BanRecord {
 		banHammerRecord.expiresAt = Expiry;
 		banHammerRecord.reason = banReason;
 		BanHammer.getDb().save(banHammerRecord);
-		// BanHammer.log.info(String.format("[BanHammer] %s was banned by %s",
-		// playerName, senderName));
 	}
 
 	static public void destroy(List<BanRecord> banHammerRecords) {
@@ -46,7 +43,7 @@ public class BanRecord {
 		ExampleExpression expression = BanHammer.getDb().getExpressionFactory().exampleLike(
 				example, true, LikeType.EQUAL_TO);
 		// find and return all bans that match the expression
-		return BanHammer.getDb().find(BanRecord.class).where().add(expression).findList();
+		return BanHammer.getDb().find(BanRecord.class).where().add(expression).orderBy("created_at DESC").findList();
 	}
 	
 	static public BanRecord findFirst(String player) {
@@ -57,17 +54,11 @@ public class BanRecord {
 		ExampleExpression expression = BanHammer.getDb().getExpressionFactory().exampleLike(
 				example, true, LikeType.EQUAL_TO);
 		// find and return all bans that match the expression
-		return BanHammer.getDb().find(BanRecord.class).where().add(expression).orderBy("createdAt DESC").findList().get(0);
+		return BanHammer.getDb().find(BanRecord.class).where().add(expression).orderBy("created_at DESC").findList().get(0);
 	}
-
-	static public boolean isBanned(String player) {
-		final List<BanRecord> banHammerRecords = BanRecord.find(player);
-		// check to see if the player is banned
-		for (BanRecord banHammerRecord : banHammerRecords) {
-			if (banHammerRecord.expiresAt == 0) return true;
-			if (banHammerRecord.expiresAt > System.currentTimeMillis()) return true;
-		}
-		return false;
+	
+	static public List<BanRecord> findRecent(Integer maxRows) {
+	  return BanHammer.getDb().find(BanRecord.class).where().orderBy("created_at DESC").setMaxRows(maxRows).findList();
 	}
 
 	static public List<BanRecord> list() {
