@@ -1,6 +1,6 @@
 name: BanHammer
 main: name.richardson.james.banhammer.BanHammer
-version: 1.2.1
+version: 1.2.2
 database: true
 commands:
   kick:
@@ -14,7 +14,7 @@ commands:
     usage: '/tempban <-f> [player] [time] [unit] [reason]'
   pardon:
     description: 'Pardons a specified player'
-    usage: '/pardon <-aA> [player]'
+    usage: '/pardon [player]'
   bh:
     description: 'Additional ban commands'
     usage: '/bh [check|history|purge|recent|reload]'

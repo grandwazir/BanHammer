@@ -109,10 +109,12 @@ public class BanHammerCommandManager implements CommandExecutor {
 	private boolean kickPlayer(CommandSender sender, String[] args) throws NoMatchingPlayer, NotEnoughArguments {
 		if (args.length < 2) throw new NotEnoughArguments("kick", "/kick [name] [reason]");
 		String playerName = args[0];
+		String senderName = BanHammer.getInstance().getSenderName(sender);
 		String reason = combineString(1, args, " ");
 		Player player = BanHammer.getInstance().matchPlayer(playerName);
 
 		player.kickPlayer(String.format(BanHammer.messages.getString("kickedMessage"), reason));
+		BanHammer.log(Level.INFO, String.format(BanHammer.messages.getString("logPlayerKicked"), senderName, playerName));
 		plugin.notifyPlayers((String.format(ChatColor.RED + BanHammer.messages.getString("notifyKickedPlayer"), playerName)), sender);
 		plugin.notifyPlayers((String.format(ChatColor.YELLOW + BanHammer.messages.getString("notifyReason"), reason)), sender);
 		return true;
