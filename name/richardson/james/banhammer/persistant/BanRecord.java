@@ -1,3 +1,4 @@
+
 package name.richardson.james.banhammer.persistant;
 
 import java.util.List;
@@ -15,132 +16,130 @@ import com.avaje.ebean.validation.NotNull;
 @Entity()
 @Table(name = "bh_bans")
 public class BanRecord {
-	public enum type {
-		PERMENANT, TEMPORARY
-	}
 
-	static public void create(String playerName, String senderName, Long Expiry, Long creationTime, String banReason) {
-		BanRecord banHammerRecord = new BanRecord();
-		banHammerRecord.player = playerName;
-		banHammerRecord.createdBy = senderName;
-		banHammerRecord.createdAt = creationTime;
-		banHammerRecord.expiresAt = Expiry;
-		banHammerRecord.reason = banReason;
-		BanHammer.getDb().save(banHammerRecord);
-	}
+  public enum type {
+    PERMENANT, TEMPORARY
+  }
 
-	static public void destroy(List<BanRecord> banHammerRecords) {
-		for (BanRecord ban : banHammerRecords) {
-			BanHammer.getDb().delete(ban);
-		}
-	}
+  @Id
+  private long createdAt;
 
-	static public List<BanRecord> find(String player) {
-		// create the example
-		BanRecord example = new BanRecord();
-		example.setPlayer(player);
-		// create the example expression
-		ExampleExpression expression = BanHammer.getDb().getExpressionFactory().exampleLike(
-				example, true, LikeType.EQUAL_TO);
-		// find and return all bans that match the expression
-		return BanHammer.getDb().find(BanRecord.class).where().add(expression).orderBy("created_at DESC").findList();
-	}
-	
-	static public BanRecord findFirst(String player) {
-		// create the example
-		BanRecord example = new BanRecord();
-		example.setPlayer(player);
-		// create the example expression
-		ExampleExpression expression = BanHammer.getDb().getExpressionFactory().exampleLike(
-				example, true, LikeType.EQUAL_TO);
-		// find and return all bans that match the expression
-		return BanHammer.getDb().find(BanRecord.class).where().add(expression).orderBy("created_at DESC").findList().get(0);
-	}
-	
-	static public List<BanRecord> findRecent(Integer maxRows) {
-	  return BanHammer.getDb().find(BanRecord.class).where().orderBy("created_at DESC").setMaxRows(maxRows).findList();
-	}
+  @NotNull
+  private String createdBy;
 
-	static public List<BanRecord> list() {
-		return BanHammer.getDb().find(BanRecord.class).findList();
-	}
+  @NotNull
+  private long expiresAt;
 
-	@Id
-	private long createdAt;
+  @NotNull
+  private String player;
 
-	@NotNull
-	private String createdBy;
+  @NotNull
+  private String reason;
 
-	@NotNull
-	private long expiresAt;
+  static public void create(String playerName, String senderName, Long Expiry, Long creationTime, String banReason) {
+    BanRecord banHammerRecord = new BanRecord();
+    banHammerRecord.player = playerName;
+    banHammerRecord.createdBy = senderName;
+    banHammerRecord.createdAt = creationTime;
+    banHammerRecord.expiresAt = Expiry;
+    banHammerRecord.reason = banReason;
+    BanHammer.getDb().save(banHammerRecord);
+  }
 
-	@NotNull
-	private String player;
+  static public void destroy(List<BanRecord> banHammerRecords) {
+    for (BanRecord ban : banHammerRecords) {
+      BanHammer.getDb().delete(ban);
+    }
+  }
 
-	@NotNull
-	private String reason;
+  static public List<BanRecord> find(String player) {
+    // create the example
+    BanRecord example = new BanRecord();
+    example.setPlayer(player);
+    // create the example expression
+    ExampleExpression expression = BanHammer.getDb().getExpressionFactory().exampleLike(example, true, LikeType.EQUAL_TO);
+    // find and return all bans that match the expression
+    return BanHammer.getDb().find(BanRecord.class).where().add(expression).orderBy("created_at DESC").findList();
+  }
 
-	public void destroy() {
-		BanHammer.getDb().delete(this);
-	}
+  static public BanRecord findFirst(String player) {
+    // create the example
+    BanRecord example = new BanRecord();
+    example.setPlayer(player);
+    // create the example expression
+    ExampleExpression expression = BanHammer.getDb().getExpressionFactory().exampleLike(example, true, LikeType.EQUAL_TO);
+    // find and return all bans that match the expression
+    return BanHammer.getDb().find(BanRecord.class).where().add(expression).orderBy("created_at DESC").findList().get(0);
+  }
 
-	public long getCreatedAt() {
-		return this.createdAt;
-	}
+  static public List<BanRecord> findRecent(Integer maxRows) {
+    return BanHammer.getDb().find(BanRecord.class).where().orderBy("created_at DESC").setMaxRows(maxRows).findList();
+  }
 
-	public String getCreatedBy() {
-		return this.createdBy;
-	}
+  static public List<BanRecord> list() {
+    return BanHammer.getDb().find(BanRecord.class).findList();
+  }
 
-	public long getExpiresAt() {
-		return this.expiresAt;
-	}
+  public void destroy() {
+    BanHammer.getDb().delete(this);
+  }
 
-	public String getPlayer() {
-		return this.player;
-	}
+  public long getCreatedAt() {
+    return this.createdAt;
+  }
 
-	public String getReason() {
-		return this.reason;
-	}
+  public String getCreatedBy() {
+    return this.createdBy;
+  }
 
-	public BanRecord.type getType() {
-		if (this.expiresAt == 0)
-			return BanRecord.type.PERMENANT;
-		else {
-			return BanRecord.type.TEMPORARY;
-		}
-	}
+  public long getExpiresAt() {
+    return this.expiresAt;
+  }
 
-	public void setCreatedAt(long createdAt) {
-		this.createdAt = createdAt;
-	}
+  public String getPlayer() {
+    return this.player;
+  }
 
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
+  public String getReason() {
+    return this.reason;
+  }
 
-	public void setExpiresAt(long expiresAt) {
-		this.expiresAt = expiresAt;
-	}
+  public BanRecord.type getType() {
+    if (this.expiresAt == 0)
+      return BanRecord.type.PERMENANT;
+    else {
+      return BanRecord.type.TEMPORARY;
+    }
+  }
 
-	public void setPlayer(String player) {
-		this.player = player;
-	}
+  public boolean isActive() {
+    if (expiresAt == 0) {
+      return true;
+    } else if (expiresAt > System.currentTimeMillis()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
-	public void setReason(String reason) {
-		this.reason = reason;
-	}
-	
-	
-	public boolean isActive() {
-		if (expiresAt == 0) {
-			return true;
-		} else if (expiresAt > System.currentTimeMillis()) {
-			return true;
-		} else {
-		  return false;
-		}
-	}
+  public void setCreatedAt(long createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public void setCreatedBy(String createdBy) {
+    this.createdBy = createdBy;
+  }
+
+  public void setExpiresAt(long expiresAt) {
+    this.expiresAt = expiresAt;
+  }
+
+  public void setPlayer(String player) {
+    this.player = player;
+  }
+
+  public void setReason(String reason) {
+    this.reason = reason;
+  }
 
 }

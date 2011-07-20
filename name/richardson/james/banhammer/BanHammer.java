@@ -1,3 +1,4 @@
+
 package name.richardson.james.banhammer;
 
 import java.util.ArrayList;
@@ -32,161 +33,158 @@ import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class BanHammer extends JavaPlugin {
 
-	public static CachedList cache;
-	public static ResourceBundle messages;
-	
-	static Map<String, Long> bans = new HashMap<String, Long>();
+  public static CachedList cache;
+  public static ResourceBundle messages;
+  
+  private static EbeanServer db;
+  private static BanHammer instance;
 
-	private static BanHammerCommandManager commands;
-	private static EbeanServer db;
-	private static BanHammer instance;
+  private final static Locale locale = Locale.getDefault();
+  private final static Logger logger = Logger.getLogger("Minecraft");
+  private final static Boolean notifyPlayers = true;
+  
+  static Map<String, Long> bans = new HashMap<String, Long>();
+  static PermissionHandler permissions;
+ 
+  private final BanHammerCommandManager commands;
+  private final BanHammerPlayerListener playerListener;
+  
+  private PluginDescriptionFile desc;
+  private PluginManager pm;
 
-	private final static Locale locale = Locale.getDefault();
-	private final static Logger logger = Logger.getLogger("Minecraft");
-	private final static Boolean notifyPlayers = true;
+  public BanHammer() {
+    BanHammer.instance = this;
+    this.commands = new BanHammerCommandManager(this);
 
-	static PermissionHandler permissions;
-	
-	private PluginDescriptionFile desc;
+    this.playerListener = new BanHammerPlayerListener();
 
-	private final BanHammerPlayerListener playerListener;
+    if (messages == null) {
+      try {
+        BanHammer.messages = ResourceBundle.getBundle("name.richardson.james.banhammer.localisation.Messages", locale);
+      } catch (MissingResourceException e) {
+        BanHammer.messages = ResourceBundle.getBundle("name.richardson.james.banhammer.localisation.Messages");
+        log(Level.WARNING, String.format(messages.getString("noLocalisationFound"), locale.getDisplayLanguage()));
+      }
+    }
+  }
 
-	private PluginManager pm;
+  public static EbeanServer getDb() {
+    return db;
+  }
 
-	public BanHammer() {
-		BanHammer.instance = this;
-		BanHammer.commands = new BanHammerCommandManager(this);
-		
-		this.playerListener = new BanHammerPlayerListener();
+  public static BanHammer getInstance() {
+    return instance;
+  }
 
-		if (messages == null) {
-			try {
-				BanHammer.messages = ResourceBundle.getBundle("name.richardson.james.banhammer.localisation.Messages", locale);
-			} catch (MissingResourceException e) {
-				BanHammer.messages = ResourceBundle.getBundle("name.richardson.james.banhammer.localisation.Messages");
-				log(Level.WARNING, String.format(messages.getString("noLocalisationFound"), locale.getDisplayLanguage()));
-			}
-		}
-	}
-	
-	public void onDisable() {
-		cache.unload();
-		log(Level.INFO, String.format(messages.getString("pluginDisabled"), desc.getName()));
-	}
+  public static PermissionHandler getPermissions() {
+    return permissions;
+  }
 
-	public void onEnable() {
-		desc = getDescription();
-		db = getDatabase();
-		pm = getServer().getPluginManager();
+  public static void log(Level level, String msg) {
+    logger.log(level, "[BanHammer] " + msg);
+  }
 
-		setupDatabase();
-		setupPermissions();
-
-		// Register events
-		pm.registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Event.Priority.Highest, this);
-		
-		// Register commands
-		getCommand("ban").setExecutor(commands);
-		getCommand("kick").setExecutor(commands);
-		getCommand("pardon").setExecutor(commands);
-		getCommand("tempban").setExecutor(commands);
-		getCommand("bh").setExecutor(commands);
-		
-		// Create cache
-		cache = new CachedList();
-		
-		log(Level.INFO, String.format(messages.getString("bansLoaded"), Integer.toString(cache.size())));
-		log(Level.INFO, String.format(messages.getString("pluginEnabled"), desc.getFullName()));
-	}
-
-	public static EbeanServer getDb() {
-		return db;
-	}
-
-	public static PermissionHandler getPermissions() {
-		return permissions;
-	}
-	
-	public static BanHammer getInstance() {
-		return instance;
-	}
-	
-	public String getName() {
-		return desc.getName();
-	}
-	
-	public Player matchPlayerExactly(String playerName) throws NoMatchingPlayer {
-		for (Player player : getServer().getOnlinePlayers()) {
-			if (player.getName().equalsIgnoreCase(playerName))
-				return player;
-		}
-		throw new NoMatchingPlayer();
-	}
-	
-	public Player matchPlayer(String playerName) throws NoMatchingPlayer {
-		List<Player> list = getServer().matchPlayer(playerName);
-		if (list.size() == 1) {
-			return list.get(0);
-		} else {
-			throw new NoMatchingPlayer();
-		}
-	}
-	
-	public String getSenderName(CommandSender sender) {
-		if (sender instanceof Player) {
-			Player player = (Player)sender;
-			String senderName = player.getName();
-			return senderName;
-		} else {
-			return "console";
-		}
-	}
-
-	public String getVersion() {
-		return desc.getVersion();
-	}
-	
-	public static void log(Level level, String msg) {
-		logger.log(level, "[BanHammer] " + msg);
-	}
-	
-	public void notifyPlayers(String message, CommandSender sender) {
-		if (notifyPlayers) {
-			if (getSenderName(sender).equals("console"))
-				sender.sendMessage(message);
-			getServer().broadcastMessage(message);
-		} else {
-			sender.sendMessage(message);
-		}
-	}
-
-	private void setupDatabase() {
-		try {
-			getDatabase().find(BanRecord.class).findRowCount();
-		} catch (PersistenceException ex) {
-			log(Level.WARNING, messages.getString("noDatabase"));
-			installDDL();
-		}
-	}
-
-	private void setupPermissions() {
-		Plugin plugin = pm.getPlugin("Permissions");
-
-		if (permissions == null && plugin != null) {
-			log(Level.INFO, String.format(messages.getString("permissionsFound"),
-					plugin.getDescription().getFullName()));
-			permissions = ((Permissions) plugin).getHandler();
-		} else {
-			log(Level.WARNING, messages.getString("permissionsNotFound"));
-		}
-	}
-	
-	
-	@Override
+  @Override
   public List<Class<?>> getDatabaseClasses() {
-	  List<Class<?>> list = new ArrayList<Class<?>>();
-	  list.add(BanRecord.class);
-	  return list;
+    List<Class<?>> list = new ArrayList<Class<?>>();
+    list.add(BanRecord.class);
+    return list;
+  }
+
+  public String getName() {
+    return desc.getName();
+  }
+
+  public String getSenderName(CommandSender sender) {
+    if (sender instanceof Player) {
+      Player player = (Player) sender;
+      String senderName = player.getName();
+      return senderName;
+    } else {
+      return "console";
+    }
+  }
+
+  public String getVersion() {
+    return desc.getVersion();
+  }
+
+  public Player matchPlayer(String playerName) throws NoMatchingPlayer {
+    List<Player> list = getServer().matchPlayer(playerName);
+    if (list.size() == 1) {
+      return list.get(0);
+    } else {
+      throw new NoMatchingPlayer();
+    }
+  }
+
+  public Player matchPlayerExactly(String playerName) throws NoMatchingPlayer {
+    for (Player player : getServer().getOnlinePlayers()) {
+      if (player.getName().equalsIgnoreCase(playerName))
+        return player;
+    }
+    throw new NoMatchingPlayer();
+  }
+
+  public void notifyPlayers(String message, CommandSender sender) {
+    if (notifyPlayers) {
+      if (getSenderName(sender).equals("console"))
+        sender.sendMessage(message);
+      getServer().broadcastMessage(message);
+    } else {
+      sender.sendMessage(message);
+    }
+  }
+
+  public void onDisable() {
+    cache.unload();
+    log(Level.INFO, String.format(messages.getString("pluginDisabled"), desc.getName()));
+  }
+
+  public void onEnable() {
+    desc = getDescription();
+    db = getDatabase();
+    pm = getServer().getPluginManager();
+
+    // Setup environment
+    setupDatabase();
+    setupPermissions();
+
+    // Register events
+    pm.registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Event.Priority.Highest, this);
+
+    // Register commands
+    getCommand("ban").setExecutor(commands);
+    getCommand("kick").setExecutor(commands);
+    getCommand("pardon").setExecutor(commands);
+    getCommand("tempban").setExecutor(commands);
+    getCommand("bh").setExecutor(commands);
+
+    // Create cache
+    cache = new CachedList();
+
+    log(Level.INFO, String.format(messages.getString("bansLoaded"), Integer.toString(cache.size())));
+    log(Level.INFO, String.format(messages.getString("pluginEnabled"), desc.getFullName()));
+  }
+
+  private void setupDatabase() {
+    try {
+      getDatabase().find(BanRecord.class).findRowCount();
+    } catch (PersistenceException ex) {
+      log(Level.WARNING, messages.getString("noDatabase"));
+      installDDL();
+    }
+  }
+
+  private void setupPermissions() {
+    Plugin plugin = pm.getPlugin("Permissions");
+
+    if (permissions == null && plugin != null) {
+      log(Level.INFO, String.format(messages.getString("permissionsFound"), plugin.getDescription().getFullName()));
+      permissions = ((Permissions) plugin).getHandler();
+    } else {
+      log(Level.WARNING, messages.getString("permissionsNotFound"));
+    }
   }
 
 }
