@@ -30,12 +30,12 @@ public class BanHammerCommandManager implements CommandExecutor {
   static final List<String> subCommands = Arrays.asList("check", "history", "purge", "recent", "reload");
 
   private BanHammer plugin;
-
+  
   public BanHammerCommandManager(BanHammer plugin) {
     this.plugin = plugin;
   }
 
-  public boolean banPlayer(CommandSender sender, String[] args) throws NotEnoughArguments, NoMatchingPlayer, PlayerAlreadyBanned {
+  public boolean banPlayer(CommandSender sender, String[] args) throws NotEnoughArguments, NoMatchingPlayer, PlayerAlreadyBanned, PlayerNotAuthorised {
     if (args.length < 2)
       throw new NotEnoughArguments("ban", "/ban <-f> [name] [reason]");
 
@@ -43,7 +43,7 @@ public class BanHammerCommandManager implements CommandExecutor {
     Player player = null;
     String playerName;
     String reason;
-
+    
     if (args[0].equalsIgnoreCase("-f")) {
       if (args.length < 3)
         throw new NotEnoughArguments("ban", "/ban <-f> [name] [reason]");
@@ -55,6 +55,8 @@ public class BanHammerCommandManager implements CommandExecutor {
       reason = combineString(1, args, " ");
     }
 
+    isPlayerValidTarget(senderName, playerName);
+    
     if (BanHammer.cache.contains(playerName)) {
       throw new PlayerAlreadyBanned(playerName);
     } else {
@@ -94,11 +96,12 @@ public class BanHammerCommandManager implements CommandExecutor {
 
   public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
     final String command = cmd.getName();
+    final String playerName = plugin.getSenderName(sender);
 
     try {
       // Handle root commands
       if (commands.contains(command)) {
-        playerHasPermission(sender, "banhammer." + cmd.getName());
+        playerHasPermission(playerName, "banhammer." + cmd.getName());
         if (command.equalsIgnoreCase("ban"))
           return banPlayer(sender, args);
         if (command.equalsIgnoreCase("kick"))
@@ -116,7 +119,7 @@ public class BanHammerCommandManager implements CommandExecutor {
         final String subCommand = args[0];
         if (!subCommands.contains(subCommand))
           return false;
-        playerHasPermission(sender, "banhammer." + subCommand);
+        playerHasPermission(playerName, "banhammer." + subCommand);
         if (subCommand.equalsIgnoreCase("purge"))
           return purgePlayerHistory(sender, args);
         if (subCommand.equalsIgnoreCase("check"))
@@ -145,12 +148,14 @@ public class BanHammerCommandManager implements CommandExecutor {
     return true;
   }
 
-  public boolean pardonPlayer(CommandSender sender, String[] args) throws NotEnoughArguments {
+  public boolean pardonPlayer(CommandSender sender, String[] args) throws NotEnoughArguments, NoMatchingPlayer, PlayerNotAuthorised {
     if (args.length < 1)
       throw new NotEnoughArguments("pardon", "/pardon [name]");
     String playerName = args[0];
     String senderName = plugin.getSenderName(sender);
 
+    isPlayerValidTarget(senderName, playerName);
+    
     if (BanHammer.cache.contains(playerName)) {
       BanHammer.cache.remove(playerName);
       BanRecord.findFirst(playerName).destroy();
@@ -190,12 +195,14 @@ public class BanHammerCommandManager implements CommandExecutor {
     return true;
   }
 
-  public boolean purgePlayerHistory(CommandSender sender, String[] args) throws NotEnoughArguments {
+  public boolean purgePlayerHistory(CommandSender sender, String[] args) throws NotEnoughArguments, NoMatchingPlayer, PlayerNotAuthorised {
     if (args.length < 2)
       throw new NotEnoughArguments("bh purge", "/bh purge [name]");
     String playerName = args[1];
     String senderName = plugin.getSenderName(sender);
-
+    
+    isPlayerValidTarget(senderName, playerName);
+    
     List<BanRecord> bans = BanRecord.find(playerName);
     if (bans.isEmpty()) {
       sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.messages.getString("noBanHistory"), playerName));
@@ -254,7 +261,7 @@ public class BanHammerCommandManager implements CommandExecutor {
     return true;
   }
 
-  public boolean tempBanPlayer(CommandSender sender, String[] args) throws NotEnoughArguments, NoMatchingPlayer, PlayerAlreadyBanned, InvalidTimeUnit {
+  public boolean tempBanPlayer(CommandSender sender, String[] args) throws NotEnoughArguments, NoMatchingPlayer, PlayerAlreadyBanned, InvalidTimeUnit, PlayerNotAuthorised {
     if (args.length < 4)
       throw new NotEnoughArguments("tempban", "/tempban <-f> [name] [time] [unit] [reason]");
 
@@ -277,6 +284,8 @@ public class BanHammerCommandManager implements CommandExecutor {
       banTime = parseTimeSpec(args[1], args[2]);
     }
 
+    isPlayerValidTarget(senderName, playerName);
+    
     if (BanHammer.cache.contains(playerName)) {
       throw new PlayerAlreadyBanned(playerName);
     } else {
@@ -308,13 +317,15 @@ public class BanHammerCommandManager implements CommandExecutor {
     }
   }
 
-  private boolean kickPlayer(CommandSender sender, String[] args) throws NoMatchingPlayer, NotEnoughArguments {
+  public boolean kickPlayer(CommandSender sender, String[] args) throws NoMatchingPlayer, NotEnoughArguments, PlayerNotAuthorised {
     if (args.length < 2)
       throw new NotEnoughArguments("kick", "/kick [name] [reason]");
     String playerName = args[0];
-    String senderName = BanHammer.getInstance().getSenderName(sender);
+    String senderName = plugin.getSenderName(sender);
     String reason = combineString(1, args, " ");
-    Player player = BanHammer.getInstance().matchPlayer(playerName);
+    Player player = plugin.matchPlayer(playerName);
+    
+    isPlayerValidTarget(senderName, player.getName());
 
     player.kickPlayer(String.format(BanHammer.messages.getString("kickedMessage"), reason));
     BanHammer.log(Level.INFO, String.format(BanHammer.messages.getString("logPlayerKicked"), senderName, playerName));
@@ -349,15 +360,75 @@ public class BanHammerCommandManager implements CommandExecutor {
     }
   }
 
-  private boolean playerHasPermission(CommandSender sender, String node) throws NoMatchingPlayer, PlayerNotAuthorised {
-    String playerName = plugin.getSenderName(sender);
-
-    if (BanHammer.getPermissions() != null) {
-      if (playerName.equals("console")) {
-        return true;
-      } else if (BanHammer.getPermissions().has(plugin.matchPlayerExactly(playerName), node)) { return true; }
-    } else if (sender.isOp())
+  private boolean isPlayerValidTarget(String playerName, String targetName) throws NoMatchingPlayer, PlayerNotAuthorised {
+    if (playerName.equalsIgnoreCase(targetName))
+      throw new PlayerNotAuthorised();
+    
+    final int playerWeight = getPlayerWeight(playerName);
+    final int targetWeight = getPlayerWeight(targetName);
+    
+    if (playerWeight > targetWeight) {
       return true;
+    } 
+    
+    throw new PlayerNotAuthorised();
+    
+  }
+  
+  private int getPlayerWeight(String playerName) throws NoMatchingPlayer {
+    final List<String> nodes = Arrays.asList("heavy", "medium", "light");
+    String weightNode = null;
+    
+    if (playerName == "console") {
+      return 4;
+    } else {
+      final Player player = plugin.matchPlayerExactly(playerName);
+      for (String key : nodes) {
+        String node = "banhammer.weight." + key;
+        if (player.hasPermission(node)) {
+          weightNode = key;
+          break;
+        } else if (plugin.externalPermissions != null) {
+          if (plugin.externalPermissions.has(player, node)) { 
+            weightNode = key;
+            break;
+          }
+        }
+      }
+      
+      if (weightNode != null) {
+        if (weightNode.equalsIgnoreCase("heavy")) {
+          return 3;
+        } else if (weightNode.equalsIgnoreCase("medium")) {
+          return 2;
+        } else if (weightNode.equalsIgnoreCase("light")) {
+          return 1;
+        } 
+      } else {
+        return 0;
+      }
+    }
+    
+    return 0;
+    
+  }
+  
+  
+  private boolean playerHasPermission(final String playerName, final String node) throws PlayerNotAuthorised {
+    if (playerName == "console") {
+      return true;
+    } else {
+      try {
+        final Player player = plugin.matchPlayerExactly(playerName);
+        if (player.hasPermission(node)) {
+          return true;
+        } else if (plugin.externalPermissions != null) {
+          if (plugin.externalPermissions.has(player, node)) { return true; }
+        }
+      } catch (NoMatchingPlayer e) {
+        throw new PlayerNotAuthorised();
+      }
+    }
     throw new PlayerNotAuthorised();
   }
 

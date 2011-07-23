@@ -35,21 +35,21 @@ public class BanHammer extends JavaPlugin {
 
   public static CachedList cache;
   public static ResourceBundle messages;
-  
+
   private static EbeanServer db;
   private static BanHammer instance;
 
   private final static Locale locale = Locale.getDefault();
   private final static Logger logger = Logger.getLogger("Minecraft");
   private final static Boolean notifyPlayers = true;
-  
+
   static Map<String, Long> bans = new HashMap<String, Long>();
-  static PermissionHandler permissions;
- 
+  public PermissionHandler externalPermissions;
+
   private final BanHammerCommandManager commands;
-  private final BanHammerPlayerListener playerListener;
-  
   private PluginDescriptionFile desc;
+
+  private final BanHammerPlayerListener playerListener;
   private PluginManager pm;
 
   public BanHammer() {
@@ -74,10 +74,6 @@ public class BanHammer extends JavaPlugin {
 
   public static BanHammer getInstance() {
     return instance;
-  }
-
-  public static PermissionHandler getPermissions() {
-    return permissions;
   }
 
   public static void log(Level level, String msg) {
@@ -148,7 +144,7 @@ public class BanHammer extends JavaPlugin {
 
     // Setup environment
     setupDatabase();
-    setupPermissions();
+    connectPermissions();
 
     // Register events
     pm.registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Event.Priority.Highest, this);
@@ -176,14 +172,11 @@ public class BanHammer extends JavaPlugin {
     }
   }
 
-  private void setupPermissions() {
-    Plugin plugin = pm.getPlugin("Permissions");
-
-    if (permissions == null && plugin != null) {
-      log(Level.INFO, String.format(messages.getString("permissionsFound"), plugin.getDescription().getFullName()));
-      permissions = ((Permissions) plugin).getHandler();
-    } else {
-      log(Level.WARNING, messages.getString("permissionsNotFound"));
+  private void connectPermissions() {
+    final Plugin permissionsPlugin = getServer().getPluginManager().getPlugin("Permissions");
+    if (permissionsPlugin != null) {
+      externalPermissions = ((Permissions) permissionsPlugin).getHandler();
+      log(Level.INFO, String.format("External permissions system found (%s)", ((Permissions) permissionsPlugin).getDescription().getFullName()));
     }
   }
 
