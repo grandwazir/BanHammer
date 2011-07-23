@@ -378,16 +378,23 @@ public class BanHammerCommandManager implements CommandExecutor {
   private int getPlayerWeight(String playerName) throws NoMatchingPlayer {
     final List<String> nodes = Arrays.asList("heavy", "medium", "light");
     String weightNode = null;
+    Player player = null;
     
     if (playerName == "console") {
       return 4;
     } else {
-      final Player player = plugin.matchPlayerExactly(playerName);
+      try {
+        player = plugin.matchPlayerExactly(playerName);
+      } catch (NoMatchingPlayer e) {
+        BanHammer.log(Level.WARNING, String.format(BanHammer.messages.getString("unableToReferToOfflinePermissions"), playerName));
+      }
       for (String key : nodes) {
-        String node = "banhammer.weight." + key;
-        if (player.hasPermission(node)) {
-          weightNode = key;
-          break;
+        String node = "banhammer.weight." + key;         
+        if (player != null) {
+          if (player.hasPermission(node)) {
+            weightNode = key;
+            break;
+          }
         } else if (plugin.externalPermissions != null) {
           if (plugin.externalPermissions.has(player, node)) { 
             weightNode = key;
