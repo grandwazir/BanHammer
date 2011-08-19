@@ -385,35 +385,37 @@ public class BanHammerCommandManager implements CommandExecutor {
     } else {
       try {
         player = plugin.matchPlayerExactly(playerName);
+        
+        for (String key : nodes) {
+          String node = "banhammer.weight." + key;         
+          if (player != null) {
+            if (player.hasPermission(node)) {
+              weightNode = key;
+              break;
+            }
+          } else if (plugin.externalPermissions != null) {
+            if (plugin.externalPermissions.has(player, node)) { 
+              weightNode = key;
+              break;
+            }
+          }
+        }  
+        
+        if (weightNode != null) {
+          if (weightNode.equalsIgnoreCase("heavy")) {
+            return 3;
+          } else if (weightNode.equalsIgnoreCase("medium")) {
+            return 2;
+          } else if (weightNode.equalsIgnoreCase("light")) {
+            return 1;
+          } 
+        } else {
+          return 0;
+        }
+        
       } catch (NoMatchingPlayer e) {
         BanHammer.log(Level.WARNING, String.format(BanHammer.messages.getString("unableToReferToOfflinePermissions"), playerName));
-      }
-      for (String key : nodes) {
-        String node = "banhammer.weight." + key;         
-        if (player != null) {
-          if (player.hasPermission(node)) {
-            weightNode = key;
-            break;
-          }
-        } else if (plugin.externalPermissions != null) {
-          if (plugin.externalPermissions.has(player, node)) { 
-            weightNode = key;
-            break;
-          }
-        }
-      }
-      
-      if (weightNode != null) {
-        if (weightNode.equalsIgnoreCase("heavy")) {
-          return 3;
-        } else if (weightNode.equalsIgnoreCase("medium")) {
-          return 2;
-        } else if (weightNode.equalsIgnoreCase("light")) {
-          return 1;
-        } 
-      } else {
-        return 0;
-      }
+      } 
     }
     
     return 0;
@@ -422,11 +424,14 @@ public class BanHammerCommandManager implements CommandExecutor {
   
   
   private boolean playerHasPermission(final String playerName, final String node) throws PlayerNotAuthorised {
+    BanHammer.log(Level.INFO, playerName);
+    BanHammer.log(Level.INFO, node);
     if (playerName == "console") {
       return true;
     } else {
       try {
         final Player player = plugin.matchPlayerExactly(playerName);
+        BanHammer.log(Level.INFO, player.getName());
         if (player.hasPermission(node)) {
           return true;
         } else if (plugin.externalPermissions != null) {
