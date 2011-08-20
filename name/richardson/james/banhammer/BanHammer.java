@@ -175,7 +175,6 @@ public class BanHammer extends JavaPlugin {
     if (permissionsPlugin != null) {
       this.externalPermissions = ((Permissions) permissionsPlugin).getHandler();
       log(Level.INFO, String.format(messages.getString("usingPermissionsAPI"), ((Permissions) permissionsPlugin).getDescription().getFullName()));
-      log(Level.WARNING, messages.getString("permissionsAPIDeprecated"));
     }
   }
 
