@@ -47,9 +47,8 @@ public class BanRecord {
   }
 
   static public void destroy(List<BanRecord> banHammerRecords) {
-    for (BanRecord ban : banHammerRecords) {
+    for (BanRecord ban : banHammerRecords)
       BanHammer.getDb().delete(ban);
-    }
   }
 
   static public List<BanRecord> find(String player) {
@@ -107,19 +106,15 @@ public class BanRecord {
   public BanRecord.type getType() {
     if (this.expiresAt == 0)
       return BanRecord.type.PERMENANT;
-    else {
-      return BanRecord.type.TEMPORARY;
-    }
+    else return BanRecord.type.TEMPORARY;
   }
 
   public boolean isActive() {
-    if (expiresAt == 0) {
+    if (this.expiresAt == 0)
       return true;
-    } else if (expiresAt > System.currentTimeMillis()) {
+    else if (this.expiresAt > System.currentTimeMillis())
       return true;
-    } else {
-      return false;
-    }
+    else return false;
   }
 
   public void setCreatedAt(long createdAt) {

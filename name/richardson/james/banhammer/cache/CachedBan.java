@@ -28,21 +28,17 @@ public class CachedBan {
   }
 
   public BanRecord.type getType() {
-    if (expiresAt == 0) {
+    if (this.expiresAt == 0)
       return BanRecord.type.PERMENANT;
-    } else {
-      return BanRecord.type.TEMPORARY;
-    }
+    else return BanRecord.type.TEMPORARY;
   }
 
   public boolean isActive() {
-    if (expiresAt == 0) {
+    if (this.expiresAt == 0)
       return true;
-    } else if (expiresAt > System.currentTimeMillis()) {
+    else if (this.expiresAt > System.currentTimeMillis())
       return true;
-    } else {
-      return false;
-    }
+    else return false;
   }
 
   public void setExpiresAt(long expiresAt) {

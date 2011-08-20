@@ -10,7 +10,7 @@ public class BanHammerTime {
   public final static long ONE_HOUR = ONE_MINUTE * 60;
   public final static long ONE_DAY = ONE_HOUR * 24;
   public final static long SECONDS = 60;
-
+  
   /**
    * converts time (in milliseconds) to human-readable format
    * "<w> days, <x> hours, <y> minutes and (z) seconds"
@@ -37,17 +37,13 @@ public class BanHammerTime {
         res.append(temp).append(" minute").append(temp > 1 ? "s" : "");
       }
 
-      if (!res.toString().equals("") && duration >= ONE_SECOND) {
+      if (!res.toString().equals("") && duration >= ONE_SECOND)
         res.append(" and ");
-      }
 
       temp = duration / ONE_SECOND;
-      if (temp > 0) {
+      if (temp > 0)
         res.append(temp).append(" second").append(temp > 1 ? "s" : "");
-      }
       return res.toString();
-    } else {
-      return "0 second";
-    }
+    } else return "0 second";
   }
 }

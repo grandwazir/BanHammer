@@ -18,43 +18,38 @@ public class CachedList {
   public void add(String playerName) {
     playerName = playerName.toLowerCase();
     BanRecord ban = BanRecord.findFirst(playerName);
-    list.put(playerName, ban.getType());
-    if (ban.getType().equals(BanRecord.type.PERMENANT)) {
-      permenant.put(playerName, ban.getReason());
-    } else if (ban.getType().equals(BanRecord.type.TEMPORARY)) {
-      temporary.put(playerName, ban.getExpiresAt());
-    }
+    this.list.put(playerName, ban.getType());
+    if (ban.getType().equals(BanRecord.type.PERMENANT))
+      this.permenant.put(playerName, ban.getReason());
+    else if (ban.getType().equals(BanRecord.type.TEMPORARY))
+      this.temporary.put(playerName, ban.getExpiresAt());
   }
 
   public boolean contains(String playerName) {
     playerName = playerName.toLowerCase();
-    if (list.containsKey(playerName)) {
+    if (this.list.containsKey(playerName))
       return true;
-    } else {
-      return false;
-    }
+    else return false;
   }
 
   public CachedBan get(String playerName) {
     playerName = playerName.toLowerCase();
-    BanRecord.type type = list.get(playerName);
+    BanRecord.type type = this.list.get(playerName);
     if (type.equals(BanRecord.type.PERMENANT)) {
-      if (!permenant.containsKey(playerName))
-        add(playerName);
-      return new CachedBan(0, playerName, permenant.get(playerName));
+      if (!this.permenant.containsKey(playerName))
+        this.add(playerName);
+      return new CachedBan(0, playerName, this.permenant.get(playerName));
     } else {
-      if (!temporary.containsKey(playerName))
-        add(playerName);
-      return new CachedBan(temporary.get(playerName), playerName, null);
+      if (!this.temporary.containsKey(playerName))
+        this.add(playerName);
+      return new CachedBan(this.temporary.get(playerName), playerName, null);
     }
   }
 
   public void load() {
-    for (BanRecord ban : BanRecord.list()) {
-      if (ban.isActive()) {
-        list.put(ban.getPlayer().toLowerCase(), ban.getType());
-      }
-    }
+    for (BanRecord ban : BanRecord.list())
+      if (ban.isActive())
+        this.list.put(ban.getPlayer().toLowerCase(), ban.getType());
   }
 
   public void reload() {
@@ -64,25 +59,25 @@ public class CachedList {
 
   public void remove(String playerName) {
     playerName = playerName.toLowerCase();
-    list.remove(playerName);
-    permenant.remove(playerName);
-    temporary.remove(playerName);
+    this.list.remove(playerName);
+    this.permenant.remove(playerName);
+    this.temporary.remove(playerName);
   }
 
   public int size() {
-    return list.size();
+    return this.list.size();
   }
 
   public HashMap<String, Integer> stats() {
     HashMap<String, Integer> stats = new HashMap<String, Integer>();
-    stats.put("permenant", permenant.size());
-    stats.put("temporary", temporary.size());
+    stats.put("permenant", this.permenant.size());
+    stats.put("temporary", this.temporary.size());
     return stats;
   }
 
   public void unload() {
-    permenant.clear();
-    temporary.clear();
+    this.permenant.clear();
+    this.temporary.clear();
   }
 
 }

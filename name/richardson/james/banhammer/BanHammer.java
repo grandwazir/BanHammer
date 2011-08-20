@@ -14,8 +14,15 @@ import java.util.logging.Logger;
 import javax.persistence.PersistenceException;
 
 import name.richardson.james.banhammer.cache.CachedList;
-import name.richardson.james.banhammer.commands.BanHammerCommandManager;
-import name.richardson.james.banhammer.exceptions.NoMatchingPlayer;
+import name.richardson.james.banhammer.commands.BanCommand;
+import name.richardson.james.banhammer.commands.CheckCommand;
+import name.richardson.james.banhammer.commands.HistoryCommand;
+import name.richardson.james.banhammer.commands.KickCommand;
+import name.richardson.james.banhammer.commands.PardonCommand;
+import name.richardson.james.banhammer.commands.PurgeCommand;
+import name.richardson.james.banhammer.commands.RecentCommand;
+import name.richardson.james.banhammer.commands.ReloadCommand;
+import name.richardson.james.banhammer.exceptions.NoMatchingPlayerException;
 import name.richardson.james.banhammer.listeners.BanHammerPlayerListener;
 import name.richardson.james.banhammer.persistant.BanRecord;
 
@@ -33,20 +40,20 @@ import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class BanHammer extends JavaPlugin {
 
-  public static CachedList cache;
   public static ResourceBundle messages;
-
   private static EbeanServer db;
-  private static BanHammer instance;
 
+  private static BanHammer instance;
   private final static Locale locale = Locale.getDefault();
+
   private final static Logger logger = Logger.getLogger("Minecraft");
   private final static Boolean notifyPlayers = true;
-
   static Map<String, Long> bans = new HashMap<String, Long>();
+
+  public CachedList cache;
   public PermissionHandler externalPermissions;
 
-  private final BanHammerCommandManager commands;
+  private final CommandManager cm;
   private PluginDescriptionFile desc;
 
   private final BanHammerPlayerListener playerListener;
@@ -54,18 +61,17 @@ public class BanHammer extends JavaPlugin {
 
   public BanHammer() {
     BanHammer.instance = this;
-    this.commands = new BanHammerCommandManager(this);
+    this.cm = new CommandManager();
 
-    this.playerListener = new BanHammerPlayerListener();
+    this.playerListener = new BanHammerPlayerListener(this);
 
-    if (messages == null) {
+    if (messages == null)
       try {
         BanHammer.messages = ResourceBundle.getBundle("name.richardson.james.banhammer.localisation.Messages", locale);
       } catch (MissingResourceException e) {
         BanHammer.messages = ResourceBundle.getBundle("name.richardson.james.banhammer.localisation.Messages");
         log(Level.WARNING, String.format(messages.getString("noLocalisationFound"), locale.getDisplayLanguage()));
       }
-    }
   }
 
   public static EbeanServer getDb() {
@@ -87,8 +93,12 @@ public class BanHammer extends JavaPlugin {
     return list;
   }
 
+  public String getMessage(String key) {
+    return messages.getString(key);
+  }
+
   public String getName() {
-    return desc.getName();
+    return this.desc.getName();
   }
 
   public String getSenderName(CommandSender sender) {
@@ -96,87 +106,85 @@ public class BanHammer extends JavaPlugin {
       Player player = (Player) sender;
       String senderName = player.getName();
       return senderName;
-    } else {
-      return "console";
-    }
+    } else return "console";
   }
 
   public String getVersion() {
-    return desc.getVersion();
+    return this.desc.getVersion();
   }
 
-  public Player matchPlayer(String playerName) throws NoMatchingPlayer {
-    List<Player> list = getServer().matchPlayer(playerName);
-    if (list.size() == 1) {
+  public Player matchPlayer(String playerName) throws NoMatchingPlayerException {
+    List<Player> list = this.getServer().matchPlayer(playerName);
+    if (list.size() == 1)
       return list.get(0);
-    } else {
-      throw new NoMatchingPlayer();
-    }
+    else throw new NoMatchingPlayerException();
   }
 
-  public Player matchPlayerExactly(String playerName) throws NoMatchingPlayer {
-    for (Player player : getServer().getOnlinePlayers()) {
+  public Player matchPlayerExactly(String playerName) throws NoMatchingPlayerException {
+    for (Player player : this.getServer().getOnlinePlayers())
       if (player.getName().equalsIgnoreCase(playerName))
         return player;
-    }
-    throw new NoMatchingPlayer();
+    throw new NoMatchingPlayerException();
   }
 
   public void notifyPlayers(String message, CommandSender sender) {
     if (notifyPlayers) {
-      if (getSenderName(sender).equals("console"))
+      if (this.getSenderName(sender).equals("console"))
         sender.sendMessage(message);
-      getServer().broadcastMessage(message);
-    } else {
-      sender.sendMessage(message);
-    }
+      this.getServer().broadcastMessage(message);
+    } else sender.sendMessage(message);
   }
 
   public void onDisable() {
-    cache.unload();
-    log(Level.INFO, String.format(messages.getString("pluginDisabled"), desc.getName()));
+    this.cache.unload();
+    log(Level.INFO, String.format(messages.getString("pluginDisabled"), this.desc.getName()));
   }
 
   public void onEnable() {
-    desc = getDescription();
-    db = getDatabase();
-    pm = getServer().getPluginManager();
+    this.desc = this.getDescription();
+    db = this.getDatabase();
+    this.pm = this.getServer().getPluginManager();
 
     // Setup environment
-    setupDatabase();
-    connectPermissions();
+    this.setupDatabase();
+    this.connectPermissions();
 
     // Register events
-    pm.registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Event.Priority.Highest, this);
+    this.pm.registerEvent(Event.Type.PLAYER_LOGIN, this.playerListener, Event.Priority.Highest, this);
 
     // Register commands
-    getCommand("ban").setExecutor(commands);
-    getCommand("kick").setExecutor(commands);
-    getCommand("pardon").setExecutor(commands);
-    getCommand("tempban").setExecutor(commands);
-    getCommand("bh").setExecutor(commands);
+    this.getCommand("ban").setExecutor(new BanCommand(this));
+    this.getCommand("kick").setExecutor(new KickCommand(this));
+    this.getCommand("pardon").setExecutor(new PardonCommand(this));
+    this.getCommand("bh").setExecutor(this.cm);
+    this.cm.registerCommand("check", new CheckCommand(this));
+    this.cm.registerCommand("history", new HistoryCommand(this));
+    this.cm.registerCommand("purge", new PurgeCommand(this));
+    this.cm.registerCommand("recent", new RecentCommand(this));
+    this.cm.registerCommand("reload", new ReloadCommand(this));
 
     // Create cache
-    cache = new CachedList();
+    this.cache = new CachedList();
 
-    log(Level.INFO, String.format(messages.getString("bansLoaded"), Integer.toString(cache.size())));
-    log(Level.INFO, String.format(messages.getString("pluginEnabled"), desc.getFullName()));
+    log(Level.INFO, String.format(messages.getString("bansLoaded"), Integer.toString(this.cache.size())));
+    log(Level.INFO, String.format(messages.getString("pluginEnabled"), this.desc.getFullName()));
+  }
+
+  private void connectPermissions() {
+    final Plugin permissionsPlugin = this.getServer().getPluginManager().getPlugin("Permissions");
+    if (permissionsPlugin != null) {
+      this.externalPermissions = ((Permissions) permissionsPlugin).getHandler();
+      log(Level.INFO, String.format(messages.getString("usingPermissionsAPI"), ((Permissions) permissionsPlugin).getDescription().getFullName()));
+      log(Level.WARNING, messages.getString("permissionsAPIDeprecated"));
+    }
   }
 
   private void setupDatabase() {
     try {
-      getDatabase().find(BanRecord.class).findRowCount();
+      this.getDatabase().find(BanRecord.class).findRowCount();
     } catch (PersistenceException ex) {
       log(Level.WARNING, messages.getString("noDatabase"));
-      installDDL();
-    }
-  }
-
-  private void connectPermissions() {
-    final Plugin permissionsPlugin = getServer().getPluginManager().getPlugin("Permissions");
-    if (permissionsPlugin != null) {
-      externalPermissions = ((Permissions) permissionsPlugin).getHandler();
-      log(Level.INFO, String.format("External permissions system found (%s)", ((Permissions) permissionsPlugin).getDescription().getFullName()));
+      this.installDDL();
     }
   }
 
