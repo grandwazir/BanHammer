@@ -120,10 +120,8 @@ public class BanCommand extends Command {
   @Override
   protected Map<String, String> parseArguments(List<String> arguments) throws NotEnoughArgumentsException, InvalidTimeUnitException {
     Map<String, String> m = new HashMap<String,String>();
-    BanHammer.log(Level.INFO, arguments.toString());
     
     try {
-      
       for (String argument : arguments) {
         if (argument.startsWith("t:")) {
           m.put("time", this.parseTime(argument));

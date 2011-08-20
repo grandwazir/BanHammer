@@ -33,7 +33,7 @@ public class KickCommand extends Command {
     String senderName = this.plugin.getSenderName(sender);
     Player player = this.plugin.matchPlayer(arguments.get("playerName"));
 
-    this.isPlayerValidTarget(senderName, arguments.get("playerName"));
+    this.isPlayerValidTarget(senderName, player.getName());
 
     player.kickPlayer(String.format(BanHammer.messages.getString("kickedMessage"), arguments.get("reason")));
     BanHammer.log(Level.INFO, String.format(BanHammer.messages.getString("logPlayerKicked"), senderName, player.getName()));
