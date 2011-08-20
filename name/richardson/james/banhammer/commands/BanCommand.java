@@ -1,7 +1,6 @@
 
 package name.richardson.james.banhammer.commands;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,15 +111,16 @@ public class BanCommand extends Command {
     // convert to milliseconds
     time = time * 1000;
 
-    if (time == 0) throw new InvalidTimeUnitException();
-    
+    if (time == 0)
+      throw new InvalidTimeUnitException();
+
     return Long.toString(time);
   }
 
   @Override
   protected Map<String, String> parseArguments(List<String> arguments) throws NotEnoughArgumentsException, InvalidTimeUnitException {
-    Map<String, String> m = new HashMap<String,String>();
-    
+    Map<String, String> m = new HashMap<String, String>();
+
     try {
       for (String argument : arguments) {
         if (argument.startsWith("t:")) {
@@ -129,8 +129,8 @@ public class BanCommand extends Command {
           break;
         }
       }
-      
-      m.put("playerName", arguments.remove(0));  
+
+      m.put("playerName", arguments.remove(0));
       m.put("reason", this.combineString(arguments, " "));
     } catch (IndexOutOfBoundsException e) {
       throw new NotEnoughArgumentsException();

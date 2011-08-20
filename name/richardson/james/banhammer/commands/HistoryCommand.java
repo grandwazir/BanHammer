@@ -3,7 +3,6 @@ package name.richardson.james.banhammer.commands;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +54,7 @@ public class HistoryCommand extends Command {
 
   @Override
   protected Map<String, String> parseArguments(List<String> arguments) throws NotEnoughArgumentsException {
-    Map<String, String> m = new HashMap<String,String>();
+    Map<String, String> m = new HashMap<String, String>();
     arguments.remove(0);
 
     try {

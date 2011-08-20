@@ -10,7 +10,7 @@ public class BanHammerTime {
   public final static long ONE_HOUR = ONE_MINUTE * 60;
   public final static long ONE_DAY = ONE_HOUR * 24;
   public final static long SECONDS = 60;
-  
+
   /**
    * converts time (in milliseconds) to human-readable format
    * "<w> days, <x> hours, <y> minutes and (z) seconds"
