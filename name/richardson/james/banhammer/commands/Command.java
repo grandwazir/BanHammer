@@ -40,10 +40,10 @@ public abstract class Command implements CommandExecutor {
 
   public boolean onCommand(final CommandSender sender, final org.bukkit.command.Command command, final String label, final String[] args) {
     try {
+      this.authorisePlayer(sender, this.permission);
       LinkedList<String> arguments = new LinkedList<String>();
       arguments.addAll(Arrays.asList(args));
-      final Map<String, String> parsedArguments = this.parseArguments(arguments);
-      this.authorisePlayer(sender, this.permission);
+      final Map<String, String> parsedArguments = this.parseArguments(arguments);  
       this.execute(sender, parsedArguments);
     } catch (final PlayerNotAuthorisedException e) {
       sender.sendMessage(ChatColor.RED + this.plugin.getMessage("PlayerNotAuthorisedException"));
@@ -105,19 +105,19 @@ public abstract class Command implements CommandExecutor {
       return 4;
     else try {
       player = this.plugin.matchPlayerExactly(playerName);
-
+      
       for (String key : nodes) {
         String node = "banhammer.weight." + key;
-        if (player != null) {
-          if (player.hasPermission(node)) {
-            weightNode = key;
-            break;
-          }
-        } else if (this.plugin.externalPermissions != null)
+        if (player.hasPermission(node)) {
+          weightNode = key;
+          break;
+        }       
+        if (this.plugin.externalPermissions != null) {
           if (this.plugin.externalPermissions.has(player, node)) {
             weightNode = key;
             break;
           }
+        }
       }
 
       if (weightNode != null) {
@@ -152,7 +152,6 @@ public abstract class Command implements CommandExecutor {
 
     final int playerWeight = this.getPlayerWeight(playerName);
     final int targetWeight = this.getPlayerWeight(targetName);
-
     if (playerWeight > targetWeight)
       return true;
 

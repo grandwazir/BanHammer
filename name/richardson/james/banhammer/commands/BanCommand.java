@@ -69,7 +69,6 @@ public class BanCommand extends Command {
   private String parseTime(String timeString) throws InvalidTimeUnitException {
     long time;
 
-    int months = 0;
     int weeks = 0;
     int days = 0;
     int hours = 0;
@@ -83,9 +82,7 @@ public class BanCommand extends Command {
     while (result) {
       String argument = m.group();
 
-      if (argument.endsWith("m"))
-        months = Integer.parseInt(argument.substring(0, argument.length() - 1));
-      else if (argument.endsWith("w"))
+      if (argument.endsWith("w"))
         weeks = Integer.parseInt(argument.substring(0, argument.length() - 1));
       else if (argument.endsWith("d"))
         days = Integer.parseInt(argument.substring(0, argument.length() - 1));
@@ -105,8 +102,6 @@ public class BanCommand extends Command {
     time += hours * 3600;
     time += days * 86400;
     time += weeks * 604800;
-    // assumes 30 days in a month
-    time += months * 2592000;
 
     // convert to milliseconds
     time = time * 1000;

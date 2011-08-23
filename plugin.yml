@@ -1,6 +1,6 @@
 name: BanHammer
 main: name.richardson.james.banhammer.BanHammer
-version: 1.4.0
+version: 1.4.2
 database: true
 commands:
   kick:
@@ -8,10 +8,7 @@ commands:
     usage: '/kick [player] <reason>'
   ban:
     description: 'Bans a specified player from the server.'
-    usage: '/ban <-f> [player] [reason]'
-  tempban:
-    description: 'Bans a specified player for a specified amount of time.'
-    usage: '/tempban <-f> [player] [time] [unit] [reason]'
+    usage: '/ban [player] [reason] <time>'
   pardon:
     description: 'Pardons a specified player'
     usage: '/pardon [player]'
