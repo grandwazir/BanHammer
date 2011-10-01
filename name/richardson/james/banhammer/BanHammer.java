@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import javax.persistence.PersistenceException;
 
+import name.richardson.james.banhammer.api.BanHammerHandler;
 import name.richardson.james.banhammer.cache.CachedList;
 import name.richardson.james.banhammer.commands.BanCommand;
 import name.richardson.james.banhammer.commands.CheckCommand;
@@ -93,6 +94,10 @@ public class BanHammer extends JavaPlugin {
     return list;
   }
 
+  public BanHammerHandler getHandler() {
+    return new BanHammerHandler(this);
+  }
+  
   public String getMessage(String key) {
     return messages.getString(key);
   }

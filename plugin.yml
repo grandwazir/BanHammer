@@ -1,6 +1,6 @@
 name: BanHammer
 main: name.richardson.james.banhammer.BanHammer
-version: 1.4.2
+version: 1.5.0 DEV
 database: true
 commands:
   kick:
