@@ -7,7 +7,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import name.richardson.james.banhammer.BanHammer;
-import name.richardson.james.banhammer.persistant.BanRecord;
+import name.richardson.james.banhammer.ban.BanRecord;
 
 
 public class BanHammerHandler {

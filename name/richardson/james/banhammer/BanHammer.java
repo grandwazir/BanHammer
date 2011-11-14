@@ -13,19 +13,18 @@ import java.util.logging.Logger;
 
 import javax.persistence.PersistenceException;
 
+import name.richardson.james.banhammer.administration.CheckCommand;
+import name.richardson.james.banhammer.administration.HistoryCommand;
+import name.richardson.james.banhammer.administration.PurgeCommand;
+import name.richardson.james.banhammer.administration.RecentCommand;
+import name.richardson.james.banhammer.administration.ReloadCommand;
 import name.richardson.james.banhammer.api.BanHammerHandler;
-import name.richardson.james.banhammer.cache.CachedList;
-import name.richardson.james.banhammer.commands.BanCommand;
-import name.richardson.james.banhammer.commands.CheckCommand;
-import name.richardson.james.banhammer.commands.HistoryCommand;
-import name.richardson.james.banhammer.commands.KickCommand;
-import name.richardson.james.banhammer.commands.PardonCommand;
-import name.richardson.james.banhammer.commands.PurgeCommand;
-import name.richardson.james.banhammer.commands.RecentCommand;
-import name.richardson.james.banhammer.commands.ReloadCommand;
+import name.richardson.james.banhammer.ban.BanCommand;
+import name.richardson.james.banhammer.ban.BanRecord;
+import name.richardson.james.banhammer.ban.CachedList;
+import name.richardson.james.banhammer.ban.PardonCommand;
 import name.richardson.james.banhammer.exceptions.NoMatchingPlayerException;
-import name.richardson.james.banhammer.listeners.BanHammerPlayerListener;
-import name.richardson.james.banhammer.persistant.BanRecord;
+import name.richardson.james.banhammer.kick.KickCommand;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -57,14 +56,14 @@ public class BanHammer extends JavaPlugin {
   private final CommandManager cm;
   private PluginDescriptionFile desc;
 
-  private final BanHammerPlayerListener playerListener;
+  private final PlayerListener playerListener;
   private PluginManager pm;
 
   public BanHammer() {
     BanHammer.instance = this;
     this.cm = new CommandManager();
 
-    this.playerListener = new BanHammerPlayerListener(this);
+    this.playerListener = new PlayerListener(this);
 
     if (messages == null)
       try {
