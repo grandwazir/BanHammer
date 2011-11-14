@@ -2,6 +2,7 @@
 package name.richardson.james.banhammer.ban;
 
 import java.util.HashMap;
+import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -92,7 +93,7 @@ public class BanCommand extends Command {
         minutes = Integer.parseInt(argument.substring(0, argument.length() - 1));
       else if (argument.endsWith("s"))
         seconds = Integer.parseInt(argument.substring(0, argument.length() - 1));
-      else throw new InvalidTimeUnitException();
+      else throw new NumberFormatException();
 
       result = m.find();
     }
