@@ -1,4 +1,20 @@
-
+/*******************************************************************************
+ * Copyright (c) 2011 James Richardson.
+ * 
+ * BanRecord.java is part of BanHammer.
+ * 
+ * BanHammer is free software: you can redistribute it and/or modify it 
+ * under the terms of the GNU General Public License as published by the Free 
+ * Software Foundation, either version 3 of the License, or (at your option) 
+ * any later version.
+ * 
+ * BanHammer is distributed in the hope that it will be useful, but WITHOUT ANY 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License 
+ * along with BanHammer.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package name.richardson.james.banhammer.ban;
 
 import java.util.List;
@@ -7,8 +23,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import name.richardson.james.banhammer.BanHammer;
-
+import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.ExampleExpression;
 import com.avaje.ebean.LikeType;
 import com.avaje.ebean.validation.NotNull;
@@ -17,9 +32,11 @@ import com.avaje.ebean.validation.NotNull;
 @Table(name = "bh_bans")
 public class BanRecord {
 
-  public enum type {
+  public enum Type {
     PERMENANT, TEMPORARY
   }
+
+  private static EbeanServer database;
 
   @Id
   private long createdAt;
@@ -36,80 +53,90 @@ public class BanRecord {
   @NotNull
   private String reason;
 
-  static public void create(String playerName, String senderName, Long Expiry, Long creationTime, String banReason) {
+  public static void setDatabase(EbeanServer database) {
+    if (BanRecord.database == null) {
+      BanRecord.database = database;
+    }
+  }
+  
+  static void create(String playerName, String senderName, Long Expiry, Long creationTime, String banReason) {
     BanRecord banHammerRecord = new BanRecord();
     banHammerRecord.player = playerName;
     banHammerRecord.createdBy = senderName;
     banHammerRecord.createdAt = creationTime;
     banHammerRecord.expiresAt = Expiry;
     banHammerRecord.reason = banReason;
-    BanHammer.getDb().save(banHammerRecord);
+    BanRecord.database.save(banHammerRecord);
   }
 
-  static public void destroy(List<BanRecord> banHammerRecords) {
+  static void destroy(List<BanRecord> banHammerRecords) {
     for (BanRecord ban : banHammerRecords)
-      BanHammer.getDb().delete(ban);
+      BanRecord.database.delete(ban);
   }
 
-  static public List<BanRecord> find(String player) {
+  static List<BanRecord> find(String player) {
     // create the example
     BanRecord example = new BanRecord();
     example.setPlayer(player);
     // create the example expression
-    ExampleExpression expression = BanHammer.getDb().getExpressionFactory().exampleLike(example, true, LikeType.EQUAL_TO);
+    ExampleExpression expression = BanRecord.database.getExpressionFactory().exampleLike(example, true, LikeType.EQUAL_TO);
     // find and return all bans that match the expression
-    return BanHammer.getDb().find(BanRecord.class).where().add(expression).orderBy("created_at DESC").findList();
+    return BanRecord.database.find(BanRecord.class).where().add(expression).orderBy("created_at DESC").findList();
   }
 
-  static public BanRecord findFirst(String player) {
+  static BanRecord findFirst(String player) {
     // create the example
     BanRecord example = new BanRecord();
     example.setPlayer(player);
     // create the example expression
-    ExampleExpression expression = BanHammer.getDb().getExpressionFactory().exampleLike(example, true, LikeType.EQUAL_TO);
+    ExampleExpression expression = BanRecord.database.getExpressionFactory().exampleLike(example, true, LikeType.EQUAL_TO);
     // find and return all bans that match the expression
-    return BanHammer.getDb().find(BanRecord.class).where().add(expression).orderBy("created_at DESC").findList().get(0);
+    return BanRecord.database.find(BanRecord.class).where().add(expression).orderBy("created_at DESC").findList().get(0);
   }
 
-  static public List<BanRecord> findRecent(Integer maxRows) {
-    return BanHammer.getDb().find(BanRecord.class).where().orderBy("created_at DESC").setMaxRows(maxRows).findList();
+  static List<BanRecord> findRecent(Integer maxRows) {
+    return BanRecord.database.find(BanRecord.class).where().orderBy("created_at DESC").setMaxRows(maxRows).findList();
   }
 
-  static public List<BanRecord> list() {
-    return BanHammer.getDb().find(BanRecord.class).findList();
+  static List<BanRecord> list() {
+    return BanRecord.database.find(BanRecord.class).findList();
   }
 
-  public void destroy() {
-    BanHammer.getDb().delete(this);
+  void destroy() {
+    BanRecord.database.delete(this);
   }
 
-  public long getCreatedAt() {
+  CachedBan toCachedBan() {
+    return new CachedBan(this.expiresAt, this.player, this.reason, this.createdBy, this.createdAt);
+  }
+  
+  long getCreatedAt() {
     return this.createdAt;
   }
 
-  public String getCreatedBy() {
+  String getCreatedBy() {
     return this.createdBy;
   }
 
-  public long getExpiresAt() {
+  long getExpiresAt() {
     return this.expiresAt;
   }
 
-  public String getPlayer() {
+  String getPlayer() {
     return this.player;
   }
 
-  public String getReason() {
+  String getReason() {
     return this.reason;
   }
 
-  public BanRecord.type getType() {
+  Type getType() {
     if (this.expiresAt == 0)
-      return BanRecord.type.PERMENANT;
-    else return BanRecord.type.TEMPORARY;
+      return Type.PERMENANT;
+    else return Type.TEMPORARY;
   }
 
-  public boolean isActive() {
+  boolean isActive() {
     if (this.expiresAt == 0)
       return true;
     else if (this.expiresAt > System.currentTimeMillis())
@@ -117,24 +144,8 @@ public class BanRecord {
     else return false;
   }
 
-  public void setCreatedAt(long createdAt) {
-    this.createdAt = createdAt;
-  }
-
-  public void setCreatedBy(String createdBy) {
-    this.createdBy = createdBy;
-  }
-
-  public void setExpiresAt(long expiresAt) {
-    this.expiresAt = expiresAt;
-  }
-
-  public void setPlayer(String player) {
+  private void setPlayer(String player) {
     this.player = player;
-  }
-
-  public void setReason(String reason) {
-    this.reason = reason;
   }
 
 }

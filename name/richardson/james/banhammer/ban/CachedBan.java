@@ -1,17 +1,39 @@
-
+/*******************************************************************************
+ * Copyright (c) 2011 James Richardson.
+ * 
+ * CachedBan.java is part of BanHammer.
+ * 
+ * BanHammer is free software: you can redistribute it and/or modify it 
+ * under the terms of the GNU General Public License as published by the Free 
+ * Software Foundation, either version 3 of the License, or (at your option) 
+ * any later version.
+ * 
+ * BanHammer is distributed in the hope that it will be useful, but WITHOUT ANY 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License 
+ * along with BanHammer.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package name.richardson.james.banhammer.ban;
 
+import name.richardson.james.banhammer.ban.BanRecord.Type;
 
-public class CachedBan {
+
+public final class CachedBan {
 
   private long expiresAt;
   private String player;
   private String reason;
+  private String createdBy;
+  private long createdAt;
 
-  public CachedBan(long expiresAt, String player, String reason) {
+  public CachedBan(Long expiresAt, String player, String reason, String createdBy, Long createdAt) {
     this.expiresAt = expiresAt;
     this.player = player;
     this.reason = reason;
+    this.createdBy = createdBy;
+    this.createdAt = createdAt;
   }
 
   public long getExpiresAt() {
@@ -26,10 +48,10 @@ public class CachedBan {
     return this.reason;
   }
 
-  public BanRecord.type getType() {
+  public Type getType() {
     if (this.expiresAt == 0)
-      return BanRecord.type.PERMENANT;
-    else return BanRecord.type.TEMPORARY;
+      return Type.PERMENANT;
+    else return Type.TEMPORARY;
   }
 
   public boolean isActive() {
@@ -40,16 +62,14 @@ public class CachedBan {
     else return false;
   }
 
-  public void setExpiresAt(long expiresAt) {
-    this.expiresAt = expiresAt;
+
+  public String getCreatedBy() {
+    return createdBy;
   }
 
-  public void setPlayer(String player) {
-    this.player = player;
-  }
 
-  public void setReason(String reason) {
-    this.reason = reason;
+  public long getCreatedAt() {
+    return createdAt;
   }
 
 }

@@ -1,11 +1,25 @@
-
+/*******************************************************************************
+ * Copyright (c) 2011 James Richardson.
+ * 
+ * BanCommand.java is part of BanHammer.
+ * 
+ * BanHammer is free software: you can redistribute it and/or modify it 
+ * under the terms of the GNU General Public License as published by the Free 
+ * Software Foundation, either version 3 of the License, or (at your option) 
+ * any later version.
+ * 
+ * BanHammer is distributed in the hope that it will be useful, but WITHOUT ANY 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License 
+ * along with BanHammer.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package name.richardson.james.banhammer.ban;
 
 import java.util.HashMap;
-import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,60 +28,42 @@ import name.richardson.james.banhammer.Command;
 import name.richardson.james.banhammer.exceptions.InvalidTimeUnitException;
 import name.richardson.james.banhammer.exceptions.NoMatchingPlayerException;
 import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
-import name.richardson.james.banhammer.exceptions.PlayerAlreadyBannedException;
-import name.richardson.james.banhammer.exceptions.PlayerNotAuthorisedException;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class BanCommand extends Command {
 
+  private final BanHandler banHandler;
+
   public BanCommand(final BanHammer plugin) {
     super(plugin);
     this.name = "ban";
     this.description = "ban a player from the server";
     this.usage = "/ban [name] [reason] <t:time>";
-    this.permission = plugin.getName() + "." + this.name;
+    this.permission = "banhammer." + this.name;
+    this.banHandler = plugin.getHandler();
   }
 
   @Override
-  public void execute(final CommandSender sender, final Map<String, String> arguments) throws NotEnoughArgumentsException, NoMatchingPlayerException,
-      PlayerNotAuthorisedException, PlayerAlreadyBannedException {
-    String senderName = this.plugin.getSenderName(sender);
-    String playerName = arguments.get("playerName");
-    String reason = arguments.get("reason");
-    Player player = null;
-
-    try {
-      player = this.plugin.matchPlayer(playerName);
-    } catch (NoMatchingPlayerException e) {
-      player = null;
+  public void execute(final CommandSender sender, final Map<String, String> arguments) throws NotEnoughArgumentsException, NoMatchingPlayerException, InvalidTimeUnitException {
+    final String senderName = this.getSenderName(sender);
+    final Player player = this.getPlayer(arguments.get("playerName"), true);
+    final String playerName = player.getName();
+    final String reason = arguments.get("reason");
+    Long expiryTime = (long) 0;
+    
+    if (arguments.containsKey("time")) {
+      expiryTime = parseTime(arguments.get("time"));
     }
-
-    if (this.plugin.cache.contains(playerName))
-      throw new PlayerAlreadyBannedException(playerName);
-    else {
-      this.isPlayerValidTarget(senderName, playerName);
-      if (arguments.containsKey("time")) {
-        BanRecord.create(playerName, senderName, Long.parseLong(arguments.get("time")) + System.currentTimeMillis(), System.currentTimeMillis(), reason);
-        this.plugin.notifyPlayers((String.format(ChatColor.RED + BanHammer.messages.getString("notifyTempBannedPlayer"), playerName)), sender);
-      } else {
-        BanRecord.create(playerName, senderName, new Long(0), System.currentTimeMillis(), reason);
-        this.plugin.notifyPlayers((String.format(ChatColor.RED + BanHammer.messages.getString("notifyBannedPlayer"), playerName)), sender);
-      }
-
-      this.plugin.notifyPlayers((String.format(ChatColor.YELLOW + BanHammer.messages.getString("notifyReason"), reason)), sender);
-      this.plugin.cache.add(playerName);
-      if (player != null)
-        player.kickPlayer(String.format(BanHammer.messages.getString("kickedMessage"), reason));
-      BanHammer.log(Level.INFO, String.format(BanHammer.messages.getString("logPlayerBanned"), senderName, playerName));
-
+    
+    if (!this.banHandler.banPlayer(player, senderName, reason, expiryTime, true)) {
+      sender.sendMessage(ChatColor.RED + String.format(BanHammer.getMessage("PlayerAlreadyBannedException"), playerName));
     }
-
+    
   }
 
-  private String parseTime(String timeString) throws InvalidTimeUnitException {
+  private Long parseTime(String timeString) throws InvalidTimeUnitException {
     long time;
 
     int weeks = 0;
@@ -110,7 +106,7 @@ public class BanCommand extends Command {
     if (time == 0)
       throw new InvalidTimeUnitException();
 
-    return Long.toString(time);
+    return time;
   }
 
   @Override
@@ -120,7 +116,7 @@ public class BanCommand extends Command {
     try {
       for (String argument : arguments) {
         if (argument.startsWith("t:")) {
-          m.put("time", this.parseTime(argument));
+          m.put("time", argument);
           arguments.remove(argument);
           break;
         }

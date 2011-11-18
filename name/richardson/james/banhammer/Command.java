@@ -1,17 +1,30 @@
-
+/*******************************************************************************
+ * Copyright (c) 2011 James Richardson.
+ * 
+ * Command.java is part of BanHammer.
+ * 
+ * BanHammer is free software: you can redistribute it and/or modify it 
+ * under the terms of the GNU General Public License as published by the Free 
+ * Software Foundation, either version 3 of the License, or (at your option) 
+ * any later version.
+ * 
+ * BanHammer is distributed in the hope that it will be useful, but WITHOUT ANY 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License 
+ * along with BanHammer.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package name.richardson.james.banhammer;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 import name.richardson.james.banhammer.exceptions.InvalidTimeUnitException;
 import name.richardson.james.banhammer.exceptions.NoMatchingPlayerException;
 import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
-import name.richardson.james.banhammer.exceptions.PlayerAlreadyBannedException;
-import name.richardson.james.banhammer.exceptions.PlayerNotAuthorisedException;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
@@ -21,6 +34,8 @@ import org.bukkit.entity.Player;
 
 public abstract class Command implements CommandExecutor {
 
+  protected static String consoleName = "Console";
+  
   protected String description;
   protected String name;
   protected String[] optionalArgumentKeys;
@@ -29,134 +44,128 @@ public abstract class Command implements CommandExecutor {
   protected Integer requiredArgumentCount;
   protected String usage;
 
-  public Command(final BanHammer plugin) {
-    super();
+  public Command(BanHammer plugin) {
     this.plugin = plugin;
   }
-
+  
   public abstract void execute(CommandSender sender, Map<String, String> arguments) throws InvalidTimeUnitException, NotEnoughArgumentsException,
-      PlayerAlreadyBannedException, PlayerNotAuthorisedException, NoMatchingPlayerException;
+      NoMatchingPlayerException;
 
   public boolean onCommand(final CommandSender sender, final org.bukkit.command.Command command, final String label, final String[] args) {
+    if (!this.authorisePlayer(sender)) {
+      sender.sendMessage(ChatColor.RED + BanHammer.getMessage("PlayerNotAuthorisedException"));
+      return true;
+    }
+    
     try {
-      this.authorisePlayer(sender, this.permission);
       LinkedList<String> arguments = new LinkedList<String>();
       arguments.addAll(Arrays.asList(args));
       final Map<String, String> parsedArguments = this.parseArguments(arguments);  
       this.execute(sender, parsedArguments);
-    } catch (final PlayerNotAuthorisedException e) {
-      sender.sendMessage(ChatColor.RED + this.plugin.getMessage("PlayerNotAuthorisedException"));
     } catch (final NotEnoughArgumentsException e) {
-      sender.sendMessage(ChatColor.RED + this.plugin.getMessage("NotEnoughArgumentsException"));
+      sender.sendMessage(ChatColor.RED + BanHammer.getMessage("NotEnoughArgumentsException"));
       sender.sendMessage(ChatColor.YELLOW + this.usage);
     } catch (InvalidTimeUnitException e) {
-      sender.sendMessage(ChatColor.RED + this.plugin.getMessage("InvalidTimeUnitException"));
-      sender.sendMessage(ChatColor.YELLOW + this.plugin.getMessage("ValidTimeUnits"));
-    } catch (PlayerAlreadyBannedException e) {
-      sender.sendMessage(ChatColor.RED + String.format(this.plugin.getMessage("PlayerAlreadyBannedException"), e.getPlayerName()));
+      sender.sendMessage(ChatColor.RED + BanHammer.getMessage("InvalidTimeUnitException"));
+      sender.sendMessage(ChatColor.YELLOW + BanHammer.getMessage("ValidTimeUnits"));
     } catch (NoMatchingPlayerException e) {
-      sender.sendMessage(ChatColor.RED + this.plugin.getMessage("NoMatchingPlayerException"));
+      sender.sendMessage(e.getMessage());
     }
     return true;
   }
 
-  protected void authorisePlayer(CommandSender sender, String node) throws PlayerNotAuthorisedException {
-    node = node.toLowerCase();
-
-    if (sender instanceof ConsoleCommandSender)
-      return;
-    else {
+  /**
+   * Check to see if a player has permission to use this command.
+   * 
+   * A console user is permitted to use all commands by default.
+   * 
+   * @param sender The player/console that is attempting to use the command
+   * @return true if the player has permission; false otherwise.
+   */
+  protected boolean authorisePlayer(CommandSender sender) {
+    if (sender instanceof ConsoleCommandSender) {
+      return true;
+    } else if (sender instanceof Player) {
       final Player player = (Player) sender;
-      if (player.hasPermission(node) || player.hasPermission("banhammer.*"))
-        return;
-
-      if (this.plugin.externalPermissions != null)
-        if (this.plugin.externalPermissions.has(player, node))
-          return;
-    }
-
-    throw new PlayerNotAuthorisedException();
+      if (player.hasPermission(this.permission) || player.hasPermission("banhammer.*")) {
+        return true;
+      }
+    } 
+    return false;
   }
 
+  /**
+   * Get the name of a CommandSender.
+   * 
+   * By default a CommandSender which is not a Player has no name. In this case
+   * the method will return the value of consoleName.
+   * 
+   * @param sender The CommandSender that you wish to resolve the name of.
+   * @return name Return the name of the Player or "Console" if no name available.
+   */
+  protected String getSenderName(CommandSender sender) {
+    if (sender instanceof ConsoleCommandSender) {
+      return Command.consoleName;
+    } else {
+      final Player player = (Player) sender;
+      return player.getName();
+    }
+  }
+  
+  /**
+   * Broadcast a message to all players
+   * 
+   * @param message A string that you want every player to receive.
+   */
+  protected void broadcastMessage(String message) {
+    plugin.getServer().broadcastMessage(message);
+  }
+  
+  /**
+   * Combine an array of strings together into one string. 
+   * 
+   * Trailing separators are removed.
+   * 
+   * @param arguments A list of strings to append together
+   * @param seperator A string that will appear between each appended string.
+   * @return result The resulting string or "No reason specified" if an exception is raised.
+   */
   protected String combineString(List<String> arguments, String seperator) {
     StringBuilder reason = new StringBuilder();
-
     try {
-
       for (String argument : arguments) {
         reason.append(argument);
         reason.append(seperator);
-      }
-
+      } 
       reason.deleteCharAt(reason.length() - seperator.length());
       return reason.toString();
     } catch (StringIndexOutOfBoundsException e) {
       return "No reason provided";
     }
   }
-
-  protected int getPlayerWeight(String playerName) throws NoMatchingPlayerException {
-    final List<String> nodes = Arrays.asList("heavy", "medium", "light");
-    String weightNode = null;
-    Player player = null;
-
-    if (playerName == "console")
-      return 4;
-    else try {
-      player = this.plugin.matchPlayerExactly(playerName);
-      
-      for (String key : nodes) {
-        String node = "banhammer.weight." + key;
-        if (player.hasPermission(node)) {
-          weightNode = key;
-          break;
-        }       
-        if (this.plugin.externalPermissions != null) {
-          if (this.plugin.externalPermissions.has(player, node)) {
-            weightNode = key;
-            break;
-          }
-        }
-      }
-
-      if (weightNode != null) {
-        if (weightNode.equalsIgnoreCase("heavy"))
-          return 3;
-        else if (weightNode.equalsIgnoreCase("medium"))
-          return 2;
-        else if (weightNode.equalsIgnoreCase("light"))
-          return 1;
-      } else return 0;
-
-    } catch (NoMatchingPlayerException e) {
-      BanHammer.log(Level.WARNING, String.format(BanHammer.messages.getString("unableToReferToOfflinePermissions"), playerName));
+  
+  /**
+   * Attempt to match an Player by name. 
+   * 
+   * This method will attempt to match players that are currently
+   * online. Failing that and if offline is true, it will return an
+   * OfflinePlayer for the specified name. 
+   * 
+   * @param playerName The name to match.
+   * @param offline If true and no match was found, return an OfflinePlayer for the same name.
+   * @return result Player that matches that name.
+   * @throws NoMatchingPlayerException - If the number of matches is not equal to 1.
+   */
+  protected Player getPlayer(String playerName, boolean offline) throws NoMatchingPlayerException {
+    List<Player> playerList = this.plugin.getServer().matchPlayer(playerName);
+    if (playerList.size() == 1) {
+      return playerList.get(0);
+    } else if (playerList.size() > 1) {
+      throw new NoMatchingPlayerException(String.format(ChatColor.RED + BanHammer.getMessage("NoMatchingPlayerException"), playerName));
+    } else {
+      return (Player) this.plugin.getServer().getOfflinePlayer(playerName);
     }
-
-    return 0;
-
-  }
-
-  protected String getSenderName(final CommandSender sender) {
-    if (sender instanceof ConsoleCommandSender)
-      return "console";
-    else {
-      final Player player = (Player) sender;
-      return player.getName();
-    }
-  }
-
-  protected boolean isPlayerValidTarget(String playerName, String targetName) throws NoMatchingPlayerException, PlayerNotAuthorisedException {
-    if (playerName.equalsIgnoreCase(targetName))
-      throw new PlayerNotAuthorisedException();
-
-    final int playerWeight = this.getPlayerWeight(playerName);
-    final int targetWeight = this.getPlayerWeight(targetName);
-    if (playerWeight > targetWeight)
-      return true;
-
-    throw new PlayerNotAuthorisedException();
-
-  }
+  }    
 
   protected abstract Map<String, String> parseArguments(List<String> arguments) throws NotEnoughArgumentsException, InvalidTimeUnitException;
 

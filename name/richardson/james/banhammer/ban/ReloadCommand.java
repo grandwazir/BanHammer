@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (c) 2011 James Richardson.
  * 
- * KickCommand.java is part of BanHammer.
+ * ReloadCommand.java is part of BanHammer.
  * 
  * BanHammer is free software: you can redistribute it and/or modify it 
  * under the terms of the GNU General Public License as published by the Free 
@@ -15,53 +15,44 @@
  * You should have received a copy of the GNU General Public License 
  * along with BanHammer.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.banhammer.kick;
+package name.richardson.james.banhammer.ban;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import name.richardson.james.banhammer.BanHammer;
 import name.richardson.james.banhammer.Command;
-import name.richardson.james.banhammer.exceptions.NoMatchingPlayerException;
 import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
 import name.richardson.james.banhammer.util.Logger;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
-public class KickCommand extends Command {
-
-  public KickCommand(BanHammer plugin) {
+public class ReloadCommand extends Command {
+  
+  public ReloadCommand(final BanHammer plugin) {
     super(plugin);
-    this.name = "kick";
-    this.description = "kick a player from the server";
-    this.usage = "/kick [name] <reason>";
+    this.name = "reload";
+    this.description = "reload the ban cache";
+    this.usage = "/bh reload";
     this.permission = "banhammer." + this.name;
-    this.requiredArgumentCount = 2;
   }
 
   @Override
-  public void execute(final CommandSender sender, Map<String, String> arguments) throws NotEnoughArgumentsException, NoMatchingPlayerException {
+  public void execute(final CommandSender sender, Map<String, String> arguments) throws NotEnoughArgumentsException {
     String senderName = this.getSenderName(sender);
-    Player player = this.getPlayer(arguments.get("playerName"), false);
-    player.kickPlayer(String.format(BanHammer.getMessage("kickedMessage"), arguments.get("reason")));
-    Logger.info(String.format(BanHammer.getMessage("logPlayerKicked"), senderName, player.getName()));
-    this.broadcastMessage(String.format(ChatColor.RED + BanHammer.getMessage("notifyKickedPlayer"), player.getName()));
-    this.broadcastMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("notifyReason"), arguments.get("reason")));
+    CachedList.getInstance().reload();
+    String cacheSize = Integer.toString(CachedList.getInstance().size());
+
+    Logger.info(String.format(BanHammer.getMessage("logCacheReloaded"), senderName));
+    Logger.info(String.format(BanHammer.getMessage("bansLoaded"), cacheSize));
+    sender.sendMessage(String.format(ChatColor.GREEN + BanHammer.getMessage("notifyCachedReloaded"), cacheSize));
   }
 
   @Override
   protected Map<String, String> parseArguments(List<String> arguments) throws NotEnoughArgumentsException {
-    Map<String, String> m = new HashMap<String, String>();
-    try {
-      m.put("playerName", arguments.remove(0));
-      m.put("reason", this.combineString(arguments, " "));
-    } catch (IndexOutOfBoundsException e) {
-      throw new NotEnoughArgumentsException();
-    }
-    return m;
+    return Collections.emptyMap();
   }
 
 }

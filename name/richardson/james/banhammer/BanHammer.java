@@ -1,91 +1,71 @@
-
+/*******************************************************************************
+ * Copyright (c) 2011 James Richardson.
+ * 
+ * BanHammer.java is part of BanHammer.
+ * 
+ * BanHammer is free software: you can redistribute it and/or modify it 
+ * under the terms of the GNU General Public License as published by the Free 
+ * Software Foundation, either version 3 of the License, or (at your option) 
+ * any later version.
+ * 
+ * BanHammer is distributed in the hope that it will be useful, but WITHOUT ANY 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License 
+ * along with BanHammer.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package name.richardson.james.banhammer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.persistence.PersistenceException;
 
-import name.richardson.james.banhammer.administration.CheckCommand;
-import name.richardson.james.banhammer.administration.HistoryCommand;
-import name.richardson.james.banhammer.administration.PurgeCommand;
-import name.richardson.james.banhammer.administration.RecentCommand;
-import name.richardson.james.banhammer.administration.ReloadCommand;
-import name.richardson.james.banhammer.api.BanHammerHandler;
 import name.richardson.james.banhammer.ban.BanCommand;
+import name.richardson.james.banhammer.ban.BanHandler;
 import name.richardson.james.banhammer.ban.BanRecord;
-import name.richardson.james.banhammer.ban.CachedList;
+import name.richardson.james.banhammer.ban.CheckCommand;
+import name.richardson.james.banhammer.ban.HistoryCommand;
 import name.richardson.james.banhammer.ban.PardonCommand;
-import name.richardson.james.banhammer.exceptions.NoMatchingPlayerException;
+import name.richardson.james.banhammer.ban.PlayerListener;
+import name.richardson.james.banhammer.ban.PurgeCommand;
+import name.richardson.james.banhammer.ban.RecentCommand;
+import name.richardson.james.banhammer.ban.ReloadCommand;
 import name.richardson.james.banhammer.kick.KickCommand;
+import name.richardson.james.banhammer.util.Logger;
 
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.avaje.ebean.EbeanServer;
-import com.nijiko.permissions.PermissionHandler;
-import com.nijikokun.bukkit.Permissions.Permissions;
-
 public class BanHammer extends JavaPlugin {
 
-  public static ResourceBundle messages;
-  private static EbeanServer db;
-
-  private static BanHammer instance;
+  private static ResourceBundle messages;
   private final static Locale locale = Locale.getDefault();
-
-  private final static Logger logger = Logger.getLogger("Minecraft");
-  private final static Boolean notifyPlayers = true;
-  static Map<String, Long> bans = new HashMap<String, Long>();
-
-  public CachedList cache;
-  public PermissionHandler externalPermissions;
-
   private final CommandManager cm;
+  
+  private PlayerListener playerListener;
   private PluginDescriptionFile desc;
-
-  private final PlayerListener playerListener;
   private PluginManager pm;
 
   public BanHammer() {
-    BanHammer.instance = this;
     this.cm = new CommandManager();
-
-    this.playerListener = new PlayerListener(this);
-
-    if (messages == null)
-      try {
-        BanHammer.messages = ResourceBundle.getBundle("name.richardson.james.banhammer.localisation.Messages", locale);
-      } catch (MissingResourceException e) {
-        BanHammer.messages = ResourceBundle.getBundle("name.richardson.james.banhammer.localisation.Messages");
-        log(Level.WARNING, String.format(messages.getString("noLocalisationFound"), locale.getDisplayLanguage()));
-      }
   }
 
-  public static EbeanServer getDb() {
-    return db;
+  /**
+   * This returns a localised string from the loaded ResourceBundle.
+   * 
+   * @param key The key for the desired string.
+   * @return The string for the given key.
+   */
+  public static String getMessage(String key) {
+    return messages.getString(key);
   }
-
-  public static BanHammer getInstance() {
-    return instance;
-  }
-
-  public static void log(Level level, String msg) {
-    logger.log(level, "[BanHammer] " + msg);
-  }
-
+  
   @Override
   public List<Class<?>> getDatabaseClasses() {
     List<Class<?>> list = new ArrayList<Class<?>>();
@@ -93,70 +73,32 @@ public class BanHammer extends JavaPlugin {
     return list;
   }
 
-  public BanHammerHandler getHandler() {
-    return new BanHammerHandler(this);
-  }
-  
-  public String getMessage(String key) {
-    return messages.getString(key);
-  }
-
-  public String getName() {
-    return this.desc.getName();
-  }
-
-  public String getSenderName(CommandSender sender) {
-    if (sender instanceof Player) {
-      Player player = (Player) sender;
-      String senderName = player.getName();
-      return senderName;
-    } else return "console";
-  }
-
-  public String getVersion() {
-    return this.desc.getVersion();
-  }
-
-  public Player matchPlayer(String playerName) throws NoMatchingPlayerException {
-    List<Player> list = this.getServer().matchPlayer(playerName);
-    if (list.size() == 1)
-      return list.get(0);
-    else throw new NoMatchingPlayerException();
-  }
-
-  public Player matchPlayerExactly(String playerName) throws NoMatchingPlayerException {
-    for (Player player : this.getServer().getOnlinePlayers())
-      if (player.getName().equalsIgnoreCase(playerName))
-        return player;
-    throw new NoMatchingPlayerException();
-  }
-
-  public void notifyPlayers(String message, CommandSender sender) {
-    if (notifyPlayers) {
-      if (this.getSenderName(sender).equals("console"))
-        sender.sendMessage(message);
-      this.getServer().broadcastMessage(message);
-    } else sender.sendMessage(message);
-  }
-
+  @Override
   public void onDisable() {
-    this.cache.unload();
-    log(Level.INFO, String.format(messages.getString("pluginDisabled"), this.desc.getName()));
+    Logger.info(String.format(messages.getString("pluginDisabled"), this.desc.getName()));
   }
 
+  @Override
   public void onEnable() {
     this.desc = this.getDescription();
-    db = this.getDatabase();
     this.pm = this.getServer().getPluginManager();
 
-    // Setup environment
-    this.setupDatabase();
-    this.connectPermissions();
+    try {
+      this.setupLocalisation();
+      this.setupDatabase();
+      this.setupListeners();
+      this.setupCommands();
+    } catch (Exception e) {
+      Logger.severe(e.getMessage());
+      e.printStackTrace();
+      this.pm.disablePlugin(this);
+      return;
+    }
 
-    // Register events
-    this.pm.registerEvent(Event.Type.PLAYER_LOGIN, this.playerListener, Event.Priority.Highest, this);
+    Logger.info(String.format(BanHammer.getMessage("pluginEnabled"), this.desc.getFullName()));
+  }
 
-    // Register commands
+  private void setupCommands() {
     this.getCommand("ban").setExecutor(new BanCommand(this));
     this.getCommand("kick").setExecutor(new KickCommand(this));
     this.getCommand("pardon").setExecutor(new PardonCommand(this));
@@ -166,29 +108,34 @@ public class BanHammer extends JavaPlugin {
     this.cm.registerCommand("purge", new PurgeCommand(this));
     this.cm.registerCommand("recent", new RecentCommand(this));
     this.cm.registerCommand("reload", new ReloadCommand(this));
-
-    // Create cache
-    this.cache = new CachedList();
-
-    log(Level.INFO, String.format(messages.getString("bansLoaded"), Integer.toString(this.cache.size())));
-    log(Level.INFO, String.format(messages.getString("pluginEnabled"), this.desc.getFullName()));
-  }
-
-  private void connectPermissions() {
-    final Plugin permissionsPlugin = this.getServer().getPluginManager().getPlugin("Permissions");
-    if (permissionsPlugin != null) {
-      this.externalPermissions = ((Permissions) permissionsPlugin).getHandler();
-      log(Level.INFO, String.format(messages.getString("usingPermissionsAPI"), ((Permissions) permissionsPlugin).getDescription().getFullName()));
-    }
   }
 
   private void setupDatabase() {
     try {
       this.getDatabase().find(BanRecord.class).findRowCount();
     } catch (PersistenceException ex) {
-      log(Level.WARNING, messages.getString("noDatabase"));
+      Logger.warning(BanHammer.getMessage("noDatabase"));
       this.installDDL();
     }
+    BanRecord.setDatabase(this.getDatabase());
+  }
+
+  private void setupListeners() {
+    this.playerListener = new PlayerListener();
+    this.pm.registerEvent(Event.Type.PLAYER_LOGIN, this.playerListener, Event.Priority.Highest, this);
+  }
+
+  private void setupLocalisation() {
+    BanHammer.messages = ResourceBundle.getBundle("name.richardson.james.banhammer.localisation.Messages", locale);
+  }
+
+  /**
+   * This returns a handler to allow access to the BanHammer API.
+   * 
+   * @return A new BanHandler instance.
+   */
+  public BanHandler getHandler() {
+    return new BanHandler(this.getServer());
   }
 
 }
