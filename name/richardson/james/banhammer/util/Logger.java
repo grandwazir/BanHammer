@@ -25,20 +25,12 @@ public class Logger {
   static private String prefix = "[BanHammer] ";
   static private Level debugLevel = Level.FINE;
   
-  public static void info(String message) {
-    logger.info(prefix + message);
-  }
-  
-  public static void warning(String message) {
-    logger.warning(prefix + message);
-  }
-  
-  public static void severe(String message) {
-    logger.severe(prefix + message);
-  }
-  
   public static void debug(String message) {
     logger.fine(prefix + message);
+  }
+  
+  public static void info(String message) {
+    logger.info(prefix + message);
   }
   
   public static boolean isDebugging() {
@@ -47,6 +39,14 @@ public class Logger {
   
   public static void setDebugging(Boolean value) {
     logger.setLevel(debugLevel);
+  }
+  
+  public static void severe(String message) {
+    logger.severe(prefix + message);
+  }
+  
+  public static void warning(String message) {
+    logger.warning(prefix + message);
   }
   
 }

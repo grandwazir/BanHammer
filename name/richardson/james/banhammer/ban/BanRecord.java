@@ -102,12 +102,12 @@ public class BanRecord {
     return BanRecord.database.find(BanRecord.class).findList();
   }
 
-  void destroy() {
-    BanRecord.database.delete(this);
+  private void setPlayer(String player) {
+    this.player = player;
   }
 
-  CachedBan toCachedBan() {
-    return new CachedBan(this.expiresAt, this.player, this.reason, this.createdBy, this.createdAt);
+  void destroy() {
+    BanRecord.database.delete(this);
   }
   
   long getCreatedAt() {
@@ -144,8 +144,8 @@ public class BanRecord {
     else return false;
   }
 
-  private void setPlayer(String player) {
-    this.player = player;
+  CachedBan toCachedBan() {
+    return new CachedBan(this.expiresAt, this.player, this.reason, this.createdBy, this.createdAt);
   }
 
 }

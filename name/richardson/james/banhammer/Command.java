@@ -95,24 +95,6 @@ public abstract class Command implements CommandExecutor {
   }
 
   /**
-   * Get the name of a CommandSender.
-   * 
-   * By default a CommandSender which is not a Player has no name. In this case
-   * the method will return the value of consoleName.
-   * 
-   * @param sender The CommandSender that you wish to resolve the name of.
-   * @return name Return the name of the Player or "Console" if no name available.
-   */
-  protected String getSenderName(CommandSender sender) {
-    if (sender instanceof ConsoleCommandSender) {
-      return Command.consoleName;
-    } else {
-      final Player player = (Player) sender;
-      return player.getName();
-    }
-  }
-  
-  /**
    * Broadcast a message to all players
    * 
    * @param message A string that you want every player to receive.
@@ -164,6 +146,24 @@ public abstract class Command implements CommandExecutor {
       throw new NoMatchingPlayerException(String.format(ChatColor.RED + BanHammer.getMessage("NoMatchingPlayerException"), playerName));
     } else {
       return (Player) this.plugin.getServer().getOfflinePlayer(playerName);
+    }
+  }
+  
+  /**
+   * Get the name of a CommandSender.
+   * 
+   * By default a CommandSender which is not a Player has no name. In this case
+   * the method will return the value of consoleName.
+   * 
+   * @param sender The CommandSender that you wish to resolve the name of.
+   * @return name Return the name of the Player or "Console" if no name available.
+   */
+  protected String getSenderName(CommandSender sender) {
+    if (sender instanceof ConsoleCommandSender) {
+      return Command.consoleName;
+    } else {
+      final Player player = (Player) sender;
+      return player.getName();
     }
   }    
 

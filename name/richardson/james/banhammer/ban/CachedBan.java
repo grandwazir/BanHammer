@@ -36,6 +36,14 @@ public final class CachedBan {
     this.createdAt = createdAt;
   }
 
+  public long getCreatedAt() {
+    return createdAt;
+  }
+
+  public String getCreatedBy() {
+    return createdBy;
+  }
+
   public long getExpiresAt() {
     return this.expiresAt;
   }
@@ -48,11 +56,13 @@ public final class CachedBan {
     return this.reason;
   }
 
+
   public Type getType() {
     if (this.expiresAt == 0)
       return Type.PERMENANT;
     else return Type.TEMPORARY;
   }
+
 
   public boolean isActive() {
     if (this.expiresAt == 0)
@@ -60,16 +70,6 @@ public final class CachedBan {
     else if (this.expiresAt > System.currentTimeMillis())
       return true;
     else return false;
-  }
-
-
-  public String getCreatedBy() {
-    return createdBy;
-  }
-
-
-  public long getCreatedAt() {
-    return createdAt;
   }
 
 }

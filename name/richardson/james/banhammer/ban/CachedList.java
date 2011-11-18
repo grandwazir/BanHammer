@@ -36,6 +36,27 @@ class CachedList {
     return instance;
   }
 
+  public void reload() {
+    this.unload();
+    this.load();
+  }
+
+  public void remove(String playerName) {
+    playerName = playerName.toLowerCase();
+    this.list.remove(playerName);
+    this.permenant.remove(playerName);
+    this.temporary.remove(playerName);
+  }
+
+  public int size() {
+    return this.list.size();
+  }
+
+  private void unload() {
+    this.permenant.clear();
+    this.temporary.clear();
+  }
+
   void add(String playerName) {
     playerName = playerName.toLowerCase();
     BanRecord ban = BanRecord.findFirst(playerName);
@@ -77,27 +98,6 @@ class CachedList {
     for (BanRecord ban : BanRecord.list())
       if (ban.isActive())
         this.list.put(ban.getPlayer().toLowerCase(), ban.getType());
-  }
-
-  public void reload() {
-    this.unload();
-    this.load();
-  }
-
-  public void remove(String playerName) {
-    playerName = playerName.toLowerCase();
-    this.list.remove(playerName);
-    this.permenant.remove(playerName);
-    this.temporary.remove(playerName);
-  }
-
-  public int size() {
-    return this.list.size();
-  }
-
-  private void unload() {
-    this.permenant.clear();
-    this.temporary.clear();
   }
 
 }

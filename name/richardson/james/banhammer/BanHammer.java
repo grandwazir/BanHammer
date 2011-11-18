@@ -73,6 +73,15 @@ public class BanHammer extends JavaPlugin {
     return list;
   }
 
+  /**
+   * This returns a handler to allow access to the BanHammer API.
+   * 
+   * @return A new BanHandler instance.
+   */
+  public BanHandler getHandler() {
+    return new BanHandler(this.getServer());
+  }
+
   @Override
   public void onDisable() {
     Logger.info(String.format(messages.getString("pluginDisabled"), this.desc.getName()));
@@ -127,15 +136,6 @@ public class BanHammer extends JavaPlugin {
 
   private void setupLocalisation() {
     BanHammer.messages = ResourceBundle.getBundle("name.richardson.james.banhammer.localisation.Messages", locale);
-  }
-
-  /**
-   * This returns a handler to allow access to the BanHammer API.
-   * 
-   * @return A new BanHandler instance.
-   */
-  public BanHandler getHandler() {
-    return new BanHandler(this.getServer());
   }
 
 }

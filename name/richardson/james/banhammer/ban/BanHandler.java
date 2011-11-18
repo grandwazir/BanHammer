@@ -78,6 +78,58 @@ public class BanHandler {
   }
   
   /**
+   * Get the details of any active bans associated with a player.
+   * 
+   * This will only return details of an active ban, one that is preventing them from logging into the server. 
+   * Previous bans will not be returned.
+   * 
+   * @param player - The player to check.
+   * @return a CachedBan with the details of the active ban or null if no ban exists.
+   */
+  public CachedBan getPlayerBan(Player player) {
+    BanRecord record = BanRecord.findFirst(player.getName());
+    if (record != null) {
+      return record.toCachedBan();
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Get the details of all bans associated with a specific player.
+   * 
+   * This will provide a CachedBan providing access to all the related data, but no ability to change or modify the actual record.
+   * 
+   * @param player - The player to lookup.
+   * @return a <List>CachedBan with the details of all bans associated with the player. If no bans are on record, the list will be empty.
+   */
+  public List<CachedBan> getPlayerBans(Player player) {
+    List<CachedBan> result = new ArrayList<CachedBan>(); 
+    for (BanRecord record : BanRecord.find(player.getName())) {
+      result.add(record.toCachedBan());
+    }
+    return result;
+  }
+  
+  /**
+   * Check to see if a player is currently banned.
+   * 
+   * This only checks to see if the player has an active ban, one that is preventing them from logging into the server. 
+   * Previous bans are not taken into account.
+   * 
+   * @param player - The player to check.
+   * @return true if the player is currently banned, false if they are not.
+   */
+  public boolean isPlayerBanned(Player player) {
+    final String playerName = player.getName();
+    if (this.cache.contains(playerName)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  
+  /**
    * Pardon a player and allow them to login once more.
    * 
    * @param player - The player that is to be pardoned.
@@ -98,58 +150,6 @@ public class BanHandler {
     } else { 
         return false;
     }
-  }
-
-  /**
-   * Check to see if a player is currently banned.
-   * 
-   * This only checks to see if the player has an active ban, one that is preventing them from logging into the server. 
-   * Previous bans are not taken into account.
-   * 
-   * @param player - The player to check.
-   * @return true if the player is currently banned, false if they are not.
-   */
-  public boolean isPlayerBanned(Player player) {
-    final String playerName = player.getName();
-    if (this.cache.contains(playerName)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-  
-  /**
-   * Get the details of any active bans associated with a player.
-   * 
-   * This will only return details of an active ban, one that is preventing them from logging into the server. 
-   * Previous bans will not be returned.
-   * 
-   * @param player - The player to check.
-   * @return a CachedBan with the details of the active ban or null if no ban exists.
-   */
-  public CachedBan getPlayerBan(Player player) {
-    BanRecord record = BanRecord.findFirst(player.getName());
-    if (record != null) {
-      return record.toCachedBan();
-    } else {
-      return null;
-    }
-  }
-  
-  /**
-   * Get the details of all bans associated with a specific player.
-   * 
-   * This will provide a CachedBan providing access to all the related data, but no ability to change or modify the actual record.
-   * 
-   * @param player - The player to lookup.
-   * @return a <List>CachedBan with the details of all bans associated with the player. If no bans are on record, the list will be empty.
-   */
-  public List<CachedBan> getPlayerBans(Player player) {
-    List<CachedBan> result = new ArrayList<CachedBan>(); 
-    for (BanRecord record : BanRecord.find(player.getName())) {
-      result.add(record.toCachedBan());
-    }
-    return result;
   }
   
 }
