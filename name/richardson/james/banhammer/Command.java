@@ -51,6 +51,7 @@ public abstract class Command implements CommandExecutor {
   public abstract void execute(CommandSender sender, Map<String, String> arguments) throws InvalidTimeUnitException, NotEnoughArgumentsException,
       NoMatchingPlayerException;
 
+  @Override
   public boolean onCommand(final CommandSender sender, final org.bukkit.command.Command command, final String label, final String[] args) {
     if (!this.authorisePlayer(sender)) {
       sender.sendMessage(ChatColor.RED + BanHammer.getMessage("PlayerNotAuthorisedException"));
