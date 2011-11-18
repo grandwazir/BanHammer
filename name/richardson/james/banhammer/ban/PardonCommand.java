@@ -28,7 +28,6 @@ import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class PardonCommand extends Command {
 
@@ -45,11 +44,10 @@ public class PardonCommand extends Command {
 
   @Override
   public void execute(final CommandSender sender, Map<String, String> arguments) throws NotEnoughArgumentsException, NoMatchingPlayerException {
-    Player player = this.getPlayer(arguments.get("playerName"), true);
     String senderName = this.getSenderName(sender);
     
-    if (!this.banHandler.pardonPlayer(player, senderName, true)) {
-      sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("playerIsNotBanned"), player.getName()));
+    if (!this.banHandler.pardonPlayer(arguments.get("playerName"), senderName, true)) {
+      sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("playerNotBanned"), arguments.get("playerName")));
     }
     
   }

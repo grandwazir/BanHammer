@@ -62,8 +62,7 @@ public class RecentCommand extends Command {
         Date createdDate = new Date(ban.getCreatedAt());
         DateFormat dateFormat = new SimpleDateFormat("MMM d");
         String createdAt = dateFormat.format(createdDate);
-        sender
-            .sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("banSummaryWithName"), ban.getPlayer(), ban.getCreatedBy(), createdAt));
+        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("banSummaryWithName"), ban.getPlayer(), ban.getCreatedBy(), createdAt));
         sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("banReason"), ban.getReason()));
         if (ban.getType().equals(BanRecord.Type.PERMENANT))
           sender.sendMessage(ChatColor.YELLOW + BanHammer.getMessage("banTimePermenant"));

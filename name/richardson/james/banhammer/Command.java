@@ -27,6 +27,7 @@ import name.richardson.james.banhammer.exceptions.NoMatchingPlayerException;
 import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
 
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -139,15 +140,17 @@ public abstract class Command implements CommandExecutor {
    * @return result Player that matches that name.
    * @throws NoMatchingPlayerException - If the number of matches is not equal to 1.
    */
-  protected Player getPlayer(String playerName, boolean offline) throws NoMatchingPlayerException {
+  protected Player getPlayer(String playerName) throws NoMatchingPlayerException {
     List<Player> playerList = this.plugin.getServer().matchPlayer(playerName);
     if (playerList.size() == 1) {
       return playerList.get(0);
-    } else if (playerList.size() > 1) {
-      throw new NoMatchingPlayerException(String.format(ChatColor.RED + BanHammer.getMessage("NoMatchingPlayerException"), playerName));
     } else {
-      return (Player) this.plugin.getServer().getOfflinePlayer(playerName);
+      throw new NoMatchingPlayerException(String.format(ChatColor.RED + BanHammer.getMessage("NoMatchingPlayerException"), playerName));
     }
+  }
+  
+  protected OfflinePlayer getOfflinePlayer(String playerName) {
+    return this.plugin.getServer().getOfflinePlayer(playerName);
   }
   
   /**

@@ -45,7 +45,7 @@ public class KickCommand extends Command {
   @Override
   public void execute(final CommandSender sender, Map<String, String> arguments) throws NotEnoughArgumentsException, NoMatchingPlayerException {
     String senderName = this.getSenderName(sender);
-    Player player = this.getPlayer(arguments.get("playerName"), false);
+    Player player = this.getPlayer(arguments.get("playerName"));
     player.kickPlayer(String.format(BanHammer.getMessage("kickedMessage"), arguments.get("reason")));
     Logger.info(String.format(BanHammer.getMessage("logPlayerKicked"), senderName, player.getName()));
     this.broadcastMessage(String.format(ChatColor.RED + BanHammer.getMessage("notifyKickedPlayer"), player.getName()));

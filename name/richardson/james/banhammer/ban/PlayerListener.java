@@ -36,7 +36,7 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
 
   @Override
   public void onPlayerLogin(PlayerLoginEvent event) {
-    String playerName = event.getPlayer().getDisplayName().toLowerCase();
+    String playerName = event.getPlayer().getName();
     String message;
 
     if (this.cache.contains(playerName)) {

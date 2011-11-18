@@ -46,18 +46,24 @@ public class BanCommand extends Command {
   }
 
   @Override
-  public void execute(final CommandSender sender, final Map<String, String> arguments) throws NotEnoughArgumentsException, NoMatchingPlayerException, InvalidTimeUnitException {
+  public void execute(final CommandSender sender, final Map<String, String> arguments) throws NotEnoughArgumentsException, InvalidTimeUnitException {
     final String senderName = this.getSenderName(sender);
-    final Player player = this.getPlayer(arguments.get("playerName"), true);
-    final String playerName = player.getName();
+    String playerName;
     final String reason = arguments.get("reason");
     Long expiryTime = (long) 0;
+    
+    try {
+      Player player = this.getPlayer(arguments.get("playerName"));
+      playerName = player.getName();
+    } catch (NoMatchingPlayerException e) {
+      playerName = arguments.get("playerName");
+    }
     
     if (arguments.containsKey("time")) {
       expiryTime = parseTime(arguments.get("time"));
     }
     
-    if (!this.banHandler.banPlayer(player, senderName, reason, expiryTime, true)) {
+    if (!this.banHandler.banPlayer(playerName, senderName, reason, expiryTime, true)) {
       sender.sendMessage(ChatColor.RED + String.format(BanHammer.getMessage("PlayerAlreadyBannedException"), playerName));
     }
     

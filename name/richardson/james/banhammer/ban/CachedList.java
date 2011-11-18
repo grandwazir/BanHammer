@@ -19,6 +19,9 @@ package name.richardson.james.banhammer.ban;
 
 import java.util.HashMap;
 
+import name.richardson.james.banhammer.BanHammer;
+import name.richardson.james.banhammer.util.Logger;
+
 
 class CachedList {
 
@@ -83,21 +86,23 @@ class CachedList {
     if (type.equals(BanRecord.Type.PERMENANT)) {
       if (!this.permenant.containsKey(playerName)) {
         this.add(playerName);
-        return new CachedBan((long) 0, playerName, this.permenant.get(playerName), playerName, (long) 0);
       }
+      return new CachedBan((long) 0, playerName, this.permenant.get(playerName), playerName, (long) 0);
     } else {
       if (!this.temporary.containsKey(playerName)) {
         this.add(playerName);
       }
       return new CachedBan(this.temporary.get(playerName), playerName, null, null, (long) 0);
     }
-    return null;
   }
 
   void load() {
-    for (BanRecord ban : BanRecord.list())
-      if (ban.isActive())
+    for (BanRecord ban : BanRecord.list()) {
+      if (ban.isActive()) {
         this.list.put(ban.getPlayer().toLowerCase(), ban.getType());
+      }
+    }
+    Logger.info(String.format(BanHammer.getMessage("bansLoaded"), this.size()));
   }
 
 }

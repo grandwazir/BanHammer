@@ -102,46 +102,62 @@ public class BanRecord {
     return BanRecord.database.find(BanRecord.class).findList();
   }
 
-  private void setPlayer(String player) {
-    this.player = player;
-  }
-
-  void destroy() {
-    BanRecord.database.delete(this);
-  }
-  
-  long getCreatedAt() {
+  public long getCreatedAt() {
     return this.createdAt;
   }
 
-  String getCreatedBy() {
+  public String getCreatedBy() {
     return this.createdBy;
   }
-
-  long getExpiresAt() {
+  
+  public long getExpiresAt() {
     return this.expiresAt;
   }
 
-  String getPlayer() {
+  public String getPlayer() {
     return this.player;
   }
 
-  String getReason() {
+  public String getReason() {
     return this.reason;
   }
 
-  Type getType() {
+  public Type getType() {
     if (this.expiresAt == 0)
       return Type.PERMENANT;
     else return Type.TEMPORARY;
   }
 
-  boolean isActive() {
+  public boolean isActive() {
     if (this.expiresAt == 0)
       return true;
     else if (this.expiresAt > System.currentTimeMillis())
       return true;
     else return false;
+  }
+  
+  public void setCreatedAt(long createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public void setCreatedBy(String createdBy) {
+    this.createdBy = createdBy;
+  }
+
+  public void setExpiresAt(long expiresAt) {
+    this.expiresAt = expiresAt;
+  }
+
+  public void setReason(String reason) {
+    this.reason = reason;
+  }
+
+  public void setPlayer(String player) {
+    this.player = player;
+  }
+
+  void destroy() {
+    BanRecord.database.delete(this);
   }
 
   CachedBan toCachedBan() {

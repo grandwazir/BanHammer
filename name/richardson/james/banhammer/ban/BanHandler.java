@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import name.richardson.james.banhammer.BanHammer;
+import name.richardson.james.banhammer.util.BanHammerTime;
 import name.richardson.james.banhammer.util.Logger;
 
 import org.bukkit.ChatColor;
@@ -44,17 +45,23 @@ public class BanHandler {
    * 
    * If the player is online when they are banned they will be kicked.
    * 
-   * @param player The player that is to be banned
+   * @param playerName The name player that is to be banned
    * @param senderName The name of the person doing the banning. If called by a plugin without user intervention this should be the name of the plugin.
    * @param reason The reason why the player has been banned.
    * @param expiryTime A Long representing how many milliseconds the player should be banned for. For permanent bans you should specify 0.
    * @param notify if true, players are not notified of the ban.
    * @return true if the ban has been successfully created. Will return false if the player is already banned.
    */
-  public boolean banPlayer(Player player, String senderName, String reason, Long expiryTime, boolean notify) {
-    final String playerName = player.getName();
+  public boolean banPlayer(String playerName, String senderName, String reason, Long banLength, boolean notify) {
+    final Player player = server.getPlayerExact(playerName);
+    Long expiryTime = (long) 0;
+    
+    if (banLength != 0) {
+      expiryTime = banLength + System.currentTimeMillis();
+    }
+    
     if (!this.cache.contains(playerName)) {
-      BanRecord.create(playerName, senderName, expiryTime + System.currentTimeMillis(), System.currentTimeMillis(), reason);
+      BanRecord.create(playerName, senderName, expiryTime, System.currentTimeMillis(), reason);
       this.cache.add(playerName);
       
       if (notify) {
@@ -62,15 +69,16 @@ public class BanHandler {
           server.broadcastMessage(String.format(ChatColor.RED + BanHammer.getMessage("notifyBannedPlayer"), playerName));
         } else {
           server.broadcastMessage(String.format(ChatColor.RED + BanHammer.getMessage("notifyTempBannedPlayer"), playerName));
+          server.broadcastMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("notifyTempBannedPlayerLength"), BanHammerTime.millisToLongDHMS(banLength)));
         }
         server.broadcastMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("notifyReason"), reason));
       }
       
-      if (player.isOnline()) {
+      if (player != null) {
         player.kickPlayer(String.format(BanHammer.getMessage("kickedMessage"), reason));
       }
 
-      Logger.info(String.format(BanHammer.getMessage("logPlayerBanned")));
+      Logger.info(String.format(BanHammer.getMessage("logPlayerBanned"), senderName, playerName));
       return true;
     } else {
       return false;
@@ -83,11 +91,11 @@ public class BanHandler {
    * This will only return details of an active ban, one that is preventing them from logging into the server. 
    * Previous bans will not be returned.
    * 
-   * @param player - The player to check.
+   * @param player - The name of the player to check (search is case insensitive).
    * @return a CachedBan with the details of the active ban or null if no ban exists.
    */
-  public CachedBan getPlayerBan(Player player) {
-    BanRecord record = BanRecord.findFirst(player.getName());
+  public CachedBan getPlayerBan(String playerName) {
+    BanRecord record = BanRecord.findFirst(playerName);
     if (record != null) {
       return record.toCachedBan();
     } else {
@@ -100,12 +108,12 @@ public class BanHandler {
    * 
    * This will provide a CachedBan providing access to all the related data, but no ability to change or modify the actual record.
    * 
-   * @param player - The player to lookup.
-   * @return a <List>CachedBan with the details of all bans associated with the player. If no bans are on record, the list will be empty.
+   * @param player The name of the player to check (search is case insensitive).
+   * @return a list with the details of all bans associated with the player. If no bans are on record, the list will be empty.
    */
-  public List<CachedBan> getPlayerBans(Player player) {
+  public List<CachedBan> getPlayerBans(String playerName) {
     List<CachedBan> result = new ArrayList<CachedBan>(); 
-    for (BanRecord record : BanRecord.find(player.getName())) {
+    for (BanRecord record : BanRecord.find(playerName)) {
       result.add(record.toCachedBan());
     }
     return result;
@@ -117,11 +125,10 @@ public class BanHandler {
    * This only checks to see if the player has an active ban, one that is preventing them from logging into the server. 
    * Previous bans are not taken into account.
    * 
-   * @param player - The player to check.
+   * @param player The name of the player to check.
    * @return true if the player is currently banned, false if they are not.
    */
-  public boolean isPlayerBanned(Player player) {
-    final String playerName = player.getName();
+  public boolean isPlayerBanned(String playerName) {
     if (this.cache.contains(playerName)) {
       return true;
     } else {
@@ -137,14 +144,13 @@ public class BanHandler {
    * @param notify - if true, players are not notified of the ban.
    * @return true if the ban has been successfully repealed. Will return false if the player was not banned in the first place.
    */
-  public boolean pardonPlayer(Player player, String senderName, Boolean notify) {
-    final String playerName = player.getName();
-    if (this.isPlayerBanned(player)) {
+  public boolean pardonPlayer(String playerName, String senderName, Boolean notify) {
+    if (this.isPlayerBanned(playerName)) {
         this.cache.remove(playerName);
         BanRecord.findFirst(playerName).destroy();
         Logger.info(String.format(BanHammer.getMessage("logPlayerPardoned"), senderName, playerName));
         if (notify) {
-          server.broadcastMessage(String.format(ChatColor.GREEN + BanHammer.getMessage("playerPardoned")));
+          server.broadcastMessage(String.format(ChatColor.GREEN + BanHammer.getMessage("playerPardoned"), playerName));
         }
         return true;
     } else { 
