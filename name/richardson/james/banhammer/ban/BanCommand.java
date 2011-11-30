@@ -59,6 +59,8 @@ public class BanCommand extends Command {
     
     if (!this.banHandler.banPlayer(playerName, senderName, reason, expiryTime, true)) {
       sender.sendMessage(ChatColor.RED + String.format(BanHammer.getMessage("player-already-banned"), playerName));
+    } else {
+      sender.sendMessage(ChatColor.RED + String.format(BanHammer.getMessage("player-banned"), playerName));
     }
     
   }

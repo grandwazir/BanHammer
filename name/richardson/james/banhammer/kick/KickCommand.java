@@ -50,8 +50,8 @@ public class KickCommand extends Command {
     if (player != null) {
       player.kickPlayer(String.format(BanHammer.getMessage("player-kicked-notification"), arguments.get("reason")));
       Logger.info(String.format(BanHammer.getMessage("player-kicked"), senderName, playerName));
-      this.broadcastMessage(String.format(ChatColor.RED + BanHammer.getMessage("broadcast-player-kicked"), playerName));
-      this.broadcastMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("broadcast-player-banned-reason"), arguments.get("reason")));
+      this.plugin.getServer().broadcast(String.format(ChatColor.RED + BanHammer.getMessage("broadcast-player-kicked"), playerName), "banhammer.notify");
+      this.plugin.getServer().broadcast(String.format(ChatColor.YELLOW + BanHammer.getMessage("broadcast-player-banned-reason"), arguments.get("reason")), "banhammer.notify");
     } else {
       Logger.info(String.format(BanHammer.getMessage("no-player-found"), playerName));
     }

@@ -99,14 +99,6 @@ public abstract class Command implements CommandExecutor {
     return false;
   }
 
-  /**
-   * Broadcast a message to all players
-   * 
-   * @param message A string that you want every player to receive.
-   */
-  protected void broadcastMessage(String message) {
-    plugin.getServer().broadcastMessage(message);
-  }
   
   /**
    * Combine an array of strings together into one string. 
