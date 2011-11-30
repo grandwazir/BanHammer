@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import name.richardson.james.banhammer.BanHammer;
+import name.richardson.james.banhammer.BanHammerPlugin;
 import name.richardson.james.banhammer.Command;
 import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
 import name.richardson.james.banhammer.util.Logger;
@@ -31,7 +31,7 @@ import org.bukkit.command.CommandSender;
 
 public class ReloadCommand extends Command {
   
-  public ReloadCommand(final BanHammer plugin) {
+  public ReloadCommand(final BanHammerPlugin plugin) {
     super(plugin);
     this.name = "reload";
     this.description = "reload the ban cache";
@@ -45,9 +45,9 @@ public class ReloadCommand extends Command {
     CachedList.getInstance().reload();
     String cacheSize = Integer.toString(CachedList.getInstance().size());
 
-    Logger.info(String.format(BanHammer.getMessage("logCacheReloaded"), senderName));
-    Logger.info(String.format(BanHammer.getMessage("bansLoaded"), cacheSize));
-    sender.sendMessage(String.format(ChatColor.GREEN + BanHammer.getMessage("notifyCachedReloaded"), cacheSize));
+    Logger.info(String.format(BanHammerPlugin.getMessage("logCacheReloaded"), senderName));
+    Logger.info(String.format(BanHammerPlugin.getMessage("bansLoaded"), cacheSize));
+    sender.sendMessage(String.format(ChatColor.GREEN + BanHammerPlugin.getMessage("notifyCachedReloaded"), cacheSize));
   }
 
   @Override

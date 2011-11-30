@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import name.richardson.james.banhammer.BanHammer;
+import name.richardson.james.banhammer.BanHammerPlugin;
 import name.richardson.james.banhammer.Command;
 import name.richardson.james.banhammer.exceptions.NoMatchingPlayerException;
 import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
@@ -33,7 +33,7 @@ public class PardonCommand extends Command {
 
   private BanHandler banHandler;
 
-  public PardonCommand(final BanHammer plugin) {
+  public PardonCommand(final BanHammerPlugin plugin) {
     super(plugin);
     this.name = "pardon";
     this.description = "pardon a player";
@@ -47,7 +47,7 @@ public class PardonCommand extends Command {
     String senderName = this.getSenderName(sender);
     
     if (!this.banHandler.pardonPlayer(arguments.get("playerName"), senderName, true)) {
-      sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("playerNotBanned"), arguments.get("playerName")));
+      sender.sendMessage(String.format(ChatColor.YELLOW + BanHammerPlugin.getMessage("playerNotBanned"), arguments.get("playerName")));
     }
     
   }

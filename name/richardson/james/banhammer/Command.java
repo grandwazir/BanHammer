@@ -41,11 +41,11 @@ public abstract class Command implements CommandExecutor {
   protected String name;
   protected String[] optionalArgumentKeys;
   protected String permission;
-  protected BanHammer plugin;
+  protected BanHammerPlugin plugin;
   protected Integer requiredArgumentCount;
   protected String usage;
 
-  public Command(BanHammer plugin) {
+  public Command(BanHammerPlugin plugin) {
     this.plugin = plugin;
   }
   
@@ -55,7 +55,7 @@ public abstract class Command implements CommandExecutor {
   @Override
   public boolean onCommand(final CommandSender sender, final org.bukkit.command.Command command, final String label, final String[] args) {
     if (!this.authorisePlayer(sender)) {
-      sender.sendMessage(ChatColor.RED + BanHammer.getMessage("PlayerNotAuthorisedException"));
+      sender.sendMessage(ChatColor.RED + BanHammerPlugin.getMessage("PlayerNotAuthorisedException"));
       return true;
     }
     
@@ -65,11 +65,11 @@ public abstract class Command implements CommandExecutor {
       final Map<String, String> parsedArguments = this.parseArguments(arguments);  
       this.execute(sender, parsedArguments);
     } catch (final NotEnoughArgumentsException e) {
-      sender.sendMessage(ChatColor.RED + BanHammer.getMessage("NotEnoughArgumentsException"));
+      sender.sendMessage(ChatColor.RED + BanHammerPlugin.getMessage("NotEnoughArgumentsException"));
       sender.sendMessage(ChatColor.YELLOW + this.usage);
     } catch (InvalidTimeUnitException e) {
-      sender.sendMessage(ChatColor.RED + BanHammer.getMessage("InvalidTimeUnitException"));
-      sender.sendMessage(ChatColor.YELLOW + BanHammer.getMessage("ValidTimeUnits"));
+      sender.sendMessage(ChatColor.RED + BanHammerPlugin.getMessage("InvalidTimeUnitException"));
+      sender.sendMessage(ChatColor.YELLOW + BanHammerPlugin.getMessage("ValidTimeUnits"));
     } catch (NoMatchingPlayerException e) {
       sender.sendMessage(e.getMessage());
     }
@@ -145,7 +145,7 @@ public abstract class Command implements CommandExecutor {
     if (playerList.size() == 1) {
       return playerList.get(0);
     } else {
-      throw new NoMatchingPlayerException(String.format(ChatColor.RED + BanHammer.getMessage("NoMatchingPlayerException"), playerName));
+      throw new NoMatchingPlayerException(String.format(ChatColor.RED + BanHammerPlugin.getMessage("NoMatchingPlayerException"), playerName));
     }
   }
   

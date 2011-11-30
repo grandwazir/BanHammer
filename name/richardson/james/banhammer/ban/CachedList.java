@@ -19,7 +19,7 @@ package name.richardson.james.banhammer.ban;
 
 import java.util.HashMap;
 
-import name.richardson.james.banhammer.BanHammer;
+import name.richardson.james.banhammer.BanHammerPlugin;
 import name.richardson.james.banhammer.util.Logger;
 
 
@@ -102,7 +102,7 @@ class CachedList {
         this.list.put(ban.getPlayer().toLowerCase(), ban.getType());
       }
     }
-    Logger.info(String.format(BanHammer.getMessage("bansLoaded"), this.size()));
+    Logger.info(String.format(BanHammerPlugin.getMessage("bansLoaded"), this.size()));
   }
 
 }

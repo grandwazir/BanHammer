@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import name.richardson.james.banhammer.BanHammer;
+import name.richardson.james.banhammer.BanHammerPlugin;
 import name.richardson.james.banhammer.Command;
 import name.richardson.james.banhammer.exceptions.NoMatchingPlayerException;
 import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
@@ -33,7 +33,7 @@ import org.bukkit.entity.Player;
 
 public class KickCommand extends Command {
 
-  public KickCommand(BanHammer plugin) {
+  public KickCommand(BanHammerPlugin plugin) {
     super(plugin);
     this.name = "kick";
     this.description = "kick a player from the server";
@@ -46,10 +46,10 @@ public class KickCommand extends Command {
   public void execute(final CommandSender sender, Map<String, String> arguments) throws NotEnoughArgumentsException, NoMatchingPlayerException {
     String senderName = this.getSenderName(sender);
     Player player = this.getPlayer(arguments.get("playerName"));
-    player.kickPlayer(String.format(BanHammer.getMessage("kickedMessage"), arguments.get("reason")));
-    Logger.info(String.format(BanHammer.getMessage("logPlayerKicked"), senderName, player.getName()));
-    this.broadcastMessage(String.format(ChatColor.RED + BanHammer.getMessage("notifyKickedPlayer"), player.getName()));
-    this.broadcastMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("notifyReason"), arguments.get("reason")));
+    player.kickPlayer(String.format(BanHammerPlugin.getMessage("kickedMessage"), arguments.get("reason")));
+    Logger.info(String.format(BanHammerPlugin.getMessage("logPlayerKicked"), senderName, player.getName()));
+    this.broadcastMessage(String.format(ChatColor.RED + BanHammerPlugin.getMessage("notifyKickedPlayer"), player.getName()));
+    this.broadcastMessage(String.format(ChatColor.YELLOW + BanHammerPlugin.getMessage("notifyReason"), arguments.get("reason")));
   }
 
   @Override

@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import name.richardson.james.banhammer.BanHammer;
+import name.richardson.james.banhammer.BanHammerPlugin;
 import name.richardson.james.banhammer.Command;
 import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
 
@@ -36,7 +36,7 @@ public class CheckCommand extends Command {
 
   private CachedList cache;
 
-  public CheckCommand(final BanHammer plugin) {
+  public CheckCommand(final BanHammerPlugin plugin) {
     super(plugin);
     this.name = "check";
     this.description = "check to see if a player is banned or not";
@@ -52,16 +52,16 @@ public class CheckCommand extends Command {
     if (this.cache.contains(playerName)) {
       BanRecord ban = BanRecord.findFirst(playerName);
       if (ban.getType().equals(BanRecord.Type.PERMENANT)) {
-        sender.sendMessage(String.format(ChatColor.RED + BanHammer.getMessage("notifyBannedPlayer"), playerName));
-        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("notifyReason"), ban.getReason()));
+        sender.sendMessage(String.format(ChatColor.RED + BanHammerPlugin.getMessage("notifyBannedPlayer"), playerName));
+        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammerPlugin.getMessage("notifyReason"), ban.getReason()));
       } else if (ban.getType().equals(BanRecord.Type.TEMPORARY)) {
         Date expiryDate = new Date(ban.getExpiresAt());
         DateFormat dateFormat = new SimpleDateFormat("MMM d H:mm a ");
         String expiryDateString = dateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")";
-        sender.sendMessage(String.format(ChatColor.RED + BanHammer.getMessage("notifyTempBannedPlayer"), playerName));
-        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("notifyExpiresOn"), expiryDateString));
+        sender.sendMessage(String.format(ChatColor.RED + BanHammerPlugin.getMessage("notifyTempBannedPlayer"), playerName));
+        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammerPlugin.getMessage("notifyExpiresOn"), expiryDateString));
       }
-    } else sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("playerNotBanned"), playerName));
+    } else sender.sendMessage(String.format(ChatColor.YELLOW + BanHammerPlugin.getMessage("playerNotBanned"), playerName));
 
   }
 
