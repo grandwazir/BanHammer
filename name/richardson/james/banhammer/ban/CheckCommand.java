@@ -31,6 +31,7 @@ import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.PermissionDefault;
 
 public class CheckCommand extends Command {
 
@@ -38,30 +39,36 @@ public class CheckCommand extends Command {
 
   public CheckCommand(final BanHammer plugin) {
     super(plugin);
-    this.name = "check";
-    this.description = "check to see if a player is banned or not";
-    this.usage = "/bh check [name]";
+    this.name = BanHammer.getMessage("check-command-name");
+    this.description = BanHammer.getMessage("check-command-description");
+    this.usage = BanHammer.getMessage("check-command-usage");
     this.permission = "banhammer." + this.name;
+    registerPermission(this.permission, this.description, PermissionDefault.OP);
     this.cache = CachedList.getInstance();
   }
 
   @Override
   public void execute(final CommandSender sender, Map<String, String> arguments) throws NotEnoughArgumentsException {
     String playerName = arguments.get("playerName");
-
+    
     if (this.cache.contains(playerName)) {
       BanRecord ban = BanRecord.findFirst(playerName);
-      if (ban.getType().equals(BanRecord.Type.PERMENANT)) {
-        sender.sendMessage(String.format(ChatColor.RED + BanHammer.getMessage("notifyBannedPlayer"), playerName));
-        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("notifyReason"), ban.getReason()));
-      } else if (ban.getType().equals(BanRecord.Type.TEMPORARY)) {
-        Date expiryDate = new Date(ban.getExpiresAt());
-        DateFormat dateFormat = new SimpleDateFormat("MMM d H:mm a ");
-        String expiryDateString = dateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")";
-        sender.sendMessage(String.format(ChatColor.RED + BanHammer.getMessage("notifyTempBannedPlayer"), playerName));
-        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("notifyExpiresOn"), expiryDateString));
+      sender.sendMessage(String.format(ChatColor.RED + BanHammer.getMessage("ban-history-detail"), playerName, ban.getCreatedBy()));
+      sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-reason"), ban.getReason()));
+      switch (ban.getType()) {
+        case PERMENANT:
+          sender.sendMessage(ChatColor.YELLOW + BanHammer.getMessage("ban-history-time-permanent:"));
+          break;
+        case TEMPORARY:
+          Date expiryDate = new Date(ban.getExpiresAt());
+          DateFormat dateFormat = new SimpleDateFormat("MMM d H:mm a ");
+          String expiryDateString = dateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")";
+          sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-expires-on"), expiryDateString));
+          break;
       }
-    } else sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("playerNotBanned"), playerName));
+    } else {
+      sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("player-not-banned"), playerName));
+    }
 
   }
 

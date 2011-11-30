@@ -41,7 +41,7 @@ public class BanCommand extends Command {
     this.description = BanHammer.getMessage("ban-command-description");
     this.usage = BanHammer.getMessage("ban-command-usage");
     this.permission = "banhammer." + this.name;
-    registerPermission(this.name, this.description, PermissionDefault.OP);
+    registerPermission(this.permission, this.description, PermissionDefault.OP);
     this.banHandler = plugin.getHandler();
   }
 
