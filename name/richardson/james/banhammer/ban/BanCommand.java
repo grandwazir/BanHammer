@@ -20,8 +20,6 @@ package name.richardson.james.banhammer.ban;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import name.richardson.james.banhammer.BanHammer;
 import name.richardson.james.banhammer.Command;
@@ -58,7 +56,7 @@ public class BanCommand extends Command {
       expiryTime = BanHammerTime.parseTime(arguments.get("time"));
     }
     
-    if (expiryTime > this.plugin.getMaximumTemporaryBan() && !sender.hasPermission("banhammer.ban.permenant")) {
+    if ((expiryTime > this.plugin.getMaximumTemporaryBan()) && sender.hasPermission("banhammer.ban.permenant")) {
       String humanTime = BanHammerTime.millisToLongDHMS(this.plugin.getMaximumTemporaryBan());
       sender.sendMessage(ChatColor.RED + String.format(BanHammer.getMessage("ban-too-long"), humanTime));
       return;

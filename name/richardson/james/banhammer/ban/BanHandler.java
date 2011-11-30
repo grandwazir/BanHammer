@@ -66,11 +66,13 @@ public class BanHandler {
       if (notify) {
         if (expiryTime.intValue() == 0) {
           server.broadcast(String.format(ChatColor.RED + BanHammer.getMessage("broadcast-player-banned"), playerName), "banhammer.notify");
+          server.broadcast(String.format(ChatColor.YELLOW + BanHammer.getMessage("broadcast-player-banned-reason"), reason), "banhammer.notify");
         } else {
           server.broadcast(String.format(ChatColor.RED + BanHammer.getMessage("broadcast-player-banned-temporarily"), playerName), "banhammer.notify");
+          server.broadcast(String.format(ChatColor.YELLOW + BanHammer.getMessage("broadcast-player-banned-reason"), reason), "banhammer.notify");
           server.broadcast(String.format(ChatColor.YELLOW + BanHammer.getMessage("broadcast-player-banned-temporarily-length"), BanHammerTime.millisToLongDHMS(banLength)), "banhammer.notify");
         }
-        server.broadcast(String.format(ChatColor.YELLOW + BanHammer.getMessage("broadcast-player-banned-reason"), reason), "banhammer.notify");
+        
       }
       
       if (player != null) {

@@ -42,13 +42,13 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
     if (this.cache.contains(playerName)) {
       CachedBan ban = this.cache.get(playerName);
       if (ban.isActive()) {
-        if (ban.getType().equals(BanRecord.Type.PERMENANT))
-          message = String.format(BanHammer.getMessage("disallowLoginPermanently"), ban.getReason());
-        else {
+        if (ban.getType().equals(BanRecord.Type.PERMENANT)) {
+          message = String.format(BanHammer.getMessage("disallow-login-permanently"), ban.getReason());
+        } else {
           Date expiryDate = new Date(ban.getExpiresAt());
           DateFormat dateFormat = new SimpleDateFormat("MMM d H:mm a ");
           String expiryDateString = dateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")";
-          message = String.format(BanHammer.getMessage("disallowLoginTemporarily"), expiryDateString);
+          message = String.format(BanHammer.getMessage("disallow-login-temporarily"), expiryDateString);
         }
         event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message);
       } else this.cache.remove(playerName);

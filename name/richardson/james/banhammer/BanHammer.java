@@ -19,7 +19,6 @@ package name.richardson.james.banhammer;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -59,7 +58,6 @@ public class BanHammer extends JavaPlugin {
   private PlayerListener playerListener;
   private PluginDescriptionFile desc;
   private PluginManager pm;
-  private YamlConfiguration configuration;
 
   public BanHammer() {
     this.cm = new CommandManager();
@@ -106,7 +104,7 @@ public class BanHammer extends JavaPlugin {
       this.setupDatabase();
       this.setupListeners();
       this.setupCommands();
-      configuration = this.loadConfiguration();
+      this.loadConfiguration();
     } catch (Exception e) {
       Logger.severe(e.getMessage());
       e.printStackTrace();
@@ -117,7 +115,7 @@ public class BanHammer extends JavaPlugin {
     Logger.info(String.format(BanHammer.getMessage("plugin-enabled"), this.desc.getFullName()));
   }
 
-  private YamlConfiguration loadConfiguration() throws IOException {
+  private void loadConfiguration() throws IOException {
     Logger.info(BanHammer.getMessage("loading-configuration"));
     File configurationFile = new File(this.getDataFolder() + "/config.yml");
     YamlConfiguration configuration = YamlConfiguration.loadConfiguration(configurationFile);
@@ -126,7 +124,6 @@ public class BanHammer extends JavaPlugin {
     configuration.options().copyDefaults(true);
     configuration.save(configurationFile);
     this.maximumTemporaryBan = BanHammerTime.parseTime(configuration.getString("maximum-temporary-ban"));
-    return configuration;
   }
 
   private void setupCommands() {
