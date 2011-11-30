@@ -27,7 +27,6 @@ import java.util.Map;
 
 import name.richardson.james.banhammer.BanHammer;
 import name.richardson.james.banhammer.Command;
-import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -48,7 +47,7 @@ public class CheckCommand extends Command {
   }
 
   @Override
-  public void execute(final CommandSender sender, Map<String, String> arguments) throws NotEnoughArgumentsException {
+  public void execute(final CommandSender sender, Map<String, String> arguments) {
     String playerName = arguments.get("playerName");
     
     if (this.cache.contains(playerName)) {
@@ -73,14 +72,14 @@ public class CheckCommand extends Command {
   }
 
   @Override
-  protected Map<String, String> parseArguments(List<String> arguments) throws NotEnoughArgumentsException {
+  protected Map<String, String> parseArguments(List<String> arguments) {
     Map<String, String> m = new HashMap<String, String>();
     arguments.remove(0);
 
     try {
       m.put("playerName", arguments.get(0));
     } catch (IndexOutOfBoundsException e) {
-      throw new NotEnoughArgumentsException();
+      throw new IllegalArgumentException();
     }
 
     return m;

@@ -19,6 +19,7 @@ package name.richardson.james.banhammer.ban;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -26,57 +27,64 @@ import java.util.Map;
 
 import name.richardson.james.banhammer.BanHammer;
 import name.richardson.james.banhammer.Command;
-import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
 import name.richardson.james.banhammer.util.BanHammerTime;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.PermissionDefault;
 
 public class HistoryCommand extends Command {
 
   public HistoryCommand(final BanHammer plugin) {
     super(plugin);
-    this.name = "history";
-    this.description = "show all the bans associated with a player";
-    this.usage = "/bh history [name]";
+    this.name = BanHammer.getMessage("history-command-name");
+    this.description = BanHammer.getMessage("history-command-description");
+    this.usage = BanHammer.getMessage("history-command-usage");
     this.permission = "banhammer." + this.name;
+    registerPermission(this.permission, this.description, PermissionDefault.OP);
   }
 
   @Override
-  public void execute(final CommandSender sender, Map<String, String> arguments) throws NotEnoughArgumentsException {
-    String playerName = arguments.get("playerName");
-
-    List<BanRecord> bans = BanRecord.find(playerName);
-    if (bans.isEmpty())
-      sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("noBanHistory"), playerName));
-    else {
-      String banTotal = Integer.toString(bans.size());
-      sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + BanHammer.getMessage("banHistorySummary"), playerName, banTotal));
+  public void execute(final CommandSender sender, Map<String, String> arguments) {
+    final String playerName = arguments.get("playerName");
+    final List<BanRecord> bans = BanRecord.find(playerName);
+    
+    if (bans.isEmpty()) {
+      sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-none"), playerName));
+    } else {
+      sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + BanHammer.getMessage("ban-history-summary"), playerName, bans.size()));
       for (BanRecord ban : bans) {
         Date createdDate = new Date(ban.getCreatedAt());
         DateFormat dateFormat = new SimpleDateFormat("MMM d");
         String createdAt = dateFormat.format(createdDate);
-        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("banSummary"), ban.getCreatedBy(), createdAt));
-        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("banReason"), ban.getReason()));
-        if (ban.getType().equals(BanRecord.Type.PERMENANT))
-          sender.sendMessage(ChatColor.YELLOW + BanHammer.getMessage("banTimePermenant"));
-        else if (ban.getType().equals(BanRecord.Type.TEMPORARY)) {
-          Long banTime = ban.getExpiresAt() - ban.getCreatedAt();
-          sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("banTimeTemporary"), BanHammerTime.millisToLongDHMS(banTime)));
+        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-detail:"), ban.getCreatedBy(), createdAt));
+        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-reason:"), ban.getReason()));
+        switch (ban.getType()) {
+          case PERMENANT:
+            sender.sendMessage(ChatColor.YELLOW + BanHammer.getMessage("ban-history-time-permanent:"));
+            break;
+          case TEMPORARY:
+            Date expiryDate = new Date(ban.getExpiresAt());
+            DateFormat expiryDateFormat = new SimpleDateFormat("MMM d H:mm a ");
+            String expiryDateString = expiryDateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")";
+            Long banTime = ban.getExpiresAt() - ban.getCreatedAt();
+            sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-time-temporary:"), BanHammerTime.millisToLongDHMS(banTime)));
+            sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-expires-on:"), expiryDateString));
+            break;
         }
       }
     }
   }
 
   @Override
-  protected Map<String, String> parseArguments(List<String> arguments) throws NotEnoughArgumentsException {
+  protected Map<String, String> parseArguments(List<String> arguments) {
     Map<String, String> m = new HashMap<String, String>();
     arguments.remove(0);
 
     try {
       m.put("playerName", arguments.get(0));
     } catch (IndexOutOfBoundsException e) {
-      throw new NotEnoughArgumentsException();
+      throw new IllegalArgumentException();
     }
 
     return m;
