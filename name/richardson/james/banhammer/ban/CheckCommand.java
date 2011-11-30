@@ -17,10 +17,6 @@
  ******************************************************************************/
 package name.richardson.james.banhammer.ban;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,19 +48,8 @@ public class CheckCommand extends Command {
     
     if (this.cache.contains(playerName)) {
       BanRecord ban = BanRecord.findFirst(playerName);
-      sender.sendMessage(String.format(ChatColor.RED + BanHammer.getMessage("ban-history-detail"), playerName, ban.getCreatedBy()));
-      sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-reason"), ban.getReason()));
-      switch (ban.getType()) {
-        case PERMENANT:
-          sender.sendMessage(ChatColor.YELLOW + BanHammer.getMessage("ban-history-time-permanent:"));
-          break;
-        case TEMPORARY:
-          Date expiryDate = new Date(ban.getExpiresAt());
-          DateFormat dateFormat = new SimpleDateFormat("MMM d H:mm a ");
-          String expiryDateString = dateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")";
-          sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-expires-on"), expiryDateString));
-          break;
-      }
+      sender.sendMessage(String.format(ChatColor.RED + BanHammer.getMessage("player-banned:"), playerName));
+      sendBanDetail(sender, ban);
     } else {
       sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("player-not-banned"), playerName));
     }

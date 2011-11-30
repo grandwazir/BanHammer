@@ -17,12 +17,17 @@
  ******************************************************************************/
 package name.richardson.james.banhammer;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
+import name.richardson.james.banhammer.ban.BanRecord;
+import name.richardson.james.banhammer.util.BanHammerTime;
 
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -39,17 +44,15 @@ public abstract class Command implements CommandExecutor {
   
   protected String description;
   protected String name;
-  protected String[] optionalArgumentKeys;
   protected String permission;
   protected BanHammer plugin;
-  protected Integer requiredArgumentCount;
   protected String usage;
 
   public Command(BanHammer plugin) {
     this.plugin = plugin;
   }
   
-  public abstract void execute(CommandSender sender, Map<String, String> arguments) throws NotEnoughArgumentsException;
+  public abstract void execute(CommandSender sender, Map<String, String> arguments);
 
   @Override
   public boolean onCommand(final CommandSender sender, final org.bukkit.command.Command command, final String label, final String[] args) {
@@ -170,11 +173,32 @@ public abstract class Command implements CommandExecutor {
     }
   }    
 
+  protected void sendBanDetail(CommandSender sender, BanRecord ban) {
+    Date createdDate = new Date(ban.getCreatedAt());
+    DateFormat dateFormat = new SimpleDateFormat("MMM d");
+    String createdAt = dateFormat.format(createdDate);
+    sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-detail:"), ban.getCreatedBy(), createdAt));
+    sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-reason:"), ban.getReason()));
+    switch (ban.getType()) {
+      case PERMENANT:
+        sender.sendMessage(ChatColor.YELLOW + BanHammer.getMessage("ban-history-time-permanent:"));
+        break;
+      case TEMPORARY:
+        Date expiryDate = new Date(ban.getExpiresAt());
+        DateFormat expiryDateFormat = new SimpleDateFormat("MMM d H:mm a ");
+        String expiryDateString = expiryDateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")";
+        Long banTime = ban.getExpiresAt() - ban.getCreatedAt();
+        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-time-temporary:"), BanHammerTime.millisToLongDHMS(banTime)));
+        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-expires-on:"), expiryDateString));
+        break;
+    }
+  }
+  
   protected void registerPermission(final String name, final String description, final PermissionDefault defaultValue) {
     final Permission permission = new Permission(name, description, defaultValue);
     plugin.getServer().getPluginManager().addPermission(permission);
   }
   
-  protected abstract Map<String, String> parseArguments(List<String> arguments) throws NotEnoughArgumentsException;
+  protected abstract Map<String, String> parseArguments(List<String> arguments);
 
 }

@@ -23,48 +23,48 @@ import java.util.Map;
 
 import name.richardson.james.banhammer.BanHammer;
 import name.richardson.james.banhammer.Command;
-import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
 import name.richardson.james.banhammer.util.Logger;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionDefault;
 
 public class KickCommand extends Command {
 
   public KickCommand(BanHammer plugin) {
     super(plugin);
-    this.name = "kick";
-    this.description = "kick a player from the server";
-    this.usage = "/kick [name] <reason>";
+    this.name = BanHammer.getMessage("kick-command-name");
+    this.description = BanHammer.getMessage("kick-command-description");
+    this.usage = BanHammer.getMessage("kick-command-usage");
     this.permission = "banhammer." + this.name;
-    this.requiredArgumentCount = 2;
+    registerPermission(this.permission, this.description, PermissionDefault.OP);
   }
 
   @Override
-  public void execute(final CommandSender sender, Map<String, String> arguments) throws NotEnoughArgumentsException {
+  public void execute(final CommandSender sender, Map<String, String> arguments) {
     final Player player = this.getPlayer(arguments.get("playerName"));
     final String playerName = arguments.get("playerName");
     final String senderName = this.getSenderName(sender);
     
     if (player != null) {
-      player.kickPlayer(String.format(BanHammer.getMessage("kickedMessage"), arguments.get("reason")));
-      Logger.info(String.format(BanHammer.getMessage("logPlayerKicked"), senderName, playerName));
-      this.broadcastMessage(String.format(ChatColor.RED + BanHammer.getMessage("notifyKickedPlayer"), playerName));
-      this.broadcastMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("notifyReason"), arguments.get("reason")));
+      player.kickPlayer(String.format(BanHammer.getMessage("player-kicked-notification"), arguments.get("reason")));
+      Logger.info(String.format(BanHammer.getMessage("player-kicked"), senderName, playerName));
+      this.broadcastMessage(String.format(ChatColor.RED + BanHammer.getMessage("broadcast-player-kicked"), playerName));
+      this.broadcastMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("broadcast-player-banned-reason"), arguments.get("reason")));
     } else {
-      Logger.info(String.format(BanHammer.getMessage("NoPlayerFound"), playerName));
+      Logger.info(String.format(BanHammer.getMessage("no-player-found"), playerName));
     }
   }
 
   @Override
-  protected Map<String, String> parseArguments(List<String> arguments) throws NotEnoughArgumentsException {
+  protected Map<String, String> parseArguments(List<String> arguments) {
     Map<String, String> m = new HashMap<String, String>();
     try {
       m.put("playerName", arguments.remove(0));
       m.put("reason", this.combineString(arguments, " "));
     } catch (IndexOutOfBoundsException e) {
-      throw new NotEnoughArgumentsException();
+      throw new IllegalArgumentException();
     }
     return m;
   }

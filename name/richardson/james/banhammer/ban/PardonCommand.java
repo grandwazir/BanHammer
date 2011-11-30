@@ -23,10 +23,9 @@ import java.util.Map;
 
 import name.richardson.james.banhammer.BanHammer;
 import name.richardson.james.banhammer.Command;
-import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.PermissionDefault;
 
 public class PardonCommand extends Command {
 
@@ -34,31 +33,32 @@ public class PardonCommand extends Command {
 
   public PardonCommand(final BanHammer plugin) {
     super(plugin);
-    this.name = "pardon";
-    this.description = "pardon a player";
-    this.usage = "/pardon [name]";
+    this.name = BanHammer.getMessage("pardon-command-name");
+    this.description = BanHammer.getMessage("pardon-command-description");
+    this.usage = BanHammer.getMessage("pardon-command-usage");
     this.permission = "banhammer." + this.name;
+    registerPermission(this.permission, this.description, PermissionDefault.OP);
     this.banHandler = plugin.getHandler();
   }
 
   @Override
-  public void execute(final CommandSender sender, Map<String, String> arguments) throws NotEnoughArgumentsException {
+  public void execute(final CommandSender sender, Map<String, String> arguments) {
     String senderName = this.getSenderName(sender);
     
     if (!this.banHandler.pardonPlayer(arguments.get("playerName"), senderName, true)) {
-      sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("playerNotBanned"), arguments.get("playerName")));
+      sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("player-not-banned"), arguments.get("playerName")));
     }
     
   }
 
   @Override
-  protected Map<String, String> parseArguments(List<String> arguments) throws NotEnoughArgumentsException {
+  protected Map<String, String> parseArguments(List<String> arguments) {
     Map<String, String> m = new HashMap<String, String>();
 
     try {
       m.put("playerName", arguments.get(0));
     } catch (IndexOutOfBoundsException e) {
-      throw new NotEnoughArgumentsException();
+      throw new IllegalArgumentException();
     }
 
     return m;

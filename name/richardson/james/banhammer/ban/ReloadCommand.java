@@ -23,35 +23,35 @@ import java.util.Map;
 
 import name.richardson.james.banhammer.BanHammer;
 import name.richardson.james.banhammer.Command;
-import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
 import name.richardson.james.banhammer.util.Logger;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.PermissionDefault;
 
 public class ReloadCommand extends Command {
   
   public ReloadCommand(final BanHammer plugin) {
     super(plugin);
-    this.name = "reload";
-    this.description = "reload the ban cache";
-    this.usage = "/bh reload";
+    this.name = BanHammer.getMessage("reload-command-name");
+    this.description = BanHammer.getMessage("reload-command-description");
+    this.usage = BanHammer.getMessage("reload-command-usage");
     this.permission = "banhammer." + this.name;
+    registerPermission(this.permission, this.description, PermissionDefault.OP);
   }
 
   @Override
-  public void execute(final CommandSender sender, Map<String, String> arguments) throws NotEnoughArgumentsException {
+  public void execute(final CommandSender sender, Map<String, String> arguments) {
     String senderName = this.getSenderName(sender);
     CachedList.getInstance().reload();
     String cacheSize = Integer.toString(CachedList.getInstance().size());
-
-    Logger.info(String.format(BanHammer.getMessage("logCacheReloaded"), senderName));
-    Logger.info(String.format(BanHammer.getMessage("bansLoaded"), cacheSize));
-    sender.sendMessage(String.format(ChatColor.GREEN + BanHammer.getMessage("notifyCachedReloaded"), cacheSize));
+    Logger.info(String.format(BanHammer.getMessage("cache-reloaded"), senderName));
+    Logger.info(String.format(BanHammer.getMessage("bans-loaded"), cacheSize));
+    sender.sendMessage(String.format(ChatColor.GREEN + BanHammer.getMessage("cache-reloaded"), cacheSize));
   }
 
   @Override
-  protected Map<String, String> parseArguments(List<String> arguments) throws NotEnoughArgumentsException {
+  protected Map<String, String> parseArguments(List<String> arguments) {
     return Collections.emptyMap();
   }
 
