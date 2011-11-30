@@ -84,7 +84,7 @@ public class BanHammerPlugin extends JavaPlugin {
 
   @Override
   public void onDisable() {
-    Logger.info(String.format(messages.getString("pluginDisabled"), this.desc.getName()));
+    Logger.info(String.format(messages.getString("plugin-disabled"), this.desc.getName()));
   }
 
   @Override
@@ -104,7 +104,7 @@ public class BanHammerPlugin extends JavaPlugin {
       return;
     }
 
-    Logger.info(String.format(BanHammerPlugin.getMessage("pluginEnabled"), this.desc.getFullName()));
+    Logger.info(String.format(BanHammerPlugin.getMessage("plugin-enabled"), this.desc.getFullName()));
   }
 
   private void setupCommands() {
@@ -123,7 +123,7 @@ public class BanHammerPlugin extends JavaPlugin {
     try {
       this.getDatabase().find(BanRecord.class).findRowCount();
     } catch (PersistenceException ex) {
-      Logger.warning(BanHammerPlugin.getMessage("noDatabase"));
+      Logger.warning(BanHammerPlugin.getMessage("no-database"));
       this.installDDL();
     }
     BanRecord.setDatabase(this.getDatabase());

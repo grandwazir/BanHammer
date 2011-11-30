@@ -55,7 +55,7 @@ public abstract class Command implements CommandExecutor {
   @Override
   public boolean onCommand(final CommandSender sender, final org.bukkit.command.Command command, final String label, final String[] args) {
     if (!this.authorisePlayer(sender)) {
-      sender.sendMessage(ChatColor.RED + BanHammerPlugin.getMessage("PlayerNotAuthorisedException"));
+      sender.sendMessage(ChatColor.RED + BanHammerPlugin.getMessage("no-permission"));
       return true;
     }
     
@@ -65,11 +65,11 @@ public abstract class Command implements CommandExecutor {
       final Map<String, String> parsedArguments = this.parseArguments(arguments);  
       this.execute(sender, parsedArguments);
     } catch (final NotEnoughArgumentsException e) {
-      sender.sendMessage(ChatColor.RED + BanHammerPlugin.getMessage("NotEnoughArgumentsException"));
+      sender.sendMessage(ChatColor.RED + BanHammerPlugin.getMessage("not-enough-arguments"));
       sender.sendMessage(ChatColor.YELLOW + this.usage);
     } catch (InvalidTimeUnitException e) {
-      sender.sendMessage(ChatColor.RED + BanHammerPlugin.getMessage("InvalidTimeUnitException"));
-      sender.sendMessage(ChatColor.YELLOW + BanHammerPlugin.getMessage("ValidTimeUnits"));
+      sender.sendMessage(ChatColor.RED + BanHammerPlugin.getMessage("invalid-time-format"));
+      sender.sendMessage(ChatColor.YELLOW + BanHammerPlugin.getMessage("invalid-time-format-hint"));
     }
     return true;
   }
@@ -122,7 +122,7 @@ public abstract class Command implements CommandExecutor {
       reason.deleteCharAt(reason.length() - seperator.length());
       return reason.toString();
     } catch (StringIndexOutOfBoundsException e) {
-      return "No reason provided";
+      return BanHammerPlugin.getMessage("default-reason");
     }
   }
   

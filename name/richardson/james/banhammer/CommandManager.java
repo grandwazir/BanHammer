@@ -35,8 +35,8 @@ public class CommandManager implements CommandExecutor {
         this.commands.get(args[0]).onCommand(sender, command, label, args);
         return true;
       }
-    sender.sendMessage(ChatColor.RED + "Invalid command!");
-    sender.sendMessage(ChatColor.YELLOW + "/bh [check|history|purge|recent|reload]");
+    sender.sendMessage(ChatColor.RED + BanHammerPlugin.getMessage("invalid-command"));
+    sender.sendMessage(ChatColor.YELLOW + BanHammerPlugin.getMessage("invalid-command-hint"));
     return true;
   }
 
