@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import name.richardson.james.banhammer.BanHammerPlugin;
+import name.richardson.james.banhammer.BanHammer;
 import name.richardson.james.banhammer.Command;
 import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
 import name.richardson.james.banhammer.util.BanHammerTime;
@@ -34,7 +34,7 @@ import org.bukkit.command.CommandSender;
 
 public class HistoryCommand extends Command {
 
-  public HistoryCommand(final BanHammerPlugin plugin) {
+  public HistoryCommand(final BanHammer plugin) {
     super(plugin);
     this.name = "history";
     this.description = "show all the bans associated with a player";
@@ -48,21 +48,21 @@ public class HistoryCommand extends Command {
 
     List<BanRecord> bans = BanRecord.find(playerName);
     if (bans.isEmpty())
-      sender.sendMessage(String.format(ChatColor.YELLOW + BanHammerPlugin.getMessage("noBanHistory"), playerName));
+      sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("noBanHistory"), playerName));
     else {
       String banTotal = Integer.toString(bans.size());
-      sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + BanHammerPlugin.getMessage("banHistorySummary"), playerName, banTotal));
+      sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + BanHammer.getMessage("banHistorySummary"), playerName, banTotal));
       for (BanRecord ban : bans) {
         Date createdDate = new Date(ban.getCreatedAt());
         DateFormat dateFormat = new SimpleDateFormat("MMM d");
         String createdAt = dateFormat.format(createdDate);
-        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammerPlugin.getMessage("banSummary"), ban.getCreatedBy(), createdAt));
-        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammerPlugin.getMessage("banReason"), ban.getReason()));
+        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("banSummary"), ban.getCreatedBy(), createdAt));
+        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("banReason"), ban.getReason()));
         if (ban.getType().equals(BanRecord.Type.PERMENANT))
-          sender.sendMessage(ChatColor.YELLOW + BanHammerPlugin.getMessage("banTimePermenant"));
+          sender.sendMessage(ChatColor.YELLOW + BanHammer.getMessage("banTimePermenant"));
         else if (ban.getType().equals(BanRecord.Type.TEMPORARY)) {
           Long banTime = ban.getExpiresAt() - ban.getCreatedAt();
-          sender.sendMessage(String.format(ChatColor.YELLOW + BanHammerPlugin.getMessage("banTimeTemporary"), BanHammerTime.millisToLongDHMS(banTime)));
+          sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("banTimeTemporary"), BanHammerTime.millisToLongDHMS(banTime)));
         }
       }
     }

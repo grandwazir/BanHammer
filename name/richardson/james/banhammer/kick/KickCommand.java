@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import name.richardson.james.banhammer.BanHammerPlugin;
+import name.richardson.james.banhammer.BanHammer;
 import name.richardson.james.banhammer.Command;
 import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
 import name.richardson.james.banhammer.util.Logger;
@@ -32,7 +32,7 @@ import org.bukkit.entity.Player;
 
 public class KickCommand extends Command {
 
-  public KickCommand(BanHammerPlugin plugin) {
+  public KickCommand(BanHammer plugin) {
     super(plugin);
     this.name = "kick";
     this.description = "kick a player from the server";
@@ -48,12 +48,12 @@ public class KickCommand extends Command {
     final String senderName = this.getSenderName(sender);
     
     if (player != null) {
-      player.kickPlayer(String.format(BanHammerPlugin.getMessage("kickedMessage"), arguments.get("reason")));
-      Logger.info(String.format(BanHammerPlugin.getMessage("logPlayerKicked"), senderName, playerName));
-      this.broadcastMessage(String.format(ChatColor.RED + BanHammerPlugin.getMessage("notifyKickedPlayer"), playerName));
-      this.broadcastMessage(String.format(ChatColor.YELLOW + BanHammerPlugin.getMessage("notifyReason"), arguments.get("reason")));
+      player.kickPlayer(String.format(BanHammer.getMessage("kickedMessage"), arguments.get("reason")));
+      Logger.info(String.format(BanHammer.getMessage("logPlayerKicked"), senderName, playerName));
+      this.broadcastMessage(String.format(ChatColor.RED + BanHammer.getMessage("notifyKickedPlayer"), playerName));
+      this.broadcastMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("notifyReason"), arguments.get("reason")));
     } else {
-      Logger.info(String.format(BanHammerPlugin.getMessage("NoPlayerFound"), playerName));
+      Logger.info(String.format(BanHammer.getMessage("NoPlayerFound"), playerName));
     }
   }
 

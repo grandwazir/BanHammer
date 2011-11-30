@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import name.richardson.james.banhammer.BanHammerPlugin;
+import name.richardson.james.banhammer.BanHammer;
 
 import org.bukkit.event.player.PlayerLoginEvent;
 
@@ -43,12 +43,12 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
       CachedBan ban = this.cache.get(playerName);
       if (ban.isActive()) {
         if (ban.getType().equals(BanRecord.Type.PERMENANT))
-          message = String.format(BanHammerPlugin.getMessage("disallowLoginPermanently"), ban.getReason());
+          message = String.format(BanHammer.getMessage("disallowLoginPermanently"), ban.getReason());
         else {
           Date expiryDate = new Date(ban.getExpiresAt());
           DateFormat dateFormat = new SimpleDateFormat("MMM d H:mm a ");
           String expiryDateString = dateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")";
-          message = String.format(BanHammerPlugin.getMessage("disallowLoginTemporarily"), expiryDateString);
+          message = String.format(BanHammer.getMessage("disallowLoginTemporarily"), expiryDateString);
         }
         event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message);
       } else this.cache.remove(playerName);

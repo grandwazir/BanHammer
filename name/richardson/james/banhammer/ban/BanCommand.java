@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import name.richardson.james.banhammer.BanHammerPlugin;
+import name.richardson.james.banhammer.BanHammer;
 import name.richardson.james.banhammer.Command;
 import name.richardson.james.banhammer.exceptions.InvalidTimeUnitException;
 import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
@@ -36,7 +36,7 @@ public class BanCommand extends Command {
 
   private final BanHandler banHandler;
 
-  public BanCommand(final BanHammerPlugin plugin) {
+  public BanCommand(final BanHammer plugin) {
     super(plugin);
     this.name = "ban";
     this.description = "ban a player from the server";
@@ -58,7 +58,7 @@ public class BanCommand extends Command {
     }
     
     if (!this.banHandler.banPlayer(playerName, senderName, reason, expiryTime, true)) {
-      sender.sendMessage(ChatColor.RED + String.format(BanHammerPlugin.getMessage("PlayerAlreadyBannedException"), playerName));
+      sender.sendMessage(ChatColor.RED + String.format(BanHammer.getMessage("PlayerAlreadyBannedException"), playerName));
     }
     
   }

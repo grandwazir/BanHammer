@@ -20,7 +20,7 @@ package name.richardson.james.banhammer.ban;
 import java.util.ArrayList;
 import java.util.List;
 
-import name.richardson.james.banhammer.BanHammerPlugin;
+import name.richardson.james.banhammer.BanHammer;
 import name.richardson.james.banhammer.util.BanHammerTime;
 import name.richardson.james.banhammer.util.Logger;
 
@@ -65,19 +65,19 @@ public class BanHandler {
       this.cache.add(playerName);
       if (notify) {
         if (expiryTime.intValue() == 0) {
-          server.broadcastMessage(String.format(ChatColor.RED + BanHammerPlugin.getMessage("notifyBannedPlayer"), playerName));
+          server.broadcastMessage(String.format(ChatColor.RED + BanHammer.getMessage("notifyBannedPlayer"), playerName));
         } else {
-          server.broadcastMessage(String.format(ChatColor.RED + BanHammerPlugin.getMessage("notifyTempBannedPlayer"), playerName));
-          server.broadcastMessage(String.format(ChatColor.YELLOW + BanHammerPlugin.getMessage("notifyTempBannedPlayerLength"), BanHammerTime.millisToLongDHMS(banLength)));
+          server.broadcastMessage(String.format(ChatColor.RED + BanHammer.getMessage("notifyTempBannedPlayer"), playerName));
+          server.broadcastMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("notifyTempBannedPlayerLength"), BanHammerTime.millisToLongDHMS(banLength)));
         }
-        server.broadcastMessage(String.format(ChatColor.YELLOW + BanHammerPlugin.getMessage("notifyReason"), reason));
+        server.broadcastMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("notifyReason"), reason));
       }
       
       if (player != null) {
-        player.kickPlayer(String.format(BanHammerPlugin.getMessage("kickedMessage"), reason));
+        player.kickPlayer(String.format(BanHammer.getMessage("kickedMessage"), reason));
       }
 
-      Logger.info(String.format(BanHammerPlugin.getMessage("logPlayerBanned"), senderName, playerName));
+      Logger.info(String.format(BanHammer.getMessage("logPlayerBanned"), senderName, playerName));
       return true;
     } else {
       return false;
@@ -147,9 +147,9 @@ public class BanHandler {
     if (this.isPlayerBanned(playerName)) {
         this.cache.remove(playerName);
         BanRecord.findFirst(playerName).destroy();
-        Logger.info(String.format(BanHammerPlugin.getMessage("logPlayerPardoned"), senderName, playerName));
+        Logger.info(String.format(BanHammer.getMessage("logPlayerPardoned"), senderName, playerName));
         if (notify) {
-          server.broadcastMessage(String.format(ChatColor.GREEN + BanHammerPlugin.getMessage("playerPardoned"), playerName));
+          server.broadcastMessage(String.format(ChatColor.GREEN + BanHammer.getMessage("playerPardoned"), playerName));
         }
         return true;
     } else { 

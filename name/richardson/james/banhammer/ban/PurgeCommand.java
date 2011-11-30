@@ -20,7 +20,7 @@ package name.richardson.james.banhammer.ban;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import name.richardson.james.banhammer.BanHammerPlugin;
+import name.richardson.james.banhammer.BanHammer;
 import name.richardson.james.banhammer.Command;
 import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
 import name.richardson.james.banhammer.util.Logger;
@@ -30,7 +30,7 @@ import org.bukkit.command.CommandSender;
 
 public class PurgeCommand extends Command {
 
-  public PurgeCommand(final BanHammerPlugin plugin) {
+  public PurgeCommand(final BanHammer plugin) {
     super(plugin);
     this.name = "purge";
     this.description = "remove all ban history associated with a player";
@@ -45,12 +45,12 @@ public class PurgeCommand extends Command {
 
     List<BanRecord> bans = BanRecord.find(playerName);
     if (bans.isEmpty())
-      sender.sendMessage(String.format(ChatColor.YELLOW + BanHammerPlugin.getMessage("noBanHistory"), playerName));
+      sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("noBanHistory"), playerName));
     else {
       String banTotal = Integer.toString(bans.size());
       BanRecord.destroy(bans);
-      Logger.info(String.format(BanHammerPlugin.getMessage("logPlayerPurged"), senderName, playerName));
-      sender.sendMessage(String.format(ChatColor.GREEN + BanHammerPlugin.getMessage("notifyPurgedPlayer"), banTotal, playerName));
+      Logger.info(String.format(BanHammer.getMessage("logPlayerPurged"), senderName, playerName));
+      sender.sendMessage(String.format(ChatColor.GREEN + BanHammer.getMessage("notifyPurgedPlayer"), banTotal, playerName));
     }
   }
 
