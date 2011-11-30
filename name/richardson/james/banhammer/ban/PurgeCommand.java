@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import name.richardson.james.banhammer.BanHammerPlugin;
 import name.richardson.james.banhammer.Command;
-import name.richardson.james.banhammer.exceptions.NoMatchingPlayerException;
 import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
 import name.richardson.james.banhammer.util.Logger;
 
@@ -40,7 +39,7 @@ public class PurgeCommand extends Command {
   }
 
   @Override
-  public void execute(final CommandSender sender, Map<String, String> arguments) throws NotEnoughArgumentsException, NoMatchingPlayerException {
+  public void execute(final CommandSender sender, Map<String, String> arguments) throws NotEnoughArgumentsException {
     String playerName = arguments.get("playerName");
     String senderName = this.getSenderName(sender);
 

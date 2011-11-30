@@ -26,8 +26,8 @@ import java.util.regex.Pattern;
 import name.richardson.james.banhammer.BanHammerPlugin;
 import name.richardson.james.banhammer.Command;
 import name.richardson.james.banhammer.exceptions.InvalidTimeUnitException;
-import name.richardson.james.banhammer.exceptions.NoMatchingPlayerException;
 import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -47,17 +47,11 @@ public class BanCommand extends Command {
 
   @Override
   public void execute(final CommandSender sender, final Map<String, String> arguments) throws NotEnoughArgumentsException, InvalidTimeUnitException {
+    long expiryTime = 0;
+    final Player player = this.getPlayer(arguments.get("playerName"));
+    final String playerName = player != null ? player.getName() : arguments.get("playerName");
     final String senderName = this.getSenderName(sender);
-    String playerName;
     final String reason = arguments.get("reason");
-    Long expiryTime = (long) 0;
-    
-    try {
-      Player player = this.getPlayer(arguments.get("playerName"));
-      playerName = player.getName();
-    } catch (NoMatchingPlayerException e) {
-      playerName = arguments.get("playerName");
-    }
     
     if (arguments.containsKey("time")) {
       expiryTime = parseTime(arguments.get("time"));

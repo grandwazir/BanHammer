@@ -23,7 +23,6 @@ import java.util.Map;
 
 import name.richardson.james.banhammer.BanHammerPlugin;
 import name.richardson.james.banhammer.Command;
-import name.richardson.james.banhammer.exceptions.NoMatchingPlayerException;
 import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
 import name.richardson.james.banhammer.util.Logger;
 
@@ -43,13 +42,19 @@ public class KickCommand extends Command {
   }
 
   @Override
-  public void execute(final CommandSender sender, Map<String, String> arguments) throws NotEnoughArgumentsException, NoMatchingPlayerException {
-    String senderName = this.getSenderName(sender);
-    Player player = this.getPlayer(arguments.get("playerName"));
-    player.kickPlayer(String.format(BanHammerPlugin.getMessage("kickedMessage"), arguments.get("reason")));
-    Logger.info(String.format(BanHammerPlugin.getMessage("logPlayerKicked"), senderName, player.getName()));
-    this.broadcastMessage(String.format(ChatColor.RED + BanHammerPlugin.getMessage("notifyKickedPlayer"), player.getName()));
-    this.broadcastMessage(String.format(ChatColor.YELLOW + BanHammerPlugin.getMessage("notifyReason"), arguments.get("reason")));
+  public void execute(final CommandSender sender, Map<String, String> arguments) throws NotEnoughArgumentsException {
+    final Player player = this.getPlayer(arguments.get("playerName"));
+    final String playerName = arguments.get("playerName");
+    final String senderName = this.getSenderName(sender);
+    
+    if (player != null) {
+      player.kickPlayer(String.format(BanHammerPlugin.getMessage("kickedMessage"), arguments.get("reason")));
+      Logger.info(String.format(BanHammerPlugin.getMessage("logPlayerKicked"), senderName, playerName));
+      this.broadcastMessage(String.format(ChatColor.RED + BanHammerPlugin.getMessage("notifyKickedPlayer"), playerName));
+      this.broadcastMessage(String.format(ChatColor.YELLOW + BanHammerPlugin.getMessage("notifyReason"), arguments.get("reason")));
+    } else {
+      Logger.info(String.format(BanHammerPlugin.getMessage("NoPlayerFound"), playerName));
+    }
   }
 
   @Override

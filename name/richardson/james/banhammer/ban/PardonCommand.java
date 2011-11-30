@@ -23,7 +23,6 @@ import java.util.Map;
 
 import name.richardson.james.banhammer.BanHammerPlugin;
 import name.richardson.james.banhammer.Command;
-import name.richardson.james.banhammer.exceptions.NoMatchingPlayerException;
 import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
 
 import org.bukkit.ChatColor;
@@ -43,7 +42,7 @@ public class PardonCommand extends Command {
   }
 
   @Override
-  public void execute(final CommandSender sender, Map<String, String> arguments) throws NotEnoughArgumentsException, NoMatchingPlayerException {
+  public void execute(final CommandSender sender, Map<String, String> arguments) throws NotEnoughArgumentsException {
     String senderName = this.getSenderName(sender);
     
     if (!this.banHandler.pardonPlayer(arguments.get("playerName"), senderName, true)) {

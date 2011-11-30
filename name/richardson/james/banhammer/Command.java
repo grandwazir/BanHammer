@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import name.richardson.james.banhammer.exceptions.InvalidTimeUnitException;
-import name.richardson.james.banhammer.exceptions.NoMatchingPlayerException;
 import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
 
 import org.bukkit.ChatColor;
@@ -49,8 +48,7 @@ public abstract class Command implements CommandExecutor {
     this.plugin = plugin;
   }
   
-  public abstract void execute(CommandSender sender, Map<String, String> arguments) throws InvalidTimeUnitException, NotEnoughArgumentsException,
-      NoMatchingPlayerException;
+  public abstract void execute(CommandSender sender, Map<String, String> arguments) throws InvalidTimeUnitException, NotEnoughArgumentsException;
 
   @Override
   public boolean onCommand(final CommandSender sender, final org.bukkit.command.Command command, final String label, final String[] args) {
@@ -70,8 +68,6 @@ public abstract class Command implements CommandExecutor {
     } catch (InvalidTimeUnitException e) {
       sender.sendMessage(ChatColor.RED + BanHammerPlugin.getMessage("InvalidTimeUnitException"));
       sender.sendMessage(ChatColor.YELLOW + BanHammerPlugin.getMessage("ValidTimeUnits"));
-    } catch (NoMatchingPlayerException e) {
-      sender.sendMessage(e.getMessage());
     }
     return true;
   }
@@ -140,13 +136,12 @@ public abstract class Command implements CommandExecutor {
    * @return result Player that matches that name.
    * @throws NoMatchingPlayerException - If the number of matches is not equal to 1.
    */
-  protected Player getPlayer(String playerName) throws NoMatchingPlayerException {
+  protected Player getPlayer(String playerName) {
     List<Player> playerList = this.plugin.getServer().matchPlayer(playerName);
     if (playerList.size() == 1) {
       return playerList.get(0);
-    } else {
-      throw new NoMatchingPlayerException(String.format(ChatColor.RED + BanHammerPlugin.getMessage("NoMatchingPlayerException"), playerName));
     }
+    return null;
   }
   
   protected OfflinePlayer getOfflinePlayer(String playerName) {
