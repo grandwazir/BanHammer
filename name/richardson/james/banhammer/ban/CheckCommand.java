@@ -48,7 +48,7 @@ public class CheckCommand extends Command {
     
     if (this.cache.contains(playerName)) {
       BanRecord ban = BanRecord.findFirst(playerName);
-      sender.sendMessage(String.format(ChatColor.RED + BanHammer.getMessage("player-banned:"), playerName));
+      sender.sendMessage(String.format(ChatColor.RED + BanHammer.getMessage("player-banned"), playerName));
       sendBanDetail(sender, ban);
     } else {
       sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("player-not-banned"), playerName));

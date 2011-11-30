@@ -169,19 +169,19 @@ public abstract class Command implements CommandExecutor {
     Date createdDate = new Date(ban.getCreatedAt());
     DateFormat dateFormat = new SimpleDateFormat("MMM d");
     String createdAt = dateFormat.format(createdDate);
-    sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-detail:"), ban.getCreatedBy(), createdAt));
-    sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-reason:"), ban.getReason()));
+    sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-detail"), ban.getCreatedBy(), createdAt));
+    sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-reason"), ban.getReason()));
     switch (ban.getType()) {
       case PERMENANT:
-        sender.sendMessage(ChatColor.YELLOW + BanHammer.getMessage("ban-history-time-permanent:"));
+        sender.sendMessage(ChatColor.YELLOW + BanHammer.getMessage("ban-history-time-permanent"));
         break;
       case TEMPORARY:
         Date expiryDate = new Date(ban.getExpiresAt());
         DateFormat expiryDateFormat = new SimpleDateFormat("MMM d H:mm a ");
         String expiryDateString = expiryDateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")";
         Long banTime = ban.getExpiresAt() - ban.getCreatedAt();
-        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-time-temporary:"), BanHammerTime.millisToLongDHMS(banTime)));
-        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-expires-on:"), expiryDateString));
+        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-time-temporary"), BanHammerTime.millisToLongDHMS(banTime)));
+        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-expires-on"), expiryDateString));
         break;
     }
   }

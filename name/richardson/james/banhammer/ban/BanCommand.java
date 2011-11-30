@@ -58,8 +58,9 @@ public class BanCommand extends Command {
       expiryTime = BanHammerTime.parseTime(arguments.get("time"));
     }
     
-    if (expiryTime > BanHammerTime.parseTime("1w") && sender.hasPermission("banhammer.ban.temporary")) {
-      sender.sendMessage(ChatColor.RED + String.format(BanHammer.getMessage("ban-too-long")));
+    if (expiryTime > this.plugin.getMaximumTemporaryBan() && !sender.hasPermission("banhammer.ban.permenant")) {
+      String humanTime = BanHammerTime.millisToLongDHMS(this.plugin.getMaximumTemporaryBan());
+      sender.sendMessage(ChatColor.RED + String.format(BanHammer.getMessage("ban-too-long"), humanTime));
       return;
     }
     

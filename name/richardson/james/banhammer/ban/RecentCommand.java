@@ -51,10 +51,10 @@ public class RecentCommand extends Command {
 
     List<BanRecord> bans = BanRecord.findRecent(maxRows);
     if (bans.isEmpty())
-      sender.sendMessage(ChatColor.YELLOW + BanHammer.getMessage("noRecentBans"));
+      sender.sendMessage(ChatColor.YELLOW + BanHammer.getMessage("ban-recent-none"));
     else {
       String banTotal = Integer.toString(bans.size());
-      sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + BanHammer.getMessage("recentBanCount"), banTotal));
+      sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + BanHammer.getMessage("ban-recent-summary"), banTotal));
       for (BanRecord ban : bans) {
         sendBanDetail(sender, ban);
       }
