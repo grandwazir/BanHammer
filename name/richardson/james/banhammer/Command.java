@@ -31,6 +31,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
 public abstract class Command implements CommandExecutor {
 
@@ -166,6 +168,11 @@ public abstract class Command implements CommandExecutor {
     }
   }    
 
+  protected void registerPermission(final String name, final String description, final PermissionDefault defaultValue) {
+    final Permission permission = new Permission(name, description, defaultValue);
+    plugin.getServer().getPluginManager().addPermission(permission);
+  }
+  
   protected abstract Map<String, String> parseArguments(List<String> arguments) throws NotEnoughArgumentsException, InvalidTimeUnitException;
 
 }
