@@ -37,6 +37,7 @@ public class CommandManager implements CommandExecutor {
       }
     sender.sendMessage(ChatColor.RED + BanHammer.getMessage("invalid-command"));
     sender.sendMessage(ChatColor.YELLOW + BanHammer.getMessage("invalid-command-hint"));
+    sender.sendMessage(ChatColor.YELLOW + BanHammer.getMessage("invalid-command-hint2"));
     return true;
   }
 

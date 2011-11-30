@@ -65,19 +65,19 @@ public class BanHandler {
       this.cache.add(playerName);
       if (notify) {
         if (expiryTime.intValue() == 0) {
-          server.broadcastMessage(String.format(ChatColor.RED + BanHammer.getMessage("notifyBannedPlayer"), playerName));
+          server.broadcastMessage(String.format(ChatColor.RED + BanHammer.getMessage("broadcast-player-banned"), playerName));
         } else {
-          server.broadcastMessage(String.format(ChatColor.RED + BanHammer.getMessage("notifyTempBannedPlayer"), playerName));
-          server.broadcastMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("notifyTempBannedPlayerLength"), BanHammerTime.millisToLongDHMS(banLength)));
+          server.broadcastMessage(String.format(ChatColor.RED + BanHammer.getMessage("broadcast-player-banned-temporarily"), playerName));
+          server.broadcastMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("broadcast-player-banned-temporarily-length"), BanHammerTime.millisToLongDHMS(banLength)));
         }
-        server.broadcastMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("notifyReason"), reason));
+        server.broadcastMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("broadcast-player-banned-reason"), reason));
       }
       
       if (player != null) {
-        player.kickPlayer(String.format(BanHammer.getMessage("kickedMessage"), reason));
+        player.kickPlayer(String.format(BanHammer.getMessage("player-kicked-notification"), reason));
       }
 
-      Logger.info(String.format(BanHammer.getMessage("logPlayerBanned"), senderName, playerName));
+      Logger.info(String.format(BanHammer.getMessage("player-banned"), senderName, playerName));
       return true;
     } else {
       return false;
@@ -147,9 +147,9 @@ public class BanHandler {
     if (this.isPlayerBanned(playerName)) {
         this.cache.remove(playerName);
         BanRecord.findFirst(playerName).destroy();
-        Logger.info(String.format(BanHammer.getMessage("logPlayerPardoned"), senderName, playerName));
+        Logger.info(String.format(BanHammer.getMessage("player-pardoned"), senderName, playerName));
         if (notify) {
-          server.broadcastMessage(String.format(ChatColor.GREEN + BanHammer.getMessage("playerPardoned"), playerName));
+          server.broadcastMessage(String.format(ChatColor.GREEN + BanHammer.getMessage("broadcast-player-pardoned"), playerName));
         }
         return true;
     } else { 

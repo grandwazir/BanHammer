@@ -102,7 +102,7 @@ class CachedList {
         this.list.put(ban.getPlayer().toLowerCase(), ban.getType());
       }
     }
-    Logger.info(String.format(BanHammer.getMessage("bansLoaded"), this.size()));
+    Logger.info(String.format(BanHammer.getMessage("bans-loaded"), this.size()));
   }
 
 }
