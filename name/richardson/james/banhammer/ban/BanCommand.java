@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 import name.richardson.james.banhammer.BanHammer;
 import name.richardson.james.banhammer.Command;
+import name.richardson.james.banhammer.util.BanHammerTime;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -54,7 +55,12 @@ public class BanCommand extends Command {
     final String reason = arguments.get("reason");
     
     if (arguments.containsKey("time")) {
-      expiryTime = parseTime(arguments.get("time"));
+      expiryTime = BanHammerTime.parseTime(arguments.get("time"));
+    }
+    
+    if (expiryTime > BanHammerTime.parseTime("1w") && sender.hasPermission("banhammer.ban.temporary")) {
+      sender.sendMessage(ChatColor.RED + String.format(BanHammer.getMessage("ban-too-long")));
+      return;
     }
     
     if (!this.banHandler.banPlayer(playerName, senderName, reason, expiryTime, true)) {
@@ -63,52 +69,6 @@ public class BanCommand extends Command {
       sender.sendMessage(ChatColor.RED + String.format(BanHammer.getMessage("player-banned"), playerName));
     }
     
-  }
-
-  private Long parseTime(String timeString) {
-    long time;
-
-    int weeks = 0;
-    int days = 0;
-    int hours = 0;
-    int minutes = 0;
-    int seconds = 0;
-
-    Pattern p = Pattern.compile("\\d+[a-z]{1}");
-    Matcher m = p.matcher(timeString);
-    boolean result = m.find();
-
-    while (result) {
-      String argument = m.group();
-
-      if (argument.endsWith("w"))
-        weeks = Integer.parseInt(argument.substring(0, argument.length() - 1));
-      else if (argument.endsWith("d"))
-        days = Integer.parseInt(argument.substring(0, argument.length() - 1));
-      else if (argument.endsWith("h"))
-        hours = Integer.parseInt(argument.substring(0, argument.length() - 1));
-      else if (argument.endsWith("m"))
-        minutes = Integer.parseInt(argument.substring(0, argument.length() - 1));
-      else if (argument.endsWith("s"))
-        seconds = Integer.parseInt(argument.substring(0, argument.length() - 1));
-      else throw new NumberFormatException(BanHammer.getMessage("invalid-time-format"));
-
-      result = m.find();
-    }
-
-    time = seconds;
-    time += minutes * 60;
-    time += hours * 3600;
-    time += days * 86400;
-    time += weeks * 604800;
-
-    // convert to milliseconds
-    time = time * 1000;
-
-    if (time == 0)
-      throw new NumberFormatException(BanHammer.getMessage("invalid-time-format"));
-
-    return time;
   }
 
   @Override

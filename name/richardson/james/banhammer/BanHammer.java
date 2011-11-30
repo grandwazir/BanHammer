@@ -17,6 +17,9 @@
  ******************************************************************************/
 package name.richardson.james.banhammer;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -37,8 +40,10 @@ import name.richardson.james.banhammer.ban.PurgeCommand;
 import name.richardson.james.banhammer.ban.RecentCommand;
 import name.richardson.james.banhammer.ban.ReloadCommand;
 import name.richardson.james.banhammer.kick.KickCommand;
+import name.richardson.james.banhammer.util.BanHammerTime;
 import name.richardson.james.banhammer.util.Logger;
 
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -46,6 +51,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class BanHammer extends JavaPlugin {
 
+  private long maximumTemporaryBan;
   private static ResourceBundle messages;
   private final static Locale locale = Locale.getDefault();
   private final CommandManager cm;
@@ -53,6 +59,7 @@ public class BanHammer extends JavaPlugin {
   private PlayerListener playerListener;
   private PluginDescriptionFile desc;
   private PluginManager pm;
+  private YamlConfiguration configuration;
 
   public BanHammer() {
     this.cm = new CommandManager();
@@ -99,6 +106,7 @@ public class BanHammer extends JavaPlugin {
       this.setupDatabase();
       this.setupListeners();
       this.setupCommands();
+      configuration = this.loadConfiguration();
     } catch (Exception e) {
       Logger.severe(e.getMessage());
       e.printStackTrace();
@@ -107,6 +115,18 @@ public class BanHammer extends JavaPlugin {
     }
 
     Logger.info(String.format(BanHammer.getMessage("plugin-enabled"), this.desc.getFullName()));
+  }
+
+  private YamlConfiguration loadConfiguration() throws IOException {
+    Logger.info(BanHammer.getMessage("loading-configuration"));
+    File configurationFile = new File(this.getDataFolder() + "/config.yml");
+    YamlConfiguration configuration = YamlConfiguration.loadConfiguration(configurationFile);
+    // load defaults
+    configuration.addDefault("maximum-temporary-ban", "1w");
+    configuration.options().copyDefaults(true);
+    configuration.save(configurationFile);
+    this.maximumTemporaryBan = BanHammerTime.parseTime(configuration.getString("maximum-temporary-ban"));
+    return configuration;
   }
 
   private void setupCommands() {
@@ -140,6 +160,14 @@ public class BanHammer extends JavaPlugin {
 
   private void setupLocalisation() {
     BanHammer.messages = ResourceBundle.getBundle("name.richardson.james.banhammer.localisation.Messages", locale);
+  }
+
+  public long getMaximumTemporaryBan() {
+    return maximumTemporaryBan;
+  }
+
+  public void setMaximumTemporaryBan(long maximumTemporaryBan) {
+    this.maximumTemporaryBan = maximumTemporaryBan;
   }
 
 }
