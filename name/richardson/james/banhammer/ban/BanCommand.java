@@ -25,12 +25,11 @@ import java.util.regex.Pattern;
 
 import name.richardson.james.banhammer.BanHammer;
 import name.richardson.james.banhammer.Command;
-import name.richardson.james.banhammer.exceptions.InvalidTimeUnitException;
-import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionDefault;
 
 public class BanCommand extends Command {
 
@@ -38,15 +37,16 @@ public class BanCommand extends Command {
 
   public BanCommand(final BanHammer plugin) {
     super(plugin);
-    this.name = "ban";
-    this.description = "ban a player from the server";
-    this.usage = "/ban [name] [reason] <t:time>";
+    this.name = BanHammer.getMessage("ban-command-name");
+    this.description = BanHammer.getMessage("ban-command-description");
+    this.usage = BanHammer.getMessage("ban-command-usage");
     this.permission = "banhammer." + this.name;
+    registerPermission(this.name, this.description, PermissionDefault.OP);
     this.banHandler = plugin.getHandler();
   }
 
   @Override
-  public void execute(final CommandSender sender, final Map<String, String> arguments) throws NotEnoughArgumentsException, InvalidTimeUnitException {
+  public void execute(final CommandSender sender, final Map<String, String> arguments) {
     long expiryTime = 0;
     final Player player = this.getPlayer(arguments.get("playerName"));
     final String playerName = player != null ? player.getName() : arguments.get("playerName");
@@ -58,12 +58,12 @@ public class BanCommand extends Command {
     }
     
     if (!this.banHandler.banPlayer(playerName, senderName, reason, expiryTime, true)) {
-      sender.sendMessage(ChatColor.RED + String.format(BanHammer.getMessage("PlayerAlreadyBannedException"), playerName));
+      sender.sendMessage(ChatColor.RED + String.format(BanHammer.getMessage("player-already-banned"), playerName));
     }
     
   }
 
-  private Long parseTime(String timeString) throws InvalidTimeUnitException {
+  private Long parseTime(String timeString) {
     long time;
 
     int weeks = 0;
@@ -89,7 +89,7 @@ public class BanCommand extends Command {
         minutes = Integer.parseInt(argument.substring(0, argument.length() - 1));
       else if (argument.endsWith("s"))
         seconds = Integer.parseInt(argument.substring(0, argument.length() - 1));
-      else throw new NumberFormatException();
+      else throw new NumberFormatException(BanHammer.getMessage("invalid-time-format"));
 
       result = m.find();
     }
@@ -104,13 +104,13 @@ public class BanCommand extends Command {
     time = time * 1000;
 
     if (time == 0)
-      throw new InvalidTimeUnitException();
+      throw new NumberFormatException(BanHammer.getMessage("invalid-time-format"));
 
     return time;
   }
 
   @Override
-  protected Map<String, String> parseArguments(List<String> arguments) throws NotEnoughArgumentsException, InvalidTimeUnitException {
+  protected Map<String, String> parseArguments(List<String> arguments) {
     Map<String, String> m = new HashMap<String, String>();
 
     try {
@@ -125,7 +125,7 @@ public class BanCommand extends Command {
       m.put("playerName", arguments.remove(0));
       m.put("reason", this.combineString(arguments, " "));
     } catch (IndexOutOfBoundsException e) {
-      throw new NotEnoughArgumentsException();
+      throw new IllegalArgumentException();
     }
 
     return m;

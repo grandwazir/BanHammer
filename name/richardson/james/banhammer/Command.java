@@ -22,7 +22,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import name.richardson.james.banhammer.exceptions.InvalidTimeUnitException;
 import name.richardson.james.banhammer.exceptions.NotEnoughArgumentsException;
 
 import org.bukkit.ChatColor;
@@ -50,7 +49,7 @@ public abstract class Command implements CommandExecutor {
     this.plugin = plugin;
   }
   
-  public abstract void execute(CommandSender sender, Map<String, String> arguments) throws InvalidTimeUnitException, NotEnoughArgumentsException;
+  public abstract void execute(CommandSender sender, Map<String, String> arguments) throws NotEnoughArgumentsException;
 
   @Override
   public boolean onCommand(final CommandSender sender, final org.bukkit.command.Command command, final String label, final String[] args) {
@@ -64,13 +63,16 @@ public abstract class Command implements CommandExecutor {
       arguments.addAll(Arrays.asList(args));
       final Map<String, String> parsedArguments = this.parseArguments(arguments);  
       this.execute(sender, parsedArguments);
-    } catch (final NotEnoughArgumentsException e) {
-      sender.sendMessage(ChatColor.RED + BanHammer.getMessage("not-enough-arguments"));
-      sender.sendMessage(ChatColor.YELLOW + this.usage);
-    } catch (InvalidTimeUnitException e) {
-      sender.sendMessage(ChatColor.RED + BanHammer.getMessage("invalid-time-format"));
-      sender.sendMessage(ChatColor.YELLOW + BanHammer.getMessage("invalid-time-format-hint"));
-    }
+    } catch (final IllegalArgumentException e) {
+      if (e instanceof NumberFormatException) {
+        sender.sendMessage(ChatColor.RED + BanHammer.getMessage("invalid-time-format"));
+        sender.sendMessage(ChatColor.YELLOW + BanHammer.getMessage("invalid-time-format-hint"));
+      } else {
+        sender.sendMessage(ChatColor.RED + BanHammer.getMessage("not-enough-arguments"));
+        sender.sendMessage(ChatColor.YELLOW + this.usage);
+      } 
+    } 
+      
     return true;
   }
 
@@ -173,6 +175,6 @@ public abstract class Command implements CommandExecutor {
     plugin.getServer().getPluginManager().addPermission(permission);
   }
   
-  protected abstract Map<String, String> parseArguments(List<String> arguments) throws NotEnoughArgumentsException, InvalidTimeUnitException;
+  protected abstract Map<String, String> parseArguments(List<String> arguments) throws NotEnoughArgumentsException;
 
 }
