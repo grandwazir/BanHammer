@@ -34,7 +34,7 @@ import org.bukkit.entity.Player;
 
 public abstract class Command implements CommandExecutor {
 
-  protected static String consoleName = "Console";
+  protected static final String CONSOLE_NAME = "Console";
   
   protected String description;
   protected String name;
@@ -159,7 +159,7 @@ public abstract class Command implements CommandExecutor {
    */
   protected String getSenderName(CommandSender sender) {
     if (sender instanceof ConsoleCommandSender) {
-      return Command.consoleName;
+      return Command.CONSOLE_NAME;
     } else {
       final Player player = (Player) sender;
       return player.getName();
