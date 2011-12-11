@@ -56,6 +56,7 @@ public class RecentCommand extends Command {
       String banTotal = Integer.toString(bans.size());
       sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + BanHammer.getMessage("ban-recent-summary"), banTotal));
       for (BanRecord ban : bans) {
+        sender.sendMessage(String.format(ChatColor.RED + BanHammer.getMessage("player-banned"), ban.getPlayer()));
         sendBanDetail(sender, ban);
       }
     }
