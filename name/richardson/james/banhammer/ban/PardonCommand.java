@@ -47,6 +47,8 @@ public class PardonCommand extends Command {
     
     if (!this.banHandler.pardonPlayer(arguments.get("playerName"), senderName, true)) {
       sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("player-not-banned"), arguments.get("playerName")));
+    } else {
+      sender.sendMessage(String.format(ChatColor.GREEN + BanHammer.getMessage("player-pardoned"), arguments.get("playerName")));
     }
     
   }

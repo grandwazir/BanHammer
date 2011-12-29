@@ -149,7 +149,7 @@ public class BanHandler {
     if (this.isPlayerBanned(playerName)) {
         this.cache.remove(playerName);
         BanRecord.findFirst(playerName).destroy();
-        Logger.info(String.format(BanHammer.getMessage("player-pardoned"), senderName, playerName));
+        Logger.info(String.format(BanHammer.getMessage("player-pardoned-by"), senderName, playerName));
         if (notify) {
           server.broadcast(String.format(ChatColor.GREEN + BanHammer.getMessage("broadcast-player-pardoned"), playerName), "banhammer.notify");
         }
