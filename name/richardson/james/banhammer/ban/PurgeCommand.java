@@ -27,7 +27,6 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.banhammer.BanHammer;
-import name.richardson.james.banhammer.util.Logger;
 import name.richardson.james.bukkit.util.command.PlayerCommand;
 
 public class PurgeCommand extends PlayerCommand {
@@ -57,7 +56,7 @@ public class PurgeCommand extends PlayerCommand {
     else {
       String banTotal = Integer.toString(bans.size());
       BanRecord.destroy(bans);
-      Logger.info(String.format(BanHammer.getMessage("player-bans-purged"), senderName, playerName));
+      logger.info(String.format(BanHammer.getMessage("player-bans-purged"), senderName, playerName));
       sender.sendMessage(String.format(ChatColor.GREEN + BanHammer.getMessage("bans-purged"), banTotal, playerName));
     }
   }

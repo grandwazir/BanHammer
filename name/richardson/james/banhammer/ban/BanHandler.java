@@ -27,18 +27,20 @@ import org.bukkit.entity.Player;
 import name.richardson.james.banhammer.BanHammer;
 import name.richardson.james.banhammer.util.BanHammerTime;
 import name.richardson.james.banhammer.util.Logger;
+import name.richardson.james.bukkit.util.Handler;
 
 
-public class BanHandler {
+public class BanHandler extends Handler {
 
+  private final CachedList cache;
+  private final Server server;
   
-  private CachedList cache;
-  private Server server;
-  
-  public BanHandler(Server server) {
-    this.server = server;
-    this.cache = CachedList.getInstance();
+  public BanHandler(Class<?> parentClass) {
+    super(parentClass);
   }
+
+
+  
 
   /**
    * Ban a player from the server and prevent them from logging in. 

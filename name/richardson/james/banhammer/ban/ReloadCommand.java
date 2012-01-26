@@ -25,7 +25,6 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.banhammer.BanHammer;
-import name.richardson.james.banhammer.util.Logger;
 import name.richardson.james.bukkit.util.command.PlayerCommand;
 
 public class ReloadCommand extends PlayerCommand {
@@ -46,8 +45,8 @@ public class ReloadCommand extends PlayerCommand {
     String senderName = sender.getName();
     CachedList.getInstance().reload();
     String cacheSize = Integer.toString(CachedList.getInstance().size());
-    Logger.info(String.format(BanHammer.getMessage("cache-reloaded"), senderName));
-    Logger.info(String.format(BanHammer.getMessage("bans-loaded"), cacheSize));
+    logger.info(String.format(BanHammer.getMessage("cache-reloaded"), senderName));
+    logger.info(String.format(BanHammer.getMessage("bans-loaded"), cacheSize));
     sender.sendMessage(String.format(ChatColor.GREEN + BanHammer.getMessage("cache-reloaded"), cacheSize));
   }
 
