@@ -58,7 +58,7 @@ public class ImportCommand extends PlayerCommand {
     
     for (OfflinePlayer player : server.getBannedPlayers()) {
       if (!this.banHandler.banPlayer(player.getName(), senderName, reason, expiryTime, false)) {
-        Logger.info(String.format(BanHammer.getMessage("failed-import"), player.getName()));
+        logger.info(String.format(BanHammer.getMessage("failed-import"), player.getName()));
       } else {
         imported++;
       }
