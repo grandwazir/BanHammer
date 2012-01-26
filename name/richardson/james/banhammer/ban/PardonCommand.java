@@ -23,30 +23,51 @@ import java.util.Map;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.banhammer.BanHammer;
-import name.richardson.james.banhammer.Command;
+import name.richardson.james.bukkit.util.command.PlayerCommand;
 
-public class PardonCommand extends Command {
+public class PardonCommand extends PlayerCommand {
 
-  private BanHandler banHandler;
+  public static final String NAME = "pardon";
+  public static final String DESCRIPTION = "Pardon a player";
+  public static final String PERMISSION_DESCRIPTION = "Allow users to pardon a player";
+  public static final String USAGE = "<name>";
+
+  public static final Permission PERMISSION = new Permission("banhammer.pardon", ImportCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
+  
+  private final BanHandler banHandler;
+  private final BanHammer plugin;
 
   public PardonCommand(final BanHammer plugin) {
-    super(plugin);
-    this.name = BanHammer.getMessage("pardon-command-name");
-    this.description = BanHammer.getMessage("pardon-command-description");
-    this.usage = BanHammer.getMessage("pardon-command-usage");
-    this.permission = "banhammer." + this.name;
-    registerPermission(this.permission, this.description, PermissionDefault.OP);
+    super(plugin, PardonCommand.NAME, PardonCommand.DESCRIPTION, PardonCommand.USAGE, PardonCommand.PERMISSION_DESCRIPTION, PardonCommand.PERMISSION);
     this.banHandler = plugin.getHandler();
+    this.plugin = plugin;
+    this.registerAdditionalPermissions();
+  }
+
+  private void registerAdditionalPermissions() {
+    final Permission wildcard = new Permission(PardonCommand.PERMISSION.getName() + ".*", "Allow a user to pardon all bans.", PermissionDefault.OP);
+    this.plugin.addPermission(wildcard, true);
+    String permissionNode = PardonCommand.PERMISSION.getName() + "." + "own";
+    String description = "Allow users to only pardon bans made by themselves.";
+    Permission permission = new Permission(permissionNode, description, PermissionDefault.OP);
+    permission.addParent(wildcard, true);
+    this.plugin.addPermission(permission, false);
+    permissionNode = PardonCommand.PERMISSION.getName() + "." + "all";
+    description = "Allow users to pardon all bans regardless of who issued it";
+    permission = new Permission(permissionNode, description, PermissionDefault.OP);
+    permission.addParent(wildcard, true);
+    this.plugin.addPermission(permission, false);
   }
 
   @Override
-  public void execute(final CommandSender sender, Map<String, String> arguments) {
-    String senderName = this.getSenderName(sender);
+  public void execute(final CommandSender sender, Map<String, Object> arguments) {
+    String senderName = sender.getName();
     
-    if (!this.banHandler.pardonPlayer(arguments.get("playerName"), senderName, true)) {
+    if (!this.banHandler.pardonPlayer((String) arguments.get("playerName"), senderName, true)) {
       sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("player-not-banned"), arguments.get("playerName")));
     } else {
       sender.sendMessage(String.format(ChatColor.GREEN + BanHammer.getMessage("player-pardoned"), arguments.get("playerName")));
@@ -55,8 +76,8 @@ public class PardonCommand extends Command {
   }
 
   @Override
-  protected Map<String, String> parseArguments(List<String> arguments) {
-    Map<String, String> m = new HashMap<String, String>();
+  public Map<String, Object> parseArguments(List<String> arguments) {
+    Map<String, Object> m = new HashMap<String, Object>();
 
     try {
       m.put("playerName", arguments.get(0));
