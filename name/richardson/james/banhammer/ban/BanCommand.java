@@ -28,9 +28,6 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.banhammer.BanHammer;
-import name.richardson.james.banhammer.Command;
-import name.richardson.james.banhammer.util.BanHammerTime;
-import name.richardson.james.bukkit.dimensiondoor.creation.CreateCommand;
 import name.richardson.james.bukkit.util.Time;
 import name.richardson.james.bukkit.util.command.CommandArgumentException;
 import name.richardson.james.bukkit.util.command.CommandPermissionException;
