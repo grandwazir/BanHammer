@@ -17,7 +17,7 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.ban;
 
-import name.richardson.james.bukkit.banhammer.ban.BanRecord.Type;
+import name.richardson.james.bukkit.banhammer.BanRecord.Type;
 
 
 public final class CachedBan {

@@ -28,8 +28,8 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
+import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanCommand;
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.util.command.PlayerCommand;
 
 public class ExportCommand extends PlayerCommand {

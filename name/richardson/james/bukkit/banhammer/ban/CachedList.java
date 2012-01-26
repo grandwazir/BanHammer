@@ -20,6 +20,7 @@ package name.richardson.james.bukkit.banhammer.ban;
 import java.util.HashMap;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
+import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.banhammer.util.Logger;
 
 

@@ -25,6 +25,7 @@ import java.util.Date;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
+import name.richardson.james.bukkit.banhammer.BanRecord;
 
 public class PlayerListener extends org.bukkit.event.player.PlayerListener {
 

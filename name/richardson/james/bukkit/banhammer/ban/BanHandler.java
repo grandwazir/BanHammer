@@ -25,6 +25,7 @@ import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
+import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.banhammer.util.BanHammerTime;
 import name.richardson.james.bukkit.banhammer.util.Logger;
 import name.richardson.james.bukkit.util.Handler;

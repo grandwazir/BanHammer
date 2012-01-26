@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License 
  * along with BanHammer.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.bukkit.banhammer.ban;
+package name.richardson.james.bukkit.banhammer;
 
 import java.util.List;
 
@@ -27,6 +27,8 @@ import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.ExampleExpression;
 import com.avaje.ebean.LikeType;
 import com.avaje.ebean.validation.NotNull;
+
+import name.richardson.james.bukkit.banhammer.ban.CachedBan;
 
 @Entity()
 @Table(name = "bh_bans")
@@ -74,7 +76,7 @@ public class BanRecord {
       BanRecord.database.delete(ban);
   }
 
-  static List<BanRecord> find(String player) {
+  static List<BanRecord> findByName(String player) {
     // create the example
     BanRecord example = new BanRecord();
     example.setPlayer(player);
@@ -84,7 +86,7 @@ public class BanRecord {
     return BanRecord.database.find(BanRecord.class).where().add(expression).orderBy("created_at DESC").findList();
   }
 
-  static BanRecord findFirst(String player) {
+  static BanRecord findFirstByName(String player) {
     // create the example
     BanRecord example = new BanRecord();
     example.setPlayer(player);
@@ -96,10 +98,6 @@ public class BanRecord {
 
   static List<BanRecord> findRecent(Integer maxRows) {
     return BanRecord.database.find(BanRecord.class).where().orderBy("created_at DESC").setMaxRows(maxRows).findList();
-  }
-
-  static List<BanRecord> list() {
-    return BanRecord.database.find(BanRecord.class).findList();
   }
 
   public long getCreatedAt() {
