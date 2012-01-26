@@ -17,42 +17,38 @@
  ******************************************************************************/
 package name.richardson.james.banhammer.ban;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.banhammer.BanHammer;
-import name.richardson.james.banhammer.Command;
 import name.richardson.james.banhammer.util.Logger;
+import name.richardson.james.bukkit.util.command.PlayerCommand;
 
-public class ReloadCommand extends Command {
+public class ReloadCommand extends PlayerCommand {
+  
+  public static final String NAME = "reload";
+  public static final String DESCRIPTION = "Reload the ban cache.";
+  public static final String PERMISSION_DESCRIPTION = "Allow users to reload the ban cache";
+  public static final String USAGE = "";
+
+  public static final Permission PERMISSION = new Permission("banhammer.reload", RecentCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
   
   public ReloadCommand(final BanHammer plugin) {
-    super(plugin);
-    this.name = BanHammer.getMessage("reload-command-name");
-    this.description = BanHammer.getMessage("reload-command-description");
-    this.usage = BanHammer.getMessage("reload-command-usage");
-    this.permission = "banhammer." + this.name;
-    registerPermission(this.permission, this.description, PermissionDefault.OP);
+    super(plugin, RecentCommand.NAME, RecentCommand.DESCRIPTION, RecentCommand.USAGE, RecentCommand.PERMISSION_DESCRIPTION, RecentCommand.PERMISSION);
   }
-
+  
   @Override
-  public void execute(final CommandSender sender, Map<String, String> arguments) {
-    String senderName = this.getSenderName(sender);
+  public void execute(final CommandSender sender, Map<String, Object> arguments) {
+    String senderName = sender.getName();
     CachedList.getInstance().reload();
     String cacheSize = Integer.toString(CachedList.getInstance().size());
     Logger.info(String.format(BanHammer.getMessage("cache-reloaded"), senderName));
     Logger.info(String.format(BanHammer.getMessage("bans-loaded"), cacheSize));
     sender.sendMessage(String.format(ChatColor.GREEN + BanHammer.getMessage("cache-reloaded"), cacheSize));
-  }
-
-  @Override
-  protected Map<String, String> parseArguments(List<String> arguments) {
-    return Collections.emptyMap();
   }
 
 }
