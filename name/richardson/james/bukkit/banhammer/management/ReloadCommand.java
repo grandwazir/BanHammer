@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License 
  * along with BanHammer.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.banhammer.management;
+package name.richardson.james.bukkit.banhammer.management;
 
 import java.util.Map;
 
@@ -24,9 +24,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
-import name.richardson.james.banhammer.BanHammer;
-import name.richardson.james.banhammer.ban.CachedList;
-import name.richardson.james.banhammer.ban.RecentCommand;
+import name.richardson.james.bukkit.banhammer.BanHammer;
+import name.richardson.james.bukkit.banhammer.ban.CachedList;
+import name.richardson.james.bukkit.banhammer.ban.RecentCommand;
 import name.richardson.james.bukkit.util.command.PlayerCommand;
 
 public class ReloadCommand extends PlayerCommand {

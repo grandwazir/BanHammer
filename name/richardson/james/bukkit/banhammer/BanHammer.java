@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License 
  * along with BanHammer.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.banhammer;
+package name.richardson.james.bukkit.banhammer;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,19 +29,19 @@ import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 
-import name.richardson.james.banhammer.ban.BanCommand;
-import name.richardson.james.banhammer.ban.BanHandler;
-import name.richardson.james.banhammer.ban.BanRecord;
-import name.richardson.james.banhammer.ban.CheckCommand;
-import name.richardson.james.banhammer.ban.HistoryCommand;
-import name.richardson.james.banhammer.ban.PardonCommand;
-import name.richardson.james.banhammer.ban.PlayerListener;
-import name.richardson.james.banhammer.ban.PurgeCommand;
-import name.richardson.james.banhammer.ban.RecentCommand;
-import name.richardson.james.banhammer.kick.KickCommand;
-import name.richardson.james.banhammer.management.ExportCommand;
-import name.richardson.james.banhammer.management.ImportCommand;
-import name.richardson.james.banhammer.management.ReloadCommand;
+import name.richardson.james.bukkit.banhammer.ban.BanCommand;
+import name.richardson.james.bukkit.banhammer.ban.BanHandler;
+import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.CheckCommand;
+import name.richardson.james.bukkit.banhammer.ban.HistoryCommand;
+import name.richardson.james.bukkit.banhammer.ban.PardonCommand;
+import name.richardson.james.bukkit.banhammer.ban.PlayerListener;
+import name.richardson.james.bukkit.banhammer.ban.PurgeCommand;
+import name.richardson.james.bukkit.banhammer.ban.RecentCommand;
+import name.richardson.james.bukkit.banhammer.kick.KickCommand;
+import name.richardson.james.bukkit.banhammer.management.ExportCommand;
+import name.richardson.james.bukkit.banhammer.management.ImportCommand;
+import name.richardson.james.bukkit.banhammer.management.ReloadCommand;
 import name.richardson.james.bukkit.util.Logger;
 import name.richardson.james.bukkit.util.Plugin;
 import name.richardson.james.bukkit.util.command.CommandManager;

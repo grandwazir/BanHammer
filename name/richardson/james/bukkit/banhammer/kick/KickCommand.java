@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License 
  * along with BanHammer.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.banhammer.kick;
+package name.richardson.james.bukkit.banhammer.kick;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +28,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
-import name.richardson.james.banhammer.BanHammer;
+import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.util.command.PlayerCommand;
 
 public class KickCommand extends PlayerCommand {

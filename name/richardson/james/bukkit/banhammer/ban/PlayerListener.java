@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License 
  * along with BanHammer.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.banhammer.ban;
+package name.richardson.james.bukkit.banhammer.ban;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -24,7 +24,7 @@ import java.util.Date;
 
 import org.bukkit.event.player.PlayerLoginEvent;
 
-import name.richardson.james.banhammer.BanHammer;
+import name.richardson.james.bukkit.banhammer.BanHammer;
 
 public class PlayerListener extends org.bukkit.event.player.PlayerListener {
 

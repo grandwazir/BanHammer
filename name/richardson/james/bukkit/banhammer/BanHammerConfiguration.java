@@ -1,4 +1,4 @@
-package name.richardson.james.banhammer;
+package name.richardson.james.bukkit.banhammer;
 
 import java.io.IOException;
 

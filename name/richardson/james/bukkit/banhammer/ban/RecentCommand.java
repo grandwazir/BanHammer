@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (c) 2011 James Richardson.
  * 
- * HistoryCommand.java is part of BanHammer.
+ * RecentCommand.java is part of BanHammer.
  * 
  * BanHammer is free software: you can redistribute it and/or modify it 
  * under the terms of the GNU General Public License as published by the Free 
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License 
  * along with BanHammer.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.banhammer.ban;
+package name.richardson.james.bukkit.banhammer.ban;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -30,37 +30,36 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
-import name.richardson.james.banhammer.BanHammer;
+import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.util.Time;
 import name.richardson.james.bukkit.util.command.CommandArgumentException;
 import name.richardson.james.bukkit.util.command.PlayerCommand;
 
-public class HistoryCommand extends PlayerCommand {
+public class RecentCommand extends PlayerCommand {
 
-  public static final String NAME = "history";
-  public static final String DESCRIPTION = "View a player's ban history";
-  public static final String PERMISSION_DESCRIPTION = "Allow users to view a player's ban history";
-  public static final String USAGE = "<name>";
+  public static final String NAME = "recent";
+  public static final String DESCRIPTION = "Display a list of recent bans";
+  public static final String PERMISSION_DESCRIPTION = "Allow users to display a list of recent bans";
+  public static final String USAGE = "[limit]";
 
-  public static final Permission PERMISSION = new Permission("banhammer.history", HistoryCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
+  public static final Permission PERMISSION = new Permission("banhammer.recent", RecentCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
   
-  private final BanHandler banHandler;
-  
-  public HistoryCommand(final BanHammer plugin) {
-    super(plugin, HistoryCommand.NAME, HistoryCommand.DESCRIPTION, HistoryCommand.USAGE, HistoryCommand.PERMISSION_DESCRIPTION, HistoryCommand.PERMISSION);
-    this.banHandler = plugin.getHandler();
+  public RecentCommand(final BanHammer plugin) {
+    super(plugin, RecentCommand.NAME, RecentCommand.DESCRIPTION, RecentCommand.USAGE, RecentCommand.PERMISSION_DESCRIPTION, RecentCommand.PERMISSION);
   }
 
   @Override
   public void execute(final CommandSender sender, Map<String, Object> arguments) {
-    final String playerName = (String) arguments.get("playerName");
-    final List<CachedBan> bans = banHandler.getPlayerBans(playerName);
-    
-    if (bans.isEmpty()) {
-      sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-none"), playerName));
-    } else {
-      sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + BanHammer.getMessage("ban-history-summary"), playerName, bans.size()));
-      for (CachedBan ban : bans) {
+    int maxRows = (Integer) arguments.get("maxRows");
+
+    List<BanRecord> bans = BanRecord.findRecent(maxRows);
+    if (bans.isEmpty())
+      sender.sendMessage(ChatColor.YELLOW + BanHammer.getMessage("ban-recent-none"));
+    else {
+      String banTotal = Integer.toString(bans.size());
+      sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + BanHammer.getMessage("ban-recent-summary"), banTotal));
+      for (BanRecord ban : bans) {
+        sender.sendMessage(String.format(ChatColor.RED + BanHammer.getMessage("player-banned"), ban.getPlayer()));
         sendBanDetail(sender, ban);
       }
     }
@@ -70,16 +69,21 @@ public class HistoryCommand extends PlayerCommand {
   public Map<String, Object> parseArguments(List<String> arguments) throws CommandArgumentException {
     Map<String, Object> m = new HashMap<String, Object>();
 
-    try {
-      m.put("playerName", arguments.get(0));
-    } catch (IndexOutOfBoundsException e) {
-      throw new CommandArgumentException("You must provide a player name to check", "You must type the name exactly");
+    m.put("maxRows", 3);
+    
+    if (!arguments.isEmpty()) {
+      try {
+        Integer.parseInt(arguments.get(0));
+        m.put("maxRows", arguments.get(0));
+      } catch (NumberFormatException exception) {
+        throw new CommandArgumentException("You must provide a valid number", "The default amount is 3");
+      }
     }
-
+      
     return m;
   }
-
-  protected void sendBanDetail(CommandSender sender, CachedBan ban) {
+  
+  protected void sendBanDetail(CommandSender sender, BanRecord ban) {
     Date createdDate = new Date(ban.getCreatedAt());
     DateFormat dateFormat = new SimpleDateFormat("MMM d");
     String createdAt = dateFormat.format(createdDate);
@@ -99,5 +103,5 @@ public class HistoryCommand extends PlayerCommand {
         break;
     }
   }
-  
+
 }

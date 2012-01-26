@@ -15,12 +15,12 @@
  * You should have received a copy of the GNU General Public License 
  * along with BanHammer.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.banhammer.ban;
+package name.richardson.james.bukkit.banhammer.ban;
 
 import java.util.HashMap;
 
-import name.richardson.james.banhammer.BanHammer;
-import name.richardson.james.banhammer.util.Logger;
+import name.richardson.james.bukkit.banhammer.BanHammer;
+import name.richardson.james.bukkit.banhammer.util.Logger;
 
 
 class CachedList {

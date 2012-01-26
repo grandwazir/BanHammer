@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License 
  * along with BanHammer.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.banhammer.ban;
+package name.richardson.james.bukkit.banhammer.ban;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +24,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
-import name.richardson.james.banhammer.BanHammer;
-import name.richardson.james.banhammer.util.BanHammerTime;
-import name.richardson.james.banhammer.util.Logger;
+import name.richardson.james.bukkit.banhammer.BanHammer;
+import name.richardson.james.bukkit.banhammer.util.BanHammerTime;
+import name.richardson.james.bukkit.banhammer.util.Logger;
 import name.richardson.james.bukkit.util.Handler;
 
 
