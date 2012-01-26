@@ -22,44 +22,50 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.banhammer.BanHammer;
-import name.richardson.james.banhammer.Command;
-import name.richardson.james.banhammer.util.Logger;
+import name.richardson.james.bukkit.util.command.PlayerCommand;
 
-public class KickCommand extends Command {
+public class KickCommand extends PlayerCommand {
 
+  public static final String NAME = "kick";
+  public static final String DESCRIPTION = "Kick a player";
+  public static final String PERMISSION_DESCRIPTION = "Allow users to kick players";
+  public static final String USAGE = "<name>";
+
+  public static final Permission PERMISSION = new Permission("banhammer.kick", KickCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
+  
+  private final Server server;
+  
   public KickCommand(BanHammer plugin) {
-    super(plugin);
-    this.name = BanHammer.getMessage("kick-command-name");
-    this.description = BanHammer.getMessage("kick-command-description");
-    this.usage = BanHammer.getMessage("kick-command-usage");
-    this.permission = "banhammer." + this.name;
-    registerPermission(this.permission, this.description, PermissionDefault.OP);
+    super(plugin, KickCommand.NAME, KickCommand.DESCRIPTION, KickCommand.USAGE, KickCommand.PERMISSION_DESCRIPTION, KickCommand.PERMISSION);
+    this.server = plugin.getServer();
   }
 
   @Override
-  public void execute(final CommandSender sender, Map<String, String> arguments) {
-    final Player player = this.getPlayer(arguments.get("playerName"));
-    final String playerName = arguments.get("playerName");
-    final String senderName = this.getSenderName(sender);
+  public void execute(final CommandSender sender, Map<String, Object> arguments) {
+    final Player player = this.server.getPlayer((String) arguments.get("playerName"));
+    final String playerName = (String) arguments.get("playerName");
+    final String senderName = sender.getName();
     
     if (player != null) {
       player.kickPlayer(String.format(BanHammer.getMessage("player-kicked-notification"), arguments.get("reason")));
-      Logger.info(String.format(BanHammer.getMessage("player-kicked"), senderName, playerName));
-      this.plugin.getServer().broadcast(String.format(ChatColor.RED + BanHammer.getMessage("broadcast-player-kicked"), playerName), "banhammer.notify");
-      this.plugin.getServer().broadcast(String.format(ChatColor.YELLOW + BanHammer.getMessage("broadcast-player-banned-reason"), arguments.get("reason")), "banhammer.notify");
+      logger.info(String.format(BanHammer.getMessage("player-kicked"), senderName, playerName));
+      this.server.broadcast(String.format(ChatColor.RED + BanHammer.getMessage("broadcast-player-kicked"), playerName), "banhammer.notify");
+      this.server.broadcast(String.format(ChatColor.YELLOW + BanHammer.getMessage("broadcast-player-banned-reason"), arguments.get("reason")), "banhammer.notify");
     } else {
-      Logger.info(String.format(BanHammer.getMessage("no-player-found"), playerName));
+      logger.info(String.format(BanHammer.getMessage("no-player-found"), playerName));
     }
   }
 
   @Override
-  protected Map<String, String> parseArguments(List<String> arguments) {
-    Map<String, String> m = new HashMap<String, String>();
+  public Map<String, Object> parseArguments(List<String> arguments) {
+    Map<String, Object> m = new HashMap<String, Object>();
     try {
       m.put("playerName", arguments.remove(0));
       m.put("reason", this.combineString(arguments, " "));
@@ -67,6 +73,20 @@ public class KickCommand extends Command {
       throw new IllegalArgumentException();
     }
     return m;
+  }
+  
+  protected String combineString(List<String> arguments, String seperator) {
+    StringBuilder reason = new StringBuilder();
+    try {
+      for (String argument : arguments) {
+        reason.append(argument);
+        reason.append(seperator);
+      }
+      reason.deleteCharAt(reason.length() - seperator.length());
+      return reason.toString();
+    } catch (StringIndexOutOfBoundsException e) {
+      return BanHammer.getMessage("default-reason");
+    }
   }
 
 }
