@@ -23,28 +23,34 @@ import java.util.Map;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.banhammer.BanHammer;
-import name.richardson.james.banhammer.Command;
 import name.richardson.james.banhammer.util.Logger;
+import name.richardson.james.bukkit.util.command.PlayerCommand;
 
-public class PurgeCommand extends Command {
+public class PurgeCommand extends PlayerCommand {
+  
+  public static final String NAME = "purge";
+  public static final String DESCRIPTION = "Purge all bans associated with a player";
+  public static final String PERMISSION_DESCRIPTION = "Allow users to purge all bans associated with a player";
+  public static final String USAGE = "<name>";
+
+  public static final Permission PERMISSION = new Permission("banhammer.purge", PurgeCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
+  
+  private final BanHandler handler;
 
   public PurgeCommand(final BanHammer plugin) {
-    super(plugin);
-    this.name = BanHammer.getMessage("purge-command-name");
-    this.description = BanHammer.getMessage("purge-command-description");
-    this.usage = BanHammer.getMessage("purge-command-usage");
-    this.permission = "banhammer." + this.name;
-    registerPermission(this.permission, this.description, PermissionDefault.OP);
+    super(plugin, PurgeCommand.NAME, PurgeCommand.DESCRIPTION, PurgeCommand.USAGE, PurgeCommand.PERMISSION_DESCRIPTION, PurgeCommand.PERMISSION);
+    this.handler = plugin.getHandler();
   }
 
   @Override
-  public void execute(final CommandSender sender, Map<String, String> arguments) {
-    String playerName = arguments.get("playerName");
-    String senderName = this.getSenderName(sender);
-
+  public void execute(final CommandSender sender, Map<String, Object> arguments) {
+    String playerName = (String) arguments.get("playerName");
+    String senderName = sender.getName();
+    
     List<BanRecord> bans = BanRecord.find(playerName);
     if (bans.isEmpty())
       sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-none"), playerName));
@@ -57,9 +63,8 @@ public class PurgeCommand extends Command {
   }
 
   @Override
-  protected Map<String, String> parseArguments(List<String> arguments) {
-    Map<String, String> m = new HashMap<String, String>();
-    arguments.remove(0);
+  public Map<String, Object> parseArguments(List<String> arguments) {
+    Map<String, Object> m = new HashMap<String, Object>();
 
     try {
       m.put("playerName", arguments.get(0));
