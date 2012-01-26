@@ -22,37 +22,46 @@ import java.util.Map;
 
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.banhammer.BanHammer;
-import name.richardson.james.banhammer.Command;
 import name.richardson.james.banhammer.util.Logger;
+import name.richardson.james.bukkit.util.command.PlayerCommand;
 
-public class ExportCommand extends Command {
+public class ExportCommand extends PlayerCommand {
 
+  public static final String NAME = "export";
+  public static final String DESCRIPTION = "Export bans to banned-players.txt";
+  public static final String PERMISSION_DESCRIPTION = "Allow users to export bans to banned-players.txt";
+  public static final String USAGE = "";
+
+  public static final Permission PERMISSION = new Permission("banhammer.export", ExportCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
+  
+  private final BanHandler banHandler;
+  private final Server server;
+  
   public ExportCommand(final BanHammer plugin) {
-    super(plugin);
-    this.name = BanHammer.getMessage("export-command-name");
-    this.description = BanHammer.getMessage("export-command-description");
-    this.usage = BanHammer.getMessage("export-command-usage");
-    this.permission = "banhammer." + this.name;
-    registerPermission(this.permission, this.description, PermissionDefault.OP);
+    super(plugin, BanCommand.NAME, BanCommand.DESCRIPTION, BanCommand.USAGE, BanCommand.PERMISSION_DESCRIPTION, BanCommand.PERMISSION);
+    this.server = plugin.getServer();
+    this.banHandler = plugin.getHandler();
   }
 
   @Override
-  public void execute(final CommandSender sender, Map<String, String> arguments) {
+  public void execute(final CommandSender sender, Map<String, Object> arguments) {
     final List<BanRecord> bans = BanRecord.list();
     for (BanRecord ban : BanRecord.list()) {
-      OfflinePlayer player = this.getOfflinePlayer(ban.getPlayer());
+      OfflinePlayer player = server.getOfflinePlayer(ban.getPlayer());
       player.setBanned(true);
     }
-    Logger.info(String.format(BanHammer.getMessage("ban-export"), this.getSenderName(sender)));
+    logger.info(String.format(BanHammer.getMessage("ban-export"), sender.getName()));
     sender.sendMessage(String.format(ChatColor.GREEN + BanHammer.getMessage("bans-exported"), bans.size()));
   }
 
   @Override
-  protected Map<String, String> parseArguments(List<String> arguments) {
+  public Map<String, Object> parseArguments(List<String> arguments) {
     return null;
   }
 
