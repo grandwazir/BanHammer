@@ -20,14 +20,14 @@ package name.richardson.james.banhammer.ban;
 import java.util.List;
 import java.util.Map;
 
-import name.richardson.james.banhammer.BanHammer;
-import name.richardson.james.banhammer.Command;
-import name.richardson.james.banhammer.util.Logger;
-
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.PermissionDefault;
+
+import name.richardson.james.banhammer.BanHammer;
+import name.richardson.james.banhammer.Command;
+import name.richardson.james.banhammer.util.Logger;
 
 public class ExportCommand extends Command {
 

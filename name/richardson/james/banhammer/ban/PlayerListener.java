@@ -22,9 +22,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import name.richardson.james.banhammer.BanHammer;
-
 import org.bukkit.event.player.PlayerLoginEvent;
+
+import name.richardson.james.banhammer.BanHammer;
 
 public class PlayerListener extends org.bukkit.event.player.PlayerListener {
 

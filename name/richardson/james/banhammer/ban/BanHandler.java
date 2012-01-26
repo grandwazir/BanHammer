@@ -20,13 +20,13 @@ package name.richardson.james.banhammer.ban;
 import java.util.ArrayList;
 import java.util.List;
 
-import name.richardson.james.banhammer.BanHammer;
-import name.richardson.james.banhammer.util.BanHammerTime;
-import name.richardson.james.banhammer.util.Logger;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
+
+import name.richardson.james.banhammer.BanHammer;
+import name.richardson.james.banhammer.util.BanHammerTime;
+import name.richardson.james.banhammer.util.Logger;
 
 
 public class BanHandler {

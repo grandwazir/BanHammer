@@ -21,14 +21,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import name.richardson.james.banhammer.BanHammer;
-import name.richardson.james.banhammer.Command;
-import name.richardson.james.banhammer.util.Logger;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionDefault;
+
+import name.richardson.james.banhammer.BanHammer;
+import name.richardson.james.banhammer.Command;
+import name.richardson.james.banhammer.util.Logger;
 
 public class KickCommand extends Command {
 

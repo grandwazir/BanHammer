@@ -148,12 +148,12 @@ public class BanRecord {
     this.expiresAt = expiresAt;
   }
 
-  public void setReason(String reason) {
-    this.reason = reason;
-  }
-
   public void setPlayer(String player) {
     this.player = player;
+  }
+
+  public void setReason(String reason) {
+    this.reason = reason;
   }
 
   void destroy() {

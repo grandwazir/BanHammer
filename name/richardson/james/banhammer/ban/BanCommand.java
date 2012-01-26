@@ -21,47 +21,57 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import name.richardson.james.banhammer.BanHammer;
-import name.richardson.james.banhammer.Command;
-import name.richardson.james.banhammer.util.BanHammerTime;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
-public class BanCommand extends Command {
+import name.richardson.james.banhammer.BanHammer;
+import name.richardson.james.banhammer.Command;
+import name.richardson.james.banhammer.util.BanHammerTime;
+import name.richardson.james.bukkit.dimensiondoor.creation.CreateCommand;
+import name.richardson.james.bukkit.util.Time;
+import name.richardson.james.bukkit.util.command.CommandArgumentException;
+import name.richardson.james.bukkit.util.command.CommandPermissionException;
+import name.richardson.james.bukkit.util.command.CommandUsageException;
+import name.richardson.james.bukkit.util.command.PlayerCommand;
 
+public class BanCommand extends PlayerCommand {
+
+  public static final String NAME = "ban";
+  public static final String DESCRIPTION = "Ban a player";
+  public static final String PERMISSION_DESCRIPTION = "Allow users to ban players.";
+  public static final String USAGE = "<name> [t:time] [reason]";
+
+  public static final Permission PERMISSION = new Permission("banhammer.ban", BanCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
+  
+  private final BanHammer plugin;
   private final BanHandler banHandler;
 
   public BanCommand(final BanHammer plugin) {
-    super(plugin);
-    this.name = BanHammer.getMessage("ban-command-name");
-    this.description = BanHammer.getMessage("ban-command-description");
-    this.usage = BanHammer.getMessage("ban-command-usage");
-    this.permission = "banhammer." + this.name;
-    registerPermission(this.permission, this.description, PermissionDefault.OP);
+    super(plugin, BanCommand.NAME, BanCommand.DESCRIPTION, BanCommand.USAGE, BanCommand.PERMISSION_DESCRIPTION, BanCommand.PERMISSION);
+    this.plugin = plugin;
     this.banHandler = plugin.getHandler();
   }
-
+  
   @Override
-  public void execute(final CommandSender sender, final Map<String, String> arguments) {
-    long expiryTime = 0;
-    final Player player = this.getPlayer(arguments.get("playerName"));
-    final String playerName = player != null ? player.getName() : arguments.get("playerName");
-    final String senderName = this.getSenderName(sender);
-    final String reason = arguments.get("reason");
+  public void execute(CommandSender sender, Map<String, Object> arguments) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+    final long expiryTime = Time.parseTime((String) arguments.get("time"));
+    final String unmatchedPlayerName = (String) (arguments.get("playerName"));
+    final Player player = this.plugin.getServer().getPlayer(unmatchedPlayerName);
+    final String playerName = player != null ? player.getName() : unmatchedPlayerName;
+    final String senderName = sender.getName();
+    final String reason = (String) arguments.get("reason");
     
-    if (arguments.containsKey("time")) {
-      expiryTime = BanHammerTime.parseTime(arguments.get("time"));
-    }
-    
-    if (expiryTime > this.plugin.getMaximumTemporaryBan() || expiryTime == 0) {
-      if (!sender.hasPermission("banhammer.ban.permanent")) {
-        String humanTime = BanHammerTime.millisToLongDHMS(this.plugin.getMaximumTemporaryBan());
-        sender.sendMessage(ChatColor.RED + String.format(BanHammer.getMessage("ban-too-long"), humanTime));
-        return;
-      } 
+    if (expiryTime == 0 && !sender.hasPermission("banhammer.ban.permanent")) {
+      throw new CommandPermissionException("You do not have permission to ban permanently", BanCommand.PERMISSION);
+    } else {
+      if (!this.banHandler.banPlayer(playerName, senderName, reason, expiryTime, true)) {
+        sender.sendMessage(ChatColor.RED + String.format(BanHammer.getMessage("player-already-banned"), playerName));
+      } else {
+        sender.sendMessage(ChatColor.RED + String.format(BanHammer.getMessage("player-banned"), playerName));
+      }
     }
     
     if (!this.banHandler.banPlayer(playerName, senderName, reason, expiryTime, true)) {
@@ -73,9 +83,12 @@ public class BanCommand extends Command {
   }
 
   @Override
-  protected Map<String, String> parseArguments(List<String> arguments) {
-    Map<String, String> m = new HashMap<String, String>();
+  public Map<String, Object> parseArguments(List<String> arguments) {
+    Map<String, Object> m = new HashMap<String, Object>();
 
+    m.put("reason", "No reason provided");
+    m.put("time", "0");
+    
     try {
       for (String argument : arguments) {
         if (argument.startsWith("t:")) {
@@ -93,5 +106,21 @@ public class BanCommand extends Command {
 
     return m;
   }
+  
+  protected String combineString(List<String> arguments, String seperator) {
+    StringBuilder reason = new StringBuilder();
+    try {
+      for (String argument : arguments) {
+        reason.append(argument);
+        reason.append(seperator);
+      }
+      reason.deleteCharAt(reason.length() - seperator.length());
+      return reason.toString();
+    } catch (StringIndexOutOfBoundsException e) {
+      return BanHammer.getMessage("default-reason");
+    }
+  }
+
+
 
 }

@@ -17,15 +17,17 @@
  ******************************************************************************/
 package name.richardson.james.banhammer;
 
-import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 import javax.persistence.PersistenceException;
+
+import org.bukkit.event.Event;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.PluginManager;
 
 import name.richardson.james.banhammer.ban.BanCommand;
 import name.richardson.james.banhammer.ban.BanHandler;
@@ -40,31 +42,22 @@ import name.richardson.james.banhammer.ban.PurgeCommand;
 import name.richardson.james.banhammer.ban.RecentCommand;
 import name.richardson.james.banhammer.ban.ReloadCommand;
 import name.richardson.james.banhammer.kick.KickCommand;
-import name.richardson.james.banhammer.util.BanHammerTime;
-import name.richardson.james.bukkit.dimensiondoor.DimensionDoorConfiguration;
 import name.richardson.james.bukkit.util.Logger;
 import name.richardson.james.bukkit.util.Plugin;
-
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.event.Event;
-import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.PluginManager;
+import name.richardson.james.bukkit.util.command.CommandManager;
 
 public class BanHammer extends Plugin {
 
   private long maximumTemporaryBan;
   private static ResourceBundle messages;
   private final static Locale locale = Locale.getDefault();
-  private final CommandManager cm;
+  private CommandManager cm;
   
   private PlayerListener playerListener;
   private PluginDescriptionFile desc;
   private PluginManager pm;
   private BanHammerConfiguration configuration;
 
-  public BanHammer() {
-    this.cm = new CommandManager();
-  }
 
   /**
    * This returns a localised string from the loaded ResourceBundle.
@@ -92,9 +85,13 @@ public class BanHammer extends Plugin {
     return new BanHandler(this.getServer());
   }
 
+  public long getMaximumTemporaryBan() {
+    return maximumTemporaryBan;
+  }
+
   @Override
   public void onDisable() {
-    Logger.info(String.format(messages.getString("plugin-disabled"), this.desc.getName()));
+    logger.info(String.format(messages.getString("plugin-disabled"), this.desc.getName()));
   }
 
   @Override
@@ -104,6 +101,7 @@ public class BanHammer extends Plugin {
 
     try {
       this.logger.setPrefix("[BanHammer] ");
+      this.setupLocalisation();
       this.loadConfiguration();
       this.setupDatabase();
       this.setPermission();
@@ -112,14 +110,15 @@ public class BanHammer extends Plugin {
     } catch (final IOException exception) {
       this.logger.severe("Unable to load configuration!");
       exception.printStackTrace();
-    } catch (SQLException exception) {
-      // TODO Auto-generated catch block
-      exception.printStackTrace();
     } finally {
       if (!this.getServer().getPluginManager().isPluginEnabled(this)) return;
     }
 
     logger.info(String.format(BanHammer.getMessage("plugin-enabled"), this.desc.getFullName()));
+  }
+
+  public void setMaximumTemporaryBan(long maximumTemporaryBan) {
+    this.maximumTemporaryBan = maximumTemporaryBan;
   }
 
   private void loadConfiguration() throws IOException {
@@ -129,11 +128,12 @@ public class BanHammer extends Plugin {
     }
   }
 
-  private void setupCommands() {
+  private void registerCommands() {
+    final CommandManager cm = new CommandManager(this.getDescription());
+    this.getCommand("bh").setExecutor(cm);
     this.getCommand("ban").setExecutor(new BanCommand(this));
     this.getCommand("kick").setExecutor(new KickCommand(this));
     this.getCommand("pardon").setExecutor(new PardonCommand(this));
-    this.getCommand("bh").setExecutor(this.cm);
     this.cm.registerCommand("check", new CheckCommand(this));
     this.cm.registerCommand("export", new ExportCommand(this));
     this.cm.registerCommand("history", new HistoryCommand(this));
@@ -143,31 +143,23 @@ public class BanHammer extends Plugin {
     this.cm.registerCommand("reload", new ReloadCommand(this));
   }
 
+  private void registerListeners() {
+    this.playerListener = new PlayerListener();
+    this.pm.registerEvent(Event.Type.PLAYER_LOGIN, this.playerListener, Event.Priority.Highest, this);
+  }
+
   private void setupDatabase() {
     try {
       this.getDatabase().find(BanRecord.class).findRowCount();
     } catch (PersistenceException ex) {
-      Logger.warning(BanHammer.getMessage("no-database"));
+      logger.warning(BanHammer.getMessage("no-database"));
       this.installDDL();
     }
     BanRecord.setDatabase(this.getDatabase());
   }
 
-  private void setupListeners() {
-    this.playerListener = new PlayerListener();
-    this.pm.registerEvent(Event.Type.PLAYER_LOGIN, this.playerListener, Event.Priority.Highest, this);
-  }
-
   private void setupLocalisation() {
     BanHammer.messages = ResourceBundle.getBundle("name.richardson.james.banhammer.localisation.Messages", locale);
-  }
-
-  public long getMaximumTemporaryBan() {
-    return maximumTemporaryBan;
-  }
-
-  public void setMaximumTemporaryBan(long maximumTemporaryBan) {
-    this.maximumTemporaryBan = maximumTemporaryBan;
   }
 
 }
