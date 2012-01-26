@@ -19,6 +19,7 @@ package name.richardson.james.banhammer;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -40,15 +41,16 @@ import name.richardson.james.banhammer.ban.RecentCommand;
 import name.richardson.james.banhammer.ban.ReloadCommand;
 import name.richardson.james.banhammer.kick.KickCommand;
 import name.richardson.james.banhammer.util.BanHammerTime;
-import name.richardson.james.banhammer.util.Logger;
+import name.richardson.james.bukkit.dimensiondoor.DimensionDoorConfiguration;
+import name.richardson.james.bukkit.util.Logger;
+import name.richardson.james.bukkit.util.Plugin;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 
-public class BanHammer extends JavaPlugin {
+public class BanHammer extends Plugin {
 
   private long maximumTemporaryBan;
   private static ResourceBundle messages;
@@ -58,6 +60,7 @@ public class BanHammer extends JavaPlugin {
   private PlayerListener playerListener;
   private PluginDescriptionFile desc;
   private PluginManager pm;
+  private BanHammerConfiguration configuration;
 
   public BanHammer() {
     this.cm = new CommandManager();
@@ -100,30 +103,30 @@ public class BanHammer extends JavaPlugin {
     this.pm = this.getServer().getPluginManager();
 
     try {
-      this.setupLocalisation();
-      this.setupDatabase();
-      this.setupListeners();
-      this.setupCommands();
+      this.logger.setPrefix("[BanHammer] ");
       this.loadConfiguration();
-    } catch (Exception e) {
-      Logger.severe(e.getMessage());
-      e.printStackTrace();
-      this.pm.disablePlugin(this);
-      return;
+      this.setupDatabase();
+      this.setPermission();
+      this.registerListeners();
+      this.registerCommands();
+    } catch (final IOException exception) {
+      this.logger.severe("Unable to load configuration!");
+      exception.printStackTrace();
+    } catch (SQLException exception) {
+      // TODO Auto-generated catch block
+      exception.printStackTrace();
+    } finally {
+      if (!this.getServer().getPluginManager().isPluginEnabled(this)) return;
     }
 
-    Logger.info(String.format(BanHammer.getMessage("plugin-enabled"), this.desc.getFullName()));
+    logger.info(String.format(BanHammer.getMessage("plugin-enabled"), this.desc.getFullName()));
   }
 
   private void loadConfiguration() throws IOException {
-    Logger.info(BanHammer.getMessage("loading-configuration"));
-    File configurationFile = new File(this.getDataFolder() + "/config.yml");
-    YamlConfiguration configuration = YamlConfiguration.loadConfiguration(configurationFile);
-    // load defaults
-    configuration.addDefault("maximum-temporary-ban", "1w");
-    configuration.options().copyDefaults(true);
-    configuration.save(configurationFile);
-    this.maximumTemporaryBan = BanHammerTime.parseTime(configuration.getString("maximum-temporary-ban"));
+    configuration = new BanHammerConfiguration(this);
+    if (configuration.isDebugging()) {
+      Logger.enableDebugging(this.getDescription().getName().toLowerCase());
+    }
   }
 
   private void setupCommands() {
