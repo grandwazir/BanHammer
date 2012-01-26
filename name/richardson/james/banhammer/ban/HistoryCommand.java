@@ -67,7 +67,7 @@ public class HistoryCommand extends PlayerCommand {
   }
 
   @Override
-  public Map<String, Object> parseArguments(List<String> arguments) {
+  public Map<String, Object> parseArguments(List<String> arguments) throws CommandArgumentException {
     Map<String, Object> m = new HashMap<String, Object>();
 
     try {
