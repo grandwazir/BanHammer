@@ -17,49 +17,45 @@
  ******************************************************************************/
 package name.richardson.james.banhammer.ban;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.banhammer.BanHammer;
-import name.richardson.james.banhammer.Command;
+import name.richardson.james.bukkit.util.Time;
+import name.richardson.james.bukkit.util.command.CommandArgumentException;
+import name.richardson.james.bukkit.util.command.CommandPermissionException;
+import name.richardson.james.bukkit.util.command.CommandUsageException;
+import name.richardson.james.bukkit.util.command.PlayerCommand;
 
-public class CheckCommand extends Command {
+public class CheckCommand extends PlayerCommand {
 
-  private CachedList cache;
+  public static final String NAME = "check";
+  public static final String DESCRIPTION = "Check if a player is banned";
+  public static final String PERMISSION_DESCRIPTION = "Allow users to check if a player is banned.";
+  public static final String USAGE = "<name>";
+
+  public static final Permission PERMISSION = new Permission("banhammer.check", CheckCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
+  
+  private final BanHandler banHandler;
 
   public CheckCommand(final BanHammer plugin) {
-    super(plugin);
-    this.name = BanHammer.getMessage("check-command-name");
-    this.description = BanHammer.getMessage("check-command-description");
-    this.usage = BanHammer.getMessage("check-command-usage");
-    this.permission = "banhammer." + this.name;
-    registerPermission(this.permission, this.description, PermissionDefault.OP);
-    this.cache = CachedList.getInstance();
+    super(plugin, BanCommand.NAME, BanCommand.DESCRIPTION, BanCommand.USAGE, BanCommand.PERMISSION_DESCRIPTION, BanCommand.PERMISSION);
+    this.banHandler = plugin.getHandler();
   }
 
   @Override
-  public void execute(final CommandSender sender, Map<String, String> arguments) {
-    String playerName = arguments.get("playerName");
-    
-    if (this.cache.contains(playerName)) {
-      BanRecord ban = BanRecord.findFirst(playerName);
-      sender.sendMessage(String.format(ChatColor.RED + BanHammer.getMessage("player-banned"), playerName));
-      sendBanDetail(sender, ban);
-    } else {
-      sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("player-not-banned"), playerName));
-    }
-
-  }
-
-  @Override
-  protected Map<String, String> parseArguments(List<String> arguments) {
-    Map<String, String> m = new HashMap<String, String>();
-    arguments.remove(0);
+  public Map<String, Object> parseArguments(List<String> arguments) {
+    Map<String, Object> m = new HashMap<String, Object>();
 
     try {
       m.put("playerName", arguments.get(0));
@@ -68,6 +64,41 @@ public class CheckCommand extends Command {
     }
 
     return m;
+  }
+
+  @Override
+  public void execute(CommandSender sender, Map<String, Object> arguments) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+    String playerName = (String) arguments.get("playerName");
+    
+    if (banHandler.isPlayerBanned(playerName)) {
+      BanRecord ban = BanRecord.findFirst(playerName);
+      sender.sendMessage(String.format(ChatColor.RED + BanHammer.getMessage("player-banned"), playerName));
+      sendBanDetail(sender, ban);
+    } else {
+      sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("player-not-banned"), playerName));
+    }
+    
+  }
+  
+  protected void sendBanDetail(CommandSender sender, BanRecord ban) {
+    Date createdDate = new Date(ban.getCreatedAt());
+    DateFormat dateFormat = new SimpleDateFormat("MMM d");
+    String createdAt = dateFormat.format(createdDate);
+    sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-detail"), ban.getCreatedBy(), createdAt));
+    sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-reason"), ban.getReason()));
+    switch (ban.getType()) {
+      case PERMENANT:
+        sender.sendMessage(ChatColor.YELLOW + BanHammer.getMessage("ban-history-time-permanent"));
+        break;
+      case TEMPORARY:
+        Date expiryDate = new Date(ban.getExpiresAt());
+        DateFormat expiryDateFormat = new SimpleDateFormat("MMM d H:mm a ");
+        String expiryDateString = expiryDateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")";
+        Long banTime = ban.getExpiresAt() - ban.getCreatedAt();
+        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-time-temporary"), Time.millisToLongDHMS(banTime)));
+        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-expires-on"), expiryDateString));
+        break;
+    }
   }
 
 }
