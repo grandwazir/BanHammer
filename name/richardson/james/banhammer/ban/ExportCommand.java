@@ -28,7 +28,6 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.banhammer.BanHammer;
-import name.richardson.james.banhammer.util.Logger;
 import name.richardson.james.bukkit.util.command.PlayerCommand;
 
 public class ExportCommand extends PlayerCommand {
@@ -40,13 +39,11 @@ public class ExportCommand extends PlayerCommand {
 
   public static final Permission PERMISSION = new Permission("banhammer.export", ExportCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
   
-  private final BanHandler banHandler;
   private final Server server;
   
   public ExportCommand(final BanHammer plugin) {
     super(plugin, BanCommand.NAME, BanCommand.DESCRIPTION, BanCommand.USAGE, BanCommand.PERMISSION_DESCRIPTION, BanCommand.PERMISSION);
     this.server = plugin.getServer();
-    this.banHandler = plugin.getHandler();
   }
 
   @Override
