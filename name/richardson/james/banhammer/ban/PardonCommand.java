@@ -27,6 +27,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.banhammer.BanHammer;
+import name.richardson.james.banhammer.management.ImportCommand;
 import name.richardson.james.bukkit.util.command.PlayerCommand;
 
 public class PardonCommand extends PlayerCommand {
