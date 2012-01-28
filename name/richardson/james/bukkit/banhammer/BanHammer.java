@@ -18,6 +18,7 @@
 package name.richardson.james.bukkit.banhammer;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -43,7 +44,6 @@ import name.richardson.james.bukkit.banhammer.kick.KickCommand;
 import name.richardson.james.bukkit.banhammer.management.ExportCommand;
 import name.richardson.james.bukkit.banhammer.management.ImportCommand;
 import name.richardson.james.bukkit.banhammer.management.ReloadCommand;
-import name.richardson.james.bukkit.dimensiondoor.DatabaseHandler;
 import name.richardson.james.bukkit.util.Logger;
 import name.richardson.james.bukkit.util.Plugin;
 import name.richardson.james.bukkit.util.command.CommandManager;
@@ -116,6 +116,8 @@ public class BanHammer extends Plugin {
     } catch (final IOException exception) {
       this.logger.severe("Unable to load configuration!");
       exception.printStackTrace();
+    } catch (SQLException exception) {
+      exception.printStackTrace();
     } finally {
       if (!this.getServer().getPluginManager().isPluginEnabled(this)) return;
     }
@@ -124,7 +126,8 @@ public class BanHammer extends Plugin {
   }
 
   private void loadBans() {
-    for (Object record : this.database.find(record)) {
+    bannedPlayerNames.clear();
+    for (Object record : this.database.list(BanRecord.class)) {
       BanRecord ban = (BanRecord) record;
       if (ban.isActive()) this.bannedPlayerNames.add(ban.getPlayer());
     }
@@ -166,7 +169,7 @@ public class BanHammer extends Plugin {
     this.pm.registerEvent(Event.Type.PLAYER_LOGIN, this.playerListener, Event.Priority.Highest, this);
   }
 
-  private void setupDatabase() {
+  private void setupDatabase() throws SQLException {
     try {
       this.getDatabase().find(BanRecord.class).findRowCount();
     } catch (PersistenceException ex) {
@@ -180,11 +183,11 @@ public class BanHammer extends Plugin {
     BanHammer.messages = ResourceBundle.getBundle("name.richardson.james.banhammer.localisation.Messages", locale);
   }
 
-  protected BanRecordCache getBanRecordCache() {
-    return this.banRecordCache;
+  public void reloadBannedPlayers() {
+    this.loadBans();
   }
   
-  protected Set<String> getBannedPlayers() {
+  public Set<String> getBannedPlayers() {
     return Collections.unmodifiableSet(this.bannedPlayerNames);
   }
 

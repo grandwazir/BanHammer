@@ -40,12 +40,12 @@ public class ImportCommand extends PlayerCommand {
 
   public static final Permission PERMISSION = new Permission("banhammer.import", ImportCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
   
-  private final BanHandler banHandler;
+  private final BanHandler handler;
   private final Server server;
   
   public ImportCommand(final BanHammer plugin) {
     super(plugin, ImportCommand.NAME, ImportCommand.DESCRIPTION, ImportCommand.USAGE, ImportCommand.PERMISSION_DESCRIPTION, ImportCommand.PERMISSION);
-    this.banHandler = plugin.getHandler();
+    this.handler = plugin.getHandler(ImportCommand.class);
     this.server = plugin.getServer();
   }
 
@@ -58,7 +58,7 @@ public class ImportCommand extends PlayerCommand {
     final String senderName = sender.getName();
     
     for (OfflinePlayer player : server.getBannedPlayers()) {
-      if (!this.banHandler.banPlayer(player.getName(), senderName, reason, expiryTime, false)) {
+      if (!this.handler.banPlayer(player.getName(), senderName, reason, expiryTime, false)) {
         logger.info(String.format(BanHammer.getMessage("failed-import"), player.getName()));
       } else {
         imported++;

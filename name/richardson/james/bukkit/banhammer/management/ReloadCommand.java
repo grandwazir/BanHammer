@@ -25,7 +25,6 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.banhammer.CachedList;
 import name.richardson.james.bukkit.banhammer.ban.RecentCommand;
 import name.richardson.james.bukkit.util.command.PlayerCommand;
 
@@ -38,18 +37,19 @@ public class ReloadCommand extends PlayerCommand {
 
   public static final Permission PERMISSION = new Permission("banhammer.reload", RecentCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
   
+  private final BanHammer plugin;
+  
   public ReloadCommand(final BanHammer plugin) {
-    super(plugin, RecentCommand.NAME, RecentCommand.DESCRIPTION, RecentCommand.USAGE, RecentCommand.PERMISSION_DESCRIPTION, RecentCommand.PERMISSION);
+    super(plugin, ReloadCommand.NAME, ReloadCommand.DESCRIPTION, ReloadCommand.USAGE, ReloadCommand.PERMISSION_DESCRIPTION, RecentCommand.PERMISSION);
+    this.plugin = plugin;
   }
   
   @Override
   public void execute(final CommandSender sender, Map<String, Object> arguments) {
     String senderName = sender.getName();
-    CachedList.getInstance().reload();
-    String cacheSize = Integer.toString(CachedList.getInstance().size());
-    logger.info(String.format(BanHammer.getMessage("cache-reloaded"), senderName));
-    logger.info(String.format(BanHammer.getMessage("bans-loaded"), cacheSize));
-    sender.sendMessage(String.format(ChatColor.GREEN + BanHammer.getMessage("cache-reloaded"), cacheSize));
+    this.plugin.reloadBannedPlayers();
+    logger.info(String.format("%s has refreshed the banned player list", senderName));
+    sender.sendMessage(String.format(ChatColor.GREEN + "Loaded %d banned name(s) into memory.", this.plugin.getBannedPlayers().size()));
   }
 
 }
