@@ -20,10 +20,12 @@ package name.richardson.james.bukkit.banhammer;
 import java.util.List;
 import java.util.Set;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
 import name.richardson.james.bukkit.util.Handler;
+import name.richardson.james.bukkit.util.Time;
 
 public class BanHandler extends Handler implements BanHammerAPI {
 
@@ -47,15 +49,31 @@ public class BanHandler extends Handler implements BanHammerAPI {
       ban.setPlayer(playerName);
       ban.setCreatedBy(senderName);
       ban.setReason(reason);
+      
       if (banLength != 0) {
         ban.setExpiresAt(now + banLength);
       } else {
         ban.setExpiresAt(0);
       }
+      
       this.database.save(ban);
       bannedPlayers.add(playerName.toLowerCase());
       Player player = this.server.getPlayerExact(playerName);
       if (player != null) player.kickPlayer(reason);
+      
+      if (notify) {
+        if (banLength == 0) {
+          this.notifyPlayers(ChatColor.RED + playerName + " has been permanently banned.");
+          this.notifyPlayers(ChatColor.YELLOW + "- Reason: " + reason);
+        } else {
+          this.notifyPlayers(ChatColor.RED + playerName + " has been banned.");
+          this.notifyPlayers(ChatColor.YELLOW + "- Reason: " + reason);
+          this.notifyPlayers(ChatColor.YELLOW + "- Length: " + Time.millisToLongDHMS(banLength));
+        }
+      }
+      
+      logger.info(String.format("%s has been banned by %s.", playerName, senderName));
+      
       return true;
     } else {
       return false;
@@ -86,6 +104,10 @@ public class BanHandler extends Handler implements BanHammerAPI {
     if (this.isPlayerBanned(playerName)) {
       this.database.delete(BanRecord.findFirstByName(database, playerName));
       this.bannedPlayers.remove(playerName.toLowerCase());
+      if (notify) {
+        this.notifyPlayers(ChatColor.GREEN + playerName + " has been pardoned by " + senderName + ".");
+      }
+      logger.info(String.format("%s has been pardoned by %s.", playerName, senderName));
       return true;
     } else {
       return false;
@@ -95,12 +117,19 @@ public class BanHandler extends Handler implements BanHammerAPI {
   @Override
   public boolean removePlayerBan(BanRecord ban) {
     this.database.delete(ban);
+    logger.debug(String.format("Removed a ban belonging to %s.", ban.getPlayer()));
     return true;
   }
 
   @Override
   public int removePlayerBans(List<BanRecord> bans) {
-    return this.database.delete(bans);
+    int i = this.database.delete(bans);
+    logger.debug(String.format("Removed %d ban(s).", i));
+    return i;
+  }
+  
+  private void notifyPlayers(String message) {
+    this.server.broadcast(message, "banhammer.notify");
   }
 
   

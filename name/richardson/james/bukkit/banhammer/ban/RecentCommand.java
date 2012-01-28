@@ -58,12 +58,11 @@ public class RecentCommand extends PlayerCommand {
     int maxRows = (Integer) arguments.get("maxRows");
     List<BanRecord> bans = BanRecord.findRecent(database, maxRows);
     if (bans.isEmpty())
-      sender.sendMessage(ChatColor.YELLOW + BanHammer.getMessage("ban-recent-none"));
+      sender.sendMessage(ChatColor.YELLOW + "There are no bans on record.");
     else {
       String banTotal = Integer.toString(bans.size());
-      sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + BanHammer.getMessage("ban-recent-summary"), banTotal));
+      sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + "Displaying last %d ban(s):", banTotal));
       for (BanRecord ban : bans) {
-        sender.sendMessage(String.format(ChatColor.RED + BanHammer.getMessage("player-banned"), ban.getPlayer()));
         sendBanDetail(sender, ban);
       }
     }
@@ -91,19 +90,19 @@ public class RecentCommand extends PlayerCommand {
     Date createdDate = new Date(ban.getCreatedAt());
     DateFormat dateFormat = new SimpleDateFormat("MMM d");
     String createdAt = dateFormat.format(createdDate);
-    sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-detail"), ban.getCreatedBy(), createdAt));
-    sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-reason"), ban.getReason()));
+    sender.sendMessage(String.format(ChatColor.RED + "%s banned by %s on %s", ban.getPlayer(), ban.getCreatedBy(), createdAt));
+    sender.sendMessage(String.format(ChatColor.YELLOW + "- Reason: %s.", ban.getReason()));
     switch (ban.getType()) {
       case PERMENANT:
-        sender.sendMessage(ChatColor.YELLOW + BanHammer.getMessage("ban-history-time-permanent"));
+        sender.sendMessage(ChatColor.YELLOW + "Length: Permanent.");
         break;
       case TEMPORARY:
         Date expiryDate = new Date(ban.getExpiresAt());
         DateFormat expiryDateFormat = new SimpleDateFormat("MMM d H:mm a ");
         String expiryDateString = expiryDateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")";
         Long banTime = ban.getExpiresAt() - ban.getCreatedAt();
-        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-time-temporary"), Time.millisToLongDHMS(banTime)));
-        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-expires-on"), expiryDateString));
+        sender.sendMessage(String.format(ChatColor.YELLOW + "Length: %s", Time.millisToLongDHMS(banTime)));
+        sender.sendMessage(String.format(ChatColor.YELLOW + "Expires on: %s", expiryDateString));
         break;
     }
   }

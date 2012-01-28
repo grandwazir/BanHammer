@@ -28,11 +28,15 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 
+import name.richardson.james.bukkit.util.Logger;
+
 
 public class BannedPlayerListener implements Listener {
 
   private final BanHandler handler;
   private final Set<String> bannedPlayers;
+  
+  private static final Logger logger = new Logger(BannedPlayerListener.class);
 
   public BannedPlayerListener(BanHammer plugin) {
     this.handler = plugin.getHandler(BannedPlayerListener.class);
@@ -55,6 +59,7 @@ public class BannedPlayerListener implements Listener {
           String expiryDateString = dateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")";
           message = String.format("You have been banned until %s.", expiryDateString);
         }
+        logger.debug(String.format("Blocked %s from connecting due to an active ban.", playerName));
         event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message);
       } else { 
         this.bannedPlayers.remove(playerName.toLowerCase());

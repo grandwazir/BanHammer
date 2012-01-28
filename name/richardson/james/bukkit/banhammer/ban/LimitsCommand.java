@@ -52,7 +52,7 @@ public class LimitsCommand extends PlayerCommand {
   @Override
   public void execute(CommandSender sender, Map<String, Object> arguments) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     
-    sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + "There are currently %d limits configured.", plugin.getBanLimits().size()));
+    sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + "There are currently %d limits configured:", plugin.getBanLimits().size()));
     for (final Entry<String, Long> limit : plugin.getBanLimits().entrySet()) {
       ChatColor colour;
       if (sender.hasPermission("banhammer.ban." + limit.getKey())) {

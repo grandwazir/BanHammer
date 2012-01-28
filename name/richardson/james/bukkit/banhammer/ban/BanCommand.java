@@ -90,9 +90,9 @@ public class BanCommand extends PlayerCommand {
     // check the user can ban for the specified amount of time
     if (banLengthAuthorised(sender, expiryTime)) {
       if (!this.banHandler.banPlayer(playerName, senderName, reason, expiryTime, true)) {
-        sender.sendMessage(ChatColor.RED + String.format(BanHammer.getMessage("player-already-banned"), playerName));
+        sender.sendMessage(ChatColor.RED + String.format("%s is already banned!", playerName));
       } else {
-        sender.sendMessage(ChatColor.RED + String.format(BanHammer.getMessage("player-banned"), playerName));
+        sender.sendMessage(ChatColor.GREEN + String.format("%s has been banned.", playerName));
       }
     } else {
       throw new CommandPermissionException("You are not allowed to ban for that long.", BanCommand.PERMISSION);

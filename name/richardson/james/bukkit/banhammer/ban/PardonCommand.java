@@ -68,7 +68,7 @@ public class PardonCommand extends PlayerCommand {
         this.handler.pardonPlayer(playerName, senderName, true);
         sender.sendMessage(String.format(ChatColor.GREEN + "%s has been pardoned.", playerName));
       } else {
-        throw new CommandPermissionException("You may only pardon your own bans", PERMISSION_ALL);
+        throw new CommandPermissionException("You may only pardon your own bans.", PERMISSION_ALL);
       } 
     } else {
       sender.sendMessage(String.format(ChatColor.YELLOW + "%s is not banned.", playerName));

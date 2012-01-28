@@ -61,10 +61,10 @@ public class CheckCommand extends PlayerCommand {
     BanRecord ban = handler.getPlayerBan(playerName);
     
     if (ban != null) {
-      sender.sendMessage(String.format(ChatColor.RED + BanHammer.getMessage("player-banned"), playerName));
+      sender.sendMessage(String.format(ChatColor.RED + "%s is banned.", playerName));
       sendBanDetail(sender, ban);
     } else {
-      sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("player-not-banned"), playerName));
+      sender.sendMessage(String.format(ChatColor.YELLOW + "%s is not banned.", playerName));
     }
     
   }
@@ -86,19 +86,19 @@ public class CheckCommand extends PlayerCommand {
     Date createdDate = new Date(ban.getCreatedAt());
     DateFormat dateFormat = new SimpleDateFormat("MMM d");
     String createdAt = dateFormat.format(createdDate);
-    sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-detail"), ban.getCreatedBy(), createdAt));
-    sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-reason"), ban.getReason()));
+    sender.sendMessage(String.format(ChatColor.YELLOW + "Banned by %s on %s", ban.getCreatedBy(), createdAt));
+    sender.sendMessage(String.format(ChatColor.YELLOW + "- Reason: %s.", ban.getReason()));
     switch (ban.getType()) {
       case PERMENANT:
-        sender.sendMessage(ChatColor.YELLOW + BanHammer.getMessage("ban-history-time-permanent"));
+        sender.sendMessage(ChatColor.YELLOW + "Length: Permanent.");
         break;
       case TEMPORARY:
         Date expiryDate = new Date(ban.getExpiresAt());
         DateFormat expiryDateFormat = new SimpleDateFormat("MMM d H:mm a ");
         String expiryDateString = expiryDateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")";
         Long banTime = ban.getExpiresAt() - ban.getCreatedAt();
-        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-time-temporary"), Time.millisToLongDHMS(banTime)));
-        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-expires-on"), expiryDateString));
+        sender.sendMessage(String.format(ChatColor.YELLOW + "Length: %s", Time.millisToLongDHMS(banTime)));
+        sender.sendMessage(String.format(ChatColor.YELLOW + "Expires on: %s", expiryDateString));
         break;
     }
   }

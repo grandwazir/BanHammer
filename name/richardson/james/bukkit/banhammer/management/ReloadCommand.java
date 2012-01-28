@@ -48,7 +48,7 @@ public class ReloadCommand extends PlayerCommand {
   public void execute(final CommandSender sender, Map<String, Object> arguments) {
     String senderName = sender.getName();
     this.plugin.reloadBannedPlayers();
-    logger.info(String.format("%s has refreshed the banned player list", senderName));
+    logger.info(String.format("%s has refreshed the banned player list.", senderName));
     sender.sendMessage(String.format(ChatColor.GREEN + "Loaded %d banned name(s) into memory.", this.plugin.getBannedPlayers().size()));
   }
 

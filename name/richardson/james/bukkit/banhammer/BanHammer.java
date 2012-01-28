@@ -109,7 +109,7 @@ public class BanHammer extends Plugin {
 
   @Override
   public void onDisable() {
-    logger.info(String.format(messages.getString("plugin-disabled"), this.desc.getName()));
+    logger.info(String.format(messages.getString("%s is disabled."), this.desc.getName()));
   }
 
   @Override
@@ -119,7 +119,6 @@ public class BanHammer extends Plugin {
 
     try {
       this.logger.setPrefix("[BanHammer] ");
-      this.setupLocalisation();
       this.loadConfiguration();
       this.setupDatabase();
       this.loadBans();
@@ -135,7 +134,7 @@ public class BanHammer extends Plugin {
       if (!this.getServer().getPluginManager().isPluginEnabled(this)) return;
     }
 
-    logger.info(String.format(BanHammer.getMessage("plugin-enabled"), this.desc.getFullName()));
+    logger.info(String.format(BanHammer.getMessage("%s is enabled."), this.desc.getFullName()));
   }
 
   public Map<String, Long> getBanLimits() {
@@ -200,14 +199,10 @@ public class BanHammer extends Plugin {
     try {
       this.getDatabase().find(BanRecord.class).findRowCount();
     } catch (PersistenceException ex) {
-      logger.warning(BanHammer.getMessage("no-database"));
+      logger.warning("No database schema found; making a new one.");
       this.installDDL();
     }
     this.database = new DatabaseHandler(this.getDatabase());
-  }
-  
-  private void setupLocalisation() {
-    BanHammer.messages = ResourceBundle.getBundle("name.richardson.james.bukkit.banhammer.localisation.Messages", locale);
   }
 
 }

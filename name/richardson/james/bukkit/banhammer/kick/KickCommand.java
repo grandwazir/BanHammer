@@ -54,12 +54,12 @@ public class KickCommand extends PlayerCommand {
     final String senderName = sender.getName();
     
     if (player != null) {
-      player.kickPlayer(String.format(BanHammer.getMessage("player-kicked-notification"), arguments.get("reason")));
-      logger.info(String.format(BanHammer.getMessage("player-kicked"), senderName, playerName));
-      this.server.broadcast(String.format(ChatColor.RED + BanHammer.getMessage("broadcast-player-kicked"), playerName), "banhammer.notify");
-      this.server.broadcast(String.format(ChatColor.YELLOW + BanHammer.getMessage("broadcast-player-banned-reason"), arguments.get("reason")), "banhammer.notify");
+      player.kickPlayer(String.format("You have been kicked: %s", arguments.get("reason")));
+      logger.info(String.format("%s has been kicked by %s", senderName, playerName));
+      this.server.broadcast(String.format(ChatColor.RED + "%s has been kicked.", playerName), "banhammer.notify");
+      this.server.broadcast(String.format(ChatColor.YELLOW + "- Reason: %s", arguments.get("reason")), "banhammer.notify");
     } else {
-      logger.info(String.format(BanHammer.getMessage("no-player-found"), playerName));
+      sender.sendMessage(ChatColor.RED + "There is no one matching that name!");
     }
   }
 
@@ -85,7 +85,7 @@ public class KickCommand extends PlayerCommand {
       reason.deleteCharAt(reason.length() - seperator.length());
       return reason.toString();
     } catch (StringIndexOutOfBoundsException e) {
-      return BanHammer.getMessage("default-reason");
+      return BanHammer.getMessage("No reason provided");
     }
   }
 

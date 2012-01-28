@@ -51,15 +51,15 @@ public class ExportCommand extends PlayerCommand {
 
   @Override
   public void execute(final CommandSender sender, Map<String, Object> arguments) {
-    int imported = 0;
+    int exported = 0;
     for (Object record : database.list(BanRecord.class)) {
       BanRecord ban = (BanRecord) record;
       OfflinePlayer player = server.getOfflinePlayer(ban.getPlayer());
       player.setBanned(true);
-      imported++;
+      exported++;
     }
-    logger.info(String.format(BanHammer.getMessage("ban-export"), sender.getName()));
-    sender.sendMessage(String.format(ChatColor.GREEN + BanHammer.getMessage("bans-exported"), imported));
+    logger.info(String.format("%s has exported all bans to banned-players.txt", sender.getName()));
+    sender.sendMessage(String.format(ChatColor.GREEN + "%d ban(s) exported.", exported));
   }
 
 }

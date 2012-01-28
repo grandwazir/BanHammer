@@ -54,20 +54,20 @@ public class ImportCommand extends PlayerCommand {
     final int totalBans = server.getBannedPlayers().size();
     int imported = 0;
     final long expiryTime = 0;
-    final String reason = BanHammer.getMessage("default-import-reason");
+    final String reason = "Imported from banned-players.txt";
     final String senderName = sender.getName();
     
     for (OfflinePlayer player : server.getBannedPlayers()) {
       if (!this.handler.banPlayer(player.getName(), senderName, reason, expiryTime, false)) {
-        logger.info(String.format(BanHammer.getMessage("failed-import"), player.getName()));
+        logger.warning(String.format("Failed to import ban for %s because they are already banned by BanHammer.", player.getName()));
       } else {
         imported++;
       }
       player.setBanned(false);
     }
     
-    logger.info(String.format(BanHammer.getMessage("ban-import"), sender.getName(), imported));
-    sender.sendMessage(String.format(ChatColor.GREEN + BanHammer.getMessage("bans-imported"), imported, totalBans));
+    logger.info(String.format("%s has imported %d bans from banned-players.txt.", sender.getName(), imported));
+    sender.sendMessage(String.format("%d out of %d ban(s) were imported.", imported, totalBans));
   }
 
   @Override
