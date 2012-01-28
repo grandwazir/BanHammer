@@ -73,12 +73,20 @@ public class BanCommand extends PlayerCommand {
 
   @Override
   public void execute(CommandSender sender, Map<String, Object> arguments) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final long expiryTime = Time.parseTime((String) arguments.get("time"));
     final String unmatchedPlayerName = (String) (arguments.get("playerName"));
     final Player player = this.plugin.getServer().getPlayer(unmatchedPlayerName);
     final String playerName = player != null ? player.getName() : unmatchedPlayerName;
     final String senderName = sender.getName();
     final String reason = (String) arguments.get("reason");
+    
+    final String expiryTimeString = (String) arguments.get("time");
+    Long expiryTime = (long) 0;
+    
+    if (plugin.getBanLimits().containsKey(expiryTimeString)) {
+      expiryTime = plugin.getBanLimits().get(expiryTimeString);
+    } else {
+      expiryTime = Time.parseTime(expiryTimeString);
+    }
     
     // check the user can ban for the specified amount of time
     if (banLengthAuthorised(sender, expiryTime)) {
