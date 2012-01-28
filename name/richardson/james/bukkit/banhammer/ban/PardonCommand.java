@@ -41,7 +41,8 @@ public class PardonCommand extends PlayerCommand {
   public static final String PERMISSION_DESCRIPTION = "Allow users to pardon a player";
   public static final String USAGE = "<name>";
 
-  public static final Permission PERMISSION = new Permission("banhammer.pardon", ImportCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
+  public static final Permission PERMISSION = new Permission("banhammer.pardon", PardonCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
+  public static final Permission PERMISSION_ALL = new Permission("banhammer.pardon.all", "Allow users to pardon all bans regardless of who issued it", PermissionDefault.OP);
   
   private final BanHandler handler;
   private final BanHammer plugin;
@@ -50,7 +51,10 @@ public class PardonCommand extends PlayerCommand {
     super(plugin, PardonCommand.NAME, PardonCommand.DESCRIPTION, PardonCommand.USAGE, PardonCommand.PERMISSION_DESCRIPTION, PardonCommand.PERMISSION);
     this.handler = plugin.getHandler(PardonCommand.class);
     this.plugin = plugin;
-    this.registerAdditionalPermissions();
+    final Permission wildcard = new Permission(PardonCommand.PERMISSION.getName() + ".*", "Allow a user to pardon all bans.", PermissionDefault.OP);
+    this.plugin.addPermission(wildcard, true);
+    PERMISSION_ALL.addParent(wildcard, true);
+    this.plugin.addPermission(PERMISSION_ALL, false);
   }
 
   @Override
@@ -60,12 +64,12 @@ public class PardonCommand extends PlayerCommand {
     final BanRecord record = handler.getPlayerBan(playerName);
     
     if (record != null) {
-      if (record.getCreatedBy().equalsIgnoreCase(senderName) || sender.hasPermission(PardonCommand.PERMISSION.getName() + "." + "all")) {
+      if (record.getCreatedBy().equalsIgnoreCase(senderName) || sender.hasPermission(PERMISSION_ALL)) {
         this.handler.pardonPlayer(playerName, senderName, true);
         sender.sendMessage(String.format(ChatColor.GREEN + "%s has been pardoned.", playerName));
       } else {
-        throw new CommandPermissionException(senderName, plugin.getServer().getPluginManager().getPermission(PardonCommand.PERMISSION.getName() + "." + "all"));
-      }
+        throw new CommandPermissionException("You may only pardon your own bans", PERMISSION_ALL);
+      } 
     } else {
       sender.sendMessage(String.format(ChatColor.YELLOW + "%s is not banned.", playerName));
     }
@@ -82,21 +86,6 @@ public class PardonCommand extends PlayerCommand {
     }
 
     return m;
-  }
-
-  private void registerAdditionalPermissions() {
-    final Permission wildcard = new Permission(PardonCommand.PERMISSION.getName() + ".*", "Allow a user to pardon all bans.", PermissionDefault.OP);
-    this.plugin.addPermission(wildcard, true);
-    String permissionNode = PardonCommand.PERMISSION.getName() + "." + "own";
-    String description = "Allow users to only pardon bans made by themselves.";
-    Permission permission = new Permission(permissionNode, description, PermissionDefault.OP);
-    permission.addParent(wildcard, true);
-    this.plugin.addPermission(permission, false);
-    permissionNode = PardonCommand.PERMISSION.getName() + "." + "all";
-    description = "Allow users to pardon all bans regardless of who issued it";
-    permission = new Permission(permissionNode, description, PermissionDefault.OP);
-    permission.addParent(wildcard, true);
-    this.plugin.addPermission(permission, false);
   }
 
 }

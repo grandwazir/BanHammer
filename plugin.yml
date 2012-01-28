@@ -1,5 +1,6 @@
 name: BanHammer
 main: name.richardson.james.bukkit.banhammer.BanHammer
+description: Bans, kicks and records.
 version: 1.7.0
 database: true
 commands:

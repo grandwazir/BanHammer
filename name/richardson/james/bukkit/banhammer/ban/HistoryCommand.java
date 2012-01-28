@@ -35,6 +35,7 @@ import name.richardson.james.bukkit.banhammer.BanHandler;
 import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.util.Time;
 import name.richardson.james.bukkit.util.command.CommandArgumentException;
+import name.richardson.james.bukkit.util.command.CommandPermissionException;
 import name.richardson.james.bukkit.util.command.PlayerCommand;
 
 public class HistoryCommand extends PlayerCommand {
@@ -42,28 +43,39 @@ public class HistoryCommand extends PlayerCommand {
   public static final String NAME = "history";
   public static final String DESCRIPTION = "View a player's ban history";
   public static final String PERMISSION_DESCRIPTION = "Allow users to view a player's ban history";
-  public static final String USAGE = "<name>";
+  public static final String USAGE = "[name]";
 
-  public static final Permission PERMISSION = new Permission("banhammer.history", HistoryCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
+  public static final Permission PERMISSION = new Permission("banhammer.history", HistoryCommand.PERMISSION_DESCRIPTION, PermissionDefault.TRUE);
+  public static final Permission PERMISSION_OTHER = new Permission("banhammer.history.others", "Allow users to check the ban history of others.", PermissionDefault.OP);
   
   private final BanHandler handler;
+  private final BanHammer plugin;
   
   public HistoryCommand(final BanHammer plugin) {
     super(plugin, HistoryCommand.NAME, HistoryCommand.DESCRIPTION, HistoryCommand.USAGE, HistoryCommand.PERMISSION_DESCRIPTION, HistoryCommand.PERMISSION);
     this.handler = plugin.getHandler(HistoryCommand.class);
+    this.plugin = plugin;
+    final Permission wildcard = new Permission(HistoryCommand.PERMISSION.getName() + ".*", "Allow a user to check the ban history of everyone.", PermissionDefault.OP);
+    this.plugin.addPermission(wildcard, true);
+    PERMISSION_OTHER.addParent(wildcard, true);
+    this.plugin.addPermission(PERMISSION_OTHER, false);
   }
 
   @Override
-  public void execute(final CommandSender sender, Map<String, Object> arguments) {
-    final String playerName = (String) arguments.get("playerName");
-    final List<BanRecord> bans = handler.getPlayerBans(playerName);
-    
-    if (bans.isEmpty()) {
-      sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-none"), playerName));
+  public void execute(final CommandSender sender, Map<String, Object> arguments) throws CommandPermissionException {
+    final String playerName = arguments.get("playerName") != null ? (String) arguments.get("playerName") : sender.getName();
+    if (!playerName.equalsIgnoreCase(sender.getName()) && !sender.hasPermission(PardonCommand.PERMISSION.getName() + "." + "others")) {
+      throw new CommandPermissionException("You do not have permission to view other player's ban history.", PERMISSION_OTHER);
     } else {
-      sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + BanHammer.getMessage("ban-history-summary"), playerName, bans.size()));
-      for (BanRecord ban : bans) {
-        sendBanDetail(sender, ban);
+      final List<BanRecord> bans = handler.getPlayerBans(playerName);
+      
+      if (bans.isEmpty()) {
+        sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-none"), playerName));
+      } else {
+        sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + BanHammer.getMessage("ban-history-summary"), playerName, bans.size()));
+        for (BanRecord ban : bans) {
+          sendBanDetail(sender, ban);
+        }
       }
     }
   }
@@ -75,7 +87,7 @@ public class HistoryCommand extends PlayerCommand {
     try {
       m.put("playerName", arguments.get(0));
     } catch (IndexOutOfBoundsException e) {
-      throw new CommandArgumentException("You must provide a player name to check", "You must type the name exactly");
+      m.put("playerName", null);
     }
 
     return m;
