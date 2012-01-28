@@ -56,13 +56,13 @@ public class CheckCommand extends PlayerCommand {
   }
 
   @Override
-  public Map<String, Object> parseArguments(List<String> arguments) {
+  public Map<String, Object> parseArguments(List<String> arguments) throws CommandArgumentException {
     Map<String, Object> m = new HashMap<String, Object>();
 
     try {
       m.put("playerName", arguments.get(0));
     } catch (IndexOutOfBoundsException e) {
-      throw new IllegalArgumentException();
+      throw new CommandArgumentException("You must specify a valid player name", "You need to type the whole name.");
     }
 
     return m;
