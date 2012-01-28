@@ -86,7 +86,7 @@ public class KickCommand extends PlayerCommand {
       reason.deleteCharAt(reason.length() - seperator.length());
       return reason.toString();
     } catch (StringIndexOutOfBoundsException e) {
-      return BanHammer.getMessage("No reason provided");
+      return "No reason provided";
     }
   }
 
