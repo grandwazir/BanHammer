@@ -47,7 +47,7 @@ public class BanHammerConfiguration extends AbstractConfiguration {
   public void setBanLimits() {
     limits.clear();
     logger.debug(String.format("Registering ban limits"));
-    final ConfigurationSection section = configuration.getConfigurationSection("ban-limit");
+    final ConfigurationSection section = configuration.getConfigurationSection("ban-limits");
     for (String key : section.getKeys(false)) {
       try {
         final String name = key;

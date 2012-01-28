@@ -120,7 +120,6 @@ public class BanHammer extends Plugin {
       this.logger.setPrefix("[BanHammer] ");
       this.setupLocalisation();
       this.loadConfiguration();
-      this.setBanLimits();
       this.setupDatabase();
       this.loadBans();
       this.setPermission();
@@ -164,6 +163,7 @@ public class BanHammer extends Plugin {
     if (configuration.isDebugging()) {
       Logger.enableDebugging(this.getDescription().getName().toLowerCase());
     }
+    this.configuration.setBanLimits();
   }
 
   private void registerCommands() {
