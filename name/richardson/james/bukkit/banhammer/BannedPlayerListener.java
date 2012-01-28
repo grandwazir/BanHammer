@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License 
  * along with BanHammer.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.bukkit.banhammer.ban;
+package name.richardson.james.bukkit.banhammer;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -28,9 +28,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 
-import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.banhammer.BanHandler;
-import name.richardson.james.bukkit.banhammer.BanRecord;
 
 public class BannedPlayerListener implements Listener {
 
@@ -39,7 +36,7 @@ public class BannedPlayerListener implements Listener {
 
   public BannedPlayerListener(BanHammer plugin) {
     this.handler = plugin.getHandler(BannedPlayerListener.class);
-    this.bannedPlayers = plugin.getBannedPlayers();
+    this.bannedPlayers = plugin.getModifiableBannedPlayers();
   }
   
   @EventHandler(priority = EventPriority.HIGH)
