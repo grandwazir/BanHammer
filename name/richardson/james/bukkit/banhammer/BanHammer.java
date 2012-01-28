@@ -3,12 +3,19 @@
  * 
  * BanHammer.java is part of BanHammer.
  * 
- * BanHammer is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * BanHammer is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  * 
- * BanHammer is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * BanHammer is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License along with BanHammer.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
+
 package name.richardson.james.bukkit.banhammer;
 
 import java.io.IOException;
@@ -47,37 +54,37 @@ public class BanHammer extends Plugin {
   private long maximumTemporaryBan;
   private static ResourceBundle messages;
   private CommandManager cm;
-  
+
   private BannedPlayerListener bannedPlayerListener;
   private PluginDescriptionFile desc;
   private PluginManager pm;
   private BanHammerConfiguration configuration;
   private DatabaseHandler database;
-  
-  private final HashSet<String> bannedPlayerNames = new HashSet<String>();
 
+  private final HashSet<String> bannedPlayerNames = new HashSet<String>();
 
   /**
    * This returns a localised string from the loaded ResourceBundle.
    * 
-   * @param key The key for the desired string.
+   * @param key
+   * The key for the desired string.
    * @return The string for the given key.
    */
-  public static String getMessage(String key) {
-    return messages.getString(key);
+  public static String getMessage(final String key) {
+    return BanHammer.messages.getString(key);
   }
-  
+
+  public Map<String, Long> getBanLimits() {
+    return this.configuration.getBanLimits();
+  }
+
   public Set<String> getBannedPlayers() {
     return Collections.unmodifiableSet(this.bannedPlayerNames);
-  }
-  
-  protected Set<String> getModifiableBannedPlayers() {
-    return this.bannedPlayerNames;
   }
 
   @Override
   public List<Class<?>> getDatabaseClasses() {
-    List<Class<?>> list = new ArrayList<Class<?>>();
+    final List<Class<?>> list = new ArrayList<Class<?>>();
     list.add(BanRecord.class);
     return list;
   }
@@ -91,17 +98,17 @@ public class BanHammer extends Plugin {
    * 
    * @return A new BanHandler instance.
    */
-  public BanHandler getHandler(Class<?> parentClass) {
+  public BanHandler getHandler(final Class<?> parentClass) {
     return new BanHandler(parentClass, this);
   }
 
   public long getMaximumTemporaryBan() {
-    return maximumTemporaryBan;
+    return this.maximumTemporaryBan;
   }
 
   @Override
   public void onDisable() {
-    logger.info(String.format("%s is disabled.", this.desc.getName()));
+    this.logger.info(String.format("%s is disabled.", this.desc.getName()));
   }
 
   @Override
@@ -120,50 +127,48 @@ public class BanHammer extends Plugin {
     } catch (final IOException exception) {
       this.logger.severe("Unable to load configuration!");
       exception.printStackTrace();
-    } catch (SQLException exception) {
+    } catch (final SQLException exception) {
       exception.printStackTrace();
     } finally {
       if (!this.getServer().getPluginManager().isPluginEnabled(this)) return;
     }
 
-    logger.info(String.format("%s is enabled.", this.desc.getFullName()));
-  }
-
-  public Map<String, Long> getBanLimits() {
-    return configuration.getBanLimits();
+    this.logger.info(String.format("%s is enabled.", this.desc.getFullName()));
   }
 
   public void reloadBannedPlayers() {
     this.loadBans();
   }
 
-  public void setMaximumTemporaryBan(long maximumTemporaryBan) {
+  public void setMaximumTemporaryBan(final long maximumTemporaryBan) {
     this.maximumTemporaryBan = maximumTemporaryBan;
   }
-  
+
   private void loadBans() {
-    bannedPlayerNames.clear();
-    for (Object record : this.database.list(BanRecord.class)) {
-      BanRecord ban = (BanRecord) record;
-      if (ban.isActive()) this.bannedPlayerNames.add(ban.getPlayer());
+    this.bannedPlayerNames.clear();
+    for (final Object record : this.database.list(BanRecord.class)) {
+      final BanRecord ban = (BanRecord) record;
+      if (ban.isActive()) {
+        this.bannedPlayerNames.add(ban.getPlayer());
+      }
     }
-    logger.info(String.format("%d banned names loaded.", bannedPlayerNames.size()));
+    this.logger.info(String.format("%d banned names loaded.", this.bannedPlayerNames.size()));
   }
-  
+
   private void loadConfiguration() throws IOException {
-    configuration = new BanHammerConfiguration(this);
-    if (configuration.isDebugging()) {
+    this.configuration = new BanHammerConfiguration(this);
+    if (this.configuration.isDebugging()) {
       Logger.enableDebugging(this.getDescription().getName().toLowerCase());
     }
     this.configuration.setBanLimits();
   }
 
   private void registerCommands() {
-    cm = new CommandManager(this.getDescription());
-    this.getCommand("bh").setExecutor(cm);
-    PlayerCommand banCommand = new BanCommand(this);
-    PlayerCommand kickCommand = new KickCommand(this);
-    PlayerCommand pardonCommand = new PardonCommand(this);
+    this.cm = new CommandManager(this.getDescription());
+    this.getCommand("bh").setExecutor(this.cm);
+    final PlayerCommand banCommand = new BanCommand(this);
+    final PlayerCommand kickCommand = new KickCommand(this);
+    final PlayerCommand pardonCommand = new PardonCommand(this);
     // register commands
     this.cm.registerCommand("ban", banCommand);
     this.cm.registerCommand("check", new CheckCommand(this));
@@ -184,17 +189,21 @@ public class BanHammer extends Plugin {
 
   private void registerListeners() {
     this.bannedPlayerListener = new BannedPlayerListener(this);
-    this.pm.registerEvents(bannedPlayerListener, this);
+    this.pm.registerEvents(this.bannedPlayerListener, this);
   }
 
   private void setupDatabase() throws SQLException {
     try {
       this.getDatabase().find(BanRecord.class).findRowCount();
-    } catch (PersistenceException ex) {
-      logger.warning("No database schema found; making a new one.");
+    } catch (final PersistenceException ex) {
+      this.logger.warning("No database schema found; making a new one.");
       this.installDDL();
     }
     this.database = new DatabaseHandler(this.getDatabase());
+  }
+
+  protected Set<String> getModifiableBannedPlayers() {
+    return this.bannedPlayerNames;
   }
 
 }

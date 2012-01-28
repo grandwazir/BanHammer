@@ -3,12 +3,19 @@
  * 
  * ExportCommand.java is part of BanHammer.
  * 
- * BanHammer is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * BanHammer is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  * 
- * BanHammer is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * BanHammer is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License along with BanHammer.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
+
 package name.richardson.james.bukkit.banhammer.management;
 
 import java.util.Map;
@@ -33,10 +40,10 @@ public class ExportCommand extends PlayerCommand {
   public static final String USAGE = "";
 
   public static final Permission PERMISSION = new Permission("banhammer.export", ExportCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
-  
+
   private final Server server;
   private final DatabaseHandler database;
-  
+
   public ExportCommand(final BanHammer plugin) {
     super(plugin, ExportCommand.NAME, ExportCommand.DESCRIPTION, ExportCommand.USAGE, ExportCommand.PERMISSION_DESCRIPTION, ExportCommand.PERMISSION);
     this.server = plugin.getServer();
@@ -44,15 +51,15 @@ public class ExportCommand extends PlayerCommand {
   }
 
   @Override
-  public void execute(final CommandSender sender, Map<String, Object> arguments) {
+  public void execute(final CommandSender sender, final Map<String, Object> arguments) {
     int exported = 0;
-    for (Object record : database.list(BanRecord.class)) {
-      BanRecord ban = (BanRecord) record;
-      OfflinePlayer player = server.getOfflinePlayer(ban.getPlayer());
+    for (final Object record : this.database.list(BanRecord.class)) {
+      final BanRecord ban = (BanRecord) record;
+      final OfflinePlayer player = this.server.getOfflinePlayer(ban.getPlayer());
       player.setBanned(true);
       exported++;
     }
-    logger.info(String.format("%s has exported all bans to banned-players.txt", sender.getName()));
+    this.logger.info(String.format("%s has exported all bans to banned-players.txt", sender.getName()));
     sender.sendMessage(String.format(ChatColor.GREEN + "%d ban(s) exported.", exported));
   }
 

@@ -3,12 +3,19 @@
  * 
  * PardonCommand.java is part of BanHammer.
  * 
- * BanHammer is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * BanHammer is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  * 
- * BanHammer is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * BanHammer is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License along with BanHammer.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
+
 package name.richardson.james.bukkit.banhammer.ban;
 
 import java.util.HashMap;
@@ -36,7 +43,7 @@ public class PardonCommand extends PlayerCommand {
 
   public static final Permission PERMISSION = new Permission("banhammer.pardon", PardonCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
   public static final Permission PERMISSION_ALL = new Permission("banhammer.pardon.all", "Allow users to pardon all bans regardless of who issued it", PermissionDefault.OP);
-  
+
   private final BanHandler handler;
   private final BanHammer plugin;
 
@@ -46,35 +53,34 @@ public class PardonCommand extends PlayerCommand {
     this.plugin = plugin;
     final Permission wildcard = new Permission(PardonCommand.PERMISSION.getName() + ".*", "Allow a user to pardon all bans.", PermissionDefault.OP);
     this.plugin.addPermission(wildcard, true);
-    PERMISSION_ALL.addParent(wildcard, true);
-    this.plugin.addPermission(PERMISSION_ALL, false);
+    PardonCommand.PERMISSION_ALL.addParent(wildcard, true);
+    this.plugin.addPermission(PardonCommand.PERMISSION_ALL, false);
   }
 
   @Override
-  public void execute(final CommandSender sender, Map<String, Object> arguments) throws CommandPermissionException {
+  public void execute(final CommandSender sender, final Map<String, Object> arguments) throws CommandPermissionException {
     final String playerName = (String) arguments.get("playerName");
     final String senderName = sender.getName();
-    final BanRecord record = handler.getPlayerBan(playerName);
-    
+    final BanRecord record = this.handler.getPlayerBan(playerName);
+
     if (record != null) {
-      if (record.getCreatedBy().equalsIgnoreCase(senderName) || sender.hasPermission(PERMISSION_ALL)) {
+      if (record.getCreatedBy().equalsIgnoreCase(senderName) || sender.hasPermission(PardonCommand.PERMISSION_ALL)) {
         this.handler.pardonPlayer(playerName, senderName, true);
         sender.sendMessage(String.format(ChatColor.GREEN + "%s has been pardoned.", playerName));
-      } else {
-        throw new CommandPermissionException("You may only pardon your own bans.", PERMISSION_ALL);
-      } 
+      } else
+        throw new CommandPermissionException("You may only pardon your own bans.", PardonCommand.PERMISSION_ALL);
     } else {
       sender.sendMessage(String.format(ChatColor.YELLOW + "%s is not banned.", playerName));
     }
   }
 
   @Override
-  public Map<String, Object> parseArguments(List<String> arguments) throws CommandArgumentException {
-    Map<String, Object> m = new HashMap<String, Object>();
+  public Map<String, Object> parseArguments(final List<String> arguments) throws CommandArgumentException {
+    final Map<String, Object> m = new HashMap<String, Object>();
 
     try {
       m.put("playerName", arguments.get(0));
-    } catch (IndexOutOfBoundsException e) {
+    } catch (final IndexOutOfBoundsException e) {
       throw new CommandArgumentException("You must specify a valid player name", "You need to type the whole name.");
     }
 
