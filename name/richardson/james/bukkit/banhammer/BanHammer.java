@@ -53,7 +53,6 @@ public class BanHammer extends Plugin {
 
   private long maximumTemporaryBan;
   private static ResourceBundle messages;
-  private final static Locale locale = Locale.getDefault();
   private CommandManager cm;
   
   private BannedPlayerListener bannedPlayerListener;

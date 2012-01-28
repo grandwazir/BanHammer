@@ -2,13 +2,10 @@ package name.richardson.james.bukkit.banhammer;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.ItemStack;
 
 import name.richardson.james.bukkit.util.Plugin;
 import name.richardson.james.bukkit.util.Time;
