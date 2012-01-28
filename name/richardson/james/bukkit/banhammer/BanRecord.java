@@ -28,7 +28,6 @@ import com.avaje.ebean.ExampleExpression;
 import com.avaje.ebean.LikeType;
 import com.avaje.ebean.validation.NotNull;
 
-import name.richardson.james.bukkit.banhammer.ban.CachedBan;
 
 @Entity()
 @Table(name = "bh_bans")

@@ -15,12 +15,10 @@
  * You should have received a copy of the GNU General Public License 
  * along with BanHammer.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.bukkit.banhammer.ban;
+package name.richardson.james.bukkit.banhammer;
 
 import java.util.HashMap;
 
-import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.banhammer.util.Logger;
 
 

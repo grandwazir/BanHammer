@@ -15,9 +15,8 @@
  * You should have received a copy of the GNU General Public License 
  * along with BanHammer.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.bukkit.banhammer.ban;
+package name.richardson.james.bukkit.banhammer;
 
-import name.richardson.james.bukkit.banhammer.BanRecord.Type;
 
 
 public final class CachedBan {
