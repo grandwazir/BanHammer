@@ -19,6 +19,8 @@ package name.richardson.james.bukkit.banhammer;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -57,6 +59,9 @@ public class BanHammer extends Plugin {
   private PluginManager pm;
   private BanHammerConfiguration configuration;
   private DatabaseHandler database;
+  
+  private final HashSet<String> bannedPlayerNames = new HashSet<String>();
+  private final BanRecordCache banRecordCache = new BanRecordCache();
 
 
   /**
@@ -104,6 +109,7 @@ public class BanHammer extends Plugin {
       this.setupLocalisation();
       this.loadConfiguration();
       this.setupDatabase();
+      this.loadBans();
       this.setPermission();
       this.registerListeners();
       this.registerCommands();
@@ -115,6 +121,14 @@ public class BanHammer extends Plugin {
     }
 
     logger.info(String.format(BanHammer.getMessage("plugin-enabled"), this.desc.getFullName()));
+  }
+
+  private void loadBans() {
+    for (Object record : this.database.list(BanRecord.class)) {
+      BanRecord ban = (BanRecord) record;
+      this.bannedPlayerNames.add(ban.getPlayer());
+      this.banRecordCache.add(ban.toCachedBan());
+    }
   }
 
   public void setMaximumTemporaryBan(long maximumTemporaryBan) {
@@ -166,6 +180,10 @@ public class BanHammer extends Plugin {
 
   private void setupLocalisation() {
     BanHammer.messages = ResourceBundle.getBundle("name.richardson.james.banhammer.localisation.Messages", locale);
+  }
+
+  public BanRecordCache getBanRecordCache() {
+    return (BanRecordCache) Collections.unmodifiableSet(this.banRecordCache);
   }
 
 }
