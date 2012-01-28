@@ -61,8 +61,12 @@ public class CheckCommand extends PlayerCommand {
     BanRecord ban = handler.getPlayerBan(playerName);
     
     if (ban != null) {
-      sender.sendMessage(String.format(ChatColor.RED + "%s is banned.", playerName));
-      sendBanDetail(sender, ban);
+      if (ban.isActive()) {
+        sender.sendMessage(String.format(ChatColor.RED + "%s is banned.", playerName));
+        sendBanDetail(sender, ban);
+      } else {
+        sender.sendMessage(String.format(ChatColor.YELLOW + "%s is not banned.", playerName));
+      }
     } else {
       sender.sendMessage(String.format(ChatColor.YELLOW + "%s is not banned.", playerName));
     }

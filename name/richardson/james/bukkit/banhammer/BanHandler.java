@@ -92,8 +92,13 @@ public class BanHandler extends Handler implements BanHammerAPI {
 
   @Override
   public boolean isPlayerBanned(String playerName) {
-    if (BanRecord.findFirstByName(database, playerName) != null) {
-      return true;
+    BanRecord record = BanRecord.findFirstByName(database, playerName);
+    if (record != null) {
+      if (record.isActive()) {
+        return true;
+      } else {
+        return false;
+      }
     } else {
       return false;
     }
