@@ -48,11 +48,11 @@ public class CheckCommand extends PlayerCommand {
 
   public static final Permission PERMISSION = new Permission("banhammer.check", CheckCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
   
-  private final BanHandler banHandler;
+  private final BanHandler handler;
 
   public CheckCommand(final BanHammer plugin) {
     super(plugin, BanCommand.NAME, BanCommand.DESCRIPTION, BanCommand.USAGE, BanCommand.PERMISSION_DESCRIPTION, BanCommand.PERMISSION);
-    this.banHandler = plugin.getHandler();
+    this.handler = plugin.getHandler(CheckCommand.class);
   }
 
   @Override
@@ -72,8 +72,8 @@ public class CheckCommand extends PlayerCommand {
   public void execute(CommandSender sender, Map<String, Object> arguments) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     String playerName = (String) arguments.get("playerName");
     
-    if (banHandler.isPlayerBanned(playerName)) {
-      BanRecord ban = BanRecord.findFirst(playerName);
+    if (handler.isPlayerBanned(playerName)) {
+      BanRecord ban = handler.getPlayerBan(playerName);
       sender.sendMessage(String.format(ChatColor.RED + BanHammer.getMessage("player-banned"), playerName));
       sendBanDetail(sender, ban);
     } else {

@@ -28,7 +28,9 @@ import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.BanHandler;
+import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.banhammer.management.ImportCommand;
+import name.richardson.james.bukkit.util.command.CommandPermissionException;
 import name.richardson.james.bukkit.util.command.PlayerCommand;
 
 public class PardonCommand extends PlayerCommand {
@@ -40,12 +42,12 @@ public class PardonCommand extends PlayerCommand {
 
   public static final Permission PERMISSION = new Permission("banhammer.pardon", ImportCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
   
-  private final BanHandler banHandler;
+  private final BanHandler handler;
   private final BanHammer plugin;
 
   public PardonCommand(final BanHammer plugin) {
     super(plugin, PardonCommand.NAME, PardonCommand.DESCRIPTION, PardonCommand.USAGE, PardonCommand.PERMISSION_DESCRIPTION, PardonCommand.PERMISSION);
-    this.banHandler = plugin.getHandler();
+    this.handler = plugin.getHandler(PardonCommand.class);
     this.plugin = plugin;
     this.registerAdditionalPermissions();
   }
@@ -66,15 +68,21 @@ public class PardonCommand extends PlayerCommand {
   }
 
   @Override
-  public void execute(final CommandSender sender, Map<String, Object> arguments) {
-    String senderName = sender.getName();
+  public void execute(final CommandSender sender, Map<String, Object> arguments) throws CommandPermissionException {
+    final String playerName = (String) arguments.get("playerName");
+    final String senderName = sender.getName();
+    final BanRecord record = handler.getPlayerBan(playerName);
     
-    if (!this.banHandler.pardonPlayer((String) arguments.get("playerName"), senderName, true)) {
-      sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("player-not-banned"), arguments.get("playerName")));
+    if (record != null) {
+      if (record.getCreatedBy().equalsIgnoreCase(senderName) || sender.hasPermission(PardonCommand.PERMISSION.getName() + "." + "all")) {
+        this.handler.pardonPlayer(playerName, senderName, true);
+        sender.sendMessage(String.format(ChatColor.GREEN + "%s has been pardoned.", playerName));
+      } else {
+        throw new CommandPermissionException(senderName, plugin.getServer().getPluginManager().getPermission(PardonCommand.PERMISSION.getName() + "." + "all"));
+      }
     } else {
-      sender.sendMessage(String.format(ChatColor.GREEN + BanHammer.getMessage("player-pardoned"), arguments.get("playerName")));
+      sender.sendMessage(String.format(ChatColor.YELLOW + "%s is not banned.", playerName));
     }
-    
   }
 
   @Override

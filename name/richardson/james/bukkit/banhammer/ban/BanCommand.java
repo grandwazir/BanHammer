@@ -50,7 +50,7 @@ public class BanCommand extends PlayerCommand {
   public BanCommand(final BanHammer plugin) {
     super(plugin, BanCommand.NAME, BanCommand.DESCRIPTION, BanCommand.USAGE, BanCommand.PERMISSION_DESCRIPTION, BanCommand.PERMISSION);
     this.plugin = plugin;
-    this.banHandler = plugin.getHandler();
+    this.banHandler = plugin.getHandler(BanCommand.class);
   }
   
   @Override

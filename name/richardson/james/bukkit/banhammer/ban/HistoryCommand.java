@@ -32,7 +32,7 @@ import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.BanHandler;
-import name.richardson.james.bukkit.banhammer.CachedBan;
+import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.util.Time;
 import name.richardson.james.bukkit.util.command.CommandArgumentException;
 import name.richardson.james.bukkit.util.command.PlayerCommand;
@@ -46,23 +46,23 @@ public class HistoryCommand extends PlayerCommand {
 
   public static final Permission PERMISSION = new Permission("banhammer.history", HistoryCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
   
-  private final BanHandler banHandler;
+  private final BanHandler handler;
   
   public HistoryCommand(final BanHammer plugin) {
     super(plugin, HistoryCommand.NAME, HistoryCommand.DESCRIPTION, HistoryCommand.USAGE, HistoryCommand.PERMISSION_DESCRIPTION, HistoryCommand.PERMISSION);
-    this.banHandler = plugin.getHandler();
+    this.handler = plugin.getHandler(HistoryCommand.class);
   }
 
   @Override
   public void execute(final CommandSender sender, Map<String, Object> arguments) {
     final String playerName = (String) arguments.get("playerName");
-    final List<CachedBan> bans = banHandler.getPlayerBans(playerName);
+    final List<BanRecord> bans = handler.getPlayerBans(playerName);
     
     if (bans.isEmpty()) {
       sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-none"), playerName));
     } else {
       sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + BanHammer.getMessage("ban-history-summary"), playerName, bans.size()));
-      for (CachedBan ban : bans) {
+      for (BanRecord ban : bans) {
         sendBanDetail(sender, ban);
       }
     }
@@ -81,7 +81,7 @@ public class HistoryCommand extends PlayerCommand {
     return m;
   }
 
-  protected void sendBanDetail(CommandSender sender, CachedBan ban) {
+  protected void sendBanDetail(CommandSender sender, BanRecord ban) {
     Date createdDate = new Date(ban.getCreatedAt());
     DateFormat dateFormat = new SimpleDateFormat("MMM d");
     String createdAt = dateFormat.format(createdDate);

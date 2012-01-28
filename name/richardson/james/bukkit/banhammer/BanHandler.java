@@ -22,7 +22,6 @@ import java.util.Set;
 
 import name.richardson.james.bukkit.util.Handler;
 
-
 public class BanHandler extends Handler implements BanHammerAPI {
 
   private final Set<String> bannedPlayers;
@@ -36,8 +35,17 @@ public class BanHandler extends Handler implements BanHammerAPI {
 
   @Override
   public boolean banPlayer(String playerName, String senderName, String reason, Long banLength, boolean notify) {
-    // TODO Auto-generated method stub
-    return false;
+    if (!this.isPlayerBanned(playerName)) {
+      BanRecord ban = new BanRecord();
+      ban.setPlayer(playerName);
+      ban.setCreatedBy(senderName);
+      ban.setReason(reason);
+      ban.setExpiresAt(banLength);
+      this.database.save(ban);
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @Override

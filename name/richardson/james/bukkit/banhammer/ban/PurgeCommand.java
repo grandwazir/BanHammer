@@ -28,7 +28,7 @@ import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.BanHandler;
-import name.richardson.james.bukkit.banhammer.BanRecord;
+import name.richardson.james.bukkit.util.command.CommandArgumentException;
 import name.richardson.james.bukkit.util.command.PlayerCommand;
 
 public class PurgeCommand extends PlayerCommand {
@@ -44,33 +44,25 @@ public class PurgeCommand extends PlayerCommand {
 
   public PurgeCommand(final BanHammer plugin) {
     super(plugin, PurgeCommand.NAME, PurgeCommand.DESCRIPTION, PurgeCommand.USAGE, PurgeCommand.PERMISSION_DESCRIPTION, PurgeCommand.PERMISSION);
-    this.handler = plugin.getHandler();
+    this.handler = plugin.getHandler(PurgeCommand.class);
   }
 
   @Override
   public void execute(final CommandSender sender, Map<String, Object> arguments) {
-    String playerName = (String) arguments.get("playerName");
-    String senderName = sender.getName();
-    
-    List<BanRecord> bans = BanRecord.find(playerName);
-    if (bans.isEmpty())
-      sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("ban-history-none"), playerName));
-    else {
-      String banTotal = Integer.toString(bans.size());
-      BanRecord.destroy(bans);
-      logger.info(String.format(BanHammer.getMessage("player-bans-purged"), senderName, playerName));
-      sender.sendMessage(String.format(ChatColor.GREEN + BanHammer.getMessage("bans-purged"), banTotal, playerName));
-    }
+    final String playerName = (String) arguments.get("playerName");
+    final String senderName = sender.getName();
+    final int i = this.handler.removePlayerBans(this.handler.getPlayerBans(playerName));
+    sender.sendMessage(String.format(ChatColor.GREEN + "Purged %d ban(s) associated with %s.", i, playerName));    
   }
 
   @Override
-  public Map<String, Object> parseArguments(List<String> arguments) {
+  public Map<String, Object> parseArguments(List<String> arguments) throws CommandArgumentException {
     Map<String, Object> m = new HashMap<String, Object>();
 
     try {
       m.put("playerName", arguments.get(0));
     } catch (IndexOutOfBoundsException e) {
-      throw new IllegalArgumentException();
+      throw new CommandArgumentException("You must specify a valid player name", "You need to type the whole name.");
     }
 
     return m;
