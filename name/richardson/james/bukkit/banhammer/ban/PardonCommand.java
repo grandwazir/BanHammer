@@ -53,21 +53,6 @@ public class PardonCommand extends PlayerCommand {
     this.registerAdditionalPermissions();
   }
 
-  private void registerAdditionalPermissions() {
-    final Permission wildcard = new Permission(PardonCommand.PERMISSION.getName() + ".*", "Allow a user to pardon all bans.", PermissionDefault.OP);
-    this.plugin.addPermission(wildcard, true);
-    String permissionNode = PardonCommand.PERMISSION.getName() + "." + "own";
-    String description = "Allow users to only pardon bans made by themselves.";
-    Permission permission = new Permission(permissionNode, description, PermissionDefault.OP);
-    permission.addParent(wildcard, true);
-    this.plugin.addPermission(permission, false);
-    permissionNode = PardonCommand.PERMISSION.getName() + "." + "all";
-    description = "Allow users to pardon all bans regardless of who issued it";
-    permission = new Permission(permissionNode, description, PermissionDefault.OP);
-    permission.addParent(wildcard, true);
-    this.plugin.addPermission(permission, false);
-  }
-
   @Override
   public void execute(final CommandSender sender, Map<String, Object> arguments) throws CommandPermissionException {
     final String playerName = (String) arguments.get("playerName");
@@ -97,6 +82,21 @@ public class PardonCommand extends PlayerCommand {
     }
 
     return m;
+  }
+
+  private void registerAdditionalPermissions() {
+    final Permission wildcard = new Permission(PardonCommand.PERMISSION.getName() + ".*", "Allow a user to pardon all bans.", PermissionDefault.OP);
+    this.plugin.addPermission(wildcard, true);
+    String permissionNode = PardonCommand.PERMISSION.getName() + "." + "own";
+    String description = "Allow users to only pardon bans made by themselves.";
+    Permission permission = new Permission(permissionNode, description, PermissionDefault.OP);
+    permission.addParent(wildcard, true);
+    this.plugin.addPermission(permission, false);
+    permissionNode = PardonCommand.PERMISSION.getName() + "." + "all";
+    description = "Allow users to pardon all bans regardless of who issued it";
+    permission = new Permission(permissionNode, description, PermissionDefault.OP);
+    permission.addParent(wildcard, true);
+    this.plugin.addPermission(permission, false);
   }
 
 }

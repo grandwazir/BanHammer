@@ -50,7 +50,6 @@ public class PurgeCommand extends PlayerCommand {
   @Override
   public void execute(final CommandSender sender, Map<String, Object> arguments) {
     final String playerName = (String) arguments.get("playerName");
-    final String senderName = sender.getName();
     final int i = this.handler.removePlayerBans(this.handler.getPlayerBans(playerName));
     sender.sendMessage(String.format(ChatColor.GREEN + "Purged %d ban(s) associated with %s.", i, playerName));    
   }

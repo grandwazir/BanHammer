@@ -6,8 +6,6 @@ import java.util.List;
 
 import com.avaje.ebean.EbeanServer;
 
-import name.richardson.james.bukkit.banhammer.BanRecord;
-
 
 public class DatabaseHandler extends name.richardson.james.bukkit.util.Database {
 

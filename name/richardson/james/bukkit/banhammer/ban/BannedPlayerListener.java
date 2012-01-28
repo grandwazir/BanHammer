@@ -21,40 +21,47 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Set;
 
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
+import name.richardson.james.bukkit.banhammer.BanHandler;
 import name.richardson.james.bukkit.banhammer.BanRecord;
-import name.richardson.james.bukkit.banhammer.CachedBan;
-import name.richardson.james.bukkit.banhammer.CachedList;
 
-public class PlayerListener extends org.bukkit.event.player.PlayerListener {
+public class BannedPlayerListener implements Listener {
 
-  private CachedList cache;
+  private final BanHandler handler;
+  private final Set<String> bannedPlayers;
 
-  public PlayerListener() {
-    this.cache = new CachedList();
+  public BannedPlayerListener(BanHammer plugin) {
+    this.handler = plugin.getHandler(BannedPlayerListener.class);
+    this.bannedPlayers = plugin.getBannedPlayers();
   }
-
-  @Override
+  
+  @EventHandler(priority = EventPriority.HIGH)
   public void onPlayerLogin(PlayerLoginEvent event) {
     String playerName = event.getPlayer().getName();
-    String message;
 
-    if (this.cache.contains(playerName)) {
-      CachedBan ban = this.cache.get(playerName);
+    if (this.handler.isPlayerBanned(playerName)) {
+      String message;
+      BanRecord ban = handler.getPlayerBan(playerName);
       if (ban.isActive()) {
         if (ban.getType().equals(BanRecord.Type.PERMENANT)) {
-          message = String.format(BanHammer.getMessage("disallow-login-permanently"), ban.getReason());
+          message = String.format("You have been permanently banned. Reason: %s.", ban.getReason());
         } else {
           Date expiryDate = new Date(ban.getExpiresAt());
           DateFormat dateFormat = new SimpleDateFormat("MMM d H:mm a ");
           String expiryDateString = dateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")";
-          message = String.format(BanHammer.getMessage("disallow-login-temporarily"), expiryDateString);
+          message = String.format("You have been banned until %s.", expiryDateString);
         }
         event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message);
-      } else this.cache.remove(playerName);
+      } else { 
+        this.bannedPlayers.remove(playerName.toLowerCase());
+      }
     }
   }
 }

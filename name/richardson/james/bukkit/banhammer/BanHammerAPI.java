@@ -1,7 +1,6 @@
 package name.richardson.james.bukkit.banhammer;
 
 import java.util.List;
-import java.util.Set;
 
 
 

@@ -56,19 +56,6 @@ public class CheckCommand extends PlayerCommand {
   }
 
   @Override
-  public Map<String, Object> parseArguments(List<String> arguments) throws CommandArgumentException {
-    Map<String, Object> m = new HashMap<String, Object>();
-
-    try {
-      m.put("playerName", arguments.get(0));
-    } catch (IndexOutOfBoundsException e) {
-      throw new CommandArgumentException("You must specify a valid player name", "You need to type the whole name.");
-    }
-
-    return m;
-  }
-
-  @Override
   public void execute(CommandSender sender, Map<String, Object> arguments) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     String playerName = (String) arguments.get("playerName");
     
@@ -80,6 +67,19 @@ public class CheckCommand extends PlayerCommand {
       sender.sendMessage(String.format(ChatColor.YELLOW + BanHammer.getMessage("player-not-banned"), playerName));
     }
     
+  }
+
+  @Override
+  public Map<String, Object> parseArguments(List<String> arguments) throws CommandArgumentException {
+    Map<String, Object> m = new HashMap<String, Object>();
+
+    try {
+      m.put("playerName", arguments.get(0));
+    } catch (IndexOutOfBoundsException e) {
+      throw new CommandArgumentException("You must specify a valid player name", "You need to type the whole name.");
+    }
+
+    return m;
   }
   
   protected void sendBanDetail(CommandSender sender, BanRecord ban) {

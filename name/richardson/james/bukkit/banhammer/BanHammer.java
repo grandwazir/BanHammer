@@ -29,15 +29,14 @@ import java.util.Set;
 
 import javax.persistence.PersistenceException;
 
-import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 
 import name.richardson.james.bukkit.banhammer.ban.BanCommand;
+import name.richardson.james.bukkit.banhammer.ban.BannedPlayerListener;
 import name.richardson.james.bukkit.banhammer.ban.CheckCommand;
 import name.richardson.james.bukkit.banhammer.ban.HistoryCommand;
 import name.richardson.james.bukkit.banhammer.ban.PardonCommand;
-import name.richardson.james.bukkit.banhammer.ban.PlayerListener;
 import name.richardson.james.bukkit.banhammer.ban.PurgeCommand;
 import name.richardson.james.bukkit.banhammer.ban.RecentCommand;
 import name.richardson.james.bukkit.banhammer.kick.KickCommand;
@@ -55,7 +54,7 @@ public class BanHammer extends Plugin {
   private final static Locale locale = Locale.getDefault();
   private CommandManager cm;
   
-  private PlayerListener playerListener;
+  private BannedPlayerListener bannedPlayerListener;
   private PluginDescriptionFile desc;
   private PluginManager pm;
   private BanHammerConfiguration configuration;
@@ -74,11 +73,19 @@ public class BanHammer extends Plugin {
     return messages.getString(key);
   }
   
+  public Set<String> getBannedPlayers() {
+    return Collections.unmodifiableSet(this.bannedPlayerNames);
+  }
+
   @Override
   public List<Class<?>> getDatabaseClasses() {
     List<Class<?>> list = new ArrayList<Class<?>>();
     list.add(BanRecord.class);
     return list;
+  }
+
+  public DatabaseHandler getDatabaseHandler() {
+    return this.database;
   }
 
   /**
@@ -125,6 +132,14 @@ public class BanHammer extends Plugin {
     logger.info(String.format(BanHammer.getMessage("plugin-enabled"), this.desc.getFullName()));
   }
 
+  public void reloadBannedPlayers() {
+    this.loadBans();
+  }
+
+  public void setMaximumTemporaryBan(long maximumTemporaryBan) {
+    this.maximumTemporaryBan = maximumTemporaryBan;
+  }
+  
   private void loadBans() {
     bannedPlayerNames.clear();
     for (Object record : this.database.list(BanRecord.class)) {
@@ -133,11 +148,7 @@ public class BanHammer extends Plugin {
     }
     logger.info(String.format("%d banned names loaded.", bannedPlayerNames.size()));
   }
-
-  public void setMaximumTemporaryBan(long maximumTemporaryBan) {
-    this.maximumTemporaryBan = maximumTemporaryBan;
-  }
-
+  
   private void loadConfiguration() throws IOException {
     configuration = new BanHammerConfiguration(this);
     if (configuration.isDebugging()) {
@@ -159,14 +170,10 @@ public class BanHammer extends Plugin {
     this.cm.registerCommand("recent", new RecentCommand(this));
     this.cm.registerCommand("reload", new ReloadCommand(this));
   }
-  
-  public DatabaseHandler getDatabaseHandler() {
-    return this.database;
-  }
-  
+
   private void registerListeners() {
-    this.playerListener = new PlayerListener();
-    this.pm.registerEvent(Event.Type.PLAYER_LOGIN, this.playerListener, Event.Priority.Highest, this);
+    this.bannedPlayerListener = new BannedPlayerListener(this);
+    this.pm.registerEvents(bannedPlayerListener, this);
   }
 
   private void setupDatabase() throws SQLException {
@@ -178,17 +185,9 @@ public class BanHammer extends Plugin {
     }
     this.database = new DatabaseHandler(this.getDatabase());
   }
-
+  
   private void setupLocalisation() {
     BanHammer.messages = ResourceBundle.getBundle("name.richardson.james.banhammer.localisation.Messages", locale);
-  }
-
-  public void reloadBannedPlayers() {
-    this.loadBans();
-  }
-  
-  public Set<String> getBannedPlayers() {
-    return Collections.unmodifiableSet(this.bannedPlayerNames);
   }
 
 }
