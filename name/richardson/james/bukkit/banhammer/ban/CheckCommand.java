@@ -58,9 +58,9 @@ public class CheckCommand extends PlayerCommand {
   @Override
   public void execute(CommandSender sender, Map<String, Object> arguments) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     String playerName = (String) arguments.get("playerName");
+    BanRecord ban = handler.getPlayerBan(playerName);
     
-    if (handler.isPlayerBanned(playerName)) {
-      BanRecord ban = handler.getPlayerBan(playerName);
+    if (ban != null) {
       sender.sendMessage(String.format(ChatColor.RED + BanHammer.getMessage("player-banned"), playerName));
       sendBanDetail(sender, ban);
     } else {

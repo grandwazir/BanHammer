@@ -43,7 +43,7 @@ public class BannedPlayerListener implements Listener {
   public void onPlayerLogin(PlayerLoginEvent event) {
     String playerName = event.getPlayer().getName();
 
-    if (this.handler.isPlayerBanned(playerName)) {
+    if (this.bannedPlayers.contains(playerName.toLowerCase())) {
       String message;
       BanRecord ban = handler.getPlayerBan(playerName);
       if (ban.isActive()) {

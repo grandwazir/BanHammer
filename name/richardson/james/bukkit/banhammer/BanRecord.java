@@ -89,17 +89,21 @@ public class BanRecord {
   }
 
   public Type getType() {
-    if (this.expiresAt == 0)
+    if (this.expiresAt == 0) {
       return Type.PERMENANT;
-    else return Type.TEMPORARY;
+    } else {
+      return Type.TEMPORARY;
+    }
   }
 
   public boolean isActive() {
-    if (this.expiresAt == 0)
+    if (this.expiresAt == 0) {
       return true;
-    else if (this.expiresAt > System.currentTimeMillis())
+    } else if (this.expiresAt > System.currentTimeMillis()) {
       return true;
-    else return false;
+    } else {
+      return false;
+    }
   }
   
   public void setCreatedAt(long createdAt) {

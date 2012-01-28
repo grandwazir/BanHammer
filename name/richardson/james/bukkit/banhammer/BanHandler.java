@@ -20,17 +20,22 @@ package name.richardson.james.bukkit.banhammer;
 import java.util.List;
 import java.util.Set;
 
+import org.bukkit.Server;
+import org.bukkit.entity.Player;
+
 import name.richardson.james.bukkit.util.Handler;
 
 public class BanHandler extends Handler implements BanHammerAPI {
 
   private final Set<String> bannedPlayers;
   private final DatabaseHandler database;
+  private final Server server;
   
   public BanHandler(Class<?> parentClass, BanHammer plugin) {
     super(parentClass);
     this.database = plugin.getDatabaseHandler();
     this.bannedPlayers = plugin.getModifiableBannedPlayers();
+    this.server = plugin.getServer();
   }
 
   @Override
@@ -42,9 +47,15 @@ public class BanHandler extends Handler implements BanHammerAPI {
       ban.setPlayer(playerName);
       ban.setCreatedBy(senderName);
       ban.setReason(reason);
-      ban.setExpiresAt(now + banLength);
+      if (banLength != 0) {
+        ban.setExpiresAt(now + banLength);
+      } else {
+        ban.setExpiresAt(0);
+      }
       this.database.save(ban);
       bannedPlayers.add(playerName.toLowerCase());
+      Player player = this.server.getPlayerExact(playerName);
+      if (player != null) player.kickPlayer(reason);
       return true;
     } else {
       return false;
@@ -63,7 +74,11 @@ public class BanHandler extends Handler implements BanHammerAPI {
 
   @Override
   public boolean isPlayerBanned(String playerName) {
-    return this.bannedPlayers.contains(playerName.toLowerCase());
+    if (BanRecord.findFirstByName(database, playerName) != null) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @Override
