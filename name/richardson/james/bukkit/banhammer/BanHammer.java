@@ -109,7 +109,7 @@ public class BanHammer extends Plugin {
 
   @Override
   public void onDisable() {
-    logger.info(String.format(messages.getString("%s is disabled."), this.desc.getName()));
+    logger.info(String.format("%s is disabled.", this.desc.getName()));
   }
 
   @Override
@@ -134,7 +134,7 @@ public class BanHammer extends Plugin {
       if (!this.getServer().getPluginManager().isPluginEnabled(this)) return;
     }
 
-    logger.info(String.format(BanHammer.getMessage("%s is enabled."), this.desc.getFullName()));
+    logger.info(String.format("%s is enabled.", this.desc.getFullName()));
   }
 
   public Map<String, Long> getBanLimits() {

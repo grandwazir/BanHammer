@@ -60,8 +60,7 @@ public class RecentCommand extends PlayerCommand {
     if (bans.isEmpty())
       sender.sendMessage(ChatColor.YELLOW + "There are no bans on record.");
     else {
-      String banTotal = Integer.toString(bans.size());
-      sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + "Displaying last %d ban(s):", banTotal));
+      sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + "Displaying last %d ban(s):", bans.size()));
       for (BanRecord ban : bans) {
         sendBanDetail(sender, ban);
       }

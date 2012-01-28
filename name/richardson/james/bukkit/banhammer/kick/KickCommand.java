@@ -29,6 +29,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
+import name.richardson.james.bukkit.util.command.CommandArgumentException;
 import name.richardson.james.bukkit.util.command.PlayerCommand;
 
 public class KickCommand extends PlayerCommand {
@@ -64,13 +65,13 @@ public class KickCommand extends PlayerCommand {
   }
 
   @Override
-  public Map<String, Object> parseArguments(List<String> arguments) {
+  public Map<String, Object> parseArguments(List<String> arguments) throws CommandArgumentException {
     Map<String, Object> m = new HashMap<String, Object>();
     try {
       m.put("playerName", arguments.remove(0));
       m.put("reason", this.combineString(arguments, " "));
     } catch (IndexOutOfBoundsException e) {
-      throw new IllegalArgumentException();
+      throw new CommandArgumentException("You must specify a valid player name!", "BanHammer will attempt to match partial names");
     }
     return m;
   }

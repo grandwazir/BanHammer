@@ -90,15 +90,15 @@ public class CheckCommand extends PlayerCommand {
     sender.sendMessage(String.format(ChatColor.YELLOW + "- Reason: %s.", ban.getReason()));
     switch (ban.getType()) {
       case PERMENANT:
-        sender.sendMessage(ChatColor.YELLOW + "Length: Permanent.");
+        sender.sendMessage(ChatColor.YELLOW + "- Length: Permanent.");
         break;
       case TEMPORARY:
         Date expiryDate = new Date(ban.getExpiresAt());
         DateFormat expiryDateFormat = new SimpleDateFormat("MMM d H:mm a ");
         String expiryDateString = expiryDateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")";
         Long banTime = ban.getExpiresAt() - ban.getCreatedAt();
-        sender.sendMessage(String.format(ChatColor.YELLOW + "Length: %s", Time.millisToLongDHMS(banTime)));
-        sender.sendMessage(String.format(ChatColor.YELLOW + "Expires on: %s", expiryDateString));
+        sender.sendMessage(String.format(ChatColor.YELLOW + "- Length: %s", Time.millisToLongDHMS(banTime)));
+        sender.sendMessage(String.format(ChatColor.YELLOW + "- Expires on: %s", expiryDateString));
         break;
     }
   }

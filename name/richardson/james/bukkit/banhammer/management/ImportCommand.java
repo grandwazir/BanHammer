@@ -67,7 +67,7 @@ public class ImportCommand extends PlayerCommand {
     }
     
     logger.info(String.format("%s has imported %d bans from banned-players.txt.", sender.getName(), imported));
-    sender.sendMessage(String.format("%d out of %d ban(s) were imported.", imported, totalBans));
+    sender.sendMessage(String.format(ChatColor.YELLOW + "%d out of %d ban(s) were imported.", imported, totalBans));
   }
 
   @Override
