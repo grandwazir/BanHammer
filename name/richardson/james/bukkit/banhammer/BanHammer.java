@@ -41,6 +41,7 @@ import name.richardson.james.bukkit.banhammer.kick.KickCommand;
 import name.richardson.james.bukkit.banhammer.management.ExportCommand;
 import name.richardson.james.bukkit.banhammer.management.ImportCommand;
 import name.richardson.james.bukkit.banhammer.management.ReloadCommand;
+import name.richardson.james.bukkit.dimensiondoor.DatabaseHandler;
 import name.richardson.james.bukkit.util.Logger;
 import name.richardson.james.bukkit.util.Plugin;
 import name.richardson.james.bukkit.util.command.CommandManager;
@@ -56,6 +57,7 @@ public class BanHammer extends Plugin {
   private PluginDescriptionFile desc;
   private PluginManager pm;
   private BanHammerConfiguration configuration;
+  private DatabaseHandler database;
 
 
   /**
@@ -141,6 +143,12 @@ public class BanHammer extends Plugin {
     this.cm.registerCommand("recent", new RecentCommand(this));
     this.cm.registerCommand("reload", new ReloadCommand(this));
   }
+  
+  public DatabaseHandler getDatabaseHandler() {
+    return this.database;
+  }
+  
+  
 
   private void registerListeners() {
     this.playerListener = new PlayerListener();
@@ -154,7 +162,7 @@ public class BanHammer extends Plugin {
       logger.warning(BanHammer.getMessage("no-database"));
       this.installDDL();
     }
-    BanRecord.setDatabase(this.getDatabase());
+    this.database = new DatabaseHandler(this.getDatabase());
   }
 
   private void setupLocalisation() {
