@@ -30,7 +30,6 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 
 import name.richardson.james.bukkit.banhammer.ban.BanCommand;
-import name.richardson.james.bukkit.banhammer.ban.BanHandler;
 import name.richardson.james.bukkit.banhammer.ban.CheckCommand;
 import name.richardson.james.bukkit.banhammer.ban.HistoryCommand;
 import name.richardson.james.bukkit.banhammer.ban.PardonCommand;
