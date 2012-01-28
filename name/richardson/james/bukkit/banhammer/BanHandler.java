@@ -30,18 +30,21 @@ public class BanHandler extends Handler implements BanHammerAPI {
   public BanHandler(Class<?> parentClass, BanHammer plugin) {
     super(parentClass);
     this.database = plugin.getDatabaseHandler();
-    this.bannedPlayers = plugin.getBannedPlayers();
+    this.bannedPlayers = plugin.getModifiableBannedPlayers();
   }
 
   @Override
   public boolean banPlayer(String playerName, String senderName, String reason, Long banLength, boolean notify) {
     if (!this.isPlayerBanned(playerName)) {
       BanRecord ban = new BanRecord();
+      long now = System.currentTimeMillis();
+      ban.setCreatedAt(now);
       ban.setPlayer(playerName);
       ban.setCreatedBy(senderName);
       ban.setReason(reason);
-      ban.setExpiresAt(banLength);
+      ban.setExpiresAt(now + banLength);
       this.database.save(ban);
+      bannedPlayers.add(playerName.toLowerCase());
       return true;
     } else {
       return false;

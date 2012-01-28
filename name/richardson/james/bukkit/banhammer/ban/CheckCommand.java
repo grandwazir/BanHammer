@@ -51,7 +51,7 @@ public class CheckCommand extends PlayerCommand {
   private final BanHandler handler;
 
   public CheckCommand(final BanHammer plugin) {
-    super(plugin, BanCommand.NAME, BanCommand.DESCRIPTION, BanCommand.USAGE, BanCommand.PERMISSION_DESCRIPTION, BanCommand.PERMISSION);
+    super(plugin, CheckCommand.NAME, CheckCommand.DESCRIPTION, CheckCommand.USAGE, CheckCommand.PERMISSION_DESCRIPTION, CheckCommand.PERMISSION);
     this.handler = plugin.getHandler(CheckCommand.class);
   }
 

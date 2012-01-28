@@ -17,6 +17,7 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.ban;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,7 @@ public class BanCommand extends PlayerCommand {
   public static final String DESCRIPTION = "Ban a player";
   public static final String PERMISSION_DESCRIPTION = "Allow users to ban players.";
   public static final String USAGE = "<name> [t:time] [reason]";
+  public static final List<String> ALIAS = Arrays.asList("ban");
 
   public static final Permission PERMISSION = new Permission("banhammer.ban", BanCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
   
@@ -70,12 +72,6 @@ public class BanCommand extends PlayerCommand {
       } else {
         sender.sendMessage(ChatColor.RED + String.format(BanHammer.getMessage("player-banned"), playerName));
       }
-    }
-    
-    if (!this.banHandler.banPlayer(playerName, senderName, reason, expiryTime, true)) {
-      sender.sendMessage(ChatColor.RED + String.format(BanHammer.getMessage("player-already-banned"), playerName));
-    } else {
-      sender.sendMessage(ChatColor.RED + String.format(BanHammer.getMessage("player-banned"), playerName));
     }
     
   }

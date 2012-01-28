@@ -35,12 +35,12 @@ public class ReloadCommand extends PlayerCommand {
   public static final String PERMISSION_DESCRIPTION = "Allow users to reload the ban cache";
   public static final String USAGE = "";
 
-  public static final Permission PERMISSION = new Permission("banhammer.reload", RecentCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
+  public static final Permission PERMISSION = new Permission("banhammer.reload", ReloadCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
   
   private final BanHammer plugin;
   
   public ReloadCommand(final BanHammer plugin) {
-    super(plugin, ReloadCommand.NAME, ReloadCommand.DESCRIPTION, ReloadCommand.USAGE, ReloadCommand.PERMISSION_DESCRIPTION, RecentCommand.PERMISSION);
+    super(plugin, ReloadCommand.NAME, ReloadCommand.DESCRIPTION, ReloadCommand.USAGE, ReloadCommand.PERMISSION_DESCRIPTION, ReloadCommand.PERMISSION);
     this.plugin = plugin;
   }
   

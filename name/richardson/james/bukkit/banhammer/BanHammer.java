@@ -46,6 +46,7 @@ import name.richardson.james.bukkit.banhammer.management.ReloadCommand;
 import name.richardson.james.bukkit.util.Logger;
 import name.richardson.james.bukkit.util.Plugin;
 import name.richardson.james.bukkit.util.command.CommandManager;
+import name.richardson.james.bukkit.util.command.PlayerCommand;
 
 public class BanHammer extends Plugin {
 
@@ -75,6 +76,10 @@ public class BanHammer extends Plugin {
   
   public Set<String> getBannedPlayers() {
     return Collections.unmodifiableSet(this.bannedPlayerNames);
+  }
+  
+  protected Set<String> getModifiableBannedPlayers() {
+    return this.bannedPlayerNames;
   }
 
   @Override
@@ -157,18 +162,26 @@ public class BanHammer extends Plugin {
   }
 
   private void registerCommands() {
-    final CommandManager cm = new CommandManager(this.getDescription());
+    cm = new CommandManager(this.getDescription());
     this.getCommand("bh").setExecutor(cm);
-    this.getCommand("ban").setExecutor(new BanCommand(this));
-    this.getCommand("kick").setExecutor(new KickCommand(this));
-    this.getCommand("pardon").setExecutor(new PardonCommand(this));
+    PlayerCommand banCommand = new BanCommand(this);
+    PlayerCommand kickCommand = new KickCommand(this);
+    PlayerCommand pardonCommand = new PardonCommand(this);
+    // register commands
+    this.cm.registerCommand("ban", banCommand);
     this.cm.registerCommand("check", new CheckCommand(this));
     this.cm.registerCommand("export", new ExportCommand(this));
     this.cm.registerCommand("history", new HistoryCommand(this));
     this.cm.registerCommand("import", new ImportCommand(this));
+    this.cm.registerCommand("kick", kickCommand);
+    this.cm.registerCommand("pardon", pardonCommand);
     this.cm.registerCommand("purge", new PurgeCommand(this));
     this.cm.registerCommand("recent", new RecentCommand(this));
     this.cm.registerCommand("reload", new ReloadCommand(this));
+    // register commands again as root commands
+    this.getCommand("ban").setExecutor(banCommand);
+    this.getCommand("kick").setExecutor(kickCommand);
+    this.getCommand("pardon").setExecutor(pardonCommand);
   }
 
   private void registerListeners() {
@@ -187,7 +200,7 @@ public class BanHammer extends Plugin {
   }
   
   private void setupLocalisation() {
-    BanHammer.messages = ResourceBundle.getBundle("name.richardson.james.banhammer.localisation.Messages", locale);
+    BanHammer.messages = ResourceBundle.getBundle("name.richardson.james.bukkit.banhammer.localisation.Messages", locale);
   }
 
 }

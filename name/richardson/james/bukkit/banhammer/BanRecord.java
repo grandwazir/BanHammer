@@ -23,10 +23,9 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.avaje.ebean.EbeanServer;
-import com.avaje.ebean.ExampleExpression;
-import com.avaje.ebean.LikeType;
 import com.avaje.ebean.validation.NotNull;
+
+import name.richardson.james.bukkit.util.Logger;
 
 
 @Entity()
@@ -37,8 +36,8 @@ public class BanRecord {
     PERMENANT, TEMPORARY
   }
 
-  private static EbeanServer database;
-
+  private final static Logger logger = new Logger(BanRecord.class);
+  
   @Id
   private long createdAt;
 
@@ -56,27 +55,17 @@ public class BanRecord {
   
 
   static public List<BanRecord> findByName(final DatabaseHandler database, String player) {
-    // create the example
-    BanRecord example = new BanRecord();
-    example.setPlayer(player);
-    // create the example expression
-    ExampleExpression expression = BanRecord.database.getExpressionFactory().exampleLike(example, true, LikeType.EQUAL_TO);
-    // find and return all bans that match the expression
-    return BanRecord.database.find(BanRecord.class).where().add(expression).orderBy("created_at DESC").findList();
+    logger.debug(String.format("Attempting to return an BanRecords matching the player name %s.", player));
+    return database.getEbeanServer().find(BanRecord.class).where().ilike("player", player).orderBy("created_at DESC").findList();
   }
 
   static public BanRecord findFirstByName(final DatabaseHandler database, String player) {
-    // create the example
-    BanRecord example = new BanRecord();
-    example.setPlayer(player);
-    // create the example expression
-    ExampleExpression expression = BanRecord.database.getExpressionFactory().exampleLike(example, true, LikeType.EQUAL_TO);
-    // find and return all bans that match the expression
-    return BanRecord.database.find(BanRecord.class).where().add(expression).orderBy("created_at DESC").findList().get(0);
+    logger.debug(String.format("Attempting to return an active BanRecord matching the player name %s.", player));
+    return database.getEbeanServer().find(BanRecord.class).where().ilike("player", player).findUnique();
   }
 
   static public List<BanRecord> findRecent(final DatabaseHandler database, Integer maxRows) {
-    return BanRecord.database.find(BanRecord.class).where().orderBy("created_at DESC").setMaxRows(maxRows).findList();
+    return database.getEbeanServer().find(BanRecord.class).where().orderBy("created_at DESC").setMaxRows(maxRows).findList();
   }
 
   public long getCreatedAt() {
