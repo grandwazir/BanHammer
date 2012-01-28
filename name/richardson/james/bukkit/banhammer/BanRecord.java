@@ -133,8 +133,4 @@ public class BanRecord {
     this.reason = reason;
   }
 
-  CachedBan toCachedBan() {
-    return new CachedBan(this.expiresAt, this.player, this.reason, this.createdBy, this.createdAt);
-  }
-
 }
