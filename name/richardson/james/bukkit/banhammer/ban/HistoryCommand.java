@@ -65,7 +65,7 @@ public class HistoryCommand extends PlayerCommand {
   public void execute(final CommandSender sender, Map<String, Object> arguments) throws CommandPermissionException {
     final String playerName = arguments.get("playerName") != null ? (String) arguments.get("playerName") : sender.getName();
     if (!playerName.equalsIgnoreCase(sender.getName()) && !sender.hasPermission(PardonCommand.PERMISSION.getName() + "." + "others")) {
-      throw new CommandPermissionException("You do not have permission to view other player's ban history.", PERMISSION_OTHER);
+      throw new CommandPermissionException("You are not allowed to view other player's ban history.", PERMISSION_OTHER);
     } else {
       final List<BanRecord> bans = handler.getPlayerBans(playerName);
       

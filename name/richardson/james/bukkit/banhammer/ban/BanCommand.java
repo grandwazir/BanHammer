@@ -88,16 +88,18 @@ public class BanCommand extends PlayerCommand {
         sender.sendMessage(ChatColor.RED + String.format(BanHammer.getMessage("player-banned"), playerName));
       }
     } else {
-      throw new CommandPermissionException("You do not have permission to ban for that long", BanCommand.PERMISSION);
+      throw new CommandPermissionException("You are not allowed to ban for that long.", BanCommand.PERMISSION);
     }
   }
   
   private boolean banLengthAuthorised(CommandSender sender, long banLength) {
     if (banLength == 0 && !sender.hasPermission("banhammer.ban.*")) {
-      return true;
+      return false;
     } else {
       for (final Entry<String, Long> limit : plugin.getBanLimits().entrySet()) {
-        if (sender.hasPermission("banhammer.ban." + limit.getKey()) && banLength <= limit.getValue()) return true;
+        if (sender.hasPermission("banhammer.ban." + limit.getKey()) && banLength <= limit.getValue()) {
+          return true;
+        }
       }
     }
     return false;
