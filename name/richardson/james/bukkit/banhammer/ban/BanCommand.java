@@ -148,7 +148,7 @@ public class BanCommand extends PlayerCommand {
       reason.deleteCharAt(reason.length() - seperator.length());
       return reason.toString();
     } catch (StringIndexOutOfBoundsException e) {
-      return BanHammer.getMessage("default-reason");
+      return "No reason provided";
     }
   }
 
