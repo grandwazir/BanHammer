@@ -53,7 +53,7 @@ public class BanHammerConfiguration extends AbstractConfiguration {
         final String name = key;
         final Long length = Time.parseTime(section.getString(key));
         limits.put(name, length);
-        logger.debug(String.format("Creating new ban limit %s with a maximum time of %s.", name, section.getString(key)));
+        logger.debug(String.format("Creating new ban limit %s with a maximum time of %s (%d).", name, section.getString(key), length));
       } catch (NumberFormatException e) {
         logger.warning(String.format("Ban limit '%s' specifies an invalid number format", key));
       }

@@ -110,6 +110,7 @@ public class BanCommand extends PlayerCommand {
         }
       }
     }
+    logger.info(Long.toString(banLength));
     return false;
   }
 
@@ -123,7 +124,7 @@ public class BanCommand extends PlayerCommand {
     try {
       for (String argument : arguments) {
         if (argument.startsWith("t:")) {
-          m.put("time", argument);
+          m.put("time", argument.replaceAll("t:", ""));
           arguments.remove(argument);
           break;
         }
