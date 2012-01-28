@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import javax.persistence.PersistenceException;
 
@@ -61,7 +62,6 @@ public class BanHammer extends Plugin {
   private DatabaseHandler database;
   
   private final HashSet<String> bannedPlayerNames = new HashSet<String>();
-  private final BanRecordCache banRecordCache = new BanRecordCache();
 
 
   /**
@@ -86,8 +86,8 @@ public class BanHammer extends Plugin {
    * 
    * @return A new BanHandler instance.
    */
-  public BanHandler getHandler() {
-    return new BanHandler(this.getServer());
+  public BanHandler getHandler(Class<?> parentClass) {
+    return new BanHandler(parentClass, this);
   }
 
   public long getMaximumTemporaryBan() {
@@ -124,11 +124,14 @@ public class BanHammer extends Plugin {
   }
 
   private void loadBans() {
-    for (Object record : this.database.list(BanRecord.class)) {
+    for (Object record : this.database.find(record)) {
       BanRecord ban = (BanRecord) record;
-      this.bannedPlayerNames.add(ban.getPlayer());
-      this.banRecordCache.add(ban.toCachedBan());
+      if (ban.isActive()) {
+        this.bannedPlayerNames.add(ban.getPlayer());
+        this.banRecordCache.add(ban.toCachedBan());
+      }
     }
+    logger.info(String.format("%d banned names loaded.", bannedPlayerNames.size()));
   }
 
   public void setMaximumTemporaryBan(long maximumTemporaryBan) {
@@ -161,8 +164,6 @@ public class BanHammer extends Plugin {
     return this.database;
   }
   
-  
-
   private void registerListeners() {
     this.playerListener = new PlayerListener();
     this.pm.registerEvent(Event.Type.PLAYER_LOGIN, this.playerListener, Event.Priority.Highest, this);
@@ -182,8 +183,12 @@ public class BanHammer extends Plugin {
     BanHammer.messages = ResourceBundle.getBundle("name.richardson.james.banhammer.localisation.Messages", locale);
   }
 
-  public BanRecordCache getBanRecordCache() {
-    return (BanRecordCache) Collections.unmodifiableSet(this.banRecordCache);
+  protected BanRecordCache getBanRecordCache() {
+    return this.banRecordCache;
+  }
+  
+  protected Set<String> getBannedPlayers() {
+    return Collections.unmodifiableSet(this.bannedPlayerNames);
   }
 
 }

@@ -53,29 +53,9 @@ public class BanRecord {
 
   @NotNull
   private String reason;
-
-  public static void setDatabase(EbeanServer database) {
-    if (BanRecord.database == null) {
-      BanRecord.database = database;
-    }
-  }
   
-  static void create(String playerName, String senderName, Long Expiry, Long creationTime, String banReason) {
-    BanRecord banHammerRecord = new BanRecord();
-    banHammerRecord.player = playerName;
-    banHammerRecord.createdBy = senderName;
-    banHammerRecord.createdAt = creationTime;
-    banHammerRecord.expiresAt = Expiry;
-    banHammerRecord.reason = banReason;
-    BanRecord.database.save(banHammerRecord);
-  }
 
-  static void destroy(List<BanRecord> banHammerRecords) {
-    for (BanRecord ban : banHammerRecords)
-      BanRecord.database.delete(ban);
-  }
-
-  static List<BanRecord> findByName(String player) {
+  static List<BanRecord> findByName(final DatabaseHandler database, String player) {
     // create the example
     BanRecord example = new BanRecord();
     example.setPlayer(player);
@@ -85,7 +65,7 @@ public class BanRecord {
     return BanRecord.database.find(BanRecord.class).where().add(expression).orderBy("created_at DESC").findList();
   }
 
-  static BanRecord findFirstByName(String player) {
+  static BanRecord findFirstByName(final DatabaseHandler database, String player) {
     // create the example
     BanRecord example = new BanRecord();
     example.setPlayer(player);
@@ -95,7 +75,7 @@ public class BanRecord {
     return BanRecord.database.find(BanRecord.class).where().add(expression).orderBy("created_at DESC").findList().get(0);
   }
 
-  static List<BanRecord> findRecent(Integer maxRows) {
+  static List<BanRecord> findRecent(final DatabaseHandler database, Integer maxRows) {
     return BanRecord.database.find(BanRecord.class).where().orderBy("created_at DESC").setMaxRows(maxRows).findList();
   }
 
@@ -151,10 +131,6 @@ public class BanRecord {
 
   public void setReason(String reason) {
     this.reason = reason;
-  }
-
-  void destroy() {
-    BanRecord.database.delete(this);
   }
 
   CachedBan toCachedBan() {

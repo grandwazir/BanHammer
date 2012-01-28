@@ -1,6 +1,7 @@
 package name.richardson.james.bukkit.banhammer;
 
 import java.util.List;
+import java.util.Set;
 
 
 
@@ -21,7 +22,7 @@ public interface BanHammerAPI {
   public boolean banPlayer(String playerName, String senderName, String reason, Long banLength, boolean notify);
   
   /**
-   * Get the details of any active bans associated with a player.
+   * Get the details of any active ban associated with a player.
    * 
    * This will only return details of an active ban, one that is preventing them from logging into the server. 
    * Previous bans will not be returned.
@@ -29,7 +30,7 @@ public interface BanHammerAPI {
    * @param player - The name of the player to check (search is case insensitive).
    * @return a CachedBan with the details of the active ban or null if no ban exists.
    */
-  public CachedBan getPlayerBan(String playerName);
+  public BanRecord getPlayerBan(String playerName);
   
   /**
    * Get the details of all bans associated with a specific player.
@@ -39,7 +40,7 @@ public interface BanHammerAPI {
    * @param player The name of the player to check (search is case insensitive).
    * @return a list with the details of all bans associated with the player. If no bans are on record, the list will be empty.
    */
-  public List<CachedBan> getPlayerBans(String playerName);
+  public List<BanRecord> getPlayerBans(String playerName);
   
   /**
    * Check to see if a player is currently banned.
@@ -61,5 +62,20 @@ public interface BanHammerAPI {
    * @return true if the ban has been successfully repealed. Will return false if the player was not banned in the first place.
    */
   public boolean pardonPlayer(String playerName, String senderName, Boolean notify);
+ 
+  /**
+   * Remove a ban from the database
+   * 
+   * @param ban - The CachedBan to convert into a BanRecord and remove.
+   */
+  public boolean removePlayerBan(BanRecord ban);
+  
+  /**
+   * Remove bans from the database
+   * 
+   * @param ban - A Set of CachedBans to convert into a BanRecords and remove.
+   * @return the number of bans removed.
+   */
+  public int removePlayerBans(List<BanRecord> bans);
   
 }

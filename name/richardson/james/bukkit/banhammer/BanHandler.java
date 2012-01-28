@@ -17,25 +17,22 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Server;
-import org.bukkit.entity.Player;
-
-import name.richardson.james.bukkit.banhammer.util.BanHammerTime;
-import name.richardson.james.bukkit.banhammer.util.Logger;
 import name.richardson.james.bukkit.util.Handler;
 
 
 public class BanHandler extends Handler implements BanHammerAPI {
 
-  private final CachedList cache;
-  private final Server server;
+  private final Set<String> bannedPlayers;
+  private final DatabaseHandler database;
   
-  public BanHandler(Class<?> parentClass) {
+  public BanHandler(Class<?> parentClass, BanHammer plugin) {
     super(parentClass);
+    this.database = plugin.getDatabaseHandler();
+    this.bannedPlayers = plugin.getBannedPlayers();
   }
 
   @Override
@@ -45,27 +42,39 @@ public class BanHandler extends Handler implements BanHammerAPI {
   }
 
   @Override
-  public CachedBan getPlayerBan(String playerName) {
-    // TODO Auto-generated method stub
-    return null;
+  public BanRecord getPlayerBan(String playerName) {
+    return BanRecord.findFirstByName(playerName);
   }
 
   @Override
-  public List<CachedBan> getPlayerBans(String playerName) {
-    // TODO Auto-generated method stub
-    return null;
+  public List<BanRecord> getPlayerBans(String playerName) {
+    return BanRecord.findByName(playerName);
   }
 
   @Override
   public boolean isPlayerBanned(String playerName) {
-    // TODO Auto-generated method stub
-    return false;
+    return this.bannedPlayers.contains(playerName.toLowerCase());
   }
 
   @Override
   public boolean pardonPlayer(String playerName, String senderName, Boolean notify) {
-    // TODO Auto-generated method stub
-    return false;
+    if (this.isPlayerBanned(playerName)) {
+      this.database.delete(BanRecord.findFirstByName(playerName));
+      this.bannedPlayers.remove(playerName.toLowerCase());
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @Override
+  public boolean removePlayerBan(CachedBan ban) {
+    this.database.delete(BanRecord.findCachedBan(ban));
+  }
+
+  @Override
+  public int removePlayerBans(List<CachedBan> bans) {
+    this.database.delete(BanRecord.findCachedBans(bans));
   }
 
   
