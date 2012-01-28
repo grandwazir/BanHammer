@@ -17,7 +17,6 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.management;
 
-import java.util.List;
 import java.util.Map;
 
 import org.bukkit.ChatColor;
@@ -29,7 +28,7 @@ import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.BanRecord;
-import name.richardson.james.bukkit.banhammer.ban.BanCommand;
+import name.richardson.james.bukkit.banhammer.DatabaseHandler;
 import name.richardson.james.bukkit.util.command.PlayerCommand;
 
 public class ExportCommand extends PlayerCommand {
@@ -42,26 +41,25 @@ public class ExportCommand extends PlayerCommand {
   public static final Permission PERMISSION = new Permission("banhammer.export", ExportCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
   
   private final Server server;
+  private final DatabaseHandler database;
   
   public ExportCommand(final BanHammer plugin) {
-    super(plugin, BanCommand.NAME, BanCommand.DESCRIPTION, BanCommand.USAGE, BanCommand.PERMISSION_DESCRIPTION, BanCommand.PERMISSION);
+    super(plugin, ExportCommand.NAME, ExportCommand.DESCRIPTION, ExportCommand.USAGE, ExportCommand.PERMISSION_DESCRIPTION, ExportCommand.PERMISSION);
     this.server = plugin.getServer();
+    this.database = plugin.getDatabaseHandler();
   }
 
   @Override
   public void execute(final CommandSender sender, Map<String, Object> arguments) {
-    final List<BanRecord> bans = BanRecord.list();
-    for (BanRecord ban : BanRecord.list()) {
+    int imported = 0;
+    for (Object record : database.list(BanRecord.class)) {
+      BanRecord ban = (BanRecord) record;
       OfflinePlayer player = server.getOfflinePlayer(ban.getPlayer());
       player.setBanned(true);
+      imported++;
     }
     logger.info(String.format(BanHammer.getMessage("ban-export"), sender.getName()));
-    sender.sendMessage(String.format(ChatColor.GREEN + BanHammer.getMessage("bans-exported"), bans.size()));
-  }
-
-  @Override
-  public Map<String, Object> parseArguments(List<String> arguments) {
-    return null;
+    sender.sendMessage(String.format(ChatColor.GREEN + BanHammer.getMessage("bans-exported"), imported));
   }
 
 }

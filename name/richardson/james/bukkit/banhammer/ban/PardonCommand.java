@@ -30,6 +30,7 @@ import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.BanHandler;
 import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.banhammer.management.ImportCommand;
+import name.richardson.james.bukkit.util.command.CommandArgumentException;
 import name.richardson.james.bukkit.util.command.CommandPermissionException;
 import name.richardson.james.bukkit.util.command.PlayerCommand;
 
@@ -86,13 +87,13 @@ public class PardonCommand extends PlayerCommand {
   }
 
   @Override
-  public Map<String, Object> parseArguments(List<String> arguments) {
+  public Map<String, Object> parseArguments(List<String> arguments) throws CommandArgumentException {
     Map<String, Object> m = new HashMap<String, Object>();
 
     try {
       m.put("playerName", arguments.get(0));
     } catch (IndexOutOfBoundsException e) {
-      throw new IllegalArgumentException();
+      throw new CommandArgumentException("You must specify a valid player name", "You need to type the whole name.");
     }
 
     return m;

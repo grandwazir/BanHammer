@@ -32,6 +32,7 @@ import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.BanRecord;
+import name.richardson.james.bukkit.banhammer.DatabaseHandler;
 import name.richardson.james.bukkit.util.Time;
 import name.richardson.james.bukkit.util.command.CommandArgumentException;
 import name.richardson.james.bukkit.util.command.PlayerCommand;
@@ -45,15 +46,17 @@ public class RecentCommand extends PlayerCommand {
 
   public static final Permission PERMISSION = new Permission("banhammer.recent", RecentCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
   
+  private final DatabaseHandler database;
+  
   public RecentCommand(final BanHammer plugin) {
     super(plugin, RecentCommand.NAME, RecentCommand.DESCRIPTION, RecentCommand.USAGE, RecentCommand.PERMISSION_DESCRIPTION, RecentCommand.PERMISSION);
+    this.database = plugin.getDatabaseHandler();
   }
 
   @Override
   public void execute(final CommandSender sender, Map<String, Object> arguments) {
     int maxRows = (Integer) arguments.get("maxRows");
-
-    List<BanRecord> bans = BanRecord.findRecent(maxRows);
+    List<BanRecord> bans = BanRecord.findRecent(database, maxRows);
     if (bans.isEmpty())
       sender.sendMessage(ChatColor.YELLOW + BanHammer.getMessage("ban-recent-none"));
     else {

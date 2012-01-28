@@ -62,7 +62,7 @@ public class PurgeCommand extends PlayerCommand {
     try {
       m.put("playerName", arguments.get(0));
     } catch (IndexOutOfBoundsException e) {
-      throw new CommandArgumentException("You must specify a valid player name", "You need to type the whole name.");
+      throw new CommandArgumentException("You must specify a valid player name!", "You need to type the whole name.");
     }
 
     return m;

@@ -55,7 +55,7 @@ public class BanRecord {
   private String reason;
   
 
-  static List<BanRecord> findByName(final DatabaseHandler database, String player) {
+  static public List<BanRecord> findByName(final DatabaseHandler database, String player) {
     // create the example
     BanRecord example = new BanRecord();
     example.setPlayer(player);
@@ -65,7 +65,7 @@ public class BanRecord {
     return BanRecord.database.find(BanRecord.class).where().add(expression).orderBy("created_at DESC").findList();
   }
 
-  static BanRecord findFirstByName(final DatabaseHandler database, String player) {
+  static public BanRecord findFirstByName(final DatabaseHandler database, String player) {
     // create the example
     BanRecord example = new BanRecord();
     example.setPlayer(player);
@@ -75,7 +75,7 @@ public class BanRecord {
     return BanRecord.database.find(BanRecord.class).where().add(expression).orderBy("created_at DESC").findList().get(0);
   }
 
-  static List<BanRecord> findRecent(final DatabaseHandler database, Integer maxRows) {
+  static public List<BanRecord> findRecent(final DatabaseHandler database, Integer maxRows) {
     return BanRecord.database.find(BanRecord.class).where().orderBy("created_at DESC").setMaxRows(maxRows).findList();
   }
 
