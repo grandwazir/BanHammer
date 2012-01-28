@@ -67,8 +67,8 @@ public class BanHandler extends Handler implements BanHammerAPI {
           this.notifyPlayers(ChatColor.YELLOW + "- Reason: " + reason);
         } else {
           this.notifyPlayers(ChatColor.RED + playerName + " has been banned.");
-          this.notifyPlayers(ChatColor.YELLOW + "- Reason: " + reason);
-          this.notifyPlayers(ChatColor.YELLOW + "- Length: " + Time.millisToLongDHMS(banLength));
+          this.notifyPlayers(ChatColor.YELLOW + "- Reason: " + reason + ".");
+          this.notifyPlayers(ChatColor.YELLOW + "- Length: " + Time.millisToLongDHMS(banLength) + ".");
         }
       }
       

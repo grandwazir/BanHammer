@@ -61,7 +61,11 @@ public class BanRecord {
 
   static public BanRecord findFirstByName(final DatabaseHandler database, String player) {
     logger.debug(String.format("Attempting to return an active BanRecord matching the player name %s.", player));
-    return database.getEbeanServer().find(BanRecord.class).where().ilike("player", player).findUnique();
+    try {
+      return database.getEbeanServer().find(BanRecord.class).where().ilike("player", player).orderBy("created_at DESC").findList().get(0);
+    } catch (IndexOutOfBoundsException exception) {
+      return null;
+    }
   }
 
   static public List<BanRecord> findRecent(final DatabaseHandler database, Integer maxRows) {

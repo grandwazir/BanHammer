@@ -34,6 +34,7 @@ public class BanHammerConfiguration extends AbstractConfiguration {
       logger.debug("Creating example ban limits.");
       configuration.createSection("ban-limits");
       final ConfigurationSection section = configuration.getConfigurationSection("ban-limits");
+      section.set("warning", "1h");
       section.set("short", "1d");
       section.set("medium", "3d");
       section.set("long", "7d");
