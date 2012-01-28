@@ -17,7 +17,6 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -43,12 +42,12 @@ public class BanHandler extends Handler implements BanHammerAPI {
 
   @Override
   public BanRecord getPlayerBan(String playerName) {
-    return BanRecord.findFirstByName(playerName);
+    return BanRecord.findFirstByName(database, playerName);
   }
 
   @Override
   public List<BanRecord> getPlayerBans(String playerName) {
-    return BanRecord.findByName(playerName);
+    return BanRecord.findByName(database, playerName);
   }
 
   @Override
@@ -59,7 +58,7 @@ public class BanHandler extends Handler implements BanHammerAPI {
   @Override
   public boolean pardonPlayer(String playerName, String senderName, Boolean notify) {
     if (this.isPlayerBanned(playerName)) {
-      this.database.delete(BanRecord.findFirstByName(playerName));
+      this.database.delete(BanRecord.findFirstByName(database, playerName));
       this.bannedPlayers.remove(playerName.toLowerCase());
       return true;
     } else {
@@ -68,13 +67,14 @@ public class BanHandler extends Handler implements BanHammerAPI {
   }
 
   @Override
-  public boolean removePlayerBan(CachedBan ban) {
-    this.database.delete(BanRecord.findCachedBan(ban));
+  public boolean removePlayerBan(BanRecord ban) {
+    this.database.delete(ban);
+    return true;
   }
 
   @Override
-  public int removePlayerBans(List<CachedBan> bans) {
-    this.database.delete(BanRecord.findCachedBans(bans));
+  public int removePlayerBans(List<BanRecord> bans) {
+    return this.database.delete(bans);
   }
 
   

@@ -126,10 +126,7 @@ public class BanHammer extends Plugin {
   private void loadBans() {
     for (Object record : this.database.find(record)) {
       BanRecord ban = (BanRecord) record;
-      if (ban.isActive()) {
-        this.bannedPlayerNames.add(ban.getPlayer());
-        this.banRecordCache.add(ban.toCachedBan());
-      }
+      if (ban.isActive()) this.bannedPlayerNames.add(ban.getPlayer());
     }
     logger.info(String.format("%d banned names loaded.", bannedPlayerNames.size()));
   }
