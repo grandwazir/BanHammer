@@ -81,7 +81,7 @@ public class BanCommand extends PlayerCommand {
   }
 
   @Override
-  public Map<String, Object> parseArguments(List<String> arguments) {
+  public Map<String, Object> parseArguments(List<String> arguments) throws CommandArgumentException {
     Map<String, Object> m = new HashMap<String, Object>();
 
     m.put("reason", "No reason provided");
@@ -99,7 +99,7 @@ public class BanCommand extends PlayerCommand {
       m.put("playerName", arguments.remove(0));
       m.put("reason", this.combineString(arguments, " "));
     } catch (IndexOutOfBoundsException e) {
-      throw new IllegalArgumentException();
+      throw new CommandArgumentException("You must specify a valid player name!", "If they are online, you can type part of the name.");
     }
 
     return m;
