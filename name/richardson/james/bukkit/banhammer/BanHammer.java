@@ -180,7 +180,7 @@ public class BanHammer extends Plugin {
     this.cm.registerCommand("history", new HistoryCommand(this));
     this.cm.registerCommand("import", new ImportCommand(this));
     this.cm.registerCommand("kick", kickCommand);
-    this.cm.registerCommand("kick", new LimitsCommand(this));
+    this.cm.registerCommand("limits", new LimitsCommand(this));
     this.cm.registerCommand("pardon", pardonCommand);
     this.cm.registerCommand("purge", new PurgeCommand(this));
     this.cm.registerCommand("recent", new RecentCommand(this));
