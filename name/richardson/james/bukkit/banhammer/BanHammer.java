@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -119,6 +120,7 @@ public class BanHammer extends Plugin {
       this.logger.setPrefix("[BanHammer] ");
       this.setupLocalisation();
       this.loadConfiguration();
+      this.setBanLimits();
       this.setupDatabase();
       this.loadBans();
       this.setPermission();
@@ -134,6 +136,10 @@ public class BanHammer extends Plugin {
     }
 
     logger.info(String.format(BanHammer.getMessage("plugin-enabled"), this.desc.getFullName()));
+  }
+
+  public Map<String, Long> getBanLimits() {
+    return configuration.getBanLimits();
   }
 
   public void reloadBannedPlayers() {

@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -31,6 +32,7 @@ import org.bukkit.permissions.PermissionDefault;
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.BanHandler;
 import name.richardson.james.bukkit.util.Time;
+import name.richardson.james.bukkit.util.command.Command;
 import name.richardson.james.bukkit.util.command.CommandArgumentException;
 import name.richardson.james.bukkit.util.command.CommandPermissionException;
 import name.richardson.james.bukkit.util.command.CommandUsageException;
@@ -53,8 +55,22 @@ public class BanCommand extends PlayerCommand {
     super(plugin, BanCommand.NAME, BanCommand.DESCRIPTION, BanCommand.USAGE, BanCommand.PERMISSION_DESCRIPTION, BanCommand.PERMISSION);
     this.plugin = plugin;
     this.banHandler = plugin.getHandler(BanCommand.class);
+    this.registerBanLimits();
   }
   
+  private void registerBanLimits() {
+    Map<String, Long> limits = plugin.getBanLimits();
+    if (!limits.isEmpty()) { 
+      final Permission wildcard = new Permission(BanCommand.PERMISSION.getName() + ".*", "Allow a user to ban for an unlimited amount of time", PermissionDefault.OP);
+      this.plugin.addPermission(wildcard, true);
+      for (final Entry<String, Long> limit : limits.entrySet()) {
+        Permission permission = new Permission("banhammer.ban." + limit.getKey(), "Allow a user to ban a player for up to specified amount of time.", PermissionDefault.OP);
+        permission.addParent(wildcard, true);
+        this.plugin.addPermission(permission, false);
+      }
+    }
+  }
+
   @Override
   public void execute(CommandSender sender, Map<String, Object> arguments) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     final long expiryTime = Time.parseTime((String) arguments.get("time"));
@@ -64,16 +80,27 @@ public class BanCommand extends PlayerCommand {
     final String senderName = sender.getName();
     final String reason = (String) arguments.get("reason");
     
-    if (expiryTime == 0 && !sender.hasPermission("banhammer.ban.permanent")) {
-      throw new CommandPermissionException("You do not have permission to ban permanently", BanCommand.PERMISSION);
-    } else {
+    // check the user can ban for the specified amount of time
+    if (banLengthAuthorised(sender, expiryTime)) {
       if (!this.banHandler.banPlayer(playerName, senderName, reason, expiryTime, true)) {
         sender.sendMessage(ChatColor.RED + String.format(BanHammer.getMessage("player-already-banned"), playerName));
       } else {
         sender.sendMessage(ChatColor.RED + String.format(BanHammer.getMessage("player-banned"), playerName));
       }
+    } else {
+      throw new CommandPermissionException("You do not have permission to ban for that long", BanCommand.PERMISSION);
     }
-    
+  }
+  
+  private boolean banLengthAuthorised(CommandSender sender, long banLength) {
+    if (banLength == 0 && !sender.hasPermission("banhammer.ban.*")) {
+      return true;
+    } else {
+      for (final Entry<String, Long> limit : plugin.getBanLimits().entrySet()) {
+        if (sender.hasPermission("banhammer.ban." + limit.getKey()) && banLength <= limit.getValue()) return true;
+      }
+    }
+    return false;
   }
 
   @Override
