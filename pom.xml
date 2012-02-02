@@ -1,0 +1,103 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>name.richardson.james.bukkit</groupId>
+  <artifactId>ban-hammer</artifactId>
+  <version>1.6.3-SNAPSHOT</version>
+  <name>BanHammer</name>
+  <description>A plugin for the Bukkit framework that allows adminstrators and other trusted users to ban and kick players.</description>
+  <repositories>
+    <repository>
+      <id>bukkit-repo</id>
+      <url>http://repo.bukkit.org/content/groups/public</url>
+    </repository>  
+    <repository>
+      <id>grandwazir-plugins</id>
+      <url>http://repository.james.richardson.name/</url>
+    </repository>  
+  </repositories>
+  <dependencies>
+	 <dependency>
+	   <groupId>org.bukkit</groupId>
+	   <artifactId>bukkit</artifactId>
+	   <version>1.1-R3</version>
+     </dependency>
+     <dependency>
+	   <groupId>name.richardson.james.bukkit</groupId>
+	   <artifactId>bukkit-utilities</artifactId>
+	   <version>1.0.0</version>
+     </dependency>
+  </dependencies>
+  <distributionManagement>  
+    <!-- Publish the versioned releases here -->  
+    <repository>  
+      <id>release</id>  
+      <name>My public repository</name>  
+      <url>scp://repository.james.richardson.name/srv/www/repository.james.richardson.name</url>  
+    </repository>  
+  </distributionManagement>    
+  
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  
+  <scm>
+    <connection>scm:git:git://github.com/grandwazir/BanHammer.git</connection>
+    <url>https://github.com/grandwazir/BanHammer</url>
+    <developerConnection>scm:git:git@github.com:grandwazir/BanHammer.git</developerConnection>
+  </scm>
+  
+  <build>
+  	<sourceDirectory>${basedir}/src/main/java/</sourceDirectory>
+    <plugins>
+  
+      <!-- Release -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.2.2</version>
+        <configuration>
+          <useUniqueVersions>false</useUniqueVersions>
+          <tagNameFormat>v@{project.version}</tagNameFormat>        
+        </configuration>
+      </plugin>
+  
+      <!-- Compile plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+      </plugin>
+      
+      <!-- JAR creation plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.3.1</version>
+      </plugin>
+      
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <artifactSet>
+                <!-- We want to bundle in BukkitUtilities -->
+                <includes>
+                  <include>name.richardson.james.bukkit:bukkit-utilities</include>
+                </includes>
+              </artifactSet>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+  
+   </plugins>
+  </build>
+  
+</project>
