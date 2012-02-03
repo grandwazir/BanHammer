@@ -2,19 +2,55 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>name.richardson.james.bukkit</groupId>
   <artifactId>ban-hammer</artifactId>
-  <version>1.7.1</version>
+  <version>1.7.1-SNAPSHOT</version>
   <name>BanHammer</name>
   <description>A plugin for the Bukkit framework that allows adminstrators and other trusted users to ban and kick players.</description>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <scm>
+    <!-- Github repo -->
+    <connection>scm:git:git://github.com/grandwazir/DimensionDoor.git/</connection>
+    <developerConnection>scm:git:git@github.com:grandwazir/DimensionDoor.git</developerConnection>
+    <url>https://github.com/grandwazir/DimensionDoor</url>
+  </scm>
+
+
+  <distributionManagement>  
+    <repository>  
+      <!-- Publish the versioned releases here -->  
+      <id>release</id>
+      <name>Simple Release Repository</name>  
+      <url>scp://repository.james.richardson.name/srv/www/repository.james.richardson.name/releases</url>  
+      <!-- Get rid of ugly time stamp suffixes -->
+      <uniqueVersion>false</uniqueVersion>
+    </repository>
+    <snapshotRepository>
+      <!-- Publish snapshots here -->  
+      <id>snapshot</id>
+      <name>Simple Snapshot Repository</name>  
+      <url>scp://repository.james.richardson.name/srv/www/repository.james.richardson.name/snapshots</url>  
+      <!-- Get rid of ugly time stamp suffixes -->
+      <uniqueVersion>true</uniqueVersion>
+    </snapshotRepository>
+  </distributionManagement> 
+
+
   <repositories>
+    <!-- Bukkit repository -->
     <repository>
       <id>bukkit-repo</id>
       <url>http://repo.bukkit.org/content/groups/public</url>
     </repository>  
+    <!-- My repository -->
     <repository>
-      <id>grandwazir-plugins</id>
-      <url>http://repository.james.richardson.name/</url>
+      <id>my-repo</id>
+      <url>http://repository.james.richardson.name</url>
     </repository>  
   </repositories>
+
   <dependencies>
 	 <dependency>
 	   <groupId>org.bukkit</groupId>
@@ -24,80 +60,53 @@
      <dependency>
 	   <groupId>name.richardson.james.bukkit</groupId>
 	   <artifactId>bukkit-utilities</artifactId>
-	   <version>1.0.0</version>
+	   <version>1.0.2</version>
      </dependency>
   </dependencies>
-  <distributionManagement>  
-    <!-- Publish the versioned releases here -->  
-    <repository>  
-      <id>release</id>  
-      <name>My public repository</name>  
-      <url>scp://repository.james.richardson.name/srv/www/repository.james.richardson.name</url>  
-    </repository>  
-  </distributionManagement>    
-  
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-  
-  <scm>
-    <connection>scm:git:git://github.com/grandwazir/BanHammer.git</connection>
-    <url>https://github.com/grandwazir/BanHammer</url>
-    <developerConnection>scm:git:git@github.com:grandwazir/BanHammer.git</developerConnection>
-  </scm>
-  
+
   <build>
-  	<sourceDirectory>${basedir}/src/main/java/</sourceDirectory>
-    <plugins>
-  
-      <!-- Release -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <version>2.2.2</version>
-        <configuration>
-          <useUniqueVersions>false</useUniqueVersions>
-          <tagNameFormat>v@{project.version}</tagNameFormat>        
-        </configuration>
-      </plugin>
-  
-      <!-- Compile plugin -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
-      </plugin>
-      
-      <!-- JAR creation plugin -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>2.3.1</version>
-      </plugin>
-      
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>1.5</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
+      <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-release-plugin</artifactId>
+            <version>2.2.2</version>
             <configuration>
-              <artifactSet>
-                <!-- We want to bundle in BukkitUtilities -->
-                <includes>
-                  <include>name.richardson.james.bukkit:bukkit-utilities</include>
-                </includes>
-              </artifactSet>
+                <localCheckout>true</localCheckout>
+                <!-- Push and tag release changes myself rather than let Maven do it -->  
+                <pushChanges>false</pushChanges>
+                <tagNameFormat>v@{project.version}</tagNameFormat>   
             </configuration>
-          </execution>
-        </executions>
-      </plugin>
-  
-   </plugins>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+             <!-- We want to bundle in BukkitUtilities -->
+            <version>1.5</version>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>shade</goal>
+                </goals>
+                <configuration>
+                  <artifactSet>
+                    <includes>
+                      <include>name.richardson.james.bukkit:bukkit-utilities</include>
+                    </includes>
+                  </artifactSet>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>2.3.2</version>
+            <configuration>            
+                <compilerVersion>1.5</compilerVersion>
+            </configuration>
+          </plugin>
+      </plugins>
   </build>
-  
+
 </project>
