@@ -18,6 +18,7 @@
 
 package name.richardson.james.bukkit.banhammer.management;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +38,7 @@ public class ImportCommand extends PlayerCommand {
   public static final String NAME = "import";
   public static final String DESCRIPTION = "Import bans from banned-players.txt";
   public static final String PERMISSION_DESCRIPTION = "Allow users to import bans from banned-players.txt";
-  public static final String USAGE = "";
+  public static final String USAGE = "[reason]";
 
   public static final Permission PERMISSION = new Permission("banhammer.import", ImportCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
 
@@ -55,7 +56,7 @@ public class ImportCommand extends PlayerCommand {
     final int totalBans = this.server.getBannedPlayers().size();
     int imported = 0;
     final long expiryTime = 0;
-    final String reason = "Imported from banned-players.txt";
+    final String reason = (String) arguments.get("reason");
     final String senderName = sender.getName();
 
     for (final OfflinePlayer player : this.server.getBannedPlayers()) {
@@ -73,7 +74,23 @@ public class ImportCommand extends PlayerCommand {
 
   @Override
   public Map<String, Object> parseArguments(final List<String> arguments) {
-    return null;
+    final Map<String, Object> m = new HashMap<String, Object>();
+    m.put("reason", this.combineString(arguments, " "));
+    return m;
+  }
+  
+  protected String combineString(final List<String> arguments, final String seperator) {
+    final StringBuilder reason = new StringBuilder();
+    try {
+      for (final String argument : arguments) {
+        reason.append(argument);
+        reason.append(seperator);
+      }
+      reason.deleteCharAt(reason.length() - seperator.length());
+      return reason.toString();
+    } catch (final StringIndexOutOfBoundsException e) {
+      return "No reason provided";
+    }
   }
 
 }
