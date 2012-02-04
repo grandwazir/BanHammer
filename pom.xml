@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>name.richardson.james.bukkit</groupId>
   <artifactId>ban-hammer</artifactId>
-  <version>1.7.2</version>
+  <version>1.7.3-SNAPSHOT</version>
   <name>BanHammer</name>
   <description>A plugin for the Bukkit framework that allows adminstrators and other trusted users to ban and kick players.</description>
 
