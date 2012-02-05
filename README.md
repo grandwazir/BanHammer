@@ -21,25 +21,31 @@ BanHammer is a plugin for the Minecraft wrapper [Bukkit](http://bukkit.org/) tha
 
 ## Requirements
 
-- Bukkit Persistence needs to be configured in bukkit.yml
+- [Bukkit Persistence](https://github.com/grandwazir/BanHammer/wiki/database) needs to be configured in bukkit.yml
 - If using MySQL for Persistence, you need a MySQL database
 
 ## Installation
 
 ### Ensure you are using the latest recommended build.
 
-Before installing, you need to make sure you are running at least the latest [recommended build](http://ci.bukkit.org/job/dev-CraftBukkit/Recommended/) for Bukkit. Support is only given for problems when using a recommended build. This does not mean that the plugin will not work on other versions of Bukkit, the likelihood is it will, but it is not supported.
+Before installing, you need to make sure you are running at least the latest [recommended build](http://repo.bukkit.org/service/local/artifact/maven/content?r=releases&g=org.bukkit&a=craftbukkit&v=RELEASE) for Bukkit. Support is only given for problems when using a recommended build. This does not mean that the plugin will not work on other versions of Bukkit, the likelihood is it will, but it is not supported.
 
 ### Getting BanHammer
 
-The best way to install BanHammer is to use the [static link](http://downloads.james.richardson.name/public/binaries/banhammer/BanHammer.jar) to the latest version. This link always points to the latest version of BanHammer, so is safe to use in scripts or update plugins.
+The best way to install BanHammer is to use the [symbolic link](http://repository.james.richardson.name/symbolic/BanHammer.jar) to the latest version. This link always points to the latest version of BanHammer, so is safe to use in scripts or update plugins. Additionally you can to use the [RSS feed](http://dev.bukkit.org/server-mods/banhammer/files.rss) provided by BukkitDev as this also includes a version changelog.
     
-Alternatively [older versions](http://downloads.james.richardson.name/public/binaries/banhammer/) are available as well, however they are not supported. If you are forced to use an older version for whatever reason, please let me know why by [opening a issue](https://github.com/grandwazir/BanHammer/issues/new) on GitHub.
+Alternatively [older versions](http://repository.james.richardson.name/releases/name/richardson/james/bukkit/ban-hammer/) are available as well, however they are not supported. If you are forced to use an older version for whatever reason, please let me know why by [opening a issue](https://github.com/grandwazir/BanHammer/issues/new) on GitHub.
 
 ## Configuration
 
 1. [Configure permissions](https://github.com/grandwazir/BanHammer/wiki/permissions) if necessary.
 2. Optionally configure your ban limits (config.yml) and assign them to moderators.
 
+## Documentation
 
+All documentation for BanHammer is available on the [GitHub wiki](https://github.com/grandwazir/BanHammer/wiki), including [example usage](https://github.com/grandwazir/BanHammer/wiki/Instructions) and details on [how to configure](https://github.com/grandwazir/BanHammer/wiki/Permissions) the plugin.
+
+## Reporting issues
+
+If you encounter any problems using BanHammer, and you believe it is due to a bug in BanHammer, [report the issue](https://github.com/grandwazir/BanHammer/wiki/Permissions) on the issue tracker. Please _do not_ report issues in this thread as I will not see them as quickly as if you place them on the tracker. 
 
