@@ -41,11 +41,5 @@ Alternatively [older versions](http://repository.james.richardson.name/releases/
 1. [Configure permissions](https://github.com/grandwazir/BanHammer/wiki/permissions) if necessary.
 2. Optionally configure your ban limits (config.yml) and assign them to moderators.
 
-## Documentation
-
-All documentation for BanHammer is available on the [GitHub wiki](https://github.com/grandwazir/BanHammer/wiki), including [example usage](https://github.com/grandwazir/BanHammer/wiki/Instructions) and details on [how to configure](https://github.com/grandwazir/BanHammer/wiki/Permissions) the plugin.
-
-## Reporting issues
-
-If you encounter any problems using BanHammer, and you believe it is due to a bug in BanHammer, [report the issue](https://github.com/grandwazir/BanHammer/wiki/Permissions) on the issue tracker. Please _do not_ report issues in this thread as I will not see them as quickly as if you place them on the tracker. 
+All documentation for BanHammer is available on the [GitHub wiki](https://github.com/grandwazir/BanHammer/wiki), including [example usage](https://github.com/grandwazir/BanHammer/wiki/Instructions) and details on [how to configure](https://github.com/grandwazir/BanHammer/wiki/Permissions) the plugin. 
 
