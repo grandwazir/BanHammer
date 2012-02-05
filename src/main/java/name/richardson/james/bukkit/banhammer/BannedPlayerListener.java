@@ -22,6 +22,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import org.bukkit.event.EventHandler;
@@ -29,17 +30,21 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 
+import name.richardson.james.bukkit.alias.AliasHandler;
+import name.richardson.james.bukkit.alias.PlayerNameRecord;
 import name.richardson.james.bukkit.util.Logger;
 
 public class BannedPlayerListener implements Listener {
 
   private final BanHandler handler;
   private final Set<String> bannedPlayers;
+  private final AliasHandler aliasHandler;
 
   private static final Logger logger = new Logger(BannedPlayerListener.class);
 
   public BannedPlayerListener(final BanHammer plugin) {
     this.handler = plugin.getHandler(BannedPlayerListener.class);
+    this.aliasHandler = plugin.getAliasHandler();
     this.bannedPlayers = plugin.getModifiableBannedPlayers();
   }
 
@@ -63,6 +68,20 @@ public class BannedPlayerListener implements Listener {
         event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message);
       } else {
         this.bannedPlayers.remove(playerName.toLowerCase());
+      } 
+    } else if (this.aliasHandler != null) {
+      Set<String> aliases = this.aliasHandler.getPlayersNames(event.getPlayer().getAddress().getAddress());
+      for (String alias : aliases) {
+        if (this.bannedPlayers.contains(alias)) {
+          // get details of previous ban
+          BanRecord ban = this.handler.getPlayerBan(alias);
+          Long time = System.currentTimeMillis() - ban.getExpiresAt();
+          String message = String.format("Alias of %s.", alias);
+          if (ban.getExpiresAt() == 0) time = (long) 0;
+          event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message);
+          this.handler.banPlayer(playerName, "CONSOLE", message, time, true);
+          break;
+        }
       }
     }
   }

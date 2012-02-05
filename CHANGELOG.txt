@@ -1,5 +1,11 @@
-Changelog for BanHammer (v1.7.3-SNAPSHOT)
+Changelog for BanHammer (v1.7.4-SNAPSHOT)
 
+2012-02-05 18:35:15 +0000    started alias intergration (James Richardson)
+2012-02-05 11:48:39 +0000    removed section not relevant to the repo (James Richardson)
+2012-02-05 11:47:23 +0000    update readme with new download link (James Richardson)
+
+v1.7.3
+2012-02-05 10:49:13 +0000    release imminent (James Richardson)
 2012-02-05 10:38:23 +0000    fix issue matching mixed cased player names in the bannedNames set (James Richardson)
 2012-02-04 14:02:19 +0000    add changelog to repo (James Richardson)
 

@@ -44,6 +44,10 @@ public class BanHammerConfiguration extends AbstractConfiguration {
   public boolean isDebugging() {
     return this.configuration.getBoolean("debugging");
   }
+  
+  public boolean isAliasEnabled() {
+    return this.configuration.getBoolean("alias-plugin.enabled");
+  }
 
   public void setBanLimits() {
     this.limits.clear();
@@ -82,10 +86,7 @@ public class BanHammerConfiguration extends AbstractConfiguration {
       this.logger.debug("Creating default alias settings.");
       this.configuration.createSection("alias-plugin");
       final ConfigurationSection section = this.configuration.getConfigurationSection("alias-plugin");
-      section.set("enabled", true);
-      section.set("on-match", "ban");
-      section.set("ban-time", "3d");
-      section.set("ban-reason", "You have been banned when using another name.");
+      section.set("enabled", false);
     }
     this.save();
   }

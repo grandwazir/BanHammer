@@ -41,7 +41,6 @@ public class BanHandler extends Handler implements BanHammerAPI {
     this.server = plugin.getServer();
   }
 
-  @Override
   public boolean banPlayer(final String playerName, final String senderName, final String reason, final Long banLength, final boolean notify) {
     if (!this.isPlayerBanned(playerName)) {
       final BanRecord ban = new BanRecord();
@@ -82,17 +81,14 @@ public class BanHandler extends Handler implements BanHammerAPI {
       return false;
   }
 
-  @Override
   public BanRecord getPlayerBan(final String playerName) {
     return BanRecord.findFirstByName(this.database, playerName);
   }
 
-  @Override
   public List<BanRecord> getPlayerBans(final String playerName) {
     return BanRecord.findByName(this.database, playerName);
   }
 
-  @Override
   public boolean isPlayerBanned(final String playerName) {
     final BanRecord record = BanRecord.findFirstByName(this.database, playerName);
     if (record != null) {
@@ -104,7 +100,6 @@ public class BanHandler extends Handler implements BanHammerAPI {
       return false;
   }
 
-  @Override
   public boolean pardonPlayer(final String playerName, final String senderName, final Boolean notify) {
     if (this.isPlayerBanned(playerName)) {
       this.database.delete(BanRecord.findFirstByName(this.database, playerName));
@@ -118,14 +113,12 @@ public class BanHandler extends Handler implements BanHammerAPI {
       return false;
   }
 
-  @Override
   public boolean removePlayerBan(final BanRecord ban) {
     this.database.delete(ban);
     Handler.logger.debug(String.format("Removed a ban belonging to %s.", ban.getPlayer()));
     return true;
   }
 
-  @Override
   public int removePlayerBans(final List<BanRecord> bans) {
     final int i = this.database.delete(bans);
     Handler.logger.debug(String.format("Removed %d ban(s).", i));

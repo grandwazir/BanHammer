@@ -33,6 +33,8 @@ import javax.persistence.PersistenceException;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 
+import name.richardson.james.bukkit.alias.Alias;
+import name.richardson.james.bukkit.alias.AliasHandler;
 import name.richardson.james.bukkit.banhammer.ban.BanCommand;
 import name.richardson.james.bukkit.banhammer.ban.CheckCommand;
 import name.richardson.james.bukkit.banhammer.ban.HistoryCommand;
@@ -62,6 +64,7 @@ public class BanHammer extends Plugin {
   private DatabaseHandler database;
 
   private final HashSet<String> bannedPlayerNames = new HashSet<String>();
+  private AliasHandler aliasHandler;
 
   /**
    * This returns a localised string from the loaded ResourceBundle.
@@ -92,6 +95,10 @@ public class BanHammer extends Plugin {
   public DatabaseHandler getDatabaseHandler() {
     return this.database;
   }
+  
+  protected BanHammerConfiguration getBanHammerConfiguration() {
+    return configuration;
+  }
 
   /**
    * This returns a handler to allow access to the BanHammer API.
@@ -106,12 +113,10 @@ public class BanHammer extends Plugin {
     return this.maximumTemporaryBan;
   }
 
-  @Override
   public void onDisable() {
     this.logger.info(String.format("%s is disabled.", this.desc.getName()));
   }
 
-  @Override
   public void onEnable() {
     this.desc = this.getDescription();
     this.pm = this.getServer().getPluginManager();
@@ -121,6 +126,7 @@ public class BanHammer extends Plugin {
       this.loadConfiguration();
       this.setupDatabase();
       this.loadBans();
+      if (configuration.isAliasEnabled()) this.hookAlias();
       this.setPermission();
       this.registerListeners();
       this.registerCommands();
@@ -134,6 +140,16 @@ public class BanHammer extends Plugin {
     }
 
     this.logger.info(String.format("%s is enabled.", this.desc.getFullName()));
+  }
+
+  private void hookAlias() {
+    Alias plugin = (Alias) this.pm.getPlugin("Alias");
+    if (plugin == null) {
+      this.logger.warning("Unable to hook Alias.");
+    } else {
+      this.logger.warning("Using " + plugin.getDescription().getFullName() + ".");
+      this.aliasHandler = plugin.getHandler(BanHammer.class);
+    }
   }
 
   public void reloadBannedPlayers() {
@@ -204,6 +220,10 @@ public class BanHammer extends Plugin {
 
   protected Set<String> getModifiableBannedPlayers() {
     return this.bannedPlayerNames;
+  }
+
+  public AliasHandler getAliasHandler() {
+    return aliasHandler;
   }
 
 }
