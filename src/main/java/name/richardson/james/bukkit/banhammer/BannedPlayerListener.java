@@ -60,7 +60,7 @@ public class BannedPlayerListener implements Listener {
           final BanRecord ban = handler.getPlayerBan(alias);
           if (ban.isActive()) {
             Long time = ban.getExpiresAt() - System.currentTimeMillis();
-            final String message = String.format("Alias of %s.", alias);
+            final String message = String.format("Banned: Alias of %s.", alias);
             if (ban.getExpiresAt() == 0) {
               time = (long) 0;
             }
