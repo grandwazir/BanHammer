@@ -18,6 +18,7 @@
 
 package name.richardson.james.bukkit.banhammer;
 
+import java.net.InetAddress;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -28,6 +29,7 @@ import java.util.Set;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 import name.richardson.james.bukkit.alias.AliasHandler;
@@ -51,7 +53,7 @@ public class BannedPlayerListener implements Listener {
   @EventHandler(priority = EventPriority.HIGH)
   public void onPlayerLogin(final PlayerLoginEvent event) {
     final String playerName = event.getPlayer().getName();
-
+    logger.debug("Checking if " + playerName + "is banned.");
     if (this.bannedPlayers.contains(playerName.toLowerCase())) {
       String message;
       final BanRecord ban = this.handler.getPlayerBan(playerName);
@@ -69,8 +71,16 @@ public class BannedPlayerListener implements Listener {
       } else {
         this.bannedPlayers.remove(playerName.toLowerCase());
       } 
-    } else if (this.aliasHandler != null) {
-      Set<String> aliases = this.aliasHandler.getPlayersNames(event.getPlayer().getAddress().getAddress());
+    } 
+  }
+  
+  @EventHandler(priority = EventPriority.HIGH)
+  public void onPlayerJoin(final PlayerJoinEvent event) {
+    if (this.aliasHandler != null) {
+      final String playerName = event.getPlayer().getName();
+      final InetAddress address = event.getPlayer().getAddress().getAddress();
+      logger.debug("Checking alias of " + playerName + ".");
+      Set<String> aliases = this.aliasHandler.getPlayersNames(address);
       for (String alias : aliases) {
         if (this.bannedPlayers.contains(alias)) {
           // get details of previous ban
@@ -78,11 +88,11 @@ public class BannedPlayerListener implements Listener {
           Long time = System.currentTimeMillis() - ban.getExpiresAt();
           String message = String.format("Alias of %s.", alias);
           if (ban.getExpiresAt() == 0) time = (long) 0;
-          event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message);
           this.handler.banPlayer(playerName, "CONSOLE", message, time, true);
           break;
         }
       }
     }
+    
   }
 }

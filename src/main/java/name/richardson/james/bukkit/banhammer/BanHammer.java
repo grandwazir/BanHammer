@@ -147,7 +147,7 @@ public class BanHammer extends Plugin {
     if (plugin == null) {
       this.logger.warning("Unable to hook Alias.");
     } else {
-      this.logger.warning("Using " + plugin.getDescription().getFullName() + ".");
+      this.logger.info("Using " + plugin.getDescription().getFullName() + ".");
       this.aliasHandler = plugin.getHandler(BanHammer.class);
     }
   }
