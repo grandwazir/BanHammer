@@ -149,7 +149,7 @@ public class BanHammer extends Plugin {
     for (final Object record : this.database.list(BanRecord.class)) {
       final BanRecord ban = (BanRecord) record;
       if (ban.isActive()) {
-        this.bannedPlayerNames.add(ban.getPlayer());
+        this.bannedPlayerNames.add(ban.getPlayer().toLowerCase());
       }
     }
     this.logger.info(String.format("%d banned names loaded.", this.bannedPlayerNames.size()));
