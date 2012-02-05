@@ -56,16 +56,17 @@ public class BannedPlayerListener implements Listener {
       final Set<String> aliases = aliasHandler.getPlayersNames(address);
       for (final String alias : aliases) {
         if (bannedPlayers.contains(alias)) {
-          // get details of previous ban
           final BanRecord ban = handler.getPlayerBan(alias);
-          Long time = System.currentTimeMillis() - ban.getExpiresAt();
-          final String message = String.format("Alias of %s.", alias);
-          if (ban.getExpiresAt() == 0) {
-            time = (long) 0;
+          if (ban.isActive()) {
+            Long time = System.currentTimeMillis() - ban.getExpiresAt();
+            final String message = String.format("Alias of %s.", alias);
+            if (ban.getExpiresAt() == 0) {
+              time = (long) 0;
+            }
+            logger.info(String.format("Banning %s as an alias of %s.", playerName, alias));
+            handler.banPlayer(playerName, "CONSOLE", message, time, true);
+            break;
           }
-          logger.info(String.format("Banning %s as an alias of %s.", playerName, alias));
-          handler.banPlayer(playerName, "CONSOLE", message, time, true);
-          break;
         }
       }
     }
