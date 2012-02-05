@@ -1,5 +1,8 @@
 Changelog for BanHammer (v1.7.4-SNAPSHOT)
 
+2012-02-05 22:02:02 +0000    fix bug in checking inactive ban for alias (James Richardson)
+2012-02-05 21:57:03 +0000    code cleanup (James Richardson)
+2012-02-05 19:58:45 +0000    moved alias checking to OnPlayerJoin as addresses are not available at login (James Richardson)
 2012-02-05 19:43:18 +0000    completed alias intergration (James Richardson)
 2012-02-05 18:35:15 +0000    started alias intergration (James Richardson)
 2012-02-05 11:48:39 +0000    removed section not relevant to the repo (James Richardson)

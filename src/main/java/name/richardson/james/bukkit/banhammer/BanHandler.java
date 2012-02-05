@@ -38,6 +38,7 @@ public class BanHandler extends Handler implements BanHammerAPI {
     database = plugin.getDatabaseHandler();
     bannedPlayers = plugin.getModifiableBannedPlayers();
     server = plugin.getServer();
+    logger.setPrefix("[BanHammer] ");
   }
 
   public boolean banPlayer(final String playerName, final String senderName, final String reason, final Long banLength, final boolean notify) {
@@ -57,6 +58,7 @@ public class BanHandler extends Handler implements BanHammerAPI {
 
       database.save(ban);
       bannedPlayers.add(playerName.toLowerCase());
+      
       final Player player = server.getPlayerExact(playerName);
       if (player != null) {
         player.kickPlayer(reason);
@@ -73,7 +75,7 @@ public class BanHandler extends Handler implements BanHammerAPI {
         }
       }
 
-      Handler.logger.info(String.format("%s has been banned by %s.", playerName, senderName));
+      logger.info(String.format("%s has been banned by %s.", playerName, senderName));
 
       return true;
     } else {
