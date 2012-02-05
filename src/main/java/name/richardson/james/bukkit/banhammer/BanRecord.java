@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License along with
  * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-
 package name.richardson.james.bukkit.banhammer;
 
 import java.util.List;
@@ -39,21 +38,6 @@ public class BanRecord {
 
   private final static Logger logger = new Logger(BanRecord.class);
 
-  @Id
-  private long createdAt;
-
-  @NotNull
-  private String createdBy;
-
-  @NotNull
-  private long expiresAt;
-
-  @NotNull
-  private String player;
-
-  @NotNull
-  private String reason;
-
   static public List<BanRecord> findByName(final DatabaseHandler database, final String player) {
     BanRecord.logger.debug(String.format("Attempting to return an BanRecords matching the player name %s.", player));
     return database.getEbeanServer().find(BanRecord.class).where().ilike("player", player).orderBy("created_at DESC").findList();
@@ -72,40 +56,57 @@ public class BanRecord {
     return database.getEbeanServer().find(BanRecord.class).where().orderBy("created_at DESC").setMaxRows(maxRows).findList();
   }
 
+  @Id
+  private long createdAt;
+
+  @NotNull
+  private String createdBy;
+
+  @NotNull
+  private long expiresAt;
+
+  @NotNull
+  private String player;
+
+  @NotNull
+  private String reason;
+
   public long getCreatedAt() {
-    return this.createdAt;
+    return createdAt;
   }
 
   public String getCreatedBy() {
-    return this.createdBy;
+    return createdBy;
   }
 
   public long getExpiresAt() {
-    return this.expiresAt;
+    return expiresAt;
   }
 
   public String getPlayer() {
-    return this.player;
+    return player;
   }
 
   public String getReason() {
-    return this.reason;
+    return reason;
   }
 
   public Type getType() {
-    if (this.expiresAt == 0)
+    if (expiresAt == 0) {
       return Type.PERMENANT;
-    else
+    } else {
       return Type.TEMPORARY;
+    }
   }
 
   public boolean isActive() {
-    if (this.expiresAt == 0)
+    if (expiresAt == 0) {
       return true;
-    else if (this.expiresAt > System.currentTimeMillis())
+    } else if (expiresAt > System.currentTimeMillis()) {
       return true;
-    else
+    } else {
       return false;
+    }
   }
 
   public void setCreatedAt(final long createdAt) {

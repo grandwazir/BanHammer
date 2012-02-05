@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License along with
  * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-
 package name.richardson.james.bukkit.banhammer.ban;
 
 import java.util.Arrays;
@@ -54,14 +53,42 @@ public class BanCommand extends PlayerCommand {
   public BanCommand(final BanHammer plugin) {
     super(plugin, BanCommand.NAME, BanCommand.DESCRIPTION, BanCommand.USAGE, BanCommand.PERMISSION_DESCRIPTION, BanCommand.PERMISSION);
     this.plugin = plugin;
-    this.banHandler = plugin.getHandler(BanCommand.class);
-    this.registerBanLimits();
+    banHandler = plugin.getHandler(BanCommand.class);
+    registerBanLimits();
+  }
+
+  private boolean banLengthAuthorised(final CommandSender sender, final long banLength) {
+    if ((banLength == 0) && !sender.hasPermission("banhammer.ban.*")) {
+      return false;
+    } else {
+      for (final Entry<String, Long> limit : plugin.getBanLimits().entrySet()) {
+        if (sender.hasPermission("banhammer.ban." + limit.getKey()) && (banLength <= limit.getValue())) {
+          return true;
+        }
+      }
+    }
+    logger.info(Long.toString(banLength));
+    return false;
+  }
+
+  protected String combineString(final List<String> arguments, final String seperator) {
+    final StringBuilder reason = new StringBuilder();
+    try {
+      for (final String argument : arguments) {
+        reason.append(argument);
+        reason.append(seperator);
+      }
+      reason.deleteCharAt(reason.length() - seperator.length());
+      return reason.toString();
+    } catch (final StringIndexOutOfBoundsException e) {
+      return "No reason provided";
+    }
   }
 
   @Override
   public void execute(final CommandSender sender, final Map<String, Object> arguments) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     final String unmatchedPlayerName = (String) (arguments.get("playerName"));
-    final Player player = this.plugin.getServer().getPlayer(unmatchedPlayerName);
+    final Player player = plugin.getServer().getPlayer(unmatchedPlayerName);
     final String playerName = player != null ? player.getName() : unmatchedPlayerName;
     final String senderName = sender.getName();
     final String reason = (String) arguments.get("reason");
@@ -69,21 +96,22 @@ public class BanCommand extends PlayerCommand {
     final String expiryTimeString = (String) arguments.get("time");
     Long expiryTime = (long) 0;
 
-    if (this.plugin.getBanLimits().containsKey(expiryTimeString)) {
-      expiryTime = this.plugin.getBanLimits().get(expiryTimeString);
+    if (plugin.getBanLimits().containsKey(expiryTimeString)) {
+      expiryTime = plugin.getBanLimits().get(expiryTimeString);
     } else {
       expiryTime = Time.parseTime(expiryTimeString);
     }
 
     // check the user can ban for the specified amount of time
-    if (this.banLengthAuthorised(sender, expiryTime)) {
-      if (!this.banHandler.banPlayer(playerName, senderName, reason, expiryTime, true)) {
+    if (banLengthAuthorised(sender, expiryTime)) {
+      if (!banHandler.banPlayer(playerName, senderName, reason, expiryTime, true)) {
         sender.sendMessage(ChatColor.RED + String.format("%s is already banned!", playerName));
       } else {
         sender.sendMessage(ChatColor.GREEN + String.format("%s has been banned.", playerName));
       }
-    } else
+    } else {
       throw new CommandPermissionException("You are not allowed to ban for that long.", BanCommand.PERMISSION);
+    }
   }
 
   @Override
@@ -103,7 +131,7 @@ public class BanCommand extends PlayerCommand {
       }
 
       m.put("playerName", arguments.remove(0));
-      m.put("reason", this.combineString(arguments, " "));
+      m.put("reason", combineString(arguments, " "));
     } catch (final IndexOutOfBoundsException e) {
       throw new CommandArgumentException("You must specify a valid player name!", "If they are online, you can type part of the name.");
     }
@@ -111,42 +139,16 @@ public class BanCommand extends PlayerCommand {
     return m;
   }
 
-  private boolean banLengthAuthorised(final CommandSender sender, final long banLength) {
-    if (banLength == 0 && !sender.hasPermission("banhammer.ban.*"))
-      return false;
-    else {
-      for (final Entry<String, Long> limit : this.plugin.getBanLimits().entrySet()) {
-        if (sender.hasPermission("banhammer.ban." + limit.getKey()) && banLength <= limit.getValue()) return true;
-      }
-    }
-    this.logger.info(Long.toString(banLength));
-    return false;
-  }
-
   private void registerBanLimits() {
-    final Map<String, Long> limits = this.plugin.getBanLimits();
+    final Map<String, Long> limits = plugin.getBanLimits();
     if (!limits.isEmpty()) {
       final Permission wildcard = new Permission(BanCommand.PERMISSION.getName() + ".*", "Allow a user to ban for an unlimited amount of time", PermissionDefault.OP);
-      this.plugin.addPermission(wildcard, true);
+      plugin.addPermission(wildcard, true);
       for (final Entry<String, Long> limit : limits.entrySet()) {
         final Permission permission = new Permission("banhammer.ban." + limit.getKey(), "Allow a user to ban a player for up to specified amount of time.", PermissionDefault.OP);
         permission.addParent(wildcard, true);
-        this.plugin.addPermission(permission, false);
+        plugin.addPermission(permission, false);
       }
-    }
-  }
-
-  protected String combineString(final List<String> arguments, final String seperator) {
-    final StringBuilder reason = new StringBuilder();
-    try {
-      for (final String argument : arguments) {
-        reason.append(argument);
-        reason.append(seperator);
-      }
-      reason.deleteCharAt(reason.length() - seperator.length());
-      return reason.toString();
-    } catch (final StringIndexOutOfBoundsException e) {
-      return "No reason provided";
     }
   }
 

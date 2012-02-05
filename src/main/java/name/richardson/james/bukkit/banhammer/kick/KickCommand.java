@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License along with
  * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-
 package name.richardson.james.bukkit.banhammer.kick;
 
 import java.util.HashMap;
@@ -46,35 +45,7 @@ public class KickCommand extends PlayerCommand {
 
   public KickCommand(final BanHammer plugin) {
     super(plugin, KickCommand.NAME, KickCommand.DESCRIPTION, KickCommand.USAGE, KickCommand.PERMISSION_DESCRIPTION, KickCommand.PERMISSION);
-    this.server = plugin.getServer();
-  }
-
-  @Override
-  public void execute(final CommandSender sender, final Map<String, Object> arguments) {
-    final Player player = this.server.getPlayer((String) arguments.get("playerName"));
-    final String playerName = (String) arguments.get("playerName");
-    final String senderName = sender.getName();
-
-    if (player != null) {
-      player.kickPlayer(String.format("You have been kicked: %s", arguments.get("reason")));
-      this.logger.info(String.format("%s has been kicked by %s", senderName, playerName));
-      this.server.broadcast(String.format(ChatColor.RED + "%s has been kicked.", playerName), "banhammer.notify");
-      this.server.broadcast(String.format(ChatColor.YELLOW + "- Reason: %s", arguments.get("reason")), "banhammer.notify");
-    } else {
-      sender.sendMessage(ChatColor.RED + "There is no one matching that name!");
-    }
-  }
-
-  @Override
-  public Map<String, Object> parseArguments(final List<String> arguments) throws CommandArgumentException {
-    final Map<String, Object> m = new HashMap<String, Object>();
-    try {
-      m.put("playerName", arguments.remove(0));
-      m.put("reason", this.combineString(arguments, " "));
-    } catch (final IndexOutOfBoundsException e) {
-      throw new CommandArgumentException("You must specify a valid player name!", "BanHammer will attempt to match partial names");
-    }
-    return m;
+    server = plugin.getServer();
   }
 
   protected String combineString(final List<String> arguments, final String seperator) {
@@ -89,6 +60,34 @@ public class KickCommand extends PlayerCommand {
     } catch (final StringIndexOutOfBoundsException e) {
       return "No reason provided";
     }
+  }
+
+  @Override
+  public void execute(final CommandSender sender, final Map<String, Object> arguments) {
+    final Player player = server.getPlayer((String) arguments.get("playerName"));
+    final String playerName = (String) arguments.get("playerName");
+    final String senderName = sender.getName();
+
+    if (player != null) {
+      player.kickPlayer(String.format("You have been kicked: %s", arguments.get("reason")));
+      logger.info(String.format("%s has been kicked by %s", senderName, playerName));
+      server.broadcast(String.format(ChatColor.RED + "%s has been kicked.", playerName), "banhammer.notify");
+      server.broadcast(String.format(ChatColor.YELLOW + "- Reason: %s", arguments.get("reason")), "banhammer.notify");
+    } else {
+      sender.sendMessage(ChatColor.RED + "There is no one matching that name!");
+    }
+  }
+
+  @Override
+  public Map<String, Object> parseArguments(final List<String> arguments) throws CommandArgumentException {
+    final Map<String, Object> m = new HashMap<String, Object>();
+    try {
+      m.put("playerName", arguments.remove(0));
+      m.put("reason", combineString(arguments, " "));
+    } catch (final IndexOutOfBoundsException e) {
+      throw new CommandArgumentException("You must specify a valid player name!", "BanHammer will attempt to match partial names");
+    }
+    return m;
   }
 
 }

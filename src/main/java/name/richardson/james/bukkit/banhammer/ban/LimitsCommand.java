@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License along with
  * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-
 package name.richardson.james.bukkit.banhammer.ban;
 
 import java.util.Map;
@@ -52,8 +51,8 @@ public class LimitsCommand extends PlayerCommand {
   @Override
   public void execute(final CommandSender sender, final Map<String, Object> arguments) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
 
-    sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + "There are currently %d limits configured:", this.plugin.getBanLimits().size()));
-    for (final Entry<String, Long> limit : this.plugin.getBanLimits().entrySet()) {
+    sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + "There are currently %d limits configured:", plugin.getBanLimits().size()));
+    for (final Entry<String, Long> limit : plugin.getBanLimits().entrySet()) {
       ChatColor colour;
       if (sender.hasPermission("banhammer.ban." + limit.getKey())) {
         colour = ChatColor.GREEN;

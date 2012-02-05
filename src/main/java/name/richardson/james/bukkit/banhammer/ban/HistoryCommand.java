@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License along with
  * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-
 package name.richardson.james.bukkit.banhammer.ban;
 
 import java.text.DateFormat;
@@ -54,7 +53,7 @@ public class HistoryCommand extends PlayerCommand {
 
   public HistoryCommand(final BanHammer plugin) {
     super(plugin, HistoryCommand.NAME, HistoryCommand.DESCRIPTION, HistoryCommand.USAGE, HistoryCommand.PERMISSION_DESCRIPTION, HistoryCommand.PERMISSION);
-    this.handler = plugin.getHandler(HistoryCommand.class);
+    handler = plugin.getHandler(HistoryCommand.class);
     this.plugin = plugin;
     final Permission wildcard = new Permission(HistoryCommand.PERMISSION.getName() + ".*", "Allow a user to check the ban history of everyone.", PermissionDefault.OP);
     this.plugin.addPermission(wildcard, true);
@@ -65,17 +64,17 @@ public class HistoryCommand extends PlayerCommand {
   @Override
   public void execute(final CommandSender sender, final Map<String, Object> arguments) throws CommandPermissionException {
     final String playerName = arguments.get("playerName") != null ? (String) arguments.get("playerName") : sender.getName();
-    if (!playerName.equalsIgnoreCase(sender.getName()) && !sender.hasPermission(HistoryCommand.PERMISSION_OTHER))
+    if (!playerName.equalsIgnoreCase(sender.getName()) && !sender.hasPermission(HistoryCommand.PERMISSION_OTHER)) {
       throw new CommandPermissionException("You are not allowed to view other players ban history.", HistoryCommand.PERMISSION_OTHER);
-    else {
-      final List<BanRecord> bans = this.handler.getPlayerBans(playerName);
+    } else {
+      final List<BanRecord> bans = handler.getPlayerBans(playerName);
 
       if (bans.isEmpty()) {
         sender.sendMessage(String.format(ChatColor.YELLOW + "%s has no bans on record.", playerName));
       } else {
         sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + "%s has %d ban(s) on record:", playerName, bans.size()));
         for (final BanRecord ban : bans) {
-          this.sendBanDetail(sender, ban);
+          sendBanDetail(sender, ban);
         }
       }
     }
@@ -101,17 +100,17 @@ public class HistoryCommand extends PlayerCommand {
     sender.sendMessage(String.format(ChatColor.YELLOW + "Banned by %s on %s", ban.getCreatedBy(), createdAt));
     sender.sendMessage(String.format(ChatColor.YELLOW + "- Reason: %s.", ban.getReason()));
     switch (ban.getType()) {
-      case PERMENANT:
-        sender.sendMessage(ChatColor.YELLOW + "- Length: Permanent.");
-        break;
-      case TEMPORARY:
-        final Date expiryDate = new Date(ban.getExpiresAt());
-        final DateFormat expiryDateFormat = new SimpleDateFormat("MMM d H:mm a ");
-        final String expiryDateString = expiryDateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")";
-        final Long banTime = ban.getExpiresAt() - ban.getCreatedAt();
-        sender.sendMessage(String.format(ChatColor.YELLOW + "- Length: %s", Time.millisToLongDHMS(banTime)));
-        sender.sendMessage(String.format(ChatColor.YELLOW + "- Expires on: %s", expiryDateString));
-        break;
+    case PERMENANT:
+      sender.sendMessage(ChatColor.YELLOW + "- Length: Permanent.");
+      break;
+    case TEMPORARY:
+      final Date expiryDate = new Date(ban.getExpiresAt());
+      final DateFormat expiryDateFormat = new SimpleDateFormat("MMM d H:mm a ");
+      final String expiryDateString = expiryDateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")";
+      final Long banTime = ban.getExpiresAt() - ban.getCreatedAt();
+      sender.sendMessage(String.format(ChatColor.YELLOW + "- Length: %s", Time.millisToLongDHMS(banTime)));
+      sender.sendMessage(String.format(ChatColor.YELLOW + "- Expires on: %s", expiryDateString));
+      break;
     }
   }
 

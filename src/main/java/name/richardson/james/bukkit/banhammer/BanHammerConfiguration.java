@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License along with
  * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-
 package name.richardson.james.bukkit.banhammer;
 
 import java.io.IOException;
@@ -38,57 +37,57 @@ public class BanHammerConfiguration extends AbstractConfiguration {
   }
 
   public Map<String, Long> getBanLimits() {
-    return Collections.unmodifiableMap(this.limits);
+    return Collections.unmodifiableMap(limits);
+  }
+
+  public boolean isAliasEnabled() {
+    return configuration.getBoolean("alias-plugin.enabled");
   }
 
   public boolean isDebugging() {
-    return this.configuration.getBoolean("debugging");
-  }
-  
-  public boolean isAliasEnabled() {
-    return this.configuration.getBoolean("alias-plugin.enabled");
+    return configuration.getBoolean("debugging");
   }
 
   public void setBanLimits() {
-    this.limits.clear();
-    this.logger.debug(String.format("Registering ban limits"));
-    final ConfigurationSection section = this.configuration.getConfigurationSection("ban-limits");
+    limits.clear();
+    logger.debug(String.format("Registering ban limits"));
+    final ConfigurationSection section = configuration.getConfigurationSection("ban-limits");
     for (final String key : section.getKeys(false)) {
       try {
         final String name = key;
         final Long length = Time.parseTime(section.getString(key));
-        this.limits.put(name, length);
-        this.logger.debug(String.format("Creating new ban limit %s with a maximum time of %s (%d).", name, section.getString(key), length));
+        limits.put(name, length);
+        logger.debug(String.format("Creating new ban limit %s with a maximum time of %s (%d).", name, section.getString(key), length));
       } catch (final NumberFormatException e) {
-        this.logger.warning(String.format("Ban limit '%s' specifies an invalid number format.", key));
+        logger.warning(String.format("Ban limit '%s' specifies an invalid number format.", key));
       }
     }
   }
 
   @Override
   public void setDefaults() throws IOException {
-    this.logger.debug(String.format("Apply default configuration."));
-    final org.bukkit.configuration.file.YamlConfiguration defaults = this.getDefaults();
-    this.configuration.setDefaults(defaults);
-    this.configuration.options().copyDefaults(true);
+    logger.debug(String.format("Apply default configuration."));
+    final org.bukkit.configuration.file.YamlConfiguration defaults = getDefaults();
+    configuration.setDefaults(defaults);
+    configuration.options().copyDefaults(true);
     // set an example kit if necessary
-    if (!this.configuration.isConfigurationSection("ban-limits")) {
-      this.logger.debug("Creating example ban limits.");
-      this.configuration.createSection("ban-limits");
-      final ConfigurationSection section = this.configuration.getConfigurationSection("ban-limits");
+    if (!configuration.isConfigurationSection("ban-limits")) {
+      logger.debug("Creating example ban limits.");
+      configuration.createSection("ban-limits");
+      final ConfigurationSection section = configuration.getConfigurationSection("ban-limits");
       section.set("warning", "1h");
       section.set("short", "1d");
       section.set("medium", "3d");
       section.set("long", "7d");
     }
     // set default alias settings
-    if (!this.configuration.isConfigurationSection("alias-plugin")) {
-      this.logger.debug("Creating default alias settings.");
-      this.configuration.createSection("alias-plugin");
-      final ConfigurationSection section = this.configuration.getConfigurationSection("alias-plugin");
+    if (!configuration.isConfigurationSection("alias-plugin")) {
+      logger.debug("Creating default alias settings.");
+      configuration.createSection("alias-plugin");
+      final ConfigurationSection section = configuration.getConfigurationSection("alias-plugin");
       section.set("enabled", false);
     }
-    this.save();
+    save();
   }
 
 }

@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License along with
  * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-
 package name.richardson.james.bukkit.banhammer.ban;
 
 import java.util.HashMap;
@@ -45,15 +44,15 @@ public class PurgeCommand extends PlayerCommand {
 
   public PurgeCommand(final BanHammer plugin) {
     super(plugin, PurgeCommand.NAME, PurgeCommand.DESCRIPTION, PurgeCommand.USAGE, PurgeCommand.PERMISSION_DESCRIPTION, PurgeCommand.PERMISSION);
-    this.handler = plugin.getHandler(PurgeCommand.class);
+    handler = plugin.getHandler(PurgeCommand.class);
   }
 
   @Override
   public void execute(final CommandSender sender, final Map<String, Object> arguments) {
     final String playerName = (String) arguments.get("playerName");
-    final int i = this.handler.removePlayerBans(this.handler.getPlayerBans(playerName));
+    final int i = handler.removePlayerBans(handler.getPlayerBans(playerName));
     sender.sendMessage(String.format(ChatColor.GREEN + "Purged %d ban(s) associated with %s.", i, playerName));
-    this.logger.info(String.format("%s has deleted %d bans associated with %s.", sender.getName(), i, playerName));
+    logger.info(String.format("%s has deleted %d bans associated with %s.", sender.getName(), i, playerName));
   }
 
   @Override

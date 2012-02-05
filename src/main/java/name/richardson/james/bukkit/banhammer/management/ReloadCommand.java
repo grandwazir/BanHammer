@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License along with
  * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-
 package name.richardson.james.bukkit.banhammer.management;
 
 import java.util.Map;
@@ -47,9 +46,9 @@ public class ReloadCommand extends PlayerCommand {
   @Override
   public void execute(final CommandSender sender, final Map<String, Object> arguments) {
     final String senderName = sender.getName();
-    this.plugin.reloadBannedPlayers();
-    this.logger.info(String.format("%s has refreshed the banned player list.", senderName));
-    sender.sendMessage(String.format(ChatColor.GREEN + "Loaded %d banned name(s) into memory.", this.plugin.getBannedPlayers().size()));
+    plugin.reloadBannedPlayers();
+    logger.info(String.format("%s has refreshed the banned player list.", senderName));
+    sender.sendMessage(String.format(ChatColor.GREEN + "Loaded %d banned name(s) into memory.", plugin.getBannedPlayers().size()));
   }
 
 }

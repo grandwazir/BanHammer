@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License along with
  * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-
 package name.richardson.james.bukkit.banhammer.ban;
 
 import java.text.DateFormat;
@@ -53,18 +52,18 @@ public class CheckCommand extends PlayerCommand {
 
   public CheckCommand(final BanHammer plugin) {
     super(plugin, CheckCommand.NAME, CheckCommand.DESCRIPTION, CheckCommand.USAGE, CheckCommand.PERMISSION_DESCRIPTION, CheckCommand.PERMISSION);
-    this.handler = plugin.getHandler(CheckCommand.class);
+    handler = plugin.getHandler(CheckCommand.class);
   }
 
   @Override
   public void execute(final CommandSender sender, final Map<String, Object> arguments) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     final String playerName = (String) arguments.get("playerName");
-    final BanRecord ban = this.handler.getPlayerBan(playerName);
+    final BanRecord ban = handler.getPlayerBan(playerName);
 
     if (ban != null) {
       if (ban.isActive()) {
         sender.sendMessage(String.format(ChatColor.RED + "%s is banned.", playerName));
-        this.sendBanDetail(sender, ban);
+        sendBanDetail(sender, ban);
       } else {
         sender.sendMessage(String.format(ChatColor.YELLOW + "%s is not banned.", playerName));
       }
@@ -94,17 +93,17 @@ public class CheckCommand extends PlayerCommand {
     sender.sendMessage(String.format(ChatColor.YELLOW + "Banned by %s on %s", ban.getCreatedBy(), createdAt));
     sender.sendMessage(String.format(ChatColor.YELLOW + "- Reason: %s.", ban.getReason()));
     switch (ban.getType()) {
-      case PERMENANT:
-        sender.sendMessage(ChatColor.YELLOW + "- Length: Permanent.");
-        break;
-      case TEMPORARY:
-        final Date expiryDate = new Date(ban.getExpiresAt());
-        final DateFormat expiryDateFormat = new SimpleDateFormat("MMM d H:mm a ");
-        final String expiryDateString = expiryDateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")";
-        final Long banTime = ban.getExpiresAt() - ban.getCreatedAt();
-        sender.sendMessage(String.format(ChatColor.YELLOW + "- Length: %s", Time.millisToLongDHMS(banTime)));
-        sender.sendMessage(String.format(ChatColor.YELLOW + "- Expires on: %s", expiryDateString));
-        break;
+    case PERMENANT:
+      sender.sendMessage(ChatColor.YELLOW + "- Length: Permanent.");
+      break;
+    case TEMPORARY:
+      final Date expiryDate = new Date(ban.getExpiresAt());
+      final DateFormat expiryDateFormat = new SimpleDateFormat("MMM d H:mm a ");
+      final String expiryDateString = expiryDateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")";
+      final Long banTime = ban.getExpiresAt() - ban.getCreatedAt();
+      sender.sendMessage(String.format(ChatColor.YELLOW + "- Length: %s", Time.millisToLongDHMS(banTime)));
+      sender.sendMessage(String.format(ChatColor.YELLOW + "- Expires on: %s", expiryDateString));
+      break;
     }
   }
 

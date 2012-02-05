@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License along with
  * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-
 package name.richardson.james.bukkit.banhammer;
 
 import java.sql.SQLException;
@@ -26,14 +25,14 @@ import com.avaje.ebean.EbeanServer;
 
 public class DatabaseHandler extends name.richardson.james.bukkit.util.Database {
 
-  public DatabaseHandler(final EbeanServer database) throws SQLException {
-    super(database);
-  }
-
   public static List<Class<?>> getDatabaseClasses() {
     final List<Class<?>> list = new ArrayList<Class<?>>();
     list.add(BanRecord.class);
     return list;
+  }
+
+  public DatabaseHandler(final EbeanServer database) throws SQLException {
+    super(database);
   }
 
 }

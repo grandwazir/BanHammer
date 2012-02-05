@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License along with
  * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-
 package name.richardson.james.bukkit.banhammer.ban;
 
 import java.util.HashMap;
@@ -49,7 +48,7 @@ public class PardonCommand extends PlayerCommand {
 
   public PardonCommand(final BanHammer plugin) {
     super(plugin, PardonCommand.NAME, PardonCommand.DESCRIPTION, PardonCommand.USAGE, PardonCommand.PERMISSION_DESCRIPTION, PardonCommand.PERMISSION);
-    this.handler = plugin.getHandler(PardonCommand.class);
+    handler = plugin.getHandler(PardonCommand.class);
     this.plugin = plugin;
     final Permission wildcard = new Permission(PardonCommand.PERMISSION.getName() + ".*", "Allow a user to pardon all bans.", PermissionDefault.OP);
     this.plugin.addPermission(wildcard, true);
@@ -61,14 +60,15 @@ public class PardonCommand extends PlayerCommand {
   public void execute(final CommandSender sender, final Map<String, Object> arguments) throws CommandPermissionException {
     final String playerName = (String) arguments.get("playerName");
     final String senderName = sender.getName();
-    final BanRecord record = this.handler.getPlayerBan(playerName);
+    final BanRecord record = handler.getPlayerBan(playerName);
 
     if (record != null) {
       if (record.getCreatedBy().equalsIgnoreCase(senderName) || sender.hasPermission(PardonCommand.PERMISSION_ALL)) {
-        this.handler.pardonPlayer(playerName, senderName, true);
+        handler.pardonPlayer(playerName, senderName, true);
         sender.sendMessage(String.format(ChatColor.GREEN + "%s has been pardoned.", playerName));
-      } else
+      } else {
         throw new CommandPermissionException("You may only pardon your own bans.", PardonCommand.PERMISSION_ALL);
+      }
     } else {
       sender.sendMessage(String.format(ChatColor.YELLOW + "%s is not banned.", playerName));
     }

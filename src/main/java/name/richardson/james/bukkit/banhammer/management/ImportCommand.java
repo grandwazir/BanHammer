@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License along with
  * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-
 package name.richardson.james.bukkit.banhammer.management;
 
 import java.util.HashMap;
@@ -47,38 +46,10 @@ public class ImportCommand extends PlayerCommand {
 
   public ImportCommand(final BanHammer plugin) {
     super(plugin, ImportCommand.NAME, ImportCommand.DESCRIPTION, ImportCommand.USAGE, ImportCommand.PERMISSION_DESCRIPTION, ImportCommand.PERMISSION);
-    this.handler = plugin.getHandler(ImportCommand.class);
-    this.server = plugin.getServer();
+    handler = plugin.getHandler(ImportCommand.class);
+    server = plugin.getServer();
   }
 
-  @Override
-  public void execute(final CommandSender sender, final Map<String, Object> arguments) {
-    final int totalBans = this.server.getBannedPlayers().size();
-    int imported = 0;
-    final long expiryTime = 0;
-    final String reason = (String) arguments.get("reason");
-    final String senderName = sender.getName();
-
-    for (final OfflinePlayer player : this.server.getBannedPlayers()) {
-      if (!this.handler.banPlayer(player.getName(), senderName, reason, expiryTime, false)) {
-        this.logger.warning(String.format("Failed to import ban for %s because they are already banned by BanHammer.", player.getName()));
-      } else {
-        imported++;
-      }
-      player.setBanned(false);
-    }
-
-    this.logger.info(String.format("%s has imported %d bans from banned-players.txt.", sender.getName(), imported));
-    sender.sendMessage(String.format(ChatColor.YELLOW + "%d out of %d ban(s) were imported.", imported, totalBans));
-  }
-
-  @Override
-  public Map<String, Object> parseArguments(final List<String> arguments) {
-    final Map<String, Object> m = new HashMap<String, Object>();
-    m.put("reason", this.combineString(arguments, " "));
-    return m;
-  }
-  
   protected String combineString(final List<String> arguments, final String seperator) {
     final StringBuilder reason = new StringBuilder();
     try {
@@ -91,6 +62,34 @@ public class ImportCommand extends PlayerCommand {
     } catch (final StringIndexOutOfBoundsException e) {
       return "No reason provided";
     }
+  }
+
+  @Override
+  public void execute(final CommandSender sender, final Map<String, Object> arguments) {
+    final int totalBans = server.getBannedPlayers().size();
+    int imported = 0;
+    final long expiryTime = 0;
+    final String reason = (String) arguments.get("reason");
+    final String senderName = sender.getName();
+
+    for (final OfflinePlayer player : server.getBannedPlayers()) {
+      if (!handler.banPlayer(player.getName(), senderName, reason, expiryTime, false)) {
+        logger.warning(String.format("Failed to import ban for %s because they are already banned by BanHammer.", player.getName()));
+      } else {
+        imported++;
+      }
+      player.setBanned(false);
+    }
+
+    logger.info(String.format("%s has imported %d bans from banned-players.txt.", sender.getName(), imported));
+    sender.sendMessage(String.format(ChatColor.YELLOW + "%d out of %d ban(s) were imported.", imported, totalBans));
+  }
+
+  @Override
+  public Map<String, Object> parseArguments(final List<String> arguments) {
+    final Map<String, Object> m = new HashMap<String, Object>();
+    m.put("reason", combineString(arguments, " "));
+    return m;
   }
 
 }

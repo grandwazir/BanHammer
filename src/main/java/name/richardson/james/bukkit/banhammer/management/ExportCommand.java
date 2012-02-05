@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License along with
  * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-
 package name.richardson.james.bukkit.banhammer.management;
 
 import java.util.Map;
@@ -46,20 +45,20 @@ public class ExportCommand extends PlayerCommand {
 
   public ExportCommand(final BanHammer plugin) {
     super(plugin, ExportCommand.NAME, ExportCommand.DESCRIPTION, ExportCommand.USAGE, ExportCommand.PERMISSION_DESCRIPTION, ExportCommand.PERMISSION);
-    this.server = plugin.getServer();
-    this.database = plugin.getDatabaseHandler();
+    server = plugin.getServer();
+    database = plugin.getDatabaseHandler();
   }
 
   @Override
   public void execute(final CommandSender sender, final Map<String, Object> arguments) {
     int exported = 0;
-    for (final Object record : this.database.list(BanRecord.class)) {
+    for (final Object record : database.list(BanRecord.class)) {
       final BanRecord ban = (BanRecord) record;
-      final OfflinePlayer player = this.server.getOfflinePlayer(ban.getPlayer());
+      final OfflinePlayer player = server.getOfflinePlayer(ban.getPlayer());
       player.setBanned(true);
       exported++;
     }
-    this.logger.info(String.format("%s has exported all bans to banned-players.txt", sender.getName()));
+    logger.info(String.format("%s has exported all bans to banned-players.txt", sender.getName()));
     sender.sendMessage(String.format(ChatColor.GREEN + "%d ban(s) exported.", exported));
   }
 
