@@ -1,5 +1,10 @@
-Changelog for BanHammer v1.7.2-SNAPSHOT
+Changelog for BanHammer (v1.7.3-SNAPSHOT)
 
+2012-02-05 10:38:23 +0000    fix issue matching mixed cased player names in the bannedNames set (James Richardson)
+2012-02-04 14:02:19 +0000    add changelog to repo (James Richardson)
+
+v1.7.2
+2012-02-04 13:58:50 +0000    updated POM to automatically set plugin.yml version (James Richardson)
 2012-02-04 12:59:12 +0000    added ability to give a reason when importing bans (James Richardson)
 
 v1.7.1
