@@ -77,6 +77,16 @@ public class BanHammerConfiguration extends AbstractConfiguration {
       section.set("medium", "3d");
       section.set("long", "7d");
     }
+    // set default alias settings
+    if (!this.configuration.isConfigurationSection("alias-plugin")) {
+      this.logger.debug("Creating default alias settings.");
+      this.configuration.createSection("alias-plugin");
+      final ConfigurationSection section = this.configuration.getConfigurationSection("alias-plugin");
+      section.set("enabled", true);
+      section.set("on-match", "ban");
+      section.set("ban-time", "3d");
+      section.set("ban-reason", "You have been banned when using another name.");
+    }
     this.save();
   }
 
