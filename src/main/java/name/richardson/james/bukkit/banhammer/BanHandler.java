@@ -58,7 +58,7 @@ public class BanHandler extends Handler implements BanHammerAPI {
 
       database.save(ban);
       bannedPlayers.add(playerName.toLowerCase());
-      
+
       final Player player = server.getPlayerExact(playerName);
       if (player != null) {
         player.kickPlayer(reason);

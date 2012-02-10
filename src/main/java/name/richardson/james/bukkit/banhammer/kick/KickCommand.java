@@ -70,7 +70,7 @@ public class KickCommand extends PlayerCommand {
 
     if (player != null) {
       player.kickPlayer(String.format("You have been kicked: %s", arguments.get("reason")));
-      logger.info(String.format("%s has been kicked by %s", senderName, playerName));
+      logger.info(String.format("%s has been kicked by %s", playerName, senderName));
       server.broadcast(String.format(ChatColor.RED + "%s has been kicked.", playerName), "banhammer.notify");
       server.broadcast(String.format(ChatColor.YELLOW + "- Reason: %s", arguments.get("reason")), "banhammer.notify");
     } else {
