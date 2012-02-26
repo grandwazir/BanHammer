@@ -67,7 +67,6 @@ public class BanCommand extends PlayerCommand {
         }
       }
     }
-    logger.info(Long.toString(banLength));
     return false;
   }
 

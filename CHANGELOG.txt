@@ -1,5 +1,11 @@
-Changelog for BanHammer (v1.7.4-SNAPSHOT)
+Changelog for BanHammer (v1.8.2-SNAPSHOT)
 
+
+v1.8.1
+2012-02-10 22:00:32 +0000    fixed typo in KickCommand logging message (James Richardson)
+
+v1.8.0
+2012-02-05 22:44:07 +0000    pre-release preperation (James Richardson)
 2012-02-05 22:36:04 +0000    fix two bugs in BannedPlayerListener (James Richardson)
 2012-02-05 22:02:02 +0000    fix bug in checking inactive ban for alias (James Richardson)
 2012-02-05 21:57:03 +0000    code cleanup (James Richardson)
