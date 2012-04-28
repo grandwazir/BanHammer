@@ -45,6 +45,12 @@ public class BanSummary implements Localisable {
     return this.getSimpleFormattedMessage("bansummary-header", arguments);
   }
   
+  public String getSelfHeader() {
+    final String date = dateFormatCreatedAt.format(dateFormatCreatedAt);
+    final Object[] arguments = { record.getCreatedBy(), date };
+    return this.getSimpleFormattedMessage("bansummary-self-header", arguments);
+  }
+  
   public String getExpiresAt() {
     final String expiryDateString =  dateFormatLength.format(record.getExpiresAt()) + "(" + tz + ")";
     return this.getSimpleFormattedMessage("bansummary-expires", expiryDateString);
