@@ -17,15 +17,8 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.ban;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
@@ -33,76 +26,67 @@ import org.bukkit.permissions.PermissionDefault;
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.banhammer.DatabaseHandler;
-import name.richardson.james.bukkit.util.Time;
-import name.richardson.james.bukkit.util.command.CommandArgumentException;
-import name.richardson.james.bukkit.util.command.PlayerCommand;
+import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
+import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
+import name.richardson.james.bukkit.utilities.command.CommandUsageException;
+import name.richardson.james.bukkit.utilities.command.PluginCommand;
 
-public class RecentCommand extends PlayerCommand {
+public class RecentCommand extends PluginCommand {
 
-  public static final String NAME = "recent";
-  public static final String DESCRIPTION = "Display a list of recent bans";
-  public static final String PERMISSION_DESCRIPTION = "Allow users to display a list of recent bans";
-  public static final String USAGE = "[limit]";
-
-  public static final Permission PERMISSION = new Permission("banhammer.recent", RecentCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
-
+  public static final int DEFAULT_LIMIT = 5;
+  
+  /** A reference to the database handler */
   private final DatabaseHandler database;
 
+  /** The number of bans to return */
+  private int count;
+
   public RecentCommand(final BanHammer plugin) {
-    super(plugin, RecentCommand.NAME, RecentCommand.DESCRIPTION, RecentCommand.USAGE, RecentCommand.PERMISSION_DESCRIPTION, RecentCommand.PERMISSION);
+    super(plugin);
     database = plugin.getDatabaseHandler();
+    this.registerPermissions();
   }
 
-  @Override
-  public void execute(final CommandSender sender, final Map<String, Object> arguments) {
-    final int maxRows = (Integer) arguments.get("maxRows");
-    final List<BanRecord> bans = BanRecord.findRecent(database, maxRows);
-    if (bans.isEmpty()) {
-      sender.sendMessage(ChatColor.YELLOW + "There are no bans on record.");
-    } else {
-      sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + "Displaying last %d ban(s):", bans.size()));
+  private void registerPermissions() {
+    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
+    // create the base permission
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("recentcommand-permission-description"), PermissionDefault.OP);
+    base.addParent(this.plugin.getRootPermission(), true);
+    this.addPermission(base);
+  }
+
+  public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+    final List<BanRecord> bans = BanRecord.findRecent(database, count);
+    if (bans.size() != 0) {
+      sender.sendMessage(this.getFormattedMessageHeader(bans.size()));
       for (final BanRecord ban : bans) {
-        sendBanDetail(sender, ban);
+        BanSummary summary = new BanSummary(plugin, ban);
+        sender.sendMessage(summary.getHeader());
+        sender.sendMessage(summary.getReason());
+        sender.sendMessage(summary.getLength());
+        if (ban.getType() == BanRecord.Type.TEMPORARY) sender.sendMessage(summary.getExpiresAt());
       }
+    } else {
+      sender.sendMessage(this.getMessage("recentcommand-no-bans"));
     }
   }
+  
+  private String getFormattedMessageHeader(int size) {
+    final Object[] arguments = { size };
+    final double[] limits = { 1, 2 };
+    final String[] formats = { this.getMessage("only-ban"), this.getMessage("many-bans") };
+    return this.getChoiceFormattedMessage("recentcommand-header", arguments, formats, limits);
+  }
 
-  @Override
-  public Map<String, Object> parseArguments(final List<String> arguments) throws CommandArgumentException {
-    final Map<String, Object> m = new HashMap<String, Object>();
-
-    m.put("maxRows", 3);
-
-    if (!arguments.isEmpty()) {
+  public void parseArguments(String[] arguments, CommandSender sender) throws CommandArgumentException {
+    if (arguments.length == 0) {
+      this.count = DEFAULT_LIMIT;
+    } else {
       try {
-        Integer.parseInt(arguments.get(0));
-        m.put("maxRows", arguments.get(0));
+        this.count = Integer.parseInt(arguments[0]);
       } catch (final NumberFormatException exception) {
-        throw new CommandArgumentException("You must provide a valid number", "The default amount is 3");
+        throw new CommandArgumentException(this.getMessage("must-specify-valid-number"), this.getSimpleFormattedMessage("recentcommand-default", RecentCommand.DEFAULT_LIMIT));
       }
-    }
-
-    return m;
-  }
-
-  protected void sendBanDetail(final CommandSender sender, final BanRecord ban) {
-    final Date createdDate = new Date(ban.getCreatedAt());
-    final DateFormat dateFormat = new SimpleDateFormat("MMM d");
-    final String createdAt = dateFormat.format(createdDate);
-    sender.sendMessage(String.format(ChatColor.RED + "%s banned by %s on %s.", ban.getPlayer(), ban.getCreatedBy(), createdAt));
-    sender.sendMessage(String.format(ChatColor.YELLOW + "- Reason: %s.", ban.getReason()));
-    switch (ban.getType()) {
-    case PERMENANT:
-      sender.sendMessage(ChatColor.YELLOW + "- Length: Permanent.");
-      break;
-    case TEMPORARY:
-      final Date expiryDate = new Date(ban.getExpiresAt());
-      final DateFormat expiryDateFormat = new SimpleDateFormat("MMM d H:mm a ");
-      final String expiryDateString = expiryDateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")";
-      final Long banTime = ban.getExpiresAt() - ban.getCreatedAt();
-      sender.sendMessage(String.format(ChatColor.YELLOW + "- Length: %s", Time.millisToLongDHMS(banTime)));
-      sender.sendMessage(String.format(ChatColor.YELLOW + "- Expires on: %s", expiryDateString));
-      break;
     }
   }
 

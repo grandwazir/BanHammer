@@ -60,7 +60,7 @@ public class BanHammer extends SimplePlugin {
    *          The key for the desired string.
    * @return The string for the given key.
    */
-  public static String getMessage(final String key) {
+  public String getMessage(final String key) {
     return BanHammer.messages.getString(key);
   }
 
