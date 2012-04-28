@@ -24,15 +24,14 @@ import java.util.Map;
 
 import org.bukkit.configuration.ConfigurationSection;
 
-import name.richardson.james.bukkit.util.Plugin;
-import name.richardson.james.bukkit.util.Time;
-import name.richardson.james.bukkit.util.configuration.AbstractConfiguration;
+import name.richardson.james.bukkit.utilities.configuration.AbstractConfiguration;
+import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
 
 public class BanHammerConfiguration extends AbstractConfiguration {
 
   private final Map<String, Long> limits = new LinkedHashMap<String, Long>();
 
-  public BanHammerConfiguration(final Plugin plugin) throws IOException {
+  public BanHammerConfiguration(final BanHammer plugin) throws IOException {
     super(plugin, "config.yml");
   }
 
@@ -55,11 +54,11 @@ public class BanHammerConfiguration extends AbstractConfiguration {
     for (final String key : section.getKeys(false)) {
       try {
         final String name = key;
-        final Long length = Time.parseTime(section.getString(key));
+        final Long length = TimeFormatter.parseTime(section.getString(key));
         limits.put(name, length);
         logger.debug(String.format("Creating new ban limit %s with a maximum time of %s (%d).", name, section.getString(key), length));
       } catch (final NumberFormatException e) {
-        logger.warning(String.format("Ban limit '%s' specifies an invalid number format.", key));
+        logger.debug(String.format("Ban limit '%s' specifies an invalid number format.", key));
       }
     }
   }
