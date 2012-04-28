@@ -37,10 +37,10 @@ public class KickCommand extends PluginCommand {
 
   /** The logger for this class . */
   private final static Logger logger = new Logger(KickCommand.class);
-  
+
   /** A instance of the Bukkit server. */
   private final Server server;
-  
+
   /** The player who is going to be kicked */
   private Player player;
 
@@ -50,30 +50,29 @@ public class KickCommand extends PluginCommand {
   public KickCommand(final BanHammer plugin) {
     super(plugin);
     logger.setPrefix("[" + plugin.getName() + "]");
-    server = plugin.getServer();
+    this.server = plugin.getServer();
     this.registerPermissions();
   }
 
-  public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    if (player.isOnline()) {
-      player.kickPlayer(this.getSimpleFormattedMessage("kicked-notification", this.reason));
+  public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+    if (this.player.isOnline()) {
+      this.player.kickPlayer(this.getSimpleFormattedMessage("kicked-notification", this.reason));
       logger.info(this.getFormattedSummaryMessage(sender.getName()));
-      server.broadcast(this.getSimpleFormattedMessage("kickcommand-player-kicked", player.getName()), "banhammer.notify");
-      server.broadcast(this.getSimpleFormattedMessage("kickcommand-player-kicked-reason", reason), "banhammer.notify");
+      this.server.broadcast(this.getSimpleFormattedMessage("kickcommand-player-kicked", this.player.getName()), "banhammer.notify");
+      this.server.broadcast(this.getSimpleFormattedMessage("kickcommand-player-kicked-reason", this.reason), "banhammer.notify");
     }
   }
-  
-  private String getFormattedSummaryMessage(String sender) {
-    final Object[] arguments = { this.player.getName(), sender, this.reason };
-    return this.getSimpleFormattedMessage("kickcommand-summary-result", arguments);
-  }
 
-  public void parseArguments(String[] arguments, CommandSender sender) throws CommandArgumentException {
-    if (arguments.length == 0) throw new CommandArgumentException(this.getMessage("must-specify-a-player"), this.getMessage("name-autocompletion"));
+  public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
+    if (arguments.length == 0) {
+      throw new CommandArgumentException(this.getMessage("must-specify-a-player"), this.getMessage("name-autocompletion"));
+    }
     this.player = this.matchPlayer(arguments[0]);
-    if (player == null) throw new CommandArgumentException(this.getMessage("must-specify-a-player"), this.getMessage("name-autocompletion"));
+    if (this.player == null) {
+      throw new CommandArgumentException(this.getMessage("must-specify-a-player"), this.getMessage("name-autocompletion"));
+    }
     if (arguments.length > 1) {
-      String[] elements = new String[arguments.length - 1];
+      final String[] elements = new String[arguments.length - 1];
       System.arraycopy(arguments, 1, elements, 0, arguments.length - 1);
       this.reason = StringFormatter.combineString(elements, " ");
     } else {
@@ -81,20 +80,25 @@ public class KickCommand extends PluginCommand {
     }
   }
 
-  private Player matchPlayer(String name) {
-    List<Player> players = server.matchPlayer(name);
-    if (players.isEmpty()) return null;
+  private String getFormattedSummaryMessage(final String sender) {
+    final Object[] arguments = { this.player.getName(), sender, this.reason };
+    return this.getSimpleFormattedMessage("kickcommand-summary-result", arguments);
+  }
+
+  private Player matchPlayer(final String name) {
+    final List<Player> players = this.server.matchPlayer(name);
+    if (players.isEmpty()) {
+      return null;
+    }
     return players.get(0);
   }
 
   private void registerPermissions() {
-    final String prefix = plugin.getDescription().getName().toLowerCase() + ".";
+    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
     // create the base permission
-    Permission base = new Permission(prefix + this.getName(), this.getMessage("kickcommand-permission-description"), PermissionDefault.OP);
-    base.addParent(plugin.getRootPermission(), true);
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("kickcommand-permission-description"), PermissionDefault.OP);
+    base.addParent(this.plugin.getRootPermission(), true);
     this.addPermission(base);
   }
-
-
 
 }

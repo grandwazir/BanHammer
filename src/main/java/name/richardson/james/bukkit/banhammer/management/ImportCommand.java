@@ -53,14 +53,6 @@ public class ImportCommand extends PluginCommand {
     this.server = plugin.getServer();
     this.registerPermissions();
   }
-  
-  private void registerPermissions() {
-    final String prefix = plugin.getDescription().getName().toLowerCase() + ".";
-    // create the base permission
-    Permission base = new Permission(prefix + this.getName(), this.getMessage("importcommand-permission-description"), PermissionDefault.OP);
-    base.addParent(plugin.getRootPermission(), true);
-    this.addPermission(base);
-  }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     final int total = this.server.getBannedPlayers().size();
@@ -109,6 +101,14 @@ public class ImportCommand extends PluginCommand {
     final double[] limits = { 0, 1, 2 };
     final String[] formats = { this.getMessage("no-bans"), this.getMessage("one-ban"), this.getMessage("many-bans") };
     return this.getChoiceFormattedMessage("importcommand-response-message", arguments, formats, limits);
+  }
+
+  private void registerPermissions() {
+    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
+    // create the base permission
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("importcommand-permission-description"), PermissionDefault.OP);
+    base.addParent(this.plugin.getRootPermission(), true);
+    this.addPermission(base);
   }
 
 }

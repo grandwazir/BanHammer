@@ -107,12 +107,12 @@ public class ExportCommand extends PluginCommand {
     final String[] formats = { this.getMessage("no-bans"), this.getMessage("one-ban"), this.getMessage("many-bans") };
     return this.getChoiceFormattedMessage("export-response-message", arguments, formats, limits);
   }
-  
+
   private void registerPermissions() {
-    final String prefix = plugin.getDescription().getName().toLowerCase() + ".";
+    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
     // create the base permission
-    Permission base = new Permission(prefix + this.getName(), this.getMessage("exportcommand-permission-description"), PermissionDefault.OP);
-    base.addParent(plugin.getRootPermission(), true);
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("exportcommand-permission-description"), PermissionDefault.OP);
+    base.addParent(this.plugin.getRootPermission(), true);
     this.addPermission(base);
   }
 
