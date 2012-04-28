@@ -17,77 +17,73 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.kick;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.util.command.CommandArgumentException;
-import name.richardson.james.bukkit.util.command.PlayerCommand;
+import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
+import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
+import name.richardson.james.bukkit.utilities.command.CommandUsageException;
+import name.richardson.james.bukkit.utilities.command.PluginCommand;
+import name.richardson.james.bukkit.utilities.formatters.StringFormatter;
+import name.richardson.james.bukkit.utilities.internals.Logger;
 
-public class KickCommand extends PlayerCommand {
+public class KickCommand extends PluginCommand {
 
-  public static final String NAME = "kick";
-  public static final String DESCRIPTION = "Kick a player";
-  public static final String PERMISSION_DESCRIPTION = "Allow users to kick players";
-  public static final String USAGE = "<name>";
-
-  public static final Permission PERMISSION = new Permission("banhammer.kick", KickCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
-
+  /** The logger for this class . */
+  private final static Logger logger = new Logger(KickCommand.class);
+  
+  /** A instance of the Bukkit server. */
   private final Server server;
+  
+  /** The player who is going to be kicked */
+  private Player player;
+
+  /** The reason to give to the kicked player */
+  private String reason;
 
   public KickCommand(final BanHammer plugin) {
-    super(plugin, KickCommand.NAME, KickCommand.DESCRIPTION, KickCommand.USAGE, KickCommand.PERMISSION_DESCRIPTION, KickCommand.PERMISSION);
+    super(plugin);
     server = plugin.getServer();
   }
 
-  protected String combineString(final List<String> arguments, final String seperator) {
-    final StringBuilder reason = new StringBuilder();
-    try {
-      for (final String argument : arguments) {
-        reason.append(argument);
-        reason.append(seperator);
-      }
-      reason.deleteCharAt(reason.length() - seperator.length());
-      return reason.toString();
-    } catch (final StringIndexOutOfBoundsException e) {
-      return "No reason provided";
+  public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+    if (player.isOnline()) {
+      player.kickPlayer(this.getSimpleFormattedMessage("kicked-notification", this.reason));
+      logger.info(this.getFormattedSummaryMessage(sender.getName()));
+      server.broadcast(this.getSimpleFormattedMessage("kickcommand-player-kicked", player.getName()), "banhammer.notify");
+      server.broadcast(this.getSimpleFormattedMessage("kickcommand-player-kicked-reason", reason), "banhammer.notify");
     }
   }
+  
+  private String getFormattedSummaryMessage(String sender) {
+    final Object[] arguments = { this.player.getName(), sender, this.reason };
+    return this.getSimpleFormattedMessage("kickcommand-summary-result", arguments);
+  }
 
-  @Override
-  public void execute(final CommandSender sender, final Map<String, Object> arguments) {
-    final Player player = server.getPlayer((String) arguments.get("playerName"));
-    final String playerName = (String) arguments.get("playerName");
-    final String senderName = sender.getName();
-
-    if (player != null) {
-      player.kickPlayer(String.format("You have been kicked: %s", arguments.get("reason")));
-      logger.info(String.format("%s has been kicked by %s", playerName, senderName));
-      server.broadcast(String.format(ChatColor.RED + "%s has been kicked.", playerName), "banhammer.notify");
-      server.broadcast(String.format(ChatColor.YELLOW + "- Reason: %s", arguments.get("reason")), "banhammer.notify");
+  public void parseArguments(String[] arguments, CommandSender sender) throws CommandArgumentException {
+    if (arguments.length == 0) throw new CommandArgumentException(this.getMessage("must-specify-a-player"), this.getMessage("name-autocompletion"));
+    this.player = this.matchPlayer(arguments[0]);
+    if (player == null) throw new CommandArgumentException(this.getMessage("must-specify-a-player"), this.getMessage("name-autocompletion"));
+    if (arguments.length > 1) {
+      String[] elements = new String[arguments.length - 1];
+      System.arraycopy(arguments, 1, elements, 0, arguments.length - 1);
+      this.reason = StringFormatter.combineString(elements, " ");
     } else {
-      sender.sendMessage(ChatColor.RED + "There is no one matching that name!");
+      this.reason = this.getMessage("kickcommand-default-reason");
     }
   }
 
-  @Override
-  public Map<String, Object> parseArguments(final List<String> arguments) throws CommandArgumentException {
-    final Map<String, Object> m = new HashMap<String, Object>();
-    try {
-      m.put("playerName", arguments.remove(0));
-      m.put("reason", combineString(arguments, " "));
-    } catch (final IndexOutOfBoundsException e) {
-      throw new CommandArgumentException("You must specify a valid player name!", "BanHammer will attempt to match partial names");
-    }
-    return m;
+  private Player matchPlayer(String name) {
+    List<Player> players = server.matchPlayer(name);
+    if (players.isEmpty()) return null;
+    return players.get(0);
   }
+
+
+
 
 }
