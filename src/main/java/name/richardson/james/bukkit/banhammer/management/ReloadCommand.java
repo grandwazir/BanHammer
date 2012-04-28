@@ -18,6 +18,8 @@
 package name.richardson.james.bukkit.banhammer.management;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
@@ -36,9 +38,19 @@ public class ReloadCommand extends PluginCommand {
 
   public ReloadCommand(final BanHammer plugin) {
     super(plugin);
+    logger.setPrefix("[" + plugin.getName() + "]");
     this.plugin = plugin;
+    this.registerPermissions();
   }
 
+  private void registerPermissions() {
+    final String prefix = plugin.getDescription().getName().toLowerCase() + ".";
+    // create the base permission
+    Permission base = new Permission(prefix + this.getName(), this.getMessage("reloadcommand-permission-description"), PermissionDefault.OP);
+    base.addParent(plugin.getRootPermission(), true);
+    this.addPermission(base);
+  }
+  
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     this.plugin.reloadBannedPlayers();
     final int total = this.plugin.getBannedPlayers().size();

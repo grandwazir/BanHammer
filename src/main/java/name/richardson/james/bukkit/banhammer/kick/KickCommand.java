@@ -49,6 +49,7 @@ public class KickCommand extends PluginCommand {
 
   public KickCommand(final BanHammer plugin) {
     super(plugin);
+    logger.setPrefix("[" + plugin.getName() + "]");
     server = plugin.getServer();
     this.registerPermissions();
   }
@@ -89,7 +90,7 @@ public class KickCommand extends PluginCommand {
   private void registerPermissions() {
     final String prefix = plugin.getDescription().getName().toLowerCase() + ".";
     // create the base permission
-    Permission base = new Permission(prefix + this.getName(), plugin.getMessage("kickcommand-permission-description"), PermissionDefault.OP);
+    Permission base = new Permission(prefix + this.getName(), this.getMessage("kickcommand-permission-description"), PermissionDefault.OP);
     base.addParent(plugin.getRootPermission(), true);
     this.addPermission(base);
   }

@@ -20,6 +20,8 @@ package name.richardson.james.bukkit.banhammer.management;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.BanRecord;
@@ -46,6 +48,7 @@ public class ExportCommand extends PluginCommand {
     logger.setPrefix("[" + plugin.getName() + "]");
     this.server = plugin.getServer();
     this.database = plugin.getDatabaseHandler();
+    this.registerPermissions();
   }
 
   /*
@@ -103,6 +106,14 @@ public class ExportCommand extends PluginCommand {
     final double[] limits = { 0, 1, 2 };
     final String[] formats = { this.getMessage("no-bans"), this.getMessage("one-ban"), this.getMessage("many-bans") };
     return this.getChoiceFormattedMessage("export-response-message", arguments, formats, limits);
+  }
+  
+  private void registerPermissions() {
+    final String prefix = plugin.getDescription().getName().toLowerCase() + ".";
+    // create the base permission
+    Permission base = new Permission(prefix + this.getName(), this.getMessage("exportcommand-permission-description"), PermissionDefault.OP);
+    base.addParent(plugin.getRootPermission(), true);
+    this.addPermission(base);
   }
 
 }
