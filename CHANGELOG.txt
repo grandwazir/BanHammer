@@ -1,5 +1,6 @@
 Changelog for BanHammer (v1.9.0-SNAPSHOT)
 
+2012-04-28 15:24:15 +0100    Missing key exception with HistoryCommand (James Richardson)
 2012-04-28 15:22:52 +0100    fix issue registering permissions (James Richardson)
 2012-04-28 15:18:58 +0100    fixed some import errors (James Richardson)
 2012-04-28 15:14:27 +0100    updated pom (James Richardson)

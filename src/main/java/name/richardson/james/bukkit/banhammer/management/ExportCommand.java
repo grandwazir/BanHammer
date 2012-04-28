@@ -29,9 +29,11 @@ import name.richardson.james.bukkit.banhammer.DatabaseHandler;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
+import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.command.PluginCommand;
 import name.richardson.james.bukkit.utilities.internals.Logger;
 
+@ConsoleCommand
 public class ExportCommand extends PluginCommand {
 
   /** The logger for this class . */

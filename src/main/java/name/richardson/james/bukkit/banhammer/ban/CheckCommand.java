@@ -33,8 +33,10 @@ import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
+import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.command.PluginCommand;
 
+@ConsoleCommand
 public class CheckCommand extends PluginCommand {
 
   /** Reference to the BanHammer API */

@@ -29,8 +29,10 @@ import name.richardson.james.bukkit.banhammer.DatabaseHandler;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
+import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.command.PluginCommand;
 
+@ConsoleCommand
 public class RecentCommand extends PluginCommand {
 
   public static final int DEFAULT_LIMIT = 5;

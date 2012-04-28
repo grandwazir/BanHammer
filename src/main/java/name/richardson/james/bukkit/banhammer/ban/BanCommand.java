@@ -34,10 +34,12 @@ import name.richardson.james.bukkit.banhammer.BanHandler;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
+import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.command.PluginCommand;
 import name.richardson.james.bukkit.utilities.formatters.StringFormatter;
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
 
+@ConsoleCommand
 public class BanCommand extends PluginCommand {
 
   /** Reference to the BanHammer API */

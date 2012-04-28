@@ -33,8 +33,10 @@ import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
+import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.command.PluginCommand;
 
+@ConsoleCommand
 public class HistoryCommand extends PluginCommand {
 
   /** Reference to the BanHammer API */
@@ -137,75 +139,5 @@ public class HistoryCommand extends PluginCommand {
     others.addParent(base, true);
     this.addPermission(others);
   }
-
-  /**
-   * @Override
-   *           public void execute(final CommandSender sender, final Map<String,
-   *           Object> arguments) throws CommandPermissionException {
-   *           final String playerName = arguments.get("playerName") != null ?
-   *           (String) arguments.get("playerName") : sender.getName();
-   *           if (!playerName.equalsIgnoreCase(sender.getName()) &&
-   *           !sender.hasPermission(HistoryCommand.PERMISSION_OTHER)) {
-   *           throw new CommandPermissionException(
-   *           "You are not allowed to view other players ban history.",
-   *           HistoryCommand.PERMISSION_OTHER);
-   *           } else {
-   *           final List<BanRecord> bans = handler.getPlayerBans(playerName);
-   * 
-   *           if (bans.isEmpty()) {
-   *           sender.sendMessage(String.format(ChatColor.YELLOW +
-   *           "%s has no bans on record.", playerName));
-   *           } else {
-   *           sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE +
-   *           "%s has %d ban(s) on record:", playerName, bans.size()));
-   *           for (final BanRecord ban : bans) {
-   *           sendBanDetail(sender, ban);
-   *           }
-   *           }
-   *           }
-   *           }
-   * @Override
-   *           public Map<String, Object> parseArguments(final List<String>
-   *           arguments) throws CommandArgumentException {
-   *           final Map<String, Object> m = new HashMap<String, Object>();
-   * 
-   *           try {
-   *           m.put("playerName", arguments.get(0));
-   *           } catch (final IndexOutOfBoundsException e) {
-   *           m.put("playerName", null);
-   *           }
-   * 
-   *           return m;
-   *           }
-   * 
-   *           protected void sendBanDetail(final CommandSender sender, final
-   *           BanRecord ban) {
-   *           final Date createdDate = new Date(ban.getCreatedAt());
-   *           final DateFormat dateFormat = new SimpleDateFormat("MMM d");
-   *           final String createdAt = dateFormat.format(createdDate);
-   *           sender.sendMessage(String.format(ChatColor.YELLOW +
-   *           "Banned by %s on %s", ban.getCreatedBy(), createdAt));
-   *           sender.sendMessage(String.format(ChatColor.YELLOW +
-   *           "- Reason: %s.", ban.getReason()));
-   *           switch (ban.getType()) {
-   *           case PERMENANT:
-   *           sender.sendMessage(ChatColor.YELLOW + "- Length: Permanent.");
-   *           break;
-   *           case TEMPORARY:
-   *           final Date expiryDate = new Date(ban.getExpiresAt());
-   *           final DateFormat expiryDateFormat = new
-   *           SimpleDateFormat("MMM d H:mm a ");
-   *           final String expiryDateString =
-   *           expiryDateFormat.format(expiryDate) + "(" +
-   *           Calendar.getInstance().getTimeZone().getDisplayName() + ")";
-   *           final Long banTime = ban.getExpiresAt() - ban.getCreatedAt();
-   *           sender.sendMessage(String.format(ChatColor.YELLOW +
-   *           "- Length: %s", Time.millisToLongDHMS(banTime)));
-   *           sender.sendMessage(String.format(ChatColor.YELLOW +
-   *           "- Expires on: %s", expiryDateString));
-   *           break;
-   *           }
-   *           }
-   */
 
 }
