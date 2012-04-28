@@ -72,27 +72,27 @@ public class BanRecord {
   private String reason;
 
   public long getCreatedAt() {
-    return createdAt;
+    return this.createdAt;
   }
 
   public String getCreatedBy() {
-    return createdBy;
+    return this.createdBy;
   }
 
   public long getExpiresAt() {
-    return expiresAt;
+    return this.expiresAt;
   }
 
   public String getPlayer() {
-    return player;
+    return this.player;
   }
 
   public String getReason() {
-    return reason;
+    return this.reason;
   }
 
   public Type getType() {
-    if (expiresAt == 0) {
+    if (this.expiresAt == 0) {
       return Type.PERMENANT;
     } else {
       return Type.TEMPORARY;
@@ -100,9 +100,9 @@ public class BanRecord {
   }
 
   public boolean isActive() {
-    if (expiresAt == 0) {
+    if (this.expiresAt == 0) {
       return true;
-    } else if (expiresAt > System.currentTimeMillis()) {
+    } else if (this.expiresAt > System.currentTimeMillis()) {
       return true;
     } else {
       return false;

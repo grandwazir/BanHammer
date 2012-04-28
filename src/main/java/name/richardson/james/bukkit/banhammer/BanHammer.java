@@ -47,12 +47,10 @@ import name.richardson.james.bukkit.utilities.plugin.SimplePlugin;
 
 public class BanHammer extends SimplePlugin {
 
-  
-  
   private AliasHandler aliasHandler;
-  
+
   private BannedPlayerListener bannedPlayerListener;
-  
+
   private BanHammerConfiguration configuration;
 
   private final HashSet<String> bannedPlayerNames = new HashSet<String>();
@@ -62,19 +60,28 @@ public class BanHammer extends SimplePlugin {
   private CommandManager commandManager;
 
   public AliasHandler getAliasHandler() {
-    return aliasHandler;
+    return this.aliasHandler;
   }
 
   public BanHammerConfiguration getBanHammerConfiguration() {
-    return configuration;
+    return this.configuration;
   }
 
   public Map<String, Long> getBanLimits() {
-    return configuration.getBanLimits();
+    return this.configuration.getBanLimits();
   }
 
   public Set<String> getBannedPlayers() {
-    return Collections.unmodifiableSet(bannedPlayerNames);
+    return Collections.unmodifiableSet(this.bannedPlayerNames);
+  }
+
+  @Override
+  public List<Class<?>> getDatabaseClasses() {
+    return DatabaseHandler.getDatabaseClasses();
+  }
+
+  public DatabaseHandler getDatabaseHandler() {
+    return this.database;
   }
 
   /**
@@ -87,35 +94,9 @@ public class BanHammer extends SimplePlugin {
   }
 
   @Override
-  public List<Class<?>> getDatabaseClasses() {
-    return DatabaseHandler.getDatabaseClasses();
-  }
-
-  public DatabaseHandler getDatabaseHandler() {
-    return this.database;
-  }
-  
-  private void setupDatabase() throws SQLException {
-    try {
-      this.getDatabase().find(BanRecord.class).findRowCount();
-    } catch (final PersistenceException ex) {
-      this.logger.warning(this.getMessage("no-database"));
-      this.installDDL();
-    }
-    this.database = new DatabaseHandler(this.getDatabase());
-    this.logger.info(this.getFormattedBanCount(database.count(BanRecord.class)));
-  }
-  
-  private String getFormattedBanCount(int count) {
-    Object[] arguments = {count};
-    double[] limits = {0, 1, 2};
-    String[] formats = {this.getMessage("no-bans"), this.getMessage("one-ban"), this.getMessage("many-bans")};
-    return this.getChoiceFormattedMessage("bans-loaded", arguments, formats, limits);
-  }
-
   public void onEnable() {
-    logger.setPrefix("[BanHammer] ");
-    
+    this.logger.setPrefix("[BanHammer] ");
+
     try {
       this.setResourceBundle();
       this.loadConfiguration();
@@ -124,9 +105,11 @@ public class BanHammer extends SimplePlugin {
       this.loadBans();
       this.loadListeners();
       this.registerCommands();
-      if (configuration.isAliasEnabled()) hookAlias();
+      if (this.configuration.isAliasEnabled()) {
+        this.hookAlias();
+      }
     } catch (final IOException exception) {
-      logger.severe("Unable to close file stream!");
+      this.logger.severe("Unable to close file stream!");
       this.setEnabled(false);
     } catch (final SQLException exception) {
       this.logger.severe(this.getMessage("unable-to-use-database"));
@@ -142,39 +125,52 @@ public class BanHammer extends SimplePlugin {
   }
 
   public void reloadBannedPlayers() {
-    loadBans();
+    this.loadBans();
+  }
+
+  private String getFormattedBanCount(final int count) {
+    final Object[] arguments = { count };
+    final double[] limits = { 0, 1, 2 };
+    final String[] formats = { this.getMessage("no-bans"), this.getMessage("one-ban"), this.getMessage("many-bans") };
+    return this.getChoiceFormattedMessage("bans-loaded", arguments, formats, limits);
   }
 
   private void hookAlias() {
     final Alias plugin = (Alias) this.getServer().getPluginManager().getPlugin("Alias");
     if (plugin == null) {
-      logger.warning("Unable to hook Alias.");
+      this.logger.warning("Unable to hook Alias.");
     } else {
-      logger.info("Using " + plugin.getDescription().getFullName() + ".");
-      aliasHandler = plugin.getHandler(BanHammer.class);
+      this.logger.info("Using " + plugin.getDescription().getFullName() + ".");
+      this.aliasHandler = plugin.getHandler(BanHammer.class);
     }
   }
 
   private void loadBans() {
-    bannedPlayerNames.clear();
-    for (final Object record : database.list(BanRecord.class)) {
+    this.bannedPlayerNames.clear();
+    for (final Object record : this.database.list(BanRecord.class)) {
       final BanRecord ban = (BanRecord) record;
       if (ban.isActive()) {
-        bannedPlayerNames.add(ban.getPlayer().toLowerCase());
+        this.bannedPlayerNames.add(ban.getPlayer().toLowerCase());
       }
     }
-    logger.info(String.format("%d banned names loaded.", bannedPlayerNames.size()));
+    this.logger.info(String.format("%d banned names loaded.", this.bannedPlayerNames.size()));
   }
 
   private void loadConfiguration() throws IOException {
     this.configuration = new BanHammerConfiguration(this);
-    if (configuration.isDebugging())
+    if (this.configuration.isDebugging()) {
       Logger.setDebugging(this, true);
+    }
+  }
+
+  private void loadListeners() {
+    this.bannedPlayerListener = new BannedPlayerListener(this);
+    this.getServer().getPluginManager().registerEvents(this.bannedPlayerListener, this);
   }
 
   private void registerCommands() {
     this.commandManager = new CommandManager(this);
-    getCommand("bh").setExecutor(this.commandManager);
+    this.getCommand("bh").setExecutor(this.commandManager);
     final PluginCommand banCommand = new BanCommand(this);
     final PluginCommand kickCommand = new KickCommand(this);
     final PluginCommand pardonCommand = new PardonCommand(this);
@@ -191,18 +187,24 @@ public class BanHammer extends SimplePlugin {
     this.commandManager.addCommand(new RecentCommand(this));
     this.commandManager.addCommand(new ReloadCommand(this));
     // register commands again as root commands
-    getCommand("ban").setExecutor(banCommand);
-    getCommand("kick").setExecutor(kickCommand);
-    getCommand("pardon").setExecutor(pardonCommand);
+    this.getCommand("ban").setExecutor(banCommand);
+    this.getCommand("kick").setExecutor(kickCommand);
+    this.getCommand("pardon").setExecutor(pardonCommand);
   }
 
-  private void loadListeners() {
-    this.bannedPlayerListener = new BannedPlayerListener(this);
-    this.getServer().getPluginManager().registerEvents(this.bannedPlayerListener, this);
+  private void setupDatabase() throws SQLException {
+    try {
+      this.getDatabase().find(BanRecord.class).findRowCount();
+    } catch (final PersistenceException ex) {
+      this.logger.warning(this.getMessage("no-database"));
+      this.installDDL();
+    }
+    this.database = new DatabaseHandler(this.getDatabase());
+    this.logger.info(this.getFormattedBanCount(this.database.count(BanRecord.class)));
   }
 
   protected Set<String> getModifiableBannedPlayers() {
-    return bannedPlayerNames;
+    return this.bannedPlayerNames;
   }
 
 }

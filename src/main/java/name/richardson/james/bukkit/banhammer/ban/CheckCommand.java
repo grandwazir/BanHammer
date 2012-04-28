@@ -39,59 +39,63 @@ public class CheckCommand extends PluginCommand {
 
   /** Reference to the BanHammer API */
   private final BanHandler handler;
-  
+
   /** The player who we are going to check and see if they are banned */
   private OfflinePlayer player;
-  
+
   /** A instance of the Bukkit server. */
   private final Server server;
 
   public CheckCommand(final BanHammer plugin) {
     super(plugin);
-    handler = plugin.getHandler(CheckCommand.class);
-    server = plugin.getServer();
+    this.handler = plugin.getHandler(CheckCommand.class);
+    this.server = plugin.getServer();
     this.registerPermissions();
   }
-  
+
+  public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+    final BanRecord ban = this.handler.getPlayerBan(this.player.getName());
+
+    if ((ban != null) && ban.isActive()) {
+      final BanSummary summary = new BanSummary(this.plugin, ban);
+      sender.sendMessage(summary.getHeader());
+      sender.sendMessage(summary.getReason());
+      sender.sendMessage(summary.getLength());
+      if (ban.getType() == BanRecord.Type.TEMPORARY) {
+        sender.sendMessage(summary.getExpiresAt());
+      }
+    } else {
+      sender.sendMessage(this.getSimpleFormattedMessage("checkcommand-player-is-not-banned", this.player.getName()));
+    }
+  }
+
+  public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
+    if (arguments.length == 0) {
+      if (sender instanceof ConsoleCommandSender) {
+        throw new CommandArgumentException(this.getMessage("must-specify-a-player"), this.getMessage("name-autocompletion"));
+      }
+      this.player = (OfflinePlayer) sender;
+    } else {
+      this.player = this.matchPlayer(arguments[0]);
+    }
+
+  }
+
+  private OfflinePlayer matchPlayer(final String name) {
+    final List<Player> players = this.server.matchPlayer(name);
+    if (players.isEmpty()) {
+      return this.server.getOfflinePlayer(name);
+    } else {
+      return players.get(0);
+    }
+  }
+
   private void registerPermissions() {
     final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
     // create the base permission
     final Permission base = new Permission(prefix + this.getName(), this.getMessage("checkcommand-permission-description"), PermissionDefault.OP);
     base.addParent(this.plugin.getRootPermission(), true);
     this.addPermission(base);
-  }
-
-  public void parseArguments(String[] arguments, CommandSender sender) throws CommandArgumentException {
-    if (arguments.length == 0) {
-      if (sender instanceof ConsoleCommandSender) throw new CommandArgumentException(this.getMessage("must-specify-a-player"), this.getMessage("name-autocompletion"));
-      this.player = (OfflinePlayer) sender;
-    } else {
-      this.player = matchPlayer(arguments[0]);
-    }
-    
-  }
-  
-  private OfflinePlayer matchPlayer(final String name) {
-    final List<Player> players = this.server.matchPlayer(name);
-    if (players.isEmpty()) {
-      return server.getOfflinePlayer(name);
-    } else {
-      return players.get(0);
-    }
-  }
-  
-  public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final BanRecord ban = handler.getPlayerBan(player.getName());
-    
-    if (ban != null && ban.isActive()) {
-      BanSummary summary = new BanSummary(plugin, ban);
-      sender.sendMessage(summary.getHeader());
-      sender.sendMessage(summary.getReason());
-      sender.sendMessage(summary.getLength());
-      if (ban.getType() == BanRecord.Type.TEMPORARY) sender.sendMessage(summary.getExpiresAt());
-    } else {
-      sender.sendMessage(this.getSimpleFormattedMessage("checkcommand-player-is-not-banned", player.getName()));
-    } 
   }
 
 }

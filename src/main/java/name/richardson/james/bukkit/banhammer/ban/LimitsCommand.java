@@ -41,38 +41,37 @@ public class LimitsCommand extends PluginCommand {
     this.registerPermissions();
   }
 
-  private void registerPermissions() {
-    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
-    // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("limitscommand-permission-description"), PermissionDefault.TRUE);
-    base.addParent(this.plugin.getRootPermission(), true);
-    this.addPermission(base);
-  }
-  
-  public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    sender.sendMessage(this.getFormattedMessageHeader(plugin.getBanLimits().size()));
-    for (final Entry<String, Long> limit : plugin.getBanLimits().entrySet()) {
+  public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+    sender.sendMessage(this.getFormattedMessageHeader(this.plugin.getBanLimits().size()));
+    for (final Entry<String, Long> limit : this.plugin.getBanLimits().entrySet()) {
       ChatColor colour;
       if (sender.hasPermission("banhammer.ban." + limit.getKey())) {
         colour = ChatColor.GREEN;
       } else {
         colour = ChatColor.RED;
       }
-      Object[] arguments = { limit.getKey(), TimeFormatter.millisToLongDHMS(limit.getValue()) };
+      final Object[] arguments = { limit.getKey(), TimeFormatter.millisToLongDHMS(limit.getValue()) };
       sender.sendMessage(colour + this.getSimpleFormattedMessage("limitscommand-detail", arguments));
-    } 
+    }
   }
-  
-  
-  private String getFormattedMessageHeader(int size) {
+
+  public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
+    return;
+  }
+
+  private String getFormattedMessageHeader(final int size) {
     final Object[] arguments = { size };
     final double[] limits = { 0, 1, 2 };
     final String[] formats = { this.getMessage("no-limits"), this.getMessage("one-limit"), this.getMessage("many-limits") };
     return this.getChoiceFormattedMessage("limitscommand-header", arguments, formats, limits);
   }
 
-  public void parseArguments(String[] arguments, CommandSender sender) throws CommandArgumentException {
-    return;
+  private void registerPermissions() {
+    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
+    // create the base permission
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("limitscommand-permission-description"), PermissionDefault.TRUE);
+    base.addParent(this.plugin.getRootPermission(), true);
+    this.addPermission(base);
   }
 
 }

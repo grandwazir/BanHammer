@@ -35,14 +35,14 @@ public class BanHandler extends Handler implements BanHammerAPI {
 
   public BanHandler(final Class<?> parentClass, final BanHammer plugin) {
     super(parentClass);
-    database = plugin.getDatabaseHandler();
-    bannedPlayers = plugin.getModifiableBannedPlayers();
-    server = plugin.getServer();
+    this.database = plugin.getDatabaseHandler();
+    this.bannedPlayers = plugin.getModifiableBannedPlayers();
+    this.server = plugin.getServer();
     logger.setPrefix("[BanHammer] ");
   }
 
   public boolean banPlayer(final String playerName, final String senderName, final String reason, final Long banLength, final boolean notify) {
-    if (!isPlayerBanned(playerName)) {
+    if (!this.isPlayerBanned(playerName)) {
       final BanRecord ban = new BanRecord();
       final long now = System.currentTimeMillis();
       ban.setCreatedAt(now);
@@ -56,22 +56,22 @@ public class BanHandler extends Handler implements BanHammerAPI {
         ban.setExpiresAt(0);
       }
 
-      database.save(ban);
-      bannedPlayers.add(playerName.toLowerCase());
+      this.database.save(ban);
+      this.bannedPlayers.add(playerName.toLowerCase());
 
-      final Player player = server.getPlayerExact(playerName);
+      final Player player = this.server.getPlayerExact(playerName);
       if (player != null) {
         player.kickPlayer(reason);
       }
 
       if (notify) {
         if (banLength == 0) {
-          notifyPlayers(ChatColor.RED + playerName + " has been permanently banned.");
-          notifyPlayers(ChatColor.YELLOW + "- Reason: " + reason);
+          this.notifyPlayers(ChatColor.RED + playerName + " has been permanently banned.");
+          this.notifyPlayers(ChatColor.YELLOW + "- Reason: " + reason);
         } else {
-          notifyPlayers(ChatColor.RED + playerName + " has been banned.");
-          notifyPlayers(ChatColor.YELLOW + "- Reason: " + reason + ".");
-          notifyPlayers(ChatColor.YELLOW + "- Length: " + Time.millisToLongDHMS(banLength) + ".");
+          this.notifyPlayers(ChatColor.RED + playerName + " has been banned.");
+          this.notifyPlayers(ChatColor.YELLOW + "- Reason: " + reason + ".");
+          this.notifyPlayers(ChatColor.YELLOW + "- Length: " + Time.millisToLongDHMS(banLength) + ".");
         }
       }
 
@@ -84,15 +84,15 @@ public class BanHandler extends Handler implements BanHammerAPI {
   }
 
   public BanRecord getPlayerBan(final String playerName) {
-    return BanRecord.findFirstByName(database, playerName);
+    return BanRecord.findFirstByName(this.database, playerName);
   }
 
   public List<BanRecord> getPlayerBans(final String playerName) {
-    return BanRecord.findByName(database, playerName);
+    return BanRecord.findByName(this.database, playerName);
   }
 
   public boolean isPlayerBanned(final String playerName) {
-    final BanRecord record = BanRecord.findFirstByName(database, playerName);
+    final BanRecord record = BanRecord.findFirstByName(this.database, playerName);
     if (record != null) {
       if (record.isActive()) {
         return true;
@@ -104,16 +104,12 @@ public class BanHandler extends Handler implements BanHammerAPI {
     }
   }
 
-  private void notifyPlayers(final String message) {
-    server.broadcast(message, "banhammer.notify");
-  }
-
   public boolean pardonPlayer(final String playerName, final String senderName, final Boolean notify) {
-    if (isPlayerBanned(playerName)) {
-      database.delete(BanRecord.findFirstByName(database, playerName));
-      bannedPlayers.remove(playerName.toLowerCase());
+    if (this.isPlayerBanned(playerName)) {
+      this.database.delete(BanRecord.findFirstByName(this.database, playerName));
+      this.bannedPlayers.remove(playerName.toLowerCase());
       if (notify) {
-        notifyPlayers(ChatColor.GREEN + playerName + " has been pardoned by " + senderName + ".");
+        this.notifyPlayers(ChatColor.GREEN + playerName + " has been pardoned by " + senderName + ".");
       }
       Handler.logger.info(String.format("%s has been pardoned by %s.", playerName, senderName));
       return true;
@@ -123,16 +119,19 @@ public class BanHandler extends Handler implements BanHammerAPI {
   }
 
   public boolean removePlayerBan(final BanRecord ban) {
-    database.delete(ban);
+    this.database.delete(ban);
     Handler.logger.debug(String.format("Removed a ban belonging to %s.", ban.getPlayer()));
     return true;
   }
 
   public int removePlayerBans(final List<BanRecord> bans) {
-    final int i = database.delete(bans);
+    final int i = this.database.delete(bans);
     Handler.logger.debug(String.format("Removed %d ban(s).", i));
     return i;
   }
 
+  private void notifyPlayers(final String message) {
+    this.server.broadcast(message, "banhammer.notify");
+  }
 
 }

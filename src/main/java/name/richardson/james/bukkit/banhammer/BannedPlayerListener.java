@@ -42,22 +42,22 @@ public class BannedPlayerListener implements Listener {
   private static final Logger logger = new Logger(BannedPlayerListener.class);
 
   public BannedPlayerListener(final BanHammer plugin) {
-    handler = plugin.getHandler(BannedPlayerListener.class);
-    aliasHandler = plugin.getAliasHandler();
-    bannedPlayers = plugin.getModifiableBannedPlayers();
+    this.handler = plugin.getHandler(BannedPlayerListener.class);
+    this.aliasHandler = plugin.getAliasHandler();
+    this.bannedPlayers = plugin.getModifiableBannedPlayers();
     logger.setPrefix("[BanHammer] ");
   }
 
   @EventHandler(priority = EventPriority.HIGH)
   public void onPlayerJoin(final PlayerJoinEvent event) {
-    if (aliasHandler != null) {
+    if (this.aliasHandler != null) {
       final String playerName = event.getPlayer().getName();
       final InetAddress address = event.getPlayer().getAddress().getAddress();
       logger.debug("Checking alias of " + playerName + ".");
-      final Set<String> aliases = aliasHandler.getPlayersNames(address);
+      final Set<String> aliases = this.aliasHandler.getPlayersNames(address);
       for (final String alias : aliases) {
-        if (bannedPlayers.contains(alias.toLowerCase())) {
-          final BanRecord ban = handler.getPlayerBan(alias);
+        if (this.bannedPlayers.contains(alias.toLowerCase())) {
+          final BanRecord ban = this.handler.getPlayerBan(alias);
           if (ban.isActive()) {
             Long time = ban.getExpiresAt() - System.currentTimeMillis();
             final String message = String.format("Banned: Alias of %s.", alias);
@@ -65,10 +65,10 @@ public class BannedPlayerListener implements Listener {
               time = (long) 0;
             }
             logger.info(String.format("Banning %s as an alias of %s.", playerName, alias));
-            handler.banPlayer(playerName, "CONSOLE", message, time, true);
+            this.handler.banPlayer(playerName, "CONSOLE", message, time, true);
             break;
           } else {
-            bannedPlayers.remove(alias.toLowerCase());
+            this.bannedPlayers.remove(alias.toLowerCase());
           }
         }
       }
@@ -80,9 +80,9 @@ public class BannedPlayerListener implements Listener {
   public void onPlayerLogin(final PlayerLoginEvent event) {
     final String playerName = event.getPlayer().getName();
     logger.debug("Checking if " + playerName + " is banned.");
-    if (bannedPlayers.contains(playerName.toLowerCase())) {
+    if (this.bannedPlayers.contains(playerName.toLowerCase())) {
       String message;
-      final BanRecord ban = handler.getPlayerBan(playerName);
+      final BanRecord ban = this.handler.getPlayerBan(playerName);
       if (ban.isActive()) {
         if (ban.getType().equals(BanRecord.Type.PERMENANT)) {
           message = String.format("You have been permanently banned. Reason: %s.", ban.getReason());
@@ -95,7 +95,7 @@ public class BannedPlayerListener implements Listener {
         BannedPlayerListener.logger.debug(String.format("Blocked %s from connecting due to an active ban.", playerName));
         event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message);
       } else {
-        bannedPlayers.remove(playerName.toLowerCase());
+        this.bannedPlayers.remove(playerName.toLowerCase());
       }
     }
   }

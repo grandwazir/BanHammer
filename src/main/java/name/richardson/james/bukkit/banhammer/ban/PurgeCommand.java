@@ -38,10 +38,10 @@ public class PurgeCommand extends PluginCommand {
 
   /** The logger for this class . */
   private final static Logger logger = new Logger(PurgeCommand.class);
-  
+
   /** A reference to the BanHammer API. */
   private final BanHandler handler;
-  
+
   /** A instance of the Bukkit server. */
   private final Server server;
 
@@ -50,58 +50,55 @@ public class PurgeCommand extends PluginCommand {
 
   public PurgeCommand(final BanHammer plugin) {
     super(plugin);
-    handler = plugin.getHandler(PurgeCommand.class);
-    server = plugin.getServer();
+    this.handler = plugin.getHandler(PurgeCommand.class);
+    this.server = plugin.getServer();
     this.registerPermissions();
   }
 
-  
+  public void execute(final CommandSender sender) throws CommandPermissionException, CommandUsageException {
+    final int i = this.handler.removePlayerBans(this.handler.getPlayerBans(this.player.getName()));
+    sender.sendMessage(this.getFormattedResponseMessage(i));
+    logger.info(this.getFormattedSummaryMessage(i, sender.getName()));
+  }
+
+  public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
+    if (arguments.length == 0) {
+      throw new CommandArgumentException(this.getMessage("must-specify-a-player"), this.getMessage("name-autocompletion"));
+    } else {
+      this.player = this.matchPlayer(arguments[0]);
+    }
+
+  }
+
+  private String getFormattedResponseMessage(final int total) {
+    final Object[] arguments = { total, this.player.getName() };
+    final double[] limits = { 0, 1, 2 };
+    final String[] formats = { this.getMessage("no-bans").toLowerCase(), this.getMessage("one-ban").toLowerCase(), this.getMessage("many-bans").toLowerCase() };
+    return this.getChoiceFormattedMessage("purgecommand-response-message", arguments, formats, limits);
+  }
+
+  private String getFormattedSummaryMessage(final int total, final String name) {
+    final Object[] arguments = { total, this.player.getName(), name };
+    final double[] limits = { 0, 1, 2 };
+    final String[] formats = { this.getMessage("no-bans").toLowerCase(), this.getMessage("one-ban").toLowerCase(), this.getMessage("many-bans").toLowerCase() };
+    return this.getChoiceFormattedMessage("purgecommand-summary-result", arguments, formats, limits);
+  }
+
+  private OfflinePlayer matchPlayer(final String name) {
+    final List<Player> players = this.server.matchPlayer(name);
+    if (players.isEmpty()) {
+      return this.server.getOfflinePlayer(name);
+    } else {
+      return players.get(0);
+    }
+  }
+
   private void registerPermissions() {
     final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
     // create the base permission
     final Permission base = new Permission(prefix + this.getName(), this.getMessage("purgecommand-permission-description"), PermissionDefault.OP);
     base.addParent(this.plugin.getRootPermission(), true);
     this.addPermission(base);
-  }
-
-
-  public void execute(CommandSender sender) throws CommandPermissionException, CommandUsageException {
-    final int i = handler.removePlayerBans(handler.getPlayerBans(player.getName()));
-    sender.sendMessage(this.getFormattedResponseMessage(i));
-    logger.info(this.getFormattedSummaryMessage(i, sender.getName()));
-  }
-  
-
-  private String getFormattedSummaryMessage(int total, String name) {
-    final Object[] arguments = { total, player.getName(), name };
-    final double[] limits = { 0, 1, 2 };
-    final String[] formats = { this.getMessage("no-bans").toLowerCase(), this.getMessage("one-ban").toLowerCase(), this.getMessage("many-bans").toLowerCase() };
-    return this.getChoiceFormattedMessage("purgecommand-summary-result", arguments, formats, limits);
-  }
-
-  private String getFormattedResponseMessage(int total) {
-    final Object[] arguments = { total, player.getName() };
-    final double[] limits = { 0, 1, 2 };
-    final String[] formats = { this.getMessage("no-bans").toLowerCase(), this.getMessage("one-ban").toLowerCase(), this.getMessage("many-bans").toLowerCase() };
-    return this.getChoiceFormattedMessage("purgecommand-response-message", arguments, formats, limits);
-  }
-
-  public void parseArguments(String[] arguments, CommandSender sender) throws CommandArgumentException {
-    if (arguments.length == 0) {
-      throw new CommandArgumentException(this.getMessage("must-specify-a-player"), this.getMessage("name-autocompletion"));
-    } else {
-      this.player = matchPlayer(arguments[0]);
-    }
-    
-  }
-  
-  private OfflinePlayer matchPlayer(final String name) {
-    final List<Player> players = this.server.matchPlayer(name);
-    if (players.isEmpty()) {
-      return server.getOfflinePlayer(name);
-    } else {
-      return players.get(0);
-    }
   }
 
 }

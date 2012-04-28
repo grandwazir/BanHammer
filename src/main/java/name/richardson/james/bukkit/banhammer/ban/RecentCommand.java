@@ -34,7 +34,7 @@ import name.richardson.james.bukkit.utilities.command.PluginCommand;
 public class RecentCommand extends PluginCommand {
 
   public static final int DEFAULT_LIMIT = 5;
-  
+
   /** A reference to the database handler */
   private final DatabaseHandler database;
 
@@ -43,42 +43,29 @@ public class RecentCommand extends PluginCommand {
 
   public RecentCommand(final BanHammer plugin) {
     super(plugin);
-    database = plugin.getDatabaseHandler();
+    this.database = plugin.getDatabaseHandler();
     this.registerPermissions();
   }
 
-  private void registerPermissions() {
-    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
-    // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("recentcommand-permission-description"), PermissionDefault.OP);
-    base.addParent(this.plugin.getRootPermission(), true);
-    this.addPermission(base);
-  }
-
-  public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final List<BanRecord> bans = BanRecord.findRecent(database, count);
+  public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+    final List<BanRecord> bans = BanRecord.findRecent(this.database, this.count);
     if (bans.size() != 0) {
       sender.sendMessage(this.getFormattedMessageHeader(bans.size()));
       for (final BanRecord ban : bans) {
-        BanSummary summary = new BanSummary(plugin, ban);
+        final BanSummary summary = new BanSummary(this.plugin, ban);
         sender.sendMessage(summary.getHeader());
         sender.sendMessage(summary.getReason());
         sender.sendMessage(summary.getLength());
-        if (ban.getType() == BanRecord.Type.TEMPORARY) sender.sendMessage(summary.getExpiresAt());
+        if (ban.getType() == BanRecord.Type.TEMPORARY) {
+          sender.sendMessage(summary.getExpiresAt());
+        }
       }
     } else {
       sender.sendMessage(this.getMessage("recentcommand-no-bans"));
     }
   }
-  
-  private String getFormattedMessageHeader(int size) {
-    final Object[] arguments = { size };
-    final double[] limits = { 1, 2 };
-    final String[] formats = { this.getMessage("only-ban"), this.getMessage("many-bans") };
-    return this.getChoiceFormattedMessage("recentcommand-header", arguments, formats, limits);
-  }
 
-  public void parseArguments(String[] arguments, CommandSender sender) throws CommandArgumentException {
+  public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
     if (arguments.length == 0) {
       this.count = DEFAULT_LIMIT;
     } else {
@@ -88,6 +75,21 @@ public class RecentCommand extends PluginCommand {
         throw new CommandArgumentException(this.getMessage("must-specify-valid-number"), this.getSimpleFormattedMessage("recentcommand-default", RecentCommand.DEFAULT_LIMIT));
       }
     }
+  }
+
+  private String getFormattedMessageHeader(final int size) {
+    final Object[] arguments = { size };
+    final double[] limits = { 1, 2 };
+    final String[] formats = { this.getMessage("only-ban"), this.getMessage("many-bans") };
+    return this.getChoiceFormattedMessage("recentcommand-header", arguments, formats, limits);
+  }
+
+  private void registerPermissions() {
+    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
+    // create the base permission
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("recentcommand-permission-description"), PermissionDefault.OP);
+    base.addParent(this.plugin.getRootPermission(), true);
+    this.addPermission(base);
   }
 
 }

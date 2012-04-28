@@ -39,155 +39,173 @@ public class HistoryCommand extends PluginCommand {
 
   /** Reference to the BanHammer API */
   private final BanHandler handler;
-  
+
   /** Reference to the BanHammer plugin */
   private final BanHammer plugin;
-  
+
   /** A instance of the Bukkit server. */
   private final Server server;
-  
+
   /** The player whos history we are going to check */
   private OfflinePlayer player;
 
   public HistoryCommand(final BanHammer plugin) {
     super(plugin);
-    handler = plugin.getHandler(HistoryCommand.class);
+    this.handler = plugin.getHandler(HistoryCommand.class);
     this.plugin = plugin;
     this.server = plugin.getServer();
     this.registerPermissions();
   }
-  
-  private void registerPermissions() {
-    final String prefix = plugin.getDescription().getName().toLowerCase() + ".";
-    final String wildcardDescription = String.format(plugin.getMessage("wildcard-permission-description"), this.getName());
-    // create the wildcard permission
-    Permission wildcard = new Permission(prefix + this.getName() + ".*", wildcardDescription, PermissionDefault.OP);
-    wildcard.addParent(plugin.getRootPermission(), true);
-    this.addPermission(wildcard);
-    // create the base permission
-    Permission base = new Permission(prefix + this.getName(), plugin.getMessage("historycommand-permission-description"), PermissionDefault.OP);
-    base.addParent(wildcard, true);
-    this.addPermission(base);
-    // add ability to view your own ban history
-    Permission own = new Permission(prefix + this.getName() + "." + plugin.getMessage("historycommand-own-permission-name"), plugin.getMessage("pardoncommand-own-permission-name"), PermissionDefault.OP);
-    own.addParent(base, true);
-    this.addPermission(own);
-    // add ability to view the ban history of others
-    Permission others = new Permission(prefix + this.getName() + "." + plugin.getMessage("historycommand-others-permission-name"), plugin.getMessage("pardoncommand-others-permission-name"), PermissionDefault.OP);
-    others.addParent(base, true);
-    this.addPermission(others);
-  }
 
-  public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final List<BanRecord> bans = handler.getPlayerBans(player.getName());
-    
-    if (sender.hasPermission(this.getPermission(3)) && !player.getName().equalsIgnoreCase(sender.getName())) {
+  public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+    final List<BanRecord> bans = this.handler.getPlayerBans(this.player.getName());
+
+    if (sender.hasPermission(this.getPermission(3)) && !this.player.getName().equalsIgnoreCase(sender.getName())) {
       this.displayHistory(bans, sender);
       return;
-    } else if (!player.getName().equalsIgnoreCase(sender.getName())) {
+    } else if (!this.player.getName().equalsIgnoreCase(sender.getName())) {
       throw new CommandPermissionException(this.getMessage("historycommand-cannot-view-others-history"), this.getPermission(3));
     }
-    
-    if (sender.hasPermission(this.getPermission(2)) && player.getName().equalsIgnoreCase(sender.getName())) {
+
+    if (sender.hasPermission(this.getPermission(2)) && this.player.getName().equalsIgnoreCase(sender.getName())) {
       this.displayHistory(bans, sender);
       return;
-    } else if (player.getName().equalsIgnoreCase(sender.getName())) {
+    } else if (this.player.getName().equalsIgnoreCase(sender.getName())) {
       throw new CommandPermissionException(this.getMessage("historycommand-cannot-view-own-history"), this.getPermission(3));
     }
-    
+
   }
-  
-  private void displayHistory(List<BanRecord> bans, CommandSender sender) {
+
+  public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
+    if (arguments.length == 0) {
+      if (sender instanceof ConsoleCommandSender) {
+        throw new CommandArgumentException(this.getMessage("must-specify-a-player"), this.getMessage("name-autocompletion"));
+      }
+      this.player = (OfflinePlayer) sender;
+    } else {
+      this.player = this.matchPlayer(arguments[0]);
+    }
+
+  }
+
+  private void displayHistory(final List<BanRecord> bans, final CommandSender sender) {
     sender.sendMessage(this.getFormattedMessageHeader(bans.size()));
-    for (BanRecord ban : bans) {
-      BanSummary summary = new BanSummary(plugin, ban);
+    for (final BanRecord ban : bans) {
+      final BanSummary summary = new BanSummary(this.plugin, ban);
       sender.sendMessage(summary.getHeader());
       sender.sendMessage(summary.getReason());
       sender.sendMessage(summary.getLength());
-      if (ban.getType() == BanRecord.Type.TEMPORARY) sender.sendMessage(summary.getExpiresAt());
+      if (ban.getType() == BanRecord.Type.TEMPORARY) {
+        sender.sendMessage(summary.getExpiresAt());
+      }
     }
   }
-  
-  private String getFormattedMessageHeader(int size) {
+
+  private String getFormattedMessageHeader(final int size) {
     final Object[] arguments = { size };
     final double[] limits = { 0, 1, 2 };
     final String[] formats = { this.getMessage("no-ban").toLowerCase(), this.getMessage("only-ban").toLowerCase(), this.getMessage("many-bans") };
     return this.getChoiceFormattedMessage("historycommand-header", arguments, formats, limits);
   }
 
-  public void parseArguments(String[] arguments, CommandSender sender) throws CommandArgumentException {
-    if (arguments.length == 0) {
-      if (sender instanceof ConsoleCommandSender) throw new CommandArgumentException(this.getMessage("must-specify-a-player"), this.getMessage("name-autocompletion"));
-      this.player = (OfflinePlayer) sender;
-    } else {
-      this.player = matchPlayer(arguments[0]);
-    }
-    
-  }
-  
   private OfflinePlayer matchPlayer(final String name) {
     final List<Player> players = this.server.matchPlayer(name);
     if (players.isEmpty()) {
-      return server.getOfflinePlayer(name);
+      return this.server.getOfflinePlayer(name);
     } else {
       return players.get(0);
     }
   }
-  
+
+  private void registerPermissions() {
+    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
+    final String wildcardDescription = String.format(this.plugin.getMessage("wildcard-permission-description"), this.getName());
+    // create the wildcard permission
+    final Permission wildcard = new Permission(prefix + this.getName() + ".*", wildcardDescription, PermissionDefault.OP);
+    wildcard.addParent(this.plugin.getRootPermission(), true);
+    this.addPermission(wildcard);
+    // create the base permission
+    final Permission base = new Permission(prefix + this.getName(), this.plugin.getMessage("historycommand-permission-description"), PermissionDefault.OP);
+    base.addParent(wildcard, true);
+    this.addPermission(base);
+    // add ability to view your own ban history
+    final Permission own = new Permission(prefix + this.getName() + "." + this.plugin.getMessage("historycommand-own-permission-name"), this.plugin.getMessage("pardoncommand-own-permission-name"), PermissionDefault.OP);
+    own.addParent(base, true);
+    this.addPermission(own);
+    // add ability to view the ban history of others
+    final Permission others = new Permission(prefix + this.getName() + "." + this.plugin.getMessage("historycommand-others-permission-name"), this.plugin.getMessage("pardoncommand-others-permission-name"), PermissionDefault.OP);
+    others.addParent(base, true);
+    this.addPermission(others);
+  }
+
   /**
-  @Override
-  public void execute(final CommandSender sender, final Map<String, Object> arguments) throws CommandPermissionException {
-    final String playerName = arguments.get("playerName") != null ? (String) arguments.get("playerName") : sender.getName();
-    if (!playerName.equalsIgnoreCase(sender.getName()) && !sender.hasPermission(HistoryCommand.PERMISSION_OTHER)) {
-      throw new CommandPermissionException("You are not allowed to view other players ban history.", HistoryCommand.PERMISSION_OTHER);
-    } else {
-      final List<BanRecord> bans = handler.getPlayerBans(playerName);
-
-      if (bans.isEmpty()) {
-        sender.sendMessage(String.format(ChatColor.YELLOW + "%s has no bans on record.", playerName));
-      } else {
-        sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + "%s has %d ban(s) on record:", playerName, bans.size()));
-        for (final BanRecord ban : bans) {
-          sendBanDetail(sender, ban);
-        }
-      }
-    }
-  }
-
-  @Override
-  public Map<String, Object> parseArguments(final List<String> arguments) throws CommandArgumentException {
-    final Map<String, Object> m = new HashMap<String, Object>();
-
-    try {
-      m.put("playerName", arguments.get(0));
-    } catch (final IndexOutOfBoundsException e) {
-      m.put("playerName", null);
-    }
-
-    return m;
-  }
-
-  protected void sendBanDetail(final CommandSender sender, final BanRecord ban) {
-    final Date createdDate = new Date(ban.getCreatedAt());
-    final DateFormat dateFormat = new SimpleDateFormat("MMM d");
-    final String createdAt = dateFormat.format(createdDate);
-    sender.sendMessage(String.format(ChatColor.YELLOW + "Banned by %s on %s", ban.getCreatedBy(), createdAt));
-    sender.sendMessage(String.format(ChatColor.YELLOW + "- Reason: %s.", ban.getReason()));
-    switch (ban.getType()) {
-    case PERMENANT:
-      sender.sendMessage(ChatColor.YELLOW + "- Length: Permanent.");
-      break;
-    case TEMPORARY:
-      final Date expiryDate = new Date(ban.getExpiresAt());
-      final DateFormat expiryDateFormat = new SimpleDateFormat("MMM d H:mm a ");
-      final String expiryDateString = expiryDateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")";
-      final Long banTime = ban.getExpiresAt() - ban.getCreatedAt();
-      sender.sendMessage(String.format(ChatColor.YELLOW + "- Length: %s", Time.millisToLongDHMS(banTime)));
-      sender.sendMessage(String.format(ChatColor.YELLOW + "- Expires on: %s", expiryDateString));
-      break;
-    }
-  }
-  
-  */
+   * @Override
+   *           public void execute(final CommandSender sender, final Map<String,
+   *           Object> arguments) throws CommandPermissionException {
+   *           final String playerName = arguments.get("playerName") != null ?
+   *           (String) arguments.get("playerName") : sender.getName();
+   *           if (!playerName.equalsIgnoreCase(sender.getName()) &&
+   *           !sender.hasPermission(HistoryCommand.PERMISSION_OTHER)) {
+   *           throw new CommandPermissionException(
+   *           "You are not allowed to view other players ban history.",
+   *           HistoryCommand.PERMISSION_OTHER);
+   *           } else {
+   *           final List<BanRecord> bans = handler.getPlayerBans(playerName);
+   * 
+   *           if (bans.isEmpty()) {
+   *           sender.sendMessage(String.format(ChatColor.YELLOW +
+   *           "%s has no bans on record.", playerName));
+   *           } else {
+   *           sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE +
+   *           "%s has %d ban(s) on record:", playerName, bans.size()));
+   *           for (final BanRecord ban : bans) {
+   *           sendBanDetail(sender, ban);
+   *           }
+   *           }
+   *           }
+   *           }
+   * @Override
+   *           public Map<String, Object> parseArguments(final List<String>
+   *           arguments) throws CommandArgumentException {
+   *           final Map<String, Object> m = new HashMap<String, Object>();
+   * 
+   *           try {
+   *           m.put("playerName", arguments.get(0));
+   *           } catch (final IndexOutOfBoundsException e) {
+   *           m.put("playerName", null);
+   *           }
+   * 
+   *           return m;
+   *           }
+   * 
+   *           protected void sendBanDetail(final CommandSender sender, final
+   *           BanRecord ban) {
+   *           final Date createdDate = new Date(ban.getCreatedAt());
+   *           final DateFormat dateFormat = new SimpleDateFormat("MMM d");
+   *           final String createdAt = dateFormat.format(createdDate);
+   *           sender.sendMessage(String.format(ChatColor.YELLOW +
+   *           "Banned by %s on %s", ban.getCreatedBy(), createdAt));
+   *           sender.sendMessage(String.format(ChatColor.YELLOW +
+   *           "- Reason: %s.", ban.getReason()));
+   *           switch (ban.getType()) {
+   *           case PERMENANT:
+   *           sender.sendMessage(ChatColor.YELLOW + "- Length: Permanent.");
+   *           break;
+   *           case TEMPORARY:
+   *           final Date expiryDate = new Date(ban.getExpiresAt());
+   *           final DateFormat expiryDateFormat = new
+   *           SimpleDateFormat("MMM d H:mm a ");
+   *           final String expiryDateString =
+   *           expiryDateFormat.format(expiryDate) + "(" +
+   *           Calendar.getInstance().getTimeZone().getDisplayName() + ")";
+   *           final Long banTime = ban.getExpiresAt() - ban.getCreatedAt();
+   *           sender.sendMessage(String.format(ChatColor.YELLOW +
+   *           "- Length: %s", Time.millisToLongDHMS(banTime)));
+   *           sender.sendMessage(String.format(ChatColor.YELLOW +
+   *           "- Expires on: %s", expiryDateString));
+   *           break;
+   *           }
+   *           }
+   */
 
 }
