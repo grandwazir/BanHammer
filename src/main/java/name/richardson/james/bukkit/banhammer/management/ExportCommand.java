@@ -47,7 +47,7 @@ public class ExportCommand extends PluginCommand {
 
   public ExportCommand(final BanHammer plugin) {
     super(plugin);
-    logger.setPrefix("[" + plugin.getName() + "]");
+    logger.setPrefix("[" + plugin.getName() + "] ");
     this.server = plugin.getServer();
     this.database = plugin.getDatabaseHandler();
     this.registerPermissions();

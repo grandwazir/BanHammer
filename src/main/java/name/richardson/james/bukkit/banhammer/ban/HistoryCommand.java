@@ -91,10 +91,10 @@ public class HistoryCommand extends PluginCommand {
   }
 
   private void displayHistory(final List<BanRecord> bans, final CommandSender sender) {
-    sender.sendMessage(this.getFormattedMessageHeader(bans.size()));
+    sender.sendMessage(this.getFormattedMessageHeader(bans.size(), player.getName()));
     for (final BanRecord ban : bans) {
       final BanSummary summary = new BanSummary(this.plugin, ban);
-      sender.sendMessage(summary.getHeader());
+      sender.sendMessage(summary.getSelfHeader());
       sender.sendMessage(summary.getReason());
       sender.sendMessage(summary.getLength());
       if (ban.getType() == BanRecord.Type.TEMPORARY) {
@@ -103,10 +103,10 @@ public class HistoryCommand extends PluginCommand {
     }
   }
 
-  private String getFormattedMessageHeader(final int size) {
-    final Object[] arguments = { size };
+  private String getFormattedMessageHeader(final int size, String name) {
+    final Object[] arguments = { size, name };
     final double[] limits = { 0, 1, 2 };
-    final String[] formats = { this.getMessage("no-ban").toLowerCase(), this.getMessage("only-ban").toLowerCase(), this.getMessage("many-bans") };
+    final String[] formats = { this.getMessage("no-ban").toLowerCase(), this.getMessage("one-ban").toLowerCase(), this.getMessage("many-bans") };
     return this.getChoiceFormattedMessage("historycommand-header", arguments, formats, limits);
   }
 
@@ -127,11 +127,11 @@ public class HistoryCommand extends PluginCommand {
     wildcard.addParent(this.plugin.getRootPermission(), true);
     this.addPermission(wildcard);
     // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.plugin.getMessage("historycommand-permission-description"), PermissionDefault.OP);
+    final Permission base = new Permission(prefix + this.getName(), this.plugin.getMessage("historycommand-permission-description"), PermissionDefault.TRUE);
     base.addParent(wildcard, true);
     this.addPermission(base);
     // add ability to view your own ban history
-    final Permission own = new Permission(prefix + this.getName() + "." + this.plugin.getMessage("historycommand-own-permission-name"), this.plugin.getMessage("pardoncommand-own-permission-name"), PermissionDefault.OP);
+    final Permission own = new Permission(prefix + this.getName() + "." + this.plugin.getMessage("historycommand-own-permission-name"), this.plugin.getMessage("pardoncommand-own-permission-name"), PermissionDefault.TRUE);
     own.addParent(base, true);
     this.addPermission(own);
     // add ability to view the ban history of others

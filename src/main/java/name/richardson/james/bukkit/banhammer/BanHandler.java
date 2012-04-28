@@ -18,26 +18,29 @@
 package name.richardson.james.bukkit.banhammer;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
-import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
+import name.richardson.james.bukkit.banhammer.ban.BanSummary;
 import name.richardson.james.bukkit.utilities.internals.Handler;
+import name.richardson.james.bukkit.utilities.plugin.Localisable;
 
-public class BanHandler extends Handler implements BanHammerAPI {
+public class BanHandler extends Handler implements BanHammerAPI, Localisable {
 
   private final Set<String> bannedPlayers;
   private final DatabaseHandler database;
   private final Server server;
+  private final BanHammer plugin;
 
   public BanHandler(final Class<?> parentClass, final BanHammer plugin) {
     super(parentClass);
     this.database = plugin.getDatabaseHandler();
     this.bannedPlayers = plugin.getModifiableBannedPlayers();
     this.server = plugin.getServer();
+    this.plugin = plugin;
     logger.setPrefix("[BanHammer] ");
   }
 
@@ -65,17 +68,17 @@ public class BanHandler extends Handler implements BanHammerAPI {
       }
 
       if (notify) {
+        BanSummary summary = new BanSummary(plugin, ban);
+        this.notifyPlayers(this.getBanBroadcastMessage(senderName, playerName));
         if (banLength == 0) {
-          this.notifyPlayers(ChatColor.RED + playerName + " has been permanently banned.");
-          this.notifyPlayers(ChatColor.YELLOW + "- Reason: " + reason);
+          this.notifyPlayers(summary.getReason());
         } else {
-          this.notifyPlayers(ChatColor.RED + playerName + " has been banned.");
-          this.notifyPlayers(ChatColor.YELLOW + "- Reason: " + reason + ".");
-          this.notifyPlayers(ChatColor.YELLOW + "- Length: " + TimeFormatter.millisToLongDHMS(banLength) + ".");
+          this.notifyPlayers(summary.getReason());
+          this.notifyPlayers(summary.getLength());
         }
       }
 
-      logger.info(String.format("%s has been banned by %s.", playerName, senderName));
+      logger.info(this.getBanSummaryMessage(senderName, playerName, reason));
 
       return true;
     } else {
@@ -109,13 +112,34 @@ public class BanHandler extends Handler implements BanHammerAPI {
       this.database.delete(BanRecord.findFirstByName(this.database, playerName));
       this.bannedPlayers.remove(playerName.toLowerCase());
       if (notify) {
-        this.notifyPlayers(ChatColor.GREEN + playerName + " has been pardoned by " + senderName + ".");
+        this.notifyPlayers(this.getPardonBroadcastMessage(senderName, playerName));
       }
-      Handler.logger.info(String.format("%s has been pardoned by %s.", playerName, senderName));
+      Handler.logger.info(this.getPardonLogMessage(senderName, playerName));
       return true;
     } else {
       return false;
     }
+  }
+
+  private String getBanSummaryMessage(String senderName, String playerName, String reason) {
+    final Object[] arguments = { playerName, senderName, reason };
+    return this.getSimpleFormattedMessage("bancommand-summary-message", arguments);
+  }
+  
+  private String getBanBroadcastMessage(String senderName, String playerName) {
+    final Object[] arguments = { playerName, senderName };
+    return this.getSimpleFormattedMessage("bancommand-broadcast-message", arguments);
+  }
+  
+  private String getPardonBroadcastMessage(String senderName, String playerName) {
+    final Object[] arguments = { playerName, senderName };
+    return this.getSimpleFormattedMessage("pardoncommand-broadcast-message", arguments);
+  }
+
+  
+  private String getPardonLogMessage(String senderName, String playerName) {
+    final Object[] arguments = { playerName, senderName };
+    return this.getSimpleFormattedMessage("pardoncommand-summary-result", arguments);
   }
 
   public boolean removePlayerBan(final BanRecord ban) {
@@ -131,7 +155,34 @@ public class BanHandler extends Handler implements BanHammerAPI {
   }
 
   private void notifyPlayers(final String message) {
-    this.server.broadcast(message, "banhammer.notify");
+    for (Player player : this.server.getOnlinePlayers()) {
+      if (player.hasPermission("banhammer.notify")) player.sendMessage(message);
+    }
+  }
+
+
+  public String getChoiceFormattedMessage(final String key, final Object[] arguments, final String[] formats, final double[] limits) {
+    return this.plugin.getChoiceFormattedMessage(key, arguments, formats, limits);
+  }
+  
+
+  public Locale getLocale() {
+    return this.plugin.getLocale();
+  }
+
+  public String getMessage(final String key) {
+    return this.plugin.getMessage(key);
+  }
+
+  
+
+  public String getSimpleFormattedMessage(final String key, final Object argument) {
+    final Object[] arguments = { argument };
+    return this.plugin.getSimpleFormattedMessage(key, arguments);
+  }
+
+  public String getSimpleFormattedMessage(final String key, final Object[] arguments) {
+    return this.plugin.getSimpleFormattedMessage(key, arguments);
   }
 
 }

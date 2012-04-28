@@ -68,6 +68,7 @@ public class BanHammer extends SimplePlugin {
   }
 
   public Map<String, Long> getBanLimits() {
+    logger.debug(configuration.getBanLimits().toString());
     return this.configuration.getBanLimits();
   }
 
@@ -153,7 +154,7 @@ public class BanHammer extends SimplePlugin {
         this.bannedPlayerNames.add(ban.getPlayer().toLowerCase());
       }
     }
-    this.logger.info(String.format("%d banned names loaded.", this.bannedPlayerNames.size()));
+    this.logger.info(this.getFormattedBanCount(this.database.count(BanRecord.class)));
   }
 
   private void loadConfiguration() throws IOException {
@@ -200,7 +201,6 @@ public class BanHammer extends SimplePlugin {
       this.installDDL();
     }
     this.database = new DatabaseHandler(this.getDatabase());
-    this.logger.info(this.getFormattedBanCount(this.database.count(BanRecord.class)));
   }
 
   protected Set<String> getModifiableBannedPlayers() {

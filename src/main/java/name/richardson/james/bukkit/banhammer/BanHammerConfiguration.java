@@ -33,6 +33,7 @@ public class BanHammerConfiguration extends AbstractConfiguration {
 
   public BanHammerConfiguration(final BanHammer plugin) throws IOException {
     super(plugin, "config.yml");
+    this.setBanLimits();
   }
 
   public Map<String, Long> getBanLimits() {

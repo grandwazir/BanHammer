@@ -68,8 +68,6 @@ public class PardonCommand extends PluginCommand {
         this.handler.pardonPlayer(this.player.getName(), sender.getName(), true);
         this.player.setBanned(false);
         sender.sendMessage(this.getSimpleFormattedMessage("pardoncommand-response-message", this.player.getName()));
-        this.server.broadcast(this.getFormattedBroadcastMessage(sender.getName()), "banhammer.notify");
-        logger.info(this.getFormattedSummaryMessage(sender.getName()));
         return;
       } else if (!record.getCreatedBy().equalsIgnoreCase(sender.getName())) {
         throw new CommandPermissionException(this.getMessage("pardoncommand-cannot-pardon-others-bans"), this.getPermission(3));
@@ -78,7 +76,7 @@ public class PardonCommand extends PluginCommand {
       if (sender.hasPermission(this.getPermission(2)) && record.getCreatedBy().equalsIgnoreCase(sender.getName())) {
         this.handler.pardonPlayer(this.player.getName(), sender.getName(), true);
         this.player.setBanned(false);
-        logger.info(this.getFormattedSummaryMessage(sender.getName()));
+        sender.sendMessage(this.getSimpleFormattedMessage("pardoncommand-response-message", this.player.getName()));
         return;
       } else if (record.getCreatedBy().equalsIgnoreCase(sender.getName())) {
         throw new CommandPermissionException(this.getMessage("pardoncommand-cannot-pardon-own-bans"), this.getPermission(3));
@@ -96,26 +94,11 @@ public class PardonCommand extends PluginCommand {
     } else {
       this.player = this.matchPlayer(arguments[0]);
     }
-
   }
 
-  private String getFormattedBroadcastMessage(final String name) {
-    final Object[] arguments = { this.player.getName(), name };
-    return this.getSimpleFormattedMessage("pardoncommand-broadcast-message", arguments);
-  }
-
-  private String getFormattedSummaryMessage(final String name) {
-    final Object[] arguments = { this.player.getName(), name };
-    return this.getSimpleFormattedMessage("pardoncommand-summary-result", arguments);
-  }
 
   private OfflinePlayer matchPlayer(final String name) {
-    final List<Player> players = this.server.matchPlayer(name);
-    if (players.isEmpty()) {
-      return this.server.getOfflinePlayer(name);
-    } else {
-      return players.get(0);
-    }
+    return this.server.getOfflinePlayer(name);
   }
 
   private void registerPermissions() {

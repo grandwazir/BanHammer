@@ -17,12 +17,9 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.ban;
 
-import java.util.List;
-
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
@@ -87,12 +84,7 @@ public class PurgeCommand extends PluginCommand {
   }
 
   private OfflinePlayer matchPlayer(final String name) {
-    final List<Player> players = this.server.matchPlayer(name);
-    if (players.isEmpty()) {
-      return this.server.getOfflinePlayer(name);
-    } else {
-      return players.get(0);
-    }
+    return this.server.getOfflinePlayer(name);
   }
 
   private void registerPermissions() {

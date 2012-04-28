@@ -38,6 +38,7 @@ public class BannedPlayerListener implements Listener {
   private final BanHandler handler;
   private final Set<String> bannedPlayers;
   private final AliasHandler aliasHandler;
+  private BanHammer plugin;
 
   private static final Logger logger = new Logger(BannedPlayerListener.class);
 
@@ -45,6 +46,7 @@ public class BannedPlayerListener implements Listener {
     this.handler = plugin.getHandler(BannedPlayerListener.class);
     this.aliasHandler = plugin.getAliasHandler();
     this.bannedPlayers = plugin.getModifiableBannedPlayers();
+    this.plugin = plugin;
     logger.setPrefix("[BanHammer] ");
   }
 
@@ -60,7 +62,7 @@ public class BannedPlayerListener implements Listener {
           final BanRecord ban = this.handler.getPlayerBan(alias);
           if (ban.isActive()) {
             Long time = ban.getExpiresAt() - System.currentTimeMillis();
-            final String message = String.format("Banned: Alias of %s.", alias);
+            final String message = String.format("Alias of %s.", alias);
             if (ban.getExpiresAt() == 0) {
               time = (long) 0;
             }
@@ -85,12 +87,12 @@ public class BannedPlayerListener implements Listener {
       final BanRecord ban = this.handler.getPlayerBan(playerName);
       if (ban.isActive()) {
         if (ban.getType().equals(BanRecord.Type.PERMENANT)) {
-          message = String.format("You have been permanently banned. Reason: %s.", ban.getReason());
+          message = plugin.getSimpleFormattedMessage("permenantly-banned", ban.getReason());
         } else {
           final Date expiryDate = new Date(ban.getExpiresAt());
           final DateFormat dateFormat = new SimpleDateFormat("MMM d H:mm a ");
           final String expiryDateString = dateFormat.format(expiryDate) + "(" + Calendar.getInstance().getTimeZone().getDisplayName() + ")";
-          message = String.format("You have been banned until %s.", expiryDateString);
+          message = plugin.getSimpleFormattedMessage("temporarily-banned", expiryDateString);
         }
         BannedPlayerListener.logger.debug(String.format("Blocked %s from connecting due to an active ban.", playerName));
         event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message);

@@ -18,6 +18,7 @@
 package name.richardson.james.bukkit.banhammer.ban;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -82,7 +83,8 @@ public class BanCommand extends PluginCommand {
   }
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
-    final List<String> args = Arrays.asList(arguments);
+    final LinkedList<String> args = new LinkedList<String>();
+    args.addAll(Arrays.asList(arguments)); 
 
     if (args.size() == 0) {
       throw new CommandArgumentException(this.getMessage("must-specify-a-player"), this.getMessage("name-autocompletion"));
@@ -90,7 +92,7 @@ public class BanCommand extends PluginCommand {
       this.player = this.matchPlayer(args.remove(0));
     }
 
-    if (args.get(0).startsWith("t:")) {
+    if (args.size() != 0 && args.get(0).startsWith("t:")) {
       final String time = args.remove(0).replaceAll("t:", "");
       if (this.plugin.getBanLimits().containsKey(time)) {
         this.time = this.plugin.getBanLimits().get(time);
@@ -109,7 +111,8 @@ public class BanCommand extends PluginCommand {
   }
 
   private boolean isBanLengthAuthorised(final CommandSender sender, final long banLength) {
-    if ((banLength == 0) && !sender.hasPermission(this.getPermission(0))) {
+    if (sender instanceof CommandSender) return true;
+    if (banLength == 0 && !sender.hasPermission(this.getPermission(0))) {
       return false;
     } else {
       for (final Entry<String, Long> limit : this.plugin.getBanLimits().entrySet()) {
@@ -145,9 +148,8 @@ public class BanCommand extends PluginCommand {
     final Map<String, Long> limits = this.plugin.getBanLimits();
     if (!limits.isEmpty()) {
       for (final Entry<String, Long> limit : limits.entrySet()) {
-        final Permission permission = new Permission(base.getName() + "." + limit.getKey(), "bancommand-limit-description", PermissionDefault.OP);
+        Permission permission = new Permission(base.getName() + "." + limit.getKey(), "bancommand-limit-description", PermissionDefault.OP);
         permission.addParent(wildcard, true);
-        this.plugin.addPermission(permission);
         this.addPermission(permission);
       }
     }

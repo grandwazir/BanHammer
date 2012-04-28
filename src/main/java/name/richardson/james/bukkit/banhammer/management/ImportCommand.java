@@ -50,7 +50,7 @@ public class ImportCommand extends PluginCommand {
 
   public ImportCommand(final BanHammer plugin) {
     super(plugin);
-    logger.setPrefix("[" + plugin.getName() + "]");
+    logger.setPrefix("[" + plugin.getName() + "] ");
     this.handler = plugin.getHandler(ImportCommand.class);
     this.server = plugin.getServer();
     this.registerPermissions();
@@ -64,17 +64,17 @@ public class ImportCommand extends PluginCommand {
 
     // Import and ban all players
     for (final OfflinePlayer player : this.server.getBannedPlayers()) {
-      if (!this.handler.banPlayer(player.getName(), name, this.reason, time, false)) {
-        logger.warning(this.getSimpleFormattedMessage("importcommand-player-already-banned", player.getName()));
-      } else {
+      if (this.handler.banPlayer(player.getName(), name, this.reason, time, false)) {
         player.setBanned(false);
-        imported++;
+        imported = imported + 1;
+      } else {
+        logger.warning(this.getSimpleFormattedMessage("importcommand-player-already-banned", player.getName()));
       }
     }
 
     logger.info(this.getFormattedLogMessage(name, imported, total));
     if (imported != total) {
-      sender.sendMessage(this.getFormattedFailedImportMessage(imported));
+      sender.sendMessage(this.getFormattedFailedImportMessage(total - imported));
     }
     sender.sendMessage(this.getFormattedResponseMessage(imported));
 
@@ -94,7 +94,7 @@ public class ImportCommand extends PluginCommand {
   private String getFormattedLogMessage(final String name, final int imported, final int total) {
     final Object[] arguments = { imported, total, name };
     final double[] limits = { 0, 1, 2 };
-    final String[] formats = { this.getMessage("no-bans"), this.getMessage("one-ban"), this.getMessage("many-bans") };
+    final String[] formats = { this.getMessage("no-bans").toLowerCase(), this.getMessage("one-ban").toLowerCase(), this.getMessage("many-bans").toLowerCase() };
     return this.getChoiceFormattedMessage("importcommand-summary-result", arguments, formats, limits);
   }
 

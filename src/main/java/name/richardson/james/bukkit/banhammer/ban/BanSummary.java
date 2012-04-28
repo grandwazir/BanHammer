@@ -20,11 +20,12 @@ public class BanSummary implements Localisable {
 
   private static final DateFormat dateFormatCreatedAt = new SimpleDateFormat("MMM d");
 
-  private final String tz = Calendar.getInstance(this.getLocale()).getTimeZone().toString();
+  private String tz;
 
   public BanSummary(final SimplePlugin plugin, final BanRecord record) {
     this.record = record;
     this.plugin = plugin;
+    this.tz = Calendar.getInstance(this.getLocale()).getTimeZone().getID();
   }
 
   public String getChoiceFormattedMessage(final String key, final Object[] arguments, final String[] formats, final double[] limits) {
@@ -37,16 +38,17 @@ public class BanSummary implements Localisable {
   }
 
   public String getHeader() {
-    final String date = dateFormatCreatedAt.format(dateFormatCreatedAt);
+    final String date = dateFormatCreatedAt.format(record.getCreatedAt());
     final Object[] arguments = { this.record.getPlayer(), this.record.getCreatedBy(), date };
     return this.getSimpleFormattedMessage("bansummary-header", arguments);
   }
 
   public String getLength() {
     if (this.record.getType() == BanRecord.Type.PERMENANT) {
-      return this.getSimpleFormattedMessage("bansummary-length", this.getMessage("permenant"));
+      return this.getSimpleFormattedMessage("bansummary-length", this.getMessage("permanent"));
     } else {
-      return this.getSimpleFormattedMessage("bansummary-length", TimeFormatter.millisToLongDHMS(this.record.getExpiresAt()));
+      long length = this.record.getExpiresAt() - this.record.getCreatedAt();
+      return this.getSimpleFormattedMessage("bansummary-length", TimeFormatter.millisToLongDHMS(length));
     }
   }
 
@@ -63,7 +65,7 @@ public class BanSummary implements Localisable {
   }
 
   public String getSelfHeader() {
-    final String date = dateFormatCreatedAt.format(dateFormatCreatedAt);
+    final String date = dateFormatCreatedAt.format(this.record.getCreatedAt());
     final Object[] arguments = { this.record.getCreatedBy(), date };
     return this.getSimpleFormattedMessage("bansummary-self-header", arguments);
   }
