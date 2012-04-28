@@ -49,8 +49,9 @@ import name.richardson.james.bukkit.util.Logger;
 import name.richardson.james.bukkit.util.Plugin;
 import name.richardson.james.bukkit.util.command.CommandManager;
 import name.richardson.james.bukkit.util.command.PlayerCommand;
+import name.richardson.james.bukkit.utilities.plugin.SimplePlugin;
 
-public class BanHammer extends Plugin {
+public class BanHammer extends SimplePlugin {
 
   /**
    * This returns a localised string from the loaded ResourceBundle.

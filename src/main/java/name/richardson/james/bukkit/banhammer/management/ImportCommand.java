@@ -17,79 +17,86 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.management;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.BanHandler;
-import name.richardson.james.bukkit.util.command.PlayerCommand;
+import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
+import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
+import name.richardson.james.bukkit.utilities.command.CommandUsageException;
+import name.richardson.james.bukkit.utilities.command.PluginCommand;
+import name.richardson.james.bukkit.utilities.formatters.StringFormatter;
+import name.richardson.james.bukkit.utilities.internals.Logger;
 
-public class ImportCommand extends PlayerCommand {
+public class ImportCommand extends PluginCommand {
 
-  public static final String NAME = "import";
-  public static final String DESCRIPTION = "Import bans from banned-players.txt";
-  public static final String PERMISSION_DESCRIPTION = "Allow users to import bans from banned-players.txt";
-  public static final String USAGE = "[reason]";
+  /** The logger for this class . */
+  private final static Logger logger = new Logger(ImportCommand.class);
 
-  public static final Permission PERMISSION = new Permission("banhammer.import", ImportCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
-
-  private final BanHandler handler;
+  /** A instance of the Bukkit server. */
   private final Server server;
 
+  /** A reference to the BanHammer API. */
+  private final BanHandler handler;
+
+  /** The reason which will be set for all imported bans */
+  private String reason;
+
   public ImportCommand(final BanHammer plugin) {
-    super(plugin, ImportCommand.NAME, ImportCommand.DESCRIPTION, ImportCommand.USAGE, ImportCommand.PERMISSION_DESCRIPTION, ImportCommand.PERMISSION);
-    handler = plugin.getHandler(ImportCommand.class);
-    server = plugin.getServer();
+    super(plugin);
+    this.handler = plugin.getHandler(ImportCommand.class);
+    this.server = plugin.getServer();
   }
 
-  protected String combineString(final List<String> arguments, final String seperator) {
-    final StringBuilder reason = new StringBuilder();
-    try {
-      for (final String argument : arguments) {
-        reason.append(argument);
-        reason.append(seperator);
-      }
-      reason.deleteCharAt(reason.length() - seperator.length());
-      return reason.toString();
-    } catch (final StringIndexOutOfBoundsException e) {
-      return "No reason provided";
-    }
-  }
-
-  @Override
-  public void execute(final CommandSender sender, final Map<String, Object> arguments) {
-    final int totalBans = server.getBannedPlayers().size();
+  public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+    final int total = this.server.getBannedPlayers().size();
     int imported = 0;
-    final long expiryTime = 0;
-    final String reason = (String) arguments.get("reason");
-    final String senderName = sender.getName();
+    final long time = 0;
+    final String name = sender.getName();
 
-    for (final OfflinePlayer player : server.getBannedPlayers()) {
-      if (!handler.banPlayer(player.getName(), senderName, reason, expiryTime, false)) {
-        logger.warning(String.format("Failed to import ban for %s because they are already banned by BanHammer.", player.getName()));
+    // Import and ban all players
+    for (final OfflinePlayer player : this.server.getBannedPlayers()) {
+      if (!this.handler.banPlayer(player.getName(), name, this.reason, time, false)) {
+        logger.warning(this.getSimpleFormattedMessage("importcommand-player-already-banned", player.getName()));
       } else {
+        player.setBanned(false);
         imported++;
       }
-      player.setBanned(false);
     }
 
-    logger.info(String.format("%s has imported %d bans from banned-players.txt.", sender.getName(), imported));
-    sender.sendMessage(String.format(ChatColor.YELLOW + "%d out of %d ban(s) were imported.", imported, totalBans));
+    logger.info(this.getFormattedLogMessage(name, imported, total));
+    if (imported != total) {
+      sender.sendMessage(this.getFormattedFailedImportMessage(imported));
+    }
+    sender.sendMessage(this.getFormattedResponseMessage(imported));
+
   }
 
-  @Override
-  public Map<String, Object> parseArguments(final List<String> arguments) {
-    final Map<String, Object> m = new HashMap<String, Object>();
-    m.put("reason", combineString(arguments, " "));
-    return m;
+  public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
+    this.reason = (arguments.length == 0) ? this.getMessage("importcommand-default-reason") : StringFormatter.combineString(arguments, " ");
+  }
+
+  private String getFormattedFailedImportMessage(final int imported) {
+    final Object[] arguments = { imported };
+    final double[] limits = { 0, 1, 2 };
+    final String[] formats = { this.getMessage("no-bans"), this.getMessage("one-ban"), this.getMessage("many-bans") };
+    return this.getChoiceFormattedMessage("importcommand-response-failed-imports", arguments, formats, limits);
+  }
+
+  private String getFormattedLogMessage(final String name, final int imported, final int total) {
+    final Object[] arguments = { imported, total, name };
+    final double[] limits = { 0, 1, 2 };
+    final String[] formats = { this.getMessage("no-bans"), this.getMessage("one-ban"), this.getMessage("many-bans") };
+    return this.getChoiceFormattedMessage("importcommand-summary-result", arguments, formats, limits);
+  }
+
+  private String getFormattedResponseMessage(final int imported) {
+    final Object[] arguments = { imported };
+    final double[] limits = { 0, 1, 2 };
+    final String[] formats = { this.getMessage("no-bans"), this.getMessage("one-ban"), this.getMessage("many-bans") };
+    return this.getChoiceFormattedMessage("importcommand-response-message", arguments, formats, limits);
   }
 
 }

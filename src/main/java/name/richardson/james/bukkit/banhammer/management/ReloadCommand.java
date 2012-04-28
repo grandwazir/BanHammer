@@ -17,38 +17,44 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.management;
 
-import java.util.Map;
-
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.util.command.PlayerCommand;
+import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
+import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
+import name.richardson.james.bukkit.utilities.command.CommandUsageException;
+import name.richardson.james.bukkit.utilities.command.PluginCommand;
+import name.richardson.james.bukkit.utilities.internals.Logger;
 
-public class ReloadCommand extends PlayerCommand {
+public class ReloadCommand extends PluginCommand {
 
-  public static final String NAME = "reload";
-  public static final String DESCRIPTION = "Reload the ban cache.";
-  public static final String PERMISSION_DESCRIPTION = "Allow users to reload the ban cache";
-  public static final String USAGE = "";
+  /** The logger for this class . */
+  private final static Logger logger = new Logger(ReloadCommand.class);
 
-  public static final Permission PERMISSION = new Permission("banhammer.reload", ReloadCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
-
+  /** A reference to the BanHammer plugin. */
   private final BanHammer plugin;
 
   public ReloadCommand(final BanHammer plugin) {
-    super(plugin, ReloadCommand.NAME, ReloadCommand.DESCRIPTION, ReloadCommand.USAGE, ReloadCommand.PERMISSION_DESCRIPTION, ReloadCommand.PERMISSION);
+    super(plugin);
     this.plugin = plugin;
   }
 
-  @Override
-  public void execute(final CommandSender sender, final Map<String, Object> arguments) {
-    final String senderName = sender.getName();
-    plugin.reloadBannedPlayers();
-    logger.info(String.format("%s has refreshed the banned player list.", senderName));
-    sender.sendMessage(String.format(ChatColor.GREEN + "Loaded %d banned name(s) into memory.", plugin.getBannedPlayers().size()));
+  public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+    this.plugin.reloadBannedPlayers();
+    final int total = this.plugin.getBannedPlayers().size();
+    logger.info(this.getSimpleFormattedMessage("reloadcommand-summary-result", sender.getName()));
+    sender.sendMessage(this.getFormattedResponseMessage(total));
+  }
+
+  public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
+    return;
+  }
+
+  private String getFormattedResponseMessage(final int total) {
+    final Object[] arguments = { total };
+    final double[] limits = { 0, 1, 2 };
+    final String[] formats = { this.getMessage("no-bans"), this.getMessage("one-ban"), this.getMessage("many-bans") };
+    return this.getChoiceFormattedMessage("reloadcommand-response-message", arguments, formats, limits);
   }
 
 }
