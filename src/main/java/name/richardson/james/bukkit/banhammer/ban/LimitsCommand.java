@@ -17,7 +17,6 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.ban;
 
-import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
@@ -26,32 +25,32 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.util.Time;
-import name.richardson.james.bukkit.util.command.CommandArgumentException;
-import name.richardson.james.bukkit.util.command.CommandPermissionException;
-import name.richardson.james.bukkit.util.command.CommandUsageException;
-import name.richardson.james.bukkit.util.command.PlayerCommand;
+import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
+import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
+import name.richardson.james.bukkit.utilities.command.CommandUsageException;
+import name.richardson.james.bukkit.utilities.command.PluginCommand;
+import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
 
-public class LimitsCommand extends PlayerCommand {
-
-  public static final String NAME = "limits";
-  public static final String DESCRIPTION = "Check what ban limits are available to you.";
-  public static final String PERMISSION_DESCRIPTION = "Allow users to check what ban limits are available for them to use.";
-  public static final String USAGE = "";
-
-  public static final Permission PERMISSION = new Permission("banhammer.limits", LimitsCommand.PERMISSION_DESCRIPTION, PermissionDefault.TRUE);
+public class LimitsCommand extends PluginCommand {
 
   private final BanHammer plugin;
 
   public LimitsCommand(final BanHammer plugin) {
-    super(plugin, LimitsCommand.NAME, LimitsCommand.DESCRIPTION, LimitsCommand.USAGE, LimitsCommand.PERMISSION_DESCRIPTION, LimitsCommand.PERMISSION);
+    super(plugin);
     this.plugin = plugin;
+    this.registerPermissions();
   }
 
-  @Override
-  public void execute(final CommandSender sender, final Map<String, Object> arguments) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-
-    sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + "There are currently %d limits configured:", plugin.getBanLimits().size()));
+  private void registerPermissions() {
+    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
+    // create the base permission
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("limitscommand-permission-description"), PermissionDefault.TRUE);
+    base.addParent(this.plugin.getRootPermission(), true);
+    this.addPermission(base);
+  }
+  
+  public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+    sender.sendMessage(this.getFormattedMessageHeader(plugin.getBanLimits().size()));
     for (final Entry<String, Long> limit : plugin.getBanLimits().entrySet()) {
       ChatColor colour;
       if (sender.hasPermission("banhammer.ban." + limit.getKey())) {
@@ -59,9 +58,21 @@ public class LimitsCommand extends PlayerCommand {
       } else {
         colour = ChatColor.RED;
       }
-      sender.sendMessage(String.format(colour + "- %s (%s)", limit.getKey(), Time.millisToLongDHMS(limit.getValue())));
-    }
+      Object[] arguments = { limit.getKey(), TimeFormatter.millisToLongDHMS(limit.getValue()) };
+      sender.sendMessage(colour + this.getSimpleFormattedMessage("limitscommand-detail", arguments));
+    } 
+  }
+  
+  
+  private String getFormattedMessageHeader(int size) {
+    final Object[] arguments = { size };
+    final double[] limits = { 0, 1, 2 };
+    final String[] formats = { this.getMessage("no-limits"), this.getMessage("one-limit"), this.getMessage("many-limits") };
+    return this.getChoiceFormattedMessage("limitscommand-header", arguments, formats, limits);
+  }
 
+  public void parseArguments(String[] arguments, CommandSender sender) throws CommandArgumentException {
+    return;
   }
 
 }
