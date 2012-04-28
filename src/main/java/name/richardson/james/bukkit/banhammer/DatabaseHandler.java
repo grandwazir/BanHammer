@@ -23,7 +23,9 @@ import java.util.List;
 
 import com.avaje.ebean.EbeanServer;
 
-public class DatabaseHandler extends name.richardson.james.bukkit.util.Database {
+import name.richardson.james.bukkit.utilities.database.Database;
+
+public class DatabaseHandler extends Database {
 
   public static List<Class<?>> getDatabaseClasses() {
     final List<Class<?>> list = new ArrayList<Class<?>>();

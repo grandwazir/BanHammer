@@ -24,8 +24,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
-import name.richardson.james.bukkit.util.Handler;
-import name.richardson.james.bukkit.util.Time;
+import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
+import name.richardson.james.bukkit.utilities.internals.Handler;
 
 public class BanHandler extends Handler implements BanHammerAPI {
 
@@ -71,7 +71,7 @@ public class BanHandler extends Handler implements BanHammerAPI {
         } else {
           this.notifyPlayers(ChatColor.RED + playerName + " has been banned.");
           this.notifyPlayers(ChatColor.YELLOW + "- Reason: " + reason + ".");
-          this.notifyPlayers(ChatColor.YELLOW + "- Length: " + Time.millisToLongDHMS(banLength) + ".");
+          this.notifyPlayers(ChatColor.YELLOW + "- Length: " + TimeFormatter.millisToLongDHMS(banLength) + ".");
         }
       }
 

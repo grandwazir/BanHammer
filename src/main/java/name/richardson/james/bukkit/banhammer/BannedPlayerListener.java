@@ -31,7 +31,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 import name.richardson.james.bukkit.alias.AliasHandler;
-import name.richardson.james.bukkit.util.Logger;
+import name.richardson.james.bukkit.utilities.internals.Logger;
 
 public class BannedPlayerListener implements Listener {
 
