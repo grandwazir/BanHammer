@@ -128,11 +128,11 @@ public class PardonCommand extends PluginCommand {
     base.addParent(wildcard, true);
     this.addPermission(base);
     // add ability to pardon your own bans
-    final Permission own = new Permission(prefix + this.getName() + "." + this.plugin.getMessage("pardoncommand-own-permission-name"), this.plugin.getMessage("pardoncommand-own-permission-name"), PermissionDefault.OP);
+    final Permission own = new Permission(prefix + this.getName() + "." + this.plugin.getMessage("pardoncommand-own-permission-name"), this.plugin.getMessage("pardoncommand-own-permission-description"), PermissionDefault.OP);
     own.addParent(base, true);
     this.addPermission(own);
     // add ability to pardon the bans of others
-    final Permission others = new Permission(prefix + this.getName() + "." + this.plugin.getMessage("pardoncommand-others-permission-name"), this.plugin.getMessage("pardoncommand-others-permission-name"), PermissionDefault.OP);
+    final Permission others = new Permission(prefix + this.getName() + "." + this.plugin.getMessage("pardoncommand-others-permission-name"), this.plugin.getMessage("pardoncommand-others-permission-description"), PermissionDefault.OP);
     others.addParent(base, true);
     this.addPermission(others);
   }
