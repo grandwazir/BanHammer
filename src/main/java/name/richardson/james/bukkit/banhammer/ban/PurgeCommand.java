@@ -17,55 +17,91 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.ban;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.BanHandler;
-import name.richardson.james.bukkit.util.command.CommandArgumentException;
-import name.richardson.james.bukkit.util.command.PlayerCommand;
+import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
+import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
+import name.richardson.james.bukkit.utilities.command.CommandUsageException;
+import name.richardson.james.bukkit.utilities.command.PluginCommand;
+import name.richardson.james.bukkit.utilities.internals.Logger;
 
-public class PurgeCommand extends PlayerCommand {
+public class PurgeCommand extends PluginCommand {
 
-  public static final String NAME = "purge";
-  public static final String DESCRIPTION = "Purge all bans associated with a player";
-  public static final String PERMISSION_DESCRIPTION = "Allow users to purge all bans associated with a player";
-  public static final String USAGE = "<name>";
-
-  public static final Permission PERMISSION = new Permission("banhammer.purge", PurgeCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
-
+  /** The logger for this class . */
+  private final static Logger logger = new Logger(PurgeCommand.class);
+  
+  /** A reference to the BanHammer API. */
   private final BanHandler handler;
+  
+  /** A instance of the Bukkit server. */
+  private final Server server;
+
+  /** The player from whom we are going to purge bans */
+  private OfflinePlayer player;
 
   public PurgeCommand(final BanHammer plugin) {
-    super(plugin, PurgeCommand.NAME, PurgeCommand.DESCRIPTION, PurgeCommand.USAGE, PurgeCommand.PERMISSION_DESCRIPTION, PurgeCommand.PERMISSION);
+    super(plugin);
     handler = plugin.getHandler(PurgeCommand.class);
+    server = plugin.getServer();
+    this.registerPermissions();
   }
 
-  @Override
-  public void execute(final CommandSender sender, final Map<String, Object> arguments) {
-    final String playerName = (String) arguments.get("playerName");
-    final int i = handler.removePlayerBans(handler.getPlayerBans(playerName));
-    sender.sendMessage(String.format(ChatColor.GREEN + "Purged %d ban(s) associated with %s.", i, playerName));
-    logger.info(String.format("%s has deleted %d bans associated with %s.", sender.getName(), i, playerName));
+  
+  private void registerPermissions() {
+    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
+    // create the base permission
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("purgecommand-permission-description"), PermissionDefault.OP);
+    base.addParent(this.plugin.getRootPermission(), true);
+    this.addPermission(base);
   }
 
-  @Override
-  public Map<String, Object> parseArguments(final List<String> arguments) throws CommandArgumentException {
-    final Map<String, Object> m = new HashMap<String, Object>();
 
-    try {
-      m.put("playerName", arguments.get(0));
-    } catch (final IndexOutOfBoundsException e) {
-      throw new CommandArgumentException("You must specify a valid player name!", "You need to type the whole name.");
+  public void execute(CommandSender sender) throws CommandPermissionException, CommandUsageException {
+    final int i = handler.removePlayerBans(handler.getPlayerBans(player.getName()));
+    sender.sendMessage(this.getFormattedResponseMessage(i));
+    logger.info(this.getFormattedSummaryMessage(i, sender.getName()));
+  }
+  
+
+  private String getFormattedSummaryMessage(int total, String name) {
+    final Object[] arguments = { total, player.getName(), name };
+    final double[] limits = { 0, 1, 2 };
+    final String[] formats = { this.getMessage("no-bans").toLowerCase(), this.getMessage("one-ban").toLowerCase(), this.getMessage("many-bans").toLowerCase() };
+    return this.getChoiceFormattedMessage("purgecommand-summary-result", arguments, formats, limits);
+  }
+
+  private String getFormattedResponseMessage(int total) {
+    final Object[] arguments = { total, player.getName() };
+    final double[] limits = { 0, 1, 2 };
+    final String[] formats = { this.getMessage("no-bans").toLowerCase(), this.getMessage("one-ban").toLowerCase(), this.getMessage("many-bans").toLowerCase() };
+    return this.getChoiceFormattedMessage("purgecommand-response-message", arguments, formats, limits);
+  }
+
+  public void parseArguments(String[] arguments, CommandSender sender) throws CommandArgumentException {
+    if (arguments.length == 0) {
+      throw new CommandArgumentException(this.getMessage("must-specify-a-player"), this.getMessage("name-autocompletion"));
+    } else {
+      this.player = matchPlayer(arguments[0]);
     }
-
-    return m;
+    
+  }
+  
+  private OfflinePlayer matchPlayer(final String name) {
+    final List<Player> players = this.server.matchPlayer(name);
+    if (players.isEmpty()) {
+      return server.getOfflinePlayer(name);
+    } else {
+      return players.get(0);
+    }
   }
 
 }
