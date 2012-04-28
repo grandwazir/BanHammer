@@ -51,7 +51,7 @@ public class KickCommand extends PluginCommand {
 
   public KickCommand(final BanHammer plugin) {
     super(plugin);
-    logger.setPrefix("[" + plugin.getName() + "]");
+    logger.setPrefix("[BanHammer] ");
     this.server = plugin.getServer();
     this.registerPermissions();
   }

@@ -40,7 +40,7 @@ public class ReloadCommand extends PluginCommand {
 
   public ReloadCommand(final BanHammer plugin) {
     super(plugin);
-    logger.setPrefix("[" + plugin.getName() + "] ");
+    logger.setPrefix("[BanHammer] ");
     this.plugin = plugin;
     this.registerPermissions();
   }

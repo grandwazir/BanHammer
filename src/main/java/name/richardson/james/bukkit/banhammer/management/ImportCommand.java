@@ -50,7 +50,7 @@ public class ImportCommand extends PluginCommand {
 
   public ImportCommand(final BanHammer plugin) {
     super(plugin);
-    logger.setPrefix("[" + plugin.getName() + "] ");
+    logger.setPrefix("[BanHammer] ");
     this.handler = plugin.getHandler(ImportCommand.class);
     this.server = plugin.getServer();
     this.registerPermissions();
