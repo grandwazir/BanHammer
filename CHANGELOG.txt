@@ -1,5 +1,10 @@
-Changelog for BanHammer (v1.9.0-SNAPSHOT)
+Changelog for BanHammer (v1.9.1-SNAPSHOT)
 
+
+v1.9.0
+2012-04-28 17:08:15 +0100    another build error fix (James Richardson)
+2012-04-28 17:05:25 +0100    fixed missing dependancy error (James Richardson)
+2012-04-28 17:01:51 +0100    preparing to release (James Richardson)
 2012-04-28 17:00:59 +0100    Various bug fixes (James Richardson)
 2012-04-28 15:26:06 +0100    Allow all commands to be used by ConsoleCommandSenders (James Richardson)
 2012-04-28 15:24:15 +0100    Missing key exception with HistoryCommand (James Richardson)
