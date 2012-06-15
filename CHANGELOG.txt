@@ -1,5 +1,9 @@
-Changelog for BanHammer (v1.9.1-SNAPSHOT)
+Changelog for BanHammer (v1.9.2-SNAPSHOT)
 
+2012-06-15 21:43:11 +0100    Added automatic updater (James Richardson)
+
+v1.9.1
+2012-05-03 19:49:36 +0100    Fixing missing key exception (James Richardson)
 
 v1.9.0
 2012-04-28 17:08:15 +0100    another build error fix (James Richardson)
