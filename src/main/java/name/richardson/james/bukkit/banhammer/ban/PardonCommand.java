@@ -17,12 +17,9 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.ban;
 
-import java.util.List;
-
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
@@ -34,13 +31,9 @@ import name.richardson.james.bukkit.utilities.command.CommandPermissionException
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.command.PluginCommand;
-import name.richardson.james.bukkit.utilities.internals.Logger;
 
 @ConsoleCommand
 public class PardonCommand extends PluginCommand {
-
-  /** The logger for this class . */
-  private final static Logger logger = new Logger(PardonCommand.class);
 
   /** A reference to the BanHammer API. */
   private final BanHandler handler;

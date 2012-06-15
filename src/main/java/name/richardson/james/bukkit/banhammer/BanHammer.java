@@ -62,6 +62,10 @@ public class BanHammer extends SkeletonPlugin {
     return this.aliasHandler;
   }
 
+  public String getArtifactID() {
+    return "ban-hammer";
+  }
+
   public BanHammerConfiguration getBanHammerConfiguration() {
     return this.configuration;
   }
@@ -82,6 +86,10 @@ public class BanHammer extends SkeletonPlugin {
 
   public DatabaseHandler getDatabaseHandler() {
     return this.database;
+  }
+
+  public String getGroupID() {
+    return "name.richardson.james.bukkit";
   }
 
   /**
@@ -125,16 +133,15 @@ public class BanHammer extends SkeletonPlugin {
     this.logger.info(this.getFormattedBanCount(this.database.count(BanRecord.class)));
   }
 
+  protected Set<String> getModifiableBannedPlayers() {
+    return this.bannedPlayerNames;
+  }
+
   protected void loadConfiguration() throws IOException {
     this.configuration = new BanHammerConfiguration(this);
     if (this.configuration.isAliasEnabled()) {
       this.hookAlias();
     }
-  }
-
-  protected void registerListeners() {
-    this.bannedPlayerListener = new BannedPlayerListener(this);
-    this.getServer().getPluginManager().registerEvents(this.bannedPlayerListener, this);
   }
 
   protected void registerCommands() {
@@ -161,6 +168,11 @@ public class BanHammer extends SkeletonPlugin {
     this.getCommand("pardon").setExecutor(pardonCommand);
   }
 
+  protected void registerListeners() {
+    this.bannedPlayerListener = new BannedPlayerListener(this);
+    this.getServer().getPluginManager().registerEvents(this.bannedPlayerListener, this);
+  }
+
   protected void setupPersistence() throws SQLException {
     try {
       this.getDatabase().find(BanRecord.class).findRowCount();
@@ -169,20 +181,6 @@ public class BanHammer extends SkeletonPlugin {
       this.installDDL();
     }
     this.database = new DatabaseHandler(this.getDatabase());
-  }
-
-  protected Set<String> getModifiableBannedPlayers() {
-    return this.bannedPlayerNames;
-  }
-
-  
-  public String getGroupID() {
-    return "name.richardson.james.bukkit";
-  }
-  
-
-  public String getArtifactID() {
-    return "ban-hammer";
   }
 
 }

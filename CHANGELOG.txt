@@ -1,5 +1,6 @@
 Changelog for BanHammer (v1.9.2-SNAPSHOT)
 
+2012-06-15 21:51:08 +0100    typo in localisation (James Richardson)
 2012-06-15 21:49:50 +0100    fixed type with ArtifactID (James Richardson)
 2012-06-15 21:48:34 +0100    updated config.yml (James Richardson)
 2012-06-15 21:43:11 +0100    Added automatic updater (James Richardson)

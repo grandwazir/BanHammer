@@ -86,12 +86,33 @@ public class BanHandler extends Handler implements BanHammerAPI, Localisable {
     }
   }
 
+  public String getChoiceFormattedMessage(final String key, final Object[] arguments, final String[] formats, final double[] limits) {
+    return this.plugin.getChoiceFormattedMessage(key, arguments, formats, limits);
+  }
+
+  public Locale getLocale() {
+    return this.plugin.getLocale();
+  }
+
+  public String getMessage(final String key) {
+    return this.plugin.getMessage(key);
+  }
+
   public BanRecord getPlayerBan(final String playerName) {
     return BanRecord.findFirstByName(this.database, playerName);
   }
 
   public List<BanRecord> getPlayerBans(final String playerName) {
     return BanRecord.findByName(this.database, playerName);
+  }
+
+  public String getSimpleFormattedMessage(final String key, final Object argument) {
+    final Object[] arguments = { argument };
+    return this.plugin.getSimpleFormattedMessage(key, arguments);
+  }
+
+  public String getSimpleFormattedMessage(final String key, final Object[] arguments) {
+    return this.plugin.getSimpleFormattedMessage(key, arguments);
   }
 
   public boolean isPlayerBanned(final String playerName) {
@@ -121,27 +142,6 @@ public class BanHandler extends Handler implements BanHammerAPI, Localisable {
     }
   }
 
-  private String getBanSummaryMessage(String senderName, String playerName, String reason) {
-    final Object[] arguments = { playerName, senderName, reason };
-    return this.getSimpleFormattedMessage("bancommand-summary-message", arguments);
-  }
-  
-  private String getBanBroadcastMessage(String senderName, String playerName) {
-    final Object[] arguments = { playerName, senderName };
-    return this.getSimpleFormattedMessage("bancommand-broadcast-message", arguments);
-  }
-  
-  private String getPardonBroadcastMessage(String senderName, String playerName) {
-    final Object[] arguments = { playerName, senderName };
-    return this.getSimpleFormattedMessage("pardoncommand-broadcast-message", arguments);
-  }
-
-  
-  private String getPardonLogMessage(String senderName, String playerName) {
-    final Object[] arguments = { playerName, senderName };
-    return this.getSimpleFormattedMessage("pardoncommand-summary-result", arguments);
-  }
-
   public boolean removePlayerBan(final BanRecord ban) {
     this.database.delete(ban);
     Handler.logger.debug(String.format("Removed a ban belonging to %s.", ban.getPlayer()));
@@ -154,35 +154,30 @@ public class BanHandler extends Handler implements BanHammerAPI, Localisable {
     return i;
   }
 
+  private String getBanBroadcastMessage(String senderName, String playerName) {
+    final Object[] arguments = { playerName, senderName };
+    return this.getSimpleFormattedMessage("bancommand-broadcast-message", arguments);
+  }
+
+  private String getBanSummaryMessage(String senderName, String playerName, String reason) {
+    final Object[] arguments = { playerName, senderName, reason };
+    return this.getSimpleFormattedMessage("bancommand-summary-message", arguments);
+  }
+
+  private String getPardonBroadcastMessage(String senderName, String playerName) {
+    final Object[] arguments = { playerName, senderName };
+    return this.getSimpleFormattedMessage("pardoncommand-broadcast-message", arguments);
+  }
+
+  private String getPardonLogMessage(String senderName, String playerName) {
+    final Object[] arguments = { playerName, senderName };
+    return this.getSimpleFormattedMessage("pardoncommand-summary-result", arguments);
+  }
+
   private void notifyPlayers(final String message) {
     for (Player player : this.server.getOnlinePlayers()) {
       if (player.hasPermission("banhammer.notify")) player.sendMessage(message);
     }
-  }
-
-
-  public String getChoiceFormattedMessage(final String key, final Object[] arguments, final String[] formats, final double[] limits) {
-    return this.plugin.getChoiceFormattedMessage(key, arguments, formats, limits);
-  }
-  
-
-  public Locale getLocale() {
-    return this.plugin.getLocale();
-  }
-
-  public String getMessage(final String key) {
-    return this.plugin.getMessage(key);
-  }
-
-  
-
-  public String getSimpleFormattedMessage(final String key, final Object argument) {
-    final Object[] arguments = { argument };
-    return this.plugin.getSimpleFormattedMessage(key, arguments);
-  }
-
-  public String getSimpleFormattedMessage(final String key, final Object[] arguments) {
-    return this.plugin.getSimpleFormattedMessage(key, arguments);
   }
 
 }

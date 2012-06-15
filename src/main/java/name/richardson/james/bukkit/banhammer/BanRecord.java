@@ -27,7 +27,6 @@ import com.avaje.ebean.validation.NotNull;
 
 import name.richardson.james.bukkit.utilities.internals.Logger;
 
-
 @Entity()
 @Table(name = "bh_bans")
 public class BanRecord {
