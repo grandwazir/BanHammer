@@ -179,9 +179,10 @@ public class BanHammer extends SkeletonPlugin {
   public String getGroupID() {
     return "name.richardson.james.bukkit";
   }
+  
 
   public String getArtifactID() {
-    return "banhammer";
+    return "ban-hammer";
   }
 
 }
