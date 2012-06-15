@@ -8,11 +8,11 @@ import java.util.Locale;
 import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
 import name.richardson.james.bukkit.utilities.plugin.Localisable;
-import name.richardson.james.bukkit.utilities.plugin.SimplePlugin;
+import name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin;
 
 public class BanSummary implements Localisable {
 
-  private final SimplePlugin plugin;
+  private final SkeletonPlugin plugin;
 
   private final BanRecord record;
 
@@ -22,7 +22,7 @@ public class BanSummary implements Localisable {
 
   private String tz;
 
-  public BanSummary(final SimplePlugin plugin, final BanRecord record) {
+  public BanSummary(final SkeletonPlugin plugin, final BanRecord record) {
     this.record = record;
     this.plugin = plugin;
     this.tz = Calendar.getInstance(this.getLocale()).getTimeZone().getID();

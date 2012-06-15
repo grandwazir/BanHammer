@@ -24,15 +24,15 @@ import java.util.Map;
 
 import org.bukkit.configuration.ConfigurationSection;
 
-import name.richardson.james.bukkit.utilities.configuration.AbstractConfiguration;
+import name.richardson.james.bukkit.utilities.configuration.PluginConfiguration;
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
 
-public class BanHammerConfiguration extends AbstractConfiguration {
+public class BanHammerConfiguration extends PluginConfiguration {
 
   private final Map<String, Long> limits = new LinkedHashMap<String, Long>();
 
   public BanHammerConfiguration(final BanHammer plugin) throws IOException {
-    super(plugin, "config.yml");
+    super(plugin);
     this.setBanLimits();
   }
 
@@ -42,10 +42,6 @@ public class BanHammerConfiguration extends AbstractConfiguration {
 
   public boolean isAliasEnabled() {
     return this.configuration.getBoolean("alias-plugin.enabled");
-  }
-
-  public boolean isDebugging() {
-    return this.configuration.getBoolean("debugging");
   }
 
   public void setBanLimits() {

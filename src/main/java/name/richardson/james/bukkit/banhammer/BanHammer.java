@@ -42,10 +42,9 @@ import name.richardson.james.bukkit.banhammer.management.ImportCommand;
 import name.richardson.james.bukkit.banhammer.management.ReloadCommand;
 import name.richardson.james.bukkit.utilities.command.CommandManager;
 import name.richardson.james.bukkit.utilities.command.PluginCommand;
-import name.richardson.james.bukkit.utilities.internals.Logger;
-import name.richardson.james.bukkit.utilities.plugin.SimplePlugin;
+import name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin;
 
-public class BanHammer extends SimplePlugin {
+public class BanHammer extends SkeletonPlugin {
 
   private AliasHandler aliasHandler;
 
@@ -94,37 +93,6 @@ public class BanHammer extends SimplePlugin {
     return new BanHandler(parentClass, this);
   }
 
-  @Override
-  public void onEnable() {
-    this.logger.setPrefix("[BanHammer] ");
-
-    try {
-      this.setResourceBundle();
-      this.loadConfiguration();
-      this.setRootPermission();
-      this.setupDatabase();
-      this.loadBans();
-      this.loadListeners();
-      this.registerCommands();
-      if (this.configuration.isAliasEnabled()) {
-        this.hookAlias();
-      }
-    } catch (final IOException exception) {
-      this.logger.severe("Unable to close file stream!");
-      this.setEnabled(false);
-    } catch (final SQLException exception) {
-      this.logger.severe(this.getMessage("unable-to-use-database"));
-      this.setEnabled(false);
-    } finally {
-      if (!this.isEnabled()) {
-        this.logger.severe(this.getMessage("panic"));
-        return;
-      }
-    }
-
-    this.logger.info(this.getSimpleFormattedMessage("plugin-enabled", this.getDescription().getName()));
-  }
-
   public void reloadBannedPlayers() {
     this.loadBans();
   }
@@ -157,19 +125,19 @@ public class BanHammer extends SimplePlugin {
     this.logger.info(this.getFormattedBanCount(this.database.count(BanRecord.class)));
   }
 
-  private void loadConfiguration() throws IOException {
+  protected void loadConfiguration() throws IOException {
     this.configuration = new BanHammerConfiguration(this);
-    if (this.configuration.isDebugging()) {
-      Logger.setDebugging(this, true);
+    if (this.configuration.isAliasEnabled()) {
+      this.hookAlias();
     }
   }
 
-  private void loadListeners() {
+  protected void registerListeners() {
     this.bannedPlayerListener = new BannedPlayerListener(this);
     this.getServer().getPluginManager().registerEvents(this.bannedPlayerListener, this);
   }
 
-  private void registerCommands() {
+  protected void registerCommands() {
     this.commandManager = new CommandManager(this);
     this.getCommand("bh").setExecutor(this.commandManager);
     final PluginCommand banCommand = new BanCommand(this);
@@ -193,7 +161,7 @@ public class BanHammer extends SimplePlugin {
     this.getCommand("pardon").setExecutor(pardonCommand);
   }
 
-  private void setupDatabase() throws SQLException {
+  protected void setupPersistence() throws SQLException {
     try {
       this.getDatabase().find(BanRecord.class).findRowCount();
     } catch (final PersistenceException ex) {
@@ -205,6 +173,15 @@ public class BanHammer extends SimplePlugin {
 
   protected Set<String> getModifiableBannedPlayers() {
     return this.bannedPlayerNames;
+  }
+
+  
+  public String getGroupID() {
+    return "name.richardson.james.bukkit";
+  }
+
+  public String getArtifactID() {
+    return "banhammer";
   }
 
 }

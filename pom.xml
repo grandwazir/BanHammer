@@ -82,7 +82,7 @@
      <dependency>
 	   <groupId>name.richardson.james.bukkit</groupId>
 	   <artifactId>bukkit-utilities</artifactId>
-	   <version>2.1.5</version>
+	   <version>3.0.3-SNAPSHOT</version>
      </dependency>
   </dependencies>
 
