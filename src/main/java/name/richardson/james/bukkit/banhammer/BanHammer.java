@@ -168,7 +168,7 @@ public class BanHammer extends SkeletonPlugin {
     this.getCommand("pardon").setExecutor(pardonCommand);
   }
 
-  protected void registerListeners() {
+  protected void registerEvents() {
     this.bannedPlayerListener = new BannedPlayerListener(this);
     this.getServer().getPluginManager().registerEvents(this.bannedPlayerListener, this);
   }
