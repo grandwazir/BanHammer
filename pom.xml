@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>name.richardson.james.bukkit</groupId>
   <artifactId>ban-hammer</artifactId>
-  <version>1.10.2-SNAPSHOT</version>
+  <version>1.10.2</version>
   <name>BanHammer</name>
   <description>Bans, kicks and records.</description>
   <url>http://grandwazir.github.com/${project.name}/</url>
@@ -82,7 +82,7 @@
      <dependency>
 	   <groupId>name.richardson.james.bukkit</groupId>
 	   <artifactId>bukkit-utilities</artifactId>
-	   <version>3.1.1-SNAPSHOT</version>
+	   <version>3.1.1</version>
      </dependency>
   </dependencies>
 
