@@ -181,6 +181,7 @@ public class BanHammer extends SkeletonPlugin {
       this.installDDL();
     }
     this.database = new DatabaseHandler(this.getDatabase());
+    this.loadBans();
   }
 
 }
