@@ -1,5 +1,9 @@
-Changelog for BanHammer (v1.10.1-SNAPSHOT)
+Changelog for BanHammer (v1.10.2-SNAPSHOT)
 
+2012-06-30 20:59:25 +0100    fix not populating banned player list on startup (James Richardson)
+
+v1.10.1
+2012-06-16 01:37:51 +0100    fix wrong name for method (James Richardson)
 
 v1.10.0
 2012-06-15 21:53:48 +0100    Code cleanup (James Richardson)
