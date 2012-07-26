@@ -17,15 +17,11 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.migration;
 
-import java.util.List;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.avaje.ebean.validation.NotNull;
-
-import name.richardson.james.bukkit.utilities.internals.Logger;
 
 @Entity()
 @Table(name = "bh_bans")
@@ -34,26 +30,6 @@ public class OldBanRecord {
   public enum Type {
     PERMENANT,
     TEMPORARY
-  }
-
-  private final static Logger logger = new Logger(OldBanRecord.class);
-
-  static public List<OldBanRecord> findByName(final DatabaseHandler database, final String player) {
-    OldBanRecord.logger.debug(String.format("Attempting to return an BanRecords matching the player name %s.", player));
-    return database.getEbeanServer().find(OldBanRecord.class).where().ilike("player", player).orderBy("created_at DESC").findList();
-  }
-
-  static public OldBanRecord findFirstByName(final DatabaseHandler database, final String player) {
-    OldBanRecord.logger.debug(String.format("Attempting to return an active BanRecord matching the player name %s.", player));
-    try {
-      return database.getEbeanServer().find(OldBanRecord.class).where().ilike("player", player).orderBy("created_at DESC").findList().get(0);
-    } catch (final IndexOutOfBoundsException exception) {
-      return null;
-    }
-  }
-
-  static public List<OldBanRecord> findRecent(final DatabaseHandler database, final Integer maxRows) {
-    return database.getEbeanServer().find(OldBanRecord.class).where().orderBy("created_at DESC").setMaxRows(maxRows).findList();
   }
 
   @Id

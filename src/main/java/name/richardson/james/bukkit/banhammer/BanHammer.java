@@ -20,7 +20,9 @@ package name.richardson.james.bukkit.banhammer;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,6 +33,7 @@ import com.avaje.ebean.EbeanServer;
 import name.richardson.james.bukkit.alias.Alias;
 import name.richardson.james.bukkit.alias.AliasHandler;
 import name.richardson.james.bukkit.alias.DatabaseHandler;
+import name.richardson.james.bukkit.banhammer.api.BanHandler;
 import name.richardson.james.bukkit.banhammer.ban.BanCommand;
 import name.richardson.james.bukkit.banhammer.ban.CheckCommand;
 import name.richardson.james.bukkit.banhammer.ban.HistoryCommand;
@@ -57,7 +60,7 @@ public class BanHammer extends SkeletonPlugin {
   private BanHammerConfiguration configuration;
 
   /** A set of banned players */
-  private final Set<String> bannedPlayerNames = new HashSet<String>();
+  private final Map<String, CachedBan> bannedPlayerNames = new HashMap<String, CachedBan>();
 
   private SQLStorage database;
   
@@ -86,8 +89,8 @@ public class BanHammer extends SkeletonPlugin {
     return this.configuration.getBanLimits();
   }
 
-  public Set<String> getBannedPlayers() {
-    return Collections.unmodifiableSet(this.bannedPlayerNames);
+  public Map<String, CachedBan> getBannedPlayers() {
+    return Collections.unmodifiableMap(this.bannedPlayerNames);
   }
 
   /**
@@ -109,6 +112,13 @@ public class BanHammer extends SkeletonPlugin {
     final String[] formats = { this.getMessage("no-bans"), this.getMessage("one-ban"), this.getMessage("many-bans") };
     return this.getChoiceFormattedMessage("bans-loaded", arguments, formats, limits);
   }
+  
+  private String getFormattedBanMigrationCount(final int count) {
+    final Object[] arguments = { count };
+    final double[] limits = { 0, 1, 2 };
+    final String[] formats = { this.getMessage("no-bans"), this.getMessage("one-ban"), this.getMessage("many-bans") };
+    return this.getChoiceFormattedMessage("bans-migrated", arguments, formats, limits);
+  }
 
   private void hookAlias() {
     final Alias plugin = (Alias) this.getServer().getPluginManager().getPlugin("Alias");
@@ -122,16 +132,16 @@ public class BanHammer extends SkeletonPlugin {
 
   private void loadBans() {
     this.bannedPlayerNames.clear();
-    for (final Object record : this.database.list(OldBanRecord.class)) {
-      final OldBanRecord ban = (OldBanRecord) record;
+    for (final Object record : this.database.list(BanRecord.class)) {
+      final BanRecord ban = (BanRecord) record;
       if (ban.isActive()) {
-        this.bannedPlayerNames.add(ban.getPlayer().toLowerCase());
+        this.bannedPlayerNames.put(ban.getPlayer().getPlayerName().toLowerCase(), new CachedBan(ban));
       }
     }
     this.logger.info(this.getFormattedBanCount(this.database.count(OldBanRecord.class)));
   }
 
-  protected Set<String> getModifiableBannedPlayers() {
+  protected Map<String, CachedBan> getModifiableBannedPlayers() {
     return this.bannedPlayerNames;
   }
 
@@ -145,23 +155,23 @@ public class BanHammer extends SkeletonPlugin {
 
   @Override
   protected void registerCommands() {
-    this.commandManager = new CommandManager(this);
-    this.getCommand("bh").setExecutor(this.commandManager);
+    CommandManager commandManager = new CommandManager(this);
+    this.getCommand("bh").setExecutor(commandManager);
     final PluginCommand banCommand = new BanCommand(this);
     final PluginCommand kickCommand = new KickCommand(this);
     final PluginCommand pardonCommand = new PardonCommand(this);
     // register commands
-    this.commandManager.addCommand(banCommand);
-    this.commandManager.addCommand(new CheckCommand(this));
-    this.commandManager.addCommand(new ExportCommand(this));
-    this.commandManager.addCommand(new HistoryCommand(this));
-    this.commandManager.addCommand(new ImportCommand(this));
-    this.commandManager.addCommand(kickCommand);
-    this.commandManager.addCommand(new LimitsCommand(this));
-    this.commandManager.addCommand(pardonCommand);
-    this.commandManager.addCommand(new PurgeCommand(this));
-    this.commandManager.addCommand(new RecentCommand(this));
-    this.commandManager.addCommand(new ReloadCommand(this));
+    commandManager.addCommand(banCommand);
+    commandManager.addCommand(new CheckCommand(this));
+    commandManager.addCommand(new ExportCommand(this));
+    commandManager.addCommand(new HistoryCommand(this));
+    commandManager.addCommand(new ImportCommand(this));
+    commandManager.addCommand(kickCommand);
+    commandManager.addCommand(new LimitsCommand(this));
+    commandManager.addCommand(pardonCommand);
+    commandManager.addCommand(new PurgeCommand(this));
+    commandManager.addCommand(new RecentCommand(this));
+    commandManager.addCommand(new ReloadCommand(this));
     // register commands again as root commands
     this.getCommand("ban").setExecutor(banCommand);
     this.getCommand("kick").setExecutor(kickCommand);
@@ -170,13 +180,24 @@ public class BanHammer extends SkeletonPlugin {
 
   @Override
   protected void registerEvents() {
-    this.bannedPlayerListener = new BannedPlayerListener(this);
-    this.getServer().getPluginManager().registerEvents(this.bannedPlayerListener, this);
+    new BannedPlayerListener(this);
   }
 
   @Override
   protected void setupPersistence() throws SQLException {
     database = new SQLStorage(this);
+    if (!this.configuration.isDatabaseUpgraded()) this.migrateRecords();
+  }
+
+  private void migrateRecords() {
+    BanHandler handler = this.getHandler(this.getClass());
+    List<? extends Object> bans = this.database.list(OldBanRecord.class);
+    for (Object record : bans) {
+      final OldBanRecord ban = (OldBanRecord) record;
+      handler.migrateRecord(ban);
+    }
+    logger.info(this.getFormattedBanMigrationCount(bans.size()));
+    this.configuration.setDatabaseUpgraded(true);
   }
 
 }

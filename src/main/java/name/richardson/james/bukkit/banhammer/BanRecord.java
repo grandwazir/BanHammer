@@ -7,12 +7,14 @@ import javax.persistence.ManyToOne;
 
 import com.avaje.ebean.validation.NotNull;
 
+import name.richardson.james.bukkit.util.Logger;
+import name.richardson.james.bukkit.utilities.persistence.SQLStorage;
+
 public class BanRecord {
 
   /* The state of this ban */
   public enum State {
-    ACTIVE,
-    EXPIRED,
+    NORMAL,
     PARDONED
   }
   
@@ -21,7 +23,14 @@ public class BanRecord {
     TEMPORARY,
     PERMENANT
   }
+
+  private static Logger logger = new Logger(BanRecord.class);
   
+  public static BanRecord findById(SQLStorage database, int id) {
+    logger.debug(String.format("Attempting to return BanRecord matching the ID %s.", id));
+    final BanRecord record = database.getEbeanServer().find(BanRecord.class).where().eq("id", id).findUnique();
+    return record;
+  }
   
   @Id
   private int id;
@@ -133,5 +142,11 @@ public class BanRecord {
     // TODO Auto-generated method stub
     
   }
+
+  public boolean isActive() {
+    return (this.expiresAt > System.currentTimeMillis()) ? true : false;
+  }
+
+
 
 }

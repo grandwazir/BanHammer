@@ -89,7 +89,7 @@ public class PlayerRecord {
    */
   public boolean isBanned() {
     for (BanRecord ban : this.bans) {
-      if (ban.getState() == State.ACTIVE) return true;
+      if (ban.getState() == State.NORMAL && ban.isActive()) return true;
     }
     return false;
   }
