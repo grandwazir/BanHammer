@@ -24,8 +24,8 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.banhammer.DatabaseHandler;
+import name.richardson.james.bukkit.banhammer.migration.OldBanRecord;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
@@ -61,8 +61,8 @@ public class ExportCommand extends PluginCommand {
    */
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     int exported = 0;
-    for (final Object record : this.database.list(BanRecord.class)) {
-      final BanRecord ban = (BanRecord) record;
+    for (final Object record : this.database.list(OldBanRecord.class)) {
+      final OldBanRecord ban = (OldBanRecord) record;
       final OfflinePlayer player = this.server.getOfflinePlayer(ban.getPlayer());
       player.setBanned(true);
       exported++;

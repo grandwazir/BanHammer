@@ -25,7 +25,7 @@ import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.BanHandler;
-import name.richardson.james.bukkit.banhammer.BanRecord;
+import name.richardson.james.bukkit.banhammer.migration.OldBanRecord;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
@@ -53,7 +53,7 @@ public class PardonCommand extends PluginCommand {
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final BanRecord record = this.handler.getPlayerBan(this.player.getName());
+    final OldBanRecord record = this.handler.getPlayerBan(this.player.getName());
 
     if (record != null) {
 

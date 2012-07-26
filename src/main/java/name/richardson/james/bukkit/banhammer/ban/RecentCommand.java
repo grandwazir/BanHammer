@@ -24,8 +24,8 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.banhammer.DatabaseHandler;
+import name.richardson.james.bukkit.banhammer.migration.OldBanRecord;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
@@ -50,15 +50,15 @@ public class RecentCommand extends PluginCommand {
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final List<BanRecord> bans = BanRecord.findRecent(this.database, this.count);
+    final List<OldBanRecord> bans = OldBanRecord.findRecent(this.database, this.count);
     if (bans.size() != 0) {
       sender.sendMessage(this.getFormattedMessageHeader(bans.size()));
-      for (final BanRecord ban : bans) {
+      for (final OldBanRecord ban : bans) {
         final BanSummary summary = new BanSummary(this.plugin, ban);
         sender.sendMessage(summary.getHeader());
         sender.sendMessage(summary.getReason());
         sender.sendMessage(summary.getLength());
-        if (ban.getType() == BanRecord.Type.TEMPORARY) {
+        if (ban.getType() == OldBanRecord.Type.TEMPORARY) {
           sender.sendMessage(summary.getExpiresAt());
         }
       }

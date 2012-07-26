@@ -40,6 +40,7 @@ import name.richardson.james.bukkit.banhammer.kick.KickCommand;
 import name.richardson.james.bukkit.banhammer.management.ExportCommand;
 import name.richardson.james.bukkit.banhammer.management.ImportCommand;
 import name.richardson.james.bukkit.banhammer.management.ReloadCommand;
+import name.richardson.james.bukkit.banhammer.migration.OldBanRecord;
 import name.richardson.james.bukkit.utilities.command.CommandManager;
 import name.richardson.james.bukkit.utilities.command.PluginCommand;
 import name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin;
@@ -124,13 +125,13 @@ public class BanHammer extends SkeletonPlugin {
 
   private void loadBans() {
     this.bannedPlayerNames.clear();
-    for (final Object record : this.database.list(BanRecord.class)) {
-      final BanRecord ban = (BanRecord) record;
+    for (final Object record : this.database.list(OldBanRecord.class)) {
+      final OldBanRecord ban = (OldBanRecord) record;
       if (ban.isActive()) {
         this.bannedPlayerNames.add(ban.getPlayer().toLowerCase());
       }
     }
-    this.logger.info(this.getFormattedBanCount(this.database.count(BanRecord.class)));
+    this.logger.info(this.getFormattedBanCount(this.database.count(OldBanRecord.class)));
   }
 
   protected Set<String> getModifiableBannedPlayers() {
@@ -175,7 +176,7 @@ public class BanHammer extends SkeletonPlugin {
 
   protected void setupPersistence() throws SQLException {
     try {
-      this.getDatabase().find(BanRecord.class).findRowCount();
+      this.getDatabase().find(OldBanRecord.class).findRowCount();
     } catch (final PersistenceException ex) {
       this.logger.warning(this.getMessage("no-database"));
       this.installDDL();

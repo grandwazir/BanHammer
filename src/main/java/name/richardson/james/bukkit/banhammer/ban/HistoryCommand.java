@@ -29,7 +29,7 @@ import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.BanHandler;
-import name.richardson.james.bukkit.banhammer.BanRecord;
+import name.richardson.james.bukkit.banhammer.migration.OldBanRecord;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
@@ -60,7 +60,7 @@ public class HistoryCommand extends PluginCommand {
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final List<BanRecord> bans = this.handler.getPlayerBans(this.player.getName());
+    final List<OldBanRecord> bans = this.handler.getPlayerBans(this.player.getName());
 
     if (sender.hasPermission(this.getPermission(3)) && !this.player.getName().equalsIgnoreCase(sender.getName())) {
       this.displayHistory(bans, sender);
@@ -90,14 +90,14 @@ public class HistoryCommand extends PluginCommand {
 
   }
 
-  private void displayHistory(final List<BanRecord> bans, final CommandSender sender) {
+  private void displayHistory(final List<OldBanRecord> bans, final CommandSender sender) {
     sender.sendMessage(this.getFormattedMessageHeader(bans.size(), player.getName()));
-    for (final BanRecord ban : bans) {
+    for (final OldBanRecord ban : bans) {
       final BanSummary summary = new BanSummary(this.plugin, ban);
       sender.sendMessage(summary.getSelfHeader());
       sender.sendMessage(summary.getReason());
       sender.sendMessage(summary.getLength());
-      if (ban.getType() == BanRecord.Type.TEMPORARY) {
+      if (ban.getType() == OldBanRecord.Type.TEMPORARY) {
         sender.sendMessage(summary.getExpiresAt());
       }
     }

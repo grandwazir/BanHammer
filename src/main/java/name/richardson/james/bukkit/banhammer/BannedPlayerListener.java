@@ -31,6 +31,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 import name.richardson.james.bukkit.alias.AliasHandler;
+import name.richardson.james.bukkit.banhammer.migration.OldBanRecord;
 import name.richardson.james.bukkit.utilities.internals.Logger;
 
 public class BannedPlayerListener implements Listener {
@@ -59,7 +60,7 @@ public class BannedPlayerListener implements Listener {
       final Set<String> aliases = this.aliasHandler.getPlayersNames(address);
       for (final String alias : aliases) {
         if (this.bannedPlayers.contains(alias.toLowerCase())) {
-          final BanRecord ban = this.handler.getPlayerBan(alias);
+          final OldBanRecord ban = this.handler.getPlayerBan(alias);
           if (ban.isActive()) {
             Long time = ban.getExpiresAt() - System.currentTimeMillis();
             final String message = String.format("Alias of %s.", alias);
@@ -84,9 +85,9 @@ public class BannedPlayerListener implements Listener {
     logger.debug("Checking if " + playerName + " is banned.");
     if (this.bannedPlayers.contains(playerName.toLowerCase())) {
       String message;
-      final BanRecord ban = this.handler.getPlayerBan(playerName);
+      final OldBanRecord ban = this.handler.getPlayerBan(playerName);
       if (ban.isActive()) {
-        if (ban.getType().equals(BanRecord.Type.PERMENANT)) {
+        if (ban.getType().equals(OldBanRecord.Type.PERMENANT)) {
           message = plugin.getSimpleFormattedMessage("permenantly-banned", ban.getReason());
         } else {
           final Date expiryDate = new Date(ban.getExpiresAt());

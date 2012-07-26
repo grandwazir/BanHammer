@@ -19,6 +19,8 @@ package name.richardson.james.bukkit.banhammer;
 
 import java.util.List;
 
+import name.richardson.james.bukkit.banhammer.migration.OldBanRecord;
+
 public interface BanHammerAPI {
 
   /**
@@ -52,7 +54,7 @@ public interface BanHammerAPI {
    * @return a CachedBan with the details of the active ban or null if no ban
    *         exists.
    */
-  public BanRecord getPlayerBan(String playerName);
+  public OldBanRecord getPlayerBan(String playerName);
 
   /**
    * Get the details of all bans associated with a specific player. This will
@@ -64,7 +66,7 @@ public interface BanHammerAPI {
    * @return a list with the details of all bans associated with the player. If
    *         no bans are on record, the list will be empty.
    */
-  public List<BanRecord> getPlayerBans(String playerName);
+  public List<OldBanRecord> getPlayerBans(String playerName);
 
   /**
    * Check to see if a player is currently banned. This only checks to see if
@@ -99,7 +101,7 @@ public interface BanHammerAPI {
    * @param ban
    *          - The CachedBan to convert into a BanRecord and remove.
    */
-  public boolean removePlayerBan(BanRecord ban);
+  public boolean removePlayerBan(OldBanRecord ban);
 
   /**
    * Remove bans from the database
@@ -108,6 +110,6 @@ public interface BanHammerAPI {
    *          - A Set of CachedBans to convert into a BanRecords and remove.
    * @return the number of bans removed.
    */
-  public int removePlayerBans(List<BanRecord> bans);
+  public int removePlayerBans(List<OldBanRecord> bans);
 
 }

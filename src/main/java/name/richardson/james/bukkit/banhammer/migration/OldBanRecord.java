@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License along with
  * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.bukkit.banhammer;
+package name.richardson.james.bukkit.banhammer.migration;
 
 import java.util.List;
 
@@ -29,31 +29,31 @@ import name.richardson.james.bukkit.utilities.internals.Logger;
 
 @Entity()
 @Table(name = "bh_bans")
-public class BanRecord {
+public class OldBanRecord {
 
   public enum Type {
     PERMENANT,
     TEMPORARY
   }
 
-  private final static Logger logger = new Logger(BanRecord.class);
+  private final static Logger logger = new Logger(OldBanRecord.class);
 
-  static public List<BanRecord> findByName(final DatabaseHandler database, final String player) {
-    BanRecord.logger.debug(String.format("Attempting to return an BanRecords matching the player name %s.", player));
-    return database.getEbeanServer().find(BanRecord.class).where().ilike("player", player).orderBy("created_at DESC").findList();
+  static public List<OldBanRecord> findByName(final DatabaseHandler database, final String player) {
+    OldBanRecord.logger.debug(String.format("Attempting to return an BanRecords matching the player name %s.", player));
+    return database.getEbeanServer().find(OldBanRecord.class).where().ilike("player", player).orderBy("created_at DESC").findList();
   }
 
-  static public BanRecord findFirstByName(final DatabaseHandler database, final String player) {
-    BanRecord.logger.debug(String.format("Attempting to return an active BanRecord matching the player name %s.", player));
+  static public OldBanRecord findFirstByName(final DatabaseHandler database, final String player) {
+    OldBanRecord.logger.debug(String.format("Attempting to return an active BanRecord matching the player name %s.", player));
     try {
-      return database.getEbeanServer().find(BanRecord.class).where().ilike("player", player).orderBy("created_at DESC").findList().get(0);
+      return database.getEbeanServer().find(OldBanRecord.class).where().ilike("player", player).orderBy("created_at DESC").findList().get(0);
     } catch (final IndexOutOfBoundsException exception) {
       return null;
     }
   }
 
-  static public List<BanRecord> findRecent(final DatabaseHandler database, final Integer maxRows) {
-    return database.getEbeanServer().find(BanRecord.class).where().orderBy("created_at DESC").setMaxRows(maxRows).findList();
+  static public List<OldBanRecord> findRecent(final DatabaseHandler database, final Integer maxRows) {
+    return database.getEbeanServer().find(OldBanRecord.class).where().orderBy("created_at DESC").setMaxRows(maxRows).findList();
   }
 
   @Id

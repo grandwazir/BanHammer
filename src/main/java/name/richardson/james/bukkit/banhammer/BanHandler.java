@@ -25,6 +25,7 @@ import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
 import name.richardson.james.bukkit.banhammer.ban.BanSummary;
+import name.richardson.james.bukkit.banhammer.migration.OldBanRecord;
 import name.richardson.james.bukkit.utilities.internals.Handler;
 import name.richardson.james.bukkit.utilities.plugin.Localisable;
 
@@ -46,7 +47,7 @@ public class BanHandler extends Handler implements BanHammerAPI, Localisable {
 
   public boolean banPlayer(final String playerName, final String senderName, final String reason, final Long banLength, final boolean notify) {
     if (!this.isPlayerBanned(playerName)) {
-      final BanRecord ban = new BanRecord();
+      final OldBanRecord ban = new OldBanRecord();
       final long now = System.currentTimeMillis();
       ban.setCreatedAt(now);
       ban.setPlayer(playerName);
@@ -98,12 +99,12 @@ public class BanHandler extends Handler implements BanHammerAPI, Localisable {
     return this.plugin.getMessage(key);
   }
 
-  public BanRecord getPlayerBan(final String playerName) {
-    return BanRecord.findFirstByName(this.database, playerName);
+  public OldBanRecord getPlayerBan(final String playerName) {
+    return OldBanRecord.findFirstByName(this.database, playerName);
   }
 
-  public List<BanRecord> getPlayerBans(final String playerName) {
-    return BanRecord.findByName(this.database, playerName);
+  public List<OldBanRecord> getPlayerBans(final String playerName) {
+    return OldBanRecord.findByName(this.database, playerName);
   }
 
   public String getSimpleFormattedMessage(final String key, final Object argument) {
@@ -116,7 +117,7 @@ public class BanHandler extends Handler implements BanHammerAPI, Localisable {
   }
 
   public boolean isPlayerBanned(final String playerName) {
-    final BanRecord record = BanRecord.findFirstByName(this.database, playerName);
+    final OldBanRecord record = OldBanRecord.findFirstByName(this.database, playerName);
     if (record != null) {
       if (record.isActive()) {
         return true;
@@ -130,7 +131,7 @@ public class BanHandler extends Handler implements BanHammerAPI, Localisable {
 
   public boolean pardonPlayer(final String playerName, final String senderName, final Boolean notify) {
     if (this.isPlayerBanned(playerName)) {
-      this.database.delete(BanRecord.findFirstByName(this.database, playerName));
+      this.database.delete(OldBanRecord.findFirstByName(this.database, playerName));
       this.bannedPlayers.remove(playerName.toLowerCase());
       if (notify) {
         this.notifyPlayers(this.getPardonBroadcastMessage(senderName, playerName));
@@ -142,13 +143,13 @@ public class BanHandler extends Handler implements BanHammerAPI, Localisable {
     }
   }
 
-  public boolean removePlayerBan(final BanRecord ban) {
+  public boolean removePlayerBan(final OldBanRecord ban) {
     this.database.delete(ban);
     Handler.logger.debug(String.format("Removed a ban belonging to %s.", ban.getPlayer()));
     return true;
   }
 
-  public int removePlayerBans(final List<BanRecord> bans) {
+  public int removePlayerBans(final List<OldBanRecord> bans) {
     final int i = this.database.delete(bans);
     Handler.logger.debug(String.format("Removed %d ban(s).", i));
     return i;
