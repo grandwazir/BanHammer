@@ -21,14 +21,16 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.PersistenceException;
 
+import com.avaje.ebean.EbeanServer;
+
 import name.richardson.james.bukkit.alias.Alias;
 import name.richardson.james.bukkit.alias.AliasHandler;
+import name.richardson.james.bukkit.alias.DatabaseHandler;
 import name.richardson.james.bukkit.banhammer.ban.BanCommand;
 import name.richardson.james.bukkit.banhammer.ban.CheckCommand;
 import name.richardson.james.bukkit.banhammer.ban.HistoryCommand;
@@ -43,21 +45,29 @@ import name.richardson.james.bukkit.banhammer.management.ReloadCommand;
 import name.richardson.james.bukkit.banhammer.migration.OldBanRecord;
 import name.richardson.james.bukkit.utilities.command.CommandManager;
 import name.richardson.james.bukkit.utilities.command.PluginCommand;
+import name.richardson.james.bukkit.utilities.persistence.SQLStorage;
 import name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin;
 
 public class BanHammer extends SkeletonPlugin {
 
+  /** Reference to the Alias API */
   private AliasHandler aliasHandler;
 
-  private BannedPlayerListener bannedPlayerListener;
-
+  /** BanHammer configuration */
   private BanHammerConfiguration configuration;
 
-  private final HashSet<String> bannedPlayerNames = new HashSet<String>();
+  /** A set of banned players */
+  private final Set<String> bannedPlayerNames = new HashSet<String>();
 
-  private DatabaseHandler database;
-
-  private CommandManager commandManager;
+  private SQLStorage database;
+  
+  public SQLStorage getSQLStorage() {
+    return database;
+  }
+  
+  public EbeanServer getDatabase() {
+    return database.getEbeanServer();
+  }
 
   public AliasHandler getAliasHandler() {
     return this.aliasHandler;
@@ -72,25 +82,12 @@ public class BanHammer extends SkeletonPlugin {
   }
 
   public Map<String, Long> getBanLimits() {
-    logger.debug(configuration.getBanLimits().toString());
+    this.logger.debug(this.configuration.getBanLimits().toString());
     return this.configuration.getBanLimits();
   }
 
   public Set<String> getBannedPlayers() {
     return Collections.unmodifiableSet(this.bannedPlayerNames);
-  }
-
-  @Override
-  public List<Class<?>> getDatabaseClasses() {
-    return DatabaseHandler.getDatabaseClasses();
-  }
-
-  public DatabaseHandler getDatabaseHandler() {
-    return this.database;
-  }
-
-  public String getGroupID() {
-    return "name.richardson.james.bukkit";
   }
 
   /**
@@ -138,6 +135,7 @@ public class BanHammer extends SkeletonPlugin {
     return this.bannedPlayerNames;
   }
 
+  @Override
   protected void loadConfiguration() throws IOException {
     this.configuration = new BanHammerConfiguration(this);
     if (this.configuration.isAliasEnabled()) {
@@ -145,6 +143,7 @@ public class BanHammer extends SkeletonPlugin {
     }
   }
 
+  @Override
   protected void registerCommands() {
     this.commandManager = new CommandManager(this);
     this.getCommand("bh").setExecutor(this.commandManager);
@@ -169,20 +168,15 @@ public class BanHammer extends SkeletonPlugin {
     this.getCommand("pardon").setExecutor(pardonCommand);
   }
 
+  @Override
   protected void registerEvents() {
     this.bannedPlayerListener = new BannedPlayerListener(this);
     this.getServer().getPluginManager().registerEvents(this.bannedPlayerListener, this);
   }
 
+  @Override
   protected void setupPersistence() throws SQLException {
-    try {
-      this.getDatabase().find(OldBanRecord.class).findRowCount();
-    } catch (final PersistenceException ex) {
-      this.logger.warning(this.getMessage("no-database"));
-      this.installDDL();
-    }
-    this.database = new DatabaseHandler(this.getDatabase());
-    this.loadBans();
+    database = new SQLStorage(this);
   }
 
 }

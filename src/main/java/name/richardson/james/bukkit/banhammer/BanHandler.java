@@ -24,67 +24,67 @@ import java.util.Set;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
+import name.richardson.james.bukkit.banhammer.BanRecord.State;
+import name.richardson.james.bukkit.banhammer.BanRecord.Type;
 import name.richardson.james.bukkit.banhammer.ban.BanSummary;
 import name.richardson.james.bukkit.banhammer.migration.OldBanRecord;
 import name.richardson.james.bukkit.utilities.internals.Handler;
+import name.richardson.james.bukkit.utilities.persistence.SQLStorage;
 import name.richardson.james.bukkit.utilities.plugin.Localisable;
 
 public class BanHandler extends Handler implements BanHammerAPI, Localisable {
 
   private final Set<String> bannedPlayers;
-  private final DatabaseHandler database;
+  private final SQLStorage database;
   private final Server server;
   private final BanHammer plugin;
 
   public BanHandler(final Class<?> parentClass, final BanHammer plugin) {
     super(parentClass);
-    this.database = plugin.getDatabaseHandler();
+    this.database = plugin.getSQLStorage();
     this.bannedPlayers = plugin.getModifiableBannedPlayers();
     this.server = plugin.getServer();
     this.plugin = plugin;
-    logger.setPrefix("[BanHammer] ");
+    logger.setPrefix(plugin.getLoggerPrefix());
   }
 
   public boolean banPlayer(final String playerName, final String senderName, final String reason, final Long banLength, final boolean notify) {
     if (!this.isPlayerBanned(playerName)) {
-      final OldBanRecord ban = new OldBanRecord();
+      /** Get the various database records required */
+      final PlayerRecord playerRecord = this.getPlayerRecord(playerName, true);
+      final PlayerRecord creatorRecord = this.getPlayerRecord(senderName, true);
+      final BanRecord banRecord = new BanRecord();
       final long now = System.currentTimeMillis();
-      ban.setCreatedAt(now);
-      ban.setPlayer(playerName);
-      ban.setCreatedBy(senderName);
-      ban.setReason(reason);
-
-      if (banLength != 0) {
-        ban.setExpiresAt(now + banLength);
-      } else {
-        ban.setExpiresAt(0);
-      }
-
-      this.database.save(ban);
-      this.bannedPlayers.add(playerName.toLowerCase());
-
-      final Player player = this.server.getPlayerExact(playerName);
-      if (player != null) {
-        player.kickPlayer(reason);
-      }
-
-      if (notify) {
-        BanSummary summary = new BanSummary(plugin, ban);
-        this.notifyPlayers(this.getBanBroadcastMessage(senderName, playerName));
-        if (banLength == 0) {
-          this.notifyPlayers(summary.getReason());
-        } else {
-          this.notifyPlayers(summary.getReason());
-          this.notifyPlayers(summary.getLength());
-        }
-      }
-
-      logger.info(this.getBanSummaryMessage(senderName, playerName, reason));
-
+      
+      /** Set the specifics of the ban */
+      banRecord.setCreatedAt(now);
+      banRecord.setPlayer(playerRecord);
+      banRecord.setCreator(playerRecord);
+      banRecord.setReason(reason);
+      final long expiresAt = (banLength != 0) ? now + banLength : 0;
+      banRecord.setExpiresAt(expiresAt);
+      banRecord.setState(State.ACTIVE);
+      final Type banType = (banLength != 0) ? Type.TEMPORARY : Type.PERMENANT;
+      banRecord.setType(banType);
+      
+      /** Save records */
+      Object[] records = {playerRecord, creatorRecord, banRecord};
+      this.database.save(records);
       return true;
     } else {
+      /** Player is already banned return false. */
       return false;
     }
+  }
+  
+  private PlayerRecord getPlayerRecord(String playerName, boolean create) {
+    PlayerRecord record = PlayerRecord.findByName(database, playerName);
+    if (record != null && create) {
+      record = new PlayerRecord();
+      record.setPlayerName(playerName);
+      database.save(record);
+    }
+    return record;
   }
 
   public String getChoiceFormattedMessage(final String key, final Object[] arguments, final String[] formats, final double[] limits) {
