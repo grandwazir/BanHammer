@@ -20,19 +20,16 @@ package name.richardson.james.bukkit.banhammer.api;
 import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.bukkit.Bukkit;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
-import name.richardson.james.bukkit.banhammer.persistence.OldBanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.utilities.internals.Handler;
 import name.richardson.james.bukkit.utilities.persistence.SQLStorage;
 
-public class BanHandler extends Handler implements BanHammerAPI {
+public class BanHandler extends Handler implements API {
 
   private final SQLStorage database;
 
@@ -41,14 +38,14 @@ public class BanHandler extends Handler implements BanHammerAPI {
     this.database = plugin.getSQLStorage();
     logger.setPrefix(plugin.getLoggerPrefix());
   }
-  
-  public boolean banPlayer(final String playerName, BanRecord record, String reason) {
+
+  public boolean banPlayer(final String playerName, final BanRecord record, final String reason) {
     if (!this.isPlayerBanned(playerName)) {
       /** Get the various database records required */
       final PlayerRecord playerRecord = PlayerRecord.find(this.database, playerName);
       final PlayerRecord creatorRecord = record.getCreater();
       final BanRecord banRecord = new BanRecord();
-      
+
       /** Set the specifics of the ban */
       banRecord.setCreatedAt(record.getCreatedAt());
       banRecord.setPlayer(playerRecord);
@@ -56,14 +53,14 @@ public class BanHandler extends Handler implements BanHammerAPI {
       banRecord.setReason(reason);
       banRecord.setExpiresAt(record.getExpiresAt());
       banRecord.setState(record.getState());
-      
+
       /** Save records */
-      Object[] records = {playerRecord, creatorRecord, banRecord};
+      final Object[] records = { playerRecord, creatorRecord, banRecord };
       this.database.save(records);
       /** Fire event */
-      BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(banRecord, true);
+      final BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(banRecord, true);
       Bukkit.getServer().getPluginManager().callEvent(event);
-      return true;   
+      return true;
     } else {
       return false;
     }
@@ -76,21 +73,23 @@ public class BanHandler extends Handler implements BanHammerAPI {
       final PlayerRecord creatorRecord = PlayerRecord.find(this.database, senderName);
       final BanRecord banRecord = new BanRecord();
       final Timestamp now = new Timestamp(System.currentTimeMillis());
-      
+
       /** Set the specifics of the ban */
       banRecord.setCreatedAt(now);
       banRecord.setPlayer(playerRecord);
       banRecord.setCreator(playerRecord);
       banRecord.setReason(reason);
-      if (banLength != 0) banRecord.setExpiresAt(new Timestamp(System.currentTimeMillis() + banLength));
-      
+      if (banLength != 0) {
+        banRecord.setExpiresAt(new Timestamp(System.currentTimeMillis() + banLength));
+      }
+
       /** Save records */
-      Object[] records = {playerRecord, creatorRecord, banRecord};
+      final Object[] records = { playerRecord, creatorRecord, banRecord };
       this.database.save(records);
       /** Fire event */
-      BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(banRecord, notify);
+      final BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(banRecord, notify);
       Bukkit.getServer().getPluginManager().callEvent(event);
-      return true;   
+      return true;
     } else {
       /** Player is already banned return false. */
       return false;
@@ -100,7 +99,7 @@ public class BanHandler extends Handler implements BanHammerAPI {
   public List<BanRecord> getPlayerBans(final String playerName) {
     PlayerRecord record = null;
     if (PlayerRecord.exists(this.database, playerName)) {
-       record = PlayerRecord.find(this.database, playerName);
+      record = PlayerRecord.find(this.database, playerName);
     }
     return (record == null) ? new LinkedList<BanRecord>() : record.getBans();
   }
@@ -108,7 +107,7 @@ public class BanHandler extends Handler implements BanHammerAPI {
   public boolean isPlayerBanned(final String playerName) {
     PlayerRecord record = null;
     if (PlayerRecord.exists(this.database, playerName)) {
-       record = PlayerRecord.find(this.database, playerName);
+      record = PlayerRecord.find(this.database, playerName);
     }
     return (record == null) ? false : record.isBanned();
   }
@@ -120,9 +119,9 @@ public class BanHandler extends Handler implements BanHammerAPI {
       /** Save records */
       this.database.save(ban);
       /** Fire event */
-      BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(ban, notify);
+      final BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(ban, notify);
       Bukkit.getServer().getPluginManager().callEvent(event);
-      return true;     
+      return true;
     } else {
       return false;
     }

@@ -1,36 +1,13 @@
 package name.richardson.james.bukkit.banhammer.api;
 
-import org.bukkit.event.Event;
-
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 
-public class BanHammerPlayerPardonedEvent extends Event {
+public class BanHammerPlayerPardonedEvent extends BanHammerPlayerEvent {
 
-  private static final long serialVersionUID = -8229648653550290621L;
-  
-  private final String playerName;
+  private static final long serialVersionUID = 768545683909385614L;
 
-  private final BanRecord record;
-
-  private final boolean silent;
-
-  public BanHammerPlayerPardonedEvent(BanRecord record, boolean silent) {
-    this.playerName = record.getPlayer().getName();
-    this.record = record;
-    this.silent = silent;
-  }
-
-  public String getPlayerName() {
-    return playerName;
-  }
-
-
-  public BanRecord getRecord() {
-    return this.record;
-  }
-  
-  public boolean isSilent() {
-    return silent;
+  public BanHammerPlayerPardonedEvent(final BanRecord record, final boolean silent) {
+    super(record, silent);
   }
 
 }

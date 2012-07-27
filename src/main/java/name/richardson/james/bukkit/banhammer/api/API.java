@@ -21,7 +21,7 @@ import java.util.List;
 
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 
-public interface BanHammerAPI {
+public interface API {
 
   /**
    * Ban a player from the server and prevent them from logging in. If the
