@@ -24,8 +24,8 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.banhammer.DatabaseHandler;
-import name.richardson.james.bukkit.banhammer.persistence.OldBanRecord;
+import name.richardson.james.bukkit.banhammer.api.BanHandler;
+import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
@@ -36,34 +36,34 @@ import name.richardson.james.bukkit.utilities.command.PluginCommand;
 public class RecentCommand extends PluginCommand {
 
   public static final int DEFAULT_LIMIT = 5;
-
-  /** A reference to the database handler */
-  private final DatabaseHandler database;
+  
+  private final BanHandler handler;
 
   /** The number of bans to return */
   private int count;
 
   public RecentCommand(final BanHammer plugin) {
     super(plugin);
-    this.database = plugin.getDatabaseHandler();
+    this.handler = plugin.getHandler(this.getClass());
     this.registerPermissions();
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final List<OldBanRecord> bans = OldBanRecord.findRecent(this.database, this.count);
-    if (bans.size() != 0) {
+    final List<BanRecord> bans = handler.getPlayerBans(count);
+    
+    if (!bans.isEmpty()) {
       sender.sendMessage(this.getFormattedMessageHeader(bans.size()));
-      for (final OldBanRecord ban : bans) {
+      for (final BanRecord ban : bans) {
         final BanSummary summary = new BanSummary(this.plugin, ban);
         sender.sendMessage(summary.getHeader());
         sender.sendMessage(summary.getReason());
         sender.sendMessage(summary.getLength());
-        if (ban.getType() == OldBanRecord.Type.TEMPORARY) {
+        if (ban.getType() == BanRecord.Type.TEMPORARY) {
           sender.sendMessage(summary.getExpiresAt());
         }
       }
     } else {
-      sender.sendMessage(this.getMessage("recentcommand-no-bans"));
+      sender.sendMessage(this.getMessage("no-bans"));
     }
   }
 
@@ -74,7 +74,7 @@ public class RecentCommand extends PluginCommand {
       try {
         this.count = Integer.parseInt(arguments[0]);
       } catch (final NumberFormatException exception) {
-        throw new CommandArgumentException(this.getMessage("must-specify-valid-number"), this.getSimpleFormattedMessage("recentcommand-default", RecentCommand.DEFAULT_LIMIT));
+        throw new CommandArgumentException(this.getMessage("must-specify-valid-number"), this.getSimpleFormattedMessage("default", RecentCommand.DEFAULT_LIMIT));
       }
     }
   }
@@ -83,7 +83,7 @@ public class RecentCommand extends PluginCommand {
     final Object[] arguments = { size };
     final double[] limits = { 1, 2 };
     final String[] formats = { this.getMessage("only-ban"), this.getMessage("many-bans") };
-    return this.getChoiceFormattedMessage("recentcommand-header", arguments, formats, limits);
+    return this.getChoiceFormattedMessage("header", arguments, formats, limits);
   }
 
   private void registerPermissions() {

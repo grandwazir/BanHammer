@@ -147,4 +147,8 @@ public class BanHandler extends Handler implements API {
     return i;
   }
 
+  public List<BanRecord> getPlayerBans(int count) {
+    return BanRecord.getRecentBans(database, count);
+  }
+  
 }

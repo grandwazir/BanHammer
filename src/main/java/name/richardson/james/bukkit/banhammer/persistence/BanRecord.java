@@ -3,6 +3,7 @@ package name.richardson.james.bukkit.banhammer.persistence;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,9 +17,15 @@ import javax.persistence.TemporalType;
 
 import com.avaje.ebean.validation.NotNull;
 
+import name.richardson.james.bukkit.utilities.persistence.SQLStorage;
+
 @Entity
 @Table(name="banhammer_bans")
 public class BanRecord {
+  
+  public static List<BanRecord> getRecentBans(SQLStorage storage, int count) {
+    return storage.getEbeanServer().find(BanRecord.class).setMaxRows(count).orderBy().desc("createdAt").findList();
+  }
 
   public enum State {
     NORMAL,
