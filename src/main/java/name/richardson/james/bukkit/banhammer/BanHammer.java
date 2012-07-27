@@ -27,6 +27,9 @@ import java.util.Map;
 
 import com.avaje.ebean.EbeanServer;
 
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
+
 import name.richardson.james.bukkit.alias.Alias;
 import name.richardson.james.bukkit.alias.AliasHandler;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
@@ -138,6 +141,11 @@ public class BanHammer extends SkeletonPlugin {
     this.getCommand("ban").setExecutor(banCommand);
     this.getCommand("kick").setExecutor(kickCommand);
     this.getCommand("pardon").setExecutor(pardonCommand);
+    // register notify permission
+    final String prefix = this.getDescription().getName().toLowerCase() + ".";
+    Permission notify = new Permission(prefix + this.getMessage("banhammer.notify-permission-name"), this.getMessage("banhammer.notify-permission-description"), PermissionDefault.TRUE); 
+    notify.addParent(this.getRootPermission(), true);
+    this.addPermission(notify);
   }
 
   @Override
