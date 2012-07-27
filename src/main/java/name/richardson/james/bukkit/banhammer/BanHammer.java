@@ -43,7 +43,6 @@ import name.richardson.james.bukkit.banhammer.ban.RecentCommand;
 import name.richardson.james.bukkit.banhammer.kick.KickCommand;
 import name.richardson.james.bukkit.banhammer.management.ExportCommand;
 import name.richardson.james.bukkit.banhammer.management.ImportCommand;
-import name.richardson.james.bukkit.banhammer.management.ReloadCommand;
 import name.richardson.james.bukkit.banhammer.migration.MigratedSQLStorage;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.OldBanRecord;
@@ -136,7 +135,6 @@ public class BanHammer extends SkeletonPlugin {
     commandManager.addCommand(pardonCommand);
     commandManager.addCommand(new PurgeCommand(this));
     commandManager.addCommand(new RecentCommand(this));
-    commandManager.addCommand(new ReloadCommand(this));
     // register commands again as root commands
     this.getCommand("ban").setExecutor(banCommand);
     this.getCommand("kick").setExecutor(kickCommand);

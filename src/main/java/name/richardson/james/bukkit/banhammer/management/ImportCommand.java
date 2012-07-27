@@ -68,7 +68,7 @@ public class ImportCommand extends PluginCommand {
         player.setBanned(false);
         imported = imported + 1;
       } else {
-        logger.warning(this.getSimpleFormattedMessage("importcommand-player-already-banned", player.getName()));
+        logger.warning(this.getSimpleFormattedMessage("player-already-banned", player.getName()));
       }
     }
 
@@ -81,28 +81,28 @@ public class ImportCommand extends PluginCommand {
   }
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
-    this.reason = (arguments.length == 0) ? this.getMessage("importcommand-default-reason") : StringFormatter.combineString(arguments, " ");
+    this.reason = (arguments.length == 0) ? this.getMessage("default-reason") : StringFormatter.combineString(arguments, " ");
   }
 
   private String getFormattedFailedImportMessage(final int imported) {
     final Object[] arguments = { imported };
     final double[] limits = { 0, 1, 2 };
     final String[] formats = { this.getMessage("no-bans"), this.getMessage("one-ban"), this.getMessage("many-bans") };
-    return this.getChoiceFormattedMessage("importcommand-response-failed-imports", arguments, formats, limits);
+    return this.getChoiceFormattedMessage("response-failed-imports", arguments, formats, limits);
   }
 
   private String getFormattedLogMessage(final String name, final int imported, final int total) {
     final Object[] arguments = { imported, total, name };
     final double[] limits = { 0, 1, 2 };
     final String[] formats = { this.getMessage("no-bans").toLowerCase(), this.getMessage("one-ban").toLowerCase(), this.getMessage("many-bans").toLowerCase() };
-    return this.getChoiceFormattedMessage("importcommand-summary-result", arguments, formats, limits);
+    return this.getChoiceFormattedMessage("summary-result", arguments, formats, limits);
   }
 
   private String getFormattedResponseMessage(final int imported) {
     final Object[] arguments = { imported };
     final double[] limits = { 0, 1, 2 };
     final String[] formats = { this.getMessage("no-bans"), this.getMessage("one-ban"), this.getMessage("many-bans") };
-    return this.getChoiceFormattedMessage("importcommand-response-message", arguments, formats, limits);
+    return this.getChoiceFormattedMessage("response-message", arguments, formats, limits);
   }
 
   private void registerPermissions() {
