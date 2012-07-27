@@ -111,6 +111,14 @@ public class BanHandler extends Handler implements API {
     }
     return (record == null) ? false : record.isBanned();
   }
+  
+  public BanRecord getPlayerBan(final String playerName) {
+    BanRecord result = null;
+    for (BanRecord ban : this.getPlayerBans(playerName)) {
+      if (ban.getState() == BanRecord.State.NORMAL) result = ban;
+    }
+    return result;
+  }
 
   public boolean pardonPlayer(final String playerName, final String senderName, final Boolean notify) {
     if (this.isPlayerBanned(playerName)) {

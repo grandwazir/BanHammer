@@ -28,9 +28,8 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
-import name.richardson.james.bukkit.banhammer.persistence.OldBanRecord;
+import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
@@ -57,10 +56,9 @@ public class CheckCommand extends PluginCommand {
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final List<BanRecord> bans = this.handler.getPlayerBans(player.getName());
+    final BanRecord ban = handler.getPlayerBan(player.getName());
 
-    for (BanRecord ban : bans) {
-      if (!ban.isActive()) continue;
+    if (ban != null) {
       final BanSummary summary = new BanSummary(this.plugin, ban);
       sender.sendMessage(summary.getHeader());
       sender.sendMessage(summary.getReason());
@@ -68,9 +66,10 @@ public class CheckCommand extends PluginCommand {
       if (ban.getType() == BanRecord.Type.TEMPORARY) {
         sender.sendMessage(summary.getExpiresAt());
       }
-      return;
-    } 
-    sender.sendMessage(this.getSimpleFormattedMessage("checkcommand-player-is-not-banned", this.player.getName()));
+    } else {
+      sender.sendMessage(this.getSimpleFormattedMessage("player-is-not-banned", this.player.getName()));
+    }
+
   }
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
@@ -97,7 +96,7 @@ public class CheckCommand extends PluginCommand {
   private void registerPermissions() {
     final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
     // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("checkcommand-permission-description"), PermissionDefault.OP);
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
     base.addParent(this.plugin.getRootPermission(), true);
     this.addPermission(base);
   }
