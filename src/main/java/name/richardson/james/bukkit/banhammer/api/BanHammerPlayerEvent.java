@@ -18,11 +18,14 @@
 package name.richardson.james.bukkit.banhammer.api;
 
 import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 
 public abstract class BanHammerPlayerEvent extends Event {
 
+  private static final HandlerList handlers = new HandlerList();
+  
   private static final long serialVersionUID = 1L;
 
   private final String playerName;

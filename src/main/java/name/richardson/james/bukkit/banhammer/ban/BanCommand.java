@@ -137,7 +137,7 @@ public class BanCommand extends PluginCommand {
 
   private void registerPermissions() {
     final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
-    final String wildcardDescription = String.format(this.plugin.getMessage("wildcard-permission-description"), this.getName());
+    final String wildcardDescription = String.format(this.plugin.getMessage("plugincommand.wildcard-permission-description"), this.getName());
     // create the wildcard permission
     final Permission wildcard = new Permission(prefix + this.getName() + ".*", wildcardDescription, PermissionDefault.OP);
     wildcard.addParent(this.plugin.getRootPermission(), true);
