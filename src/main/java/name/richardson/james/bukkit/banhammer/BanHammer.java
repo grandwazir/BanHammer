@@ -141,7 +141,7 @@ public class BanHammer extends SkeletonPlugin {
     this.getCommand("pardon").setExecutor(pardonCommand);
     // register notify permission
     final String prefix = this.getDescription().getName().toLowerCase() + ".";
-    Permission notify = new Permission(prefix + this.getMessage("banhammer.notify-permission-name"), this.getMessage("banhammer.notify-permission-description"), PermissionDefault.TRUE); 
+    final Permission notify = new Permission(prefix + this.getMessage("banhammer.notify-permission-name"), this.getMessage("banhammer.notify-permission-description"), PermissionDefault.TRUE);
     notify.addParent(this.getRootPermission(), true);
     this.addPermission(notify);
   }

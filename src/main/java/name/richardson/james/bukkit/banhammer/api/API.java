@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (c) 2012 James Richardson.
  * 
- * BanHammerAPI.java is part of BanHammer.
+ * API.java is part of BanHammer.
  * 
  * BanHammer is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software

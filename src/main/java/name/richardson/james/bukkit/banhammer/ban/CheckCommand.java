@@ -57,7 +57,7 @@ public class CheckCommand extends PluginCommand {
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final BanRecord ban = handler.getPlayerBan(player.getName());
+    final BanRecord ban = this.handler.getPlayerBan(this.player.getName());
 
     if (ban != null) {
       final BanSummary summary = new BanSummary(this.plugin, ban);

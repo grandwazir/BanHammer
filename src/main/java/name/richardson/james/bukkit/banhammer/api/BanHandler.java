@@ -96,6 +96,20 @@ public class BanHandler extends Handler implements API {
     }
   }
 
+  public BanRecord getPlayerBan(final String playerName) {
+    BanRecord result = null;
+    for (final BanRecord ban : this.getPlayerBans(playerName)) {
+      if (ban.getState() == BanRecord.State.NORMAL) {
+        result = ban;
+      }
+    }
+    return result;
+  }
+
+  public List<BanRecord> getPlayerBans(final int count) {
+    return BanRecord.getRecentBans(this.database, count);
+  }
+
   public List<BanRecord> getPlayerBans(final String playerName) {
     PlayerRecord record = null;
     if (PlayerRecord.exists(this.database, playerName)) {
@@ -110,14 +124,6 @@ public class BanHandler extends Handler implements API {
       record = PlayerRecord.find(this.database, playerName);
     }
     return (record == null) ? false : record.isBanned();
-  }
-  
-  public BanRecord getPlayerBan(final String playerName) {
-    BanRecord result = null;
-    for (BanRecord ban : this.getPlayerBans(playerName)) {
-      if (ban.getState() == BanRecord.State.NORMAL) result = ban;
-    }
-    return result;
   }
 
   public boolean pardonPlayer(final String playerName, final String senderName, final Boolean notify) {
@@ -147,8 +153,4 @@ public class BanHandler extends Handler implements API {
     return i;
   }
 
-  public List<BanRecord> getPlayerBans(int count) {
-    return BanRecord.getRecentBans(database, count);
-  }
-  
 }

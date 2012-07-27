@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Copyright (c) 2012 James Richardson.
+ * 
+ * PlayerRecord.java is part of BanHammer.
+ * 
+ * BanHammer is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+ * BanHammer is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * BanHammer. If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.persistence;
 
 import java.util.List;
@@ -14,10 +31,15 @@ import com.avaje.ebean.validation.NotNull;
 import name.richardson.james.bukkit.utilities.persistence.SQLStorage;
 
 @Entity
-@Table(name="banhammer_players")
+@Table(name = "banhammer_players")
 public class PlayerRecord {
 
-  public static PlayerRecord find(SQLStorage storage, String playerName) {
+  public static boolean exists(final SQLStorage storage, final String playerName) {
+    final PlayerRecord record = storage.getEbeanServer().find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
+    return (record != null);
+  }
+
+  public static PlayerRecord find(final SQLStorage storage, final String playerName) {
     PlayerRecord record = storage.getEbeanServer().find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
     if (record != null) {
       record = new PlayerRecord();
@@ -26,70 +48,69 @@ public class PlayerRecord {
     }
     return record;
   }
-  
-  public static boolean exists(SQLStorage storage, String playerName) {
-    PlayerRecord record = storage.getEbeanServer().find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
-    return (record != null);
-  }
- 
+
   @Id
-  @GeneratedValue(strategy=GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private long id;
-  
+
   @NotNull
   private String name;
 
-  @OneToMany(mappedBy="player", targetEntity=BanRecord.class)
+  @OneToMany(mappedBy = "player", targetEntity = BanRecord.class)
   private List<BanRecord> bans;
 
-  @OneToMany(mappedBy="creator", targetEntity=BanRecord.class)
+  @OneToMany(mappedBy = "creator", targetEntity = BanRecord.class)
   private List<BanRecord> createdBans;
-  
-  public long getId() {
-    return id;
-  }
 
-  public String getName() {
-    return name;
-  }
-
-  @OneToMany(targetEntity=BanRecord.class)
-  public List<BanRecord> getBans() {
-    return this.bans;
-  }
-
-  public void setBans(List<BanRecord> records) {
-    this.bans = records;
-  }
-
-  @OneToMany(targetEntity=BanRecord.class)
-  public List<BanRecord> getCreatedBans() {
-    return createdBans;
-  }
-
-  public void setCreatedBans(List<BanRecord> records) {
-    this.createdBans = records;
-  }
-
-  public boolean isBanned() {
-    for (BanRecord ban : bans) {
-      if (ban.getState() == BanRecord.State.NORMAL) return true;
-    }
-    return false;
-  }
-  
   public BanRecord getActiveBan() {
-    for (BanRecord ban : bans) {
-      if (ban.getState() == BanRecord.State.NORMAL) return ban;
+    for (final BanRecord ban : this.bans) {
+      if (ban.getState() == BanRecord.State.NORMAL) {
+        return ban;
+      }
     }
     return null;
   }
 
-  public void setId(long id) {
+  @OneToMany(targetEntity = BanRecord.class)
+  public List<BanRecord> getBans() {
+    return this.bans;
+  }
+
+  @OneToMany(targetEntity = BanRecord.class)
+  public List<BanRecord> getCreatedBans() {
+    return this.createdBans;
+  }
+
+  public long getId() {
+    return this.id;
+  }
+
+  public String getName() {
+    return this.name;
+  }
+
+  public boolean isBanned() {
+    for (final BanRecord ban : this.bans) {
+      if (ban.getState() == BanRecord.State.NORMAL) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public void setBans(final List<BanRecord> records) {
+    this.bans = records;
+  }
+
+  public void setCreatedBans(final List<BanRecord> records) {
+    this.createdBans = records;
+  }
+
+  public void setId(final long id) {
     this.id = id;
   }
 
-  public void setName(String name) {
+  public void setName(final String name) {
     this.name = name;
   }
 

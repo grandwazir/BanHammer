@@ -37,7 +37,7 @@ import name.richardson.james.bukkit.utilities.command.PluginCommand;
 public class RecentCommand extends PluginCommand {
 
   public static final int DEFAULT_LIMIT = 5;
-  
+
   private final BanHandler handler;
 
   /** The number of bans to return */
@@ -50,8 +50,8 @@ public class RecentCommand extends PluginCommand {
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final List<BanRecord> bans = handler.getPlayerBans(count);
-    
+    final List<BanRecord> bans = this.handler.getPlayerBans(this.count);
+
     if (!bans.isEmpty()) {
       sender.sendMessage(this.getFormattedMessageHeader(bans.size()));
       for (final BanRecord ban : bans) {

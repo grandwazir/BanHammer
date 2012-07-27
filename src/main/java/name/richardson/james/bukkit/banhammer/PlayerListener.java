@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (c) 2012 James Richardson.
  * 
- * BannedPlayerListener.java is part of BanHammer.
+ * PlayerListener.java is part of BanHammer.
  * 
  * BanHammer is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -129,6 +129,12 @@ public class PlayerListener implements Listener, Localisable {
     }
   }
 
+  @EventHandler(priority = EventPriority.NORMAL)
+  public void onPlayerKicked(final PlayerKickEvent event) {
+    final Object[] arguments = { event.getPlayer(), event.getReason() };
+    event.setLeaveMessage(this.getSimpleFormattedMessage("kick-broadcast", arguments));
+  }
+
   @EventHandler(priority = EventPriority.HIGH)
   public void onPlayerLogin(final PlayerLoginEvent event) {
     final String playerName = event.getPlayer().getName().toLowerCase();
@@ -154,12 +160,6 @@ public class PlayerListener implements Listener, Localisable {
     if (!event.isSilent()) {
       this.broadcast(event.getRecord(), BroadcastMessageType.PLAYER_PARDONED);
     }
-  }
-  
-  @EventHandler(priority = EventPriority.NORMAL)
-  public void onPlayerKicked(final PlayerKickEvent event) {
-    Object[] arguments = {event.getPlayer(), event.getReason()};
-    event.setLeaveMessage(this.getSimpleFormattedMessage("kick-broadcast", arguments));
   }
 
   private void broadcast(final BanRecord ban, final BroadcastMessageType type) {

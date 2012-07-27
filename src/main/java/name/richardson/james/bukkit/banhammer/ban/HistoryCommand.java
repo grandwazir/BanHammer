@@ -92,7 +92,7 @@ public class HistoryCommand extends PluginCommand {
   }
 
   private void displayHistory(final List<BanRecord> bans, final CommandSender sender) {
-    sender.sendMessage(this.getFormattedMessageHeader(bans.size(), player.getName()));
+    sender.sendMessage(this.getFormattedMessageHeader(bans.size(), this.player.getName()));
     for (final BanRecord ban : bans) {
       final BanSummary summary = new BanSummary(this.plugin, ban);
       sender.sendMessage(summary.getSelfHeader());
@@ -104,7 +104,7 @@ public class HistoryCommand extends PluginCommand {
     }
   }
 
-  private String getFormattedMessageHeader(final int size, String name) {
+  private String getFormattedMessageHeader(final int size, final String name) {
     final Object[] arguments = { size, name };
     final double[] limits = { 0, 1, 2 };
     final String[] formats = { this.getMessage("no-ban").toLowerCase(), this.getMessage("one-ban").toLowerCase(), this.getMessage("many-bans") };

@@ -45,7 +45,7 @@ public class BanCommand extends PluginCommand {
 
   /** Reference to the BanHammer plugin */
   private final BanHammer plugin;
-  
+
   /** Reference to the BanHammer API */
   private final BanHandler handler;
 
@@ -84,7 +84,7 @@ public class BanCommand extends PluginCommand {
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
     final LinkedList<String> args = new LinkedList<String>();
-    args.addAll(Arrays.asList(arguments)); 
+    args.addAll(Arrays.asList(arguments));
 
     if (args.size() == 0) {
       throw new CommandArgumentException(this.getMessage("must-specify-a-player"), this.getMessage("name-autocompletion"));
@@ -92,7 +92,7 @@ public class BanCommand extends PluginCommand {
       this.player = this.matchPlayer(args.remove(0));
     }
 
-    if (args.size() != 0 && args.get(0).startsWith("t:")) {
+    if ((args.size() != 0) && args.get(0).startsWith("t:")) {
       final String time = args.remove(0).replaceAll("t:", "");
       if (this.plugin.getBanLimits().containsKey(time)) {
         this.time = this.plugin.getBanLimits().get(time);
@@ -100,7 +100,7 @@ public class BanCommand extends PluginCommand {
         this.time = TimeFormatter.parseTime(time);
       }
     } else {
-      this.time = (long) 0;
+      this.time = 0;
     }
 
     if (args.isEmpty()) {
@@ -111,8 +111,10 @@ public class BanCommand extends PluginCommand {
   }
 
   private boolean isBanLengthAuthorised(final CommandSender sender, final long banLength) {
-    if (sender instanceof CommandSender) return true;
-    if (banLength == 0 && !sender.hasPermission(this.getPermission(0))) {
+    if (sender instanceof CommandSender) {
+      return true;
+    }
+    if ((banLength == 0) && !sender.hasPermission(this.getPermission(0))) {
       return false;
     } else {
       for (final Entry<String, Long> limit : this.plugin.getBanLimits().entrySet()) {
@@ -148,7 +150,7 @@ public class BanCommand extends PluginCommand {
     final Map<String, Long> limits = this.plugin.getBanLimits();
     if (!limits.isEmpty()) {
       for (final Entry<String, Long> limit : limits.entrySet()) {
-        Permission permission = new Permission(base.getName() + "." + limit.getKey(), this.getSimpleFormattedMessage("permission-limit-description", TimeFormatter.millisToLongDHMS(limit.getValue())), PermissionDefault.OP);
+        final Permission permission = new Permission(base.getName() + "." + limit.getKey(), this.getSimpleFormattedMessage("permission-limit-description", TimeFormatter.millisToLongDHMS(limit.getValue())), PermissionDefault.OP);
         permission.addParent(wildcard, true);
         this.addPermission(permission);
       }

@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Copyright (c) 2012 James Richardson.
+ * 
+ * BanSummary.java is part of BanHammer.
+ * 
+ * BanHammer is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+ * BanHammer is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * BanHammer. If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.api;
 
 import java.util.Locale;
@@ -26,12 +43,12 @@ public class BanSummary implements Localisable {
   }
 
   public String getExpiresAt() {
-    final String expiryDateString = BanHammer.DATE_FORMAT.format(record.getExpiresAt());
+    final String expiryDateString = BanHammer.DATE_FORMAT.format(this.record.getExpiresAt());
     return this.getSimpleFormattedMessage("expires", expiryDateString);
   }
 
   public String getHeader() {
-    final String date = BanHammer.DATE_FORMAT.format(record.getCreatedAt());
+    final String date = BanHammer.DATE_FORMAT.format(this.record.getCreatedAt());
     final Object[] arguments = { this.record.getPlayer().getName(), this.record.getCreater().getName(), date };
     return this.getSimpleFormattedMessage("header", arguments);
   }
@@ -40,7 +57,7 @@ public class BanSummary implements Localisable {
     if (this.record.getType() == BanRecord.Type.PERMENANT) {
       return this.getSimpleFormattedMessage("length", this.getMessage("permanent"));
     } else {
-      long length = this.record.getExpiresAt().getTime() - this.record.getCreatedAt().getTime();
+      final long length = this.record.getExpiresAt().getTime() - this.record.getCreatedAt().getTime();
       return this.getSimpleFormattedMessage("length", TimeFormatter.millisToLongDHMS(length));
     }
   }
@@ -58,7 +75,7 @@ public class BanSummary implements Localisable {
   }
 
   public String getSelfHeader() {
-    final String date = BanHammer.DATE_FORMAT.format(record.getCreatedAt());
+    final String date = BanHammer.DATE_FORMAT.format(this.record.getCreatedAt());
     final Object[] arguments = { this.record.getCreater().getName(), date };
     return this.getSimpleFormattedMessage("self-header", arguments);
   }

@@ -61,7 +61,7 @@ public class KickCommand extends PluginCommand {
       this.player.kickPlayer(this.getSimpleFormattedMessage("kick-reason", this.reason));
       logger.info(this.getFormattedSummaryMessage(sender.getName()));
     }
-    player = null;
+    this.player = null;
   }
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
