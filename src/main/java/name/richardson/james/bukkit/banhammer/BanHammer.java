@@ -150,7 +150,7 @@ public class BanHammer extends SkeletonPlugin {
 
   @Override
   protected void registerEvents() {
-    new BannedPlayerListener(this);
+    new PlayerListener(this);
   }
 
   @Override

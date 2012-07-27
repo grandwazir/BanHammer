@@ -28,6 +28,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 import name.richardson.james.bukkit.alias.AliasHandler;
@@ -39,7 +40,7 @@ import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.utilities.internals.Logger;
 import name.richardson.james.bukkit.utilities.plugin.Localisable;
 
-public class BannedPlayerListener implements Listener, Localisable {
+public class PlayerListener implements Listener, Localisable {
 
   public enum BroadcastMessageType {
     PLAYER_BANNED,
@@ -49,7 +50,7 @@ public class BannedPlayerListener implements Listener, Localisable {
   public static final String NOTIFY_PERMISSION = "banhammer.notify";
 
   /** The logger for this class */
-  private static final Logger logger = new Logger(BannedPlayerListener.class);
+  private static final Logger logger = new Logger(PlayerListener.class);
 
   /** The BanHammer API */
   private final BanHandler handler;
@@ -58,15 +59,15 @@ public class BannedPlayerListener implements Listener, Localisable {
   private final AliasHandler aliasHandler;
 
   /** A cache of currently banned players and their active bans */
-  private final BannedPlayersCache cache;
+  private final BanRecordCache cache;
 
   /** The BanHammer plugin */
   private final BanHammer plugin;
 
-  public BannedPlayerListener(final BanHammer plugin) {
+  public PlayerListener(final BanHammer plugin) {
     this.aliasHandler = plugin.getAliasHandler();
-    this.handler = plugin.getHandler(BannedPlayerListener.class);
-    this.cache = new BannedPlayersCache(this.plugin.getSQLStorage());
+    this.handler = plugin.getHandler(PlayerListener.class);
+    this.cache = new BanRecordCache(this.plugin.getSQLStorage());
     this.plugin = plugin;
     logger.setPrefix("[BanHammer] ");
     Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
@@ -143,7 +144,7 @@ public class BannedPlayerListener implements Listener, Localisable {
     default:
       message = this.getSimpleFormattedMessage("permenantly-banned", ban.getReason());
     }
-    BannedPlayerListener.logger.debug(String.format("Blocked %s from connecting due to an active ban.", playerName));
+    PlayerListener.logger.debug(String.format("Blocked %s from connecting due to an active ban.", playerName));
     event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message);
   }
 
@@ -153,6 +154,12 @@ public class BannedPlayerListener implements Listener, Localisable {
     if (!event.isSilent()) {
       this.broadcast(event.getRecord(), BroadcastMessageType.PLAYER_PARDONED);
     }
+  }
+  
+  @EventHandler(priority = EventPriority.NORMAL)
+  public void onPlayerKicked(final PlayerKickEvent event) {
+    Object[] arguments = {event.getPlayer(), event.getReason()};
+    event.setLeaveMessage(this.getSimpleFormattedMessage("kick-broadcast", arguments));
   }
 
   private void broadcast(final BanRecord ban, final BroadcastMessageType type) {

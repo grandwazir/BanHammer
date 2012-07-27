@@ -58,7 +58,7 @@ public class KickCommand extends PluginCommand {
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     if (this.player.isOnline()) {
-      this.player.kickPlayer(this.getSimpleFormattedMessage("kicked-notification", this.reason));
+      this.player.kickPlayer(this.getSimpleFormattedMessage("kick-reason", this.reason));
       logger.info(this.getFormattedSummaryMessage(sender.getName()));
     }
     player = null;
@@ -77,13 +77,13 @@ public class KickCommand extends PluginCommand {
       System.arraycopy(arguments, 1, elements, 0, arguments.length - 1);
       this.reason = StringFormatter.combineString(elements, " ");
     } else {
-      this.reason = this.getMessage("kickcommand-default-reason");
+      this.reason = this.getMessage("default-reason");
     }
   }
 
   private String getFormattedSummaryMessage(final String sender) {
     final Object[] arguments = { this.player.getName(), sender, this.reason };
-    return this.getSimpleFormattedMessage("kickcommand-summary-result", arguments);
+    return this.getSimpleFormattedMessage("summary-result", arguments);
   }
 
   private Player matchPlayer(final String name) {
@@ -97,7 +97,7 @@ public class KickCommand extends PluginCommand {
   private void registerPermissions() {
     final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
     // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("kickcommand-permission-description"), PermissionDefault.OP);
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
     base.addParent(this.plugin.getRootPermission(), true);
     this.addPermission(base);
   }

@@ -7,13 +7,13 @@ import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.utilities.persistence.SQLStorage;
 
-public class BannedPlayersCache {
+public class BanRecordCache {
 
   private final HashMap<String, BanRecord> cache = new LinkedHashMap<String, BanRecord>();
 
   private final SQLStorage storage;
 
-  public BannedPlayersCache(final SQLStorage storage) {
+  public BanRecordCache(final SQLStorage storage) {
     this.storage = storage;
   }
 
