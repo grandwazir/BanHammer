@@ -1,33 +1,24 @@
-package name.richardson.james.bukkit.banhammer.ban;
+package name.richardson.james.bukkit.banhammer.api;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.List;
 import java.util.Locale;
 
+import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
-import name.richardson.james.bukkit.banhammer.persistence.OldBanRecord;
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
 import name.richardson.james.bukkit.utilities.plugin.Localisable;
 import name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin;
 
 public class BanSummary implements Localisable {
 
+  /** The plugin with the resource bundles */
   private final SkeletonPlugin plugin;
 
+  /** The record we are linked with */
   private final BanRecord record;
-
-  private static final DateFormat dateFormatLength = new SimpleDateFormat("MMM d H:mm a ");
-
-  private static final DateFormat dateFormatCreatedAt = new SimpleDateFormat("MMM d");
-
-  private String tz;
 
   public BanSummary(final SkeletonPlugin plugin, final BanRecord ban) {
     this.record = ban;
     this.plugin = plugin;
-    this.tz = Calendar.getInstance(this.getLocale()).getTimeZone().getID();
   }
 
   public String getChoiceFormattedMessage(final String key, final Object[] arguments, final String[] formats, final double[] limits) {
@@ -35,22 +26,22 @@ public class BanSummary implements Localisable {
   }
 
   public String getExpiresAt() {
-    final String expiryDateString = dateFormatLength.format(this.record.getExpiresAt()) + "(" + this.tz + ")";
-    return this.getSimpleFormattedMessage("bansummary-expires", expiryDateString);
+    final String expiryDateString = BanHammer.DATE_FORMAT.format(record.getExpiresAt());
+    return this.getSimpleFormattedMessage("expires", expiryDateString);
   }
 
   public String getHeader() {
-    final String date = dateFormatCreatedAt.format(record.getCreatedAt());
+    final String date = BanHammer.DATE_FORMAT.format(record.getCreatedAt());
     final Object[] arguments = { this.record.getPlayer().getName(), this.record.getCreater().getName(), date };
-    return this.getSimpleFormattedMessage("bansummary-header", arguments);
+    return this.getSimpleFormattedMessage("header", arguments);
   }
 
   public String getLength() {
     if (this.record.getType() == BanRecord.Type.PERMENANT) {
-      return this.getSimpleFormattedMessage("bansummary-length", this.getMessage("permanent"));
+      return this.getSimpleFormattedMessage("length", this.getMessage("permanent"));
     } else {
-      long length = this.record.getExpiresAt() - this.record.getCreatedAt();
-      return this.getSimpleFormattedMessage("bansummary-length", TimeFormatter.millisToLongDHMS(length));
+      long length = this.record.getExpiresAt().getTime() - this.record.getCreatedAt().getTime();
+      return this.getSimpleFormattedMessage("length", TimeFormatter.millisToLongDHMS(length));
     }
   }
 
@@ -63,13 +54,13 @@ public class BanSummary implements Localisable {
   }
 
   public String getReason() {
-    return this.getSimpleFormattedMessage("bansummary-reason", this.record.getReason());
+    return this.getSimpleFormattedMessage("reason", this.record.getReason());
   }
 
   public String getSelfHeader() {
-    final String date = dateFormatCreatedAt.format(this.record.getCreatedAt());
-    final Object[] arguments = { this.record.getCreatedBy(), date };
-    return this.getSimpleFormattedMessage("bansummary-self-header", arguments);
+    final String date = BanHammer.DATE_FORMAT.format(record.getCreatedAt());
+    final Object[] arguments = { this.record.getCreater().getName(), date };
+    return this.getSimpleFormattedMessage("self-header", arguments);
   }
 
   public String getSimpleFormattedMessage(final String key, final Object argument) {

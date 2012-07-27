@@ -34,7 +34,7 @@ import name.richardson.james.bukkit.alias.AliasHandler;
 import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerBannedEvent;
 import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
-import name.richardson.james.bukkit.banhammer.ban.BanSummary;
+import name.richardson.james.bukkit.banhammer.api.BanSummary;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.utilities.internals.Logger;
 import name.richardson.james.bukkit.utilities.plugin.Localisable;
