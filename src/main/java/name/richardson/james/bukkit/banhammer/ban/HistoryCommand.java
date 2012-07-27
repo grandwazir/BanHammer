@@ -28,9 +28,8 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
-import name.richardson.james.bukkit.banhammer.persistence.OldBanRecord;
+import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
@@ -67,14 +66,14 @@ public class HistoryCommand extends PluginCommand {
       this.displayHistory(bans, sender);
       return;
     } else if (!this.player.getName().equalsIgnoreCase(sender.getName())) {
-      throw new CommandPermissionException(this.getMessage("historycommand-cannot-view-others-history"), this.getPermission(3));
+      throw new CommandPermissionException(this.getMessage("cannot-view-others-history"), this.getPermission(3));
     }
 
     if (sender.hasPermission(this.getPermission(2)) && this.player.getName().equalsIgnoreCase(sender.getName())) {
       this.displayHistory(bans, sender);
       return;
     } else if (this.player.getName().equalsIgnoreCase(sender.getName())) {
-      throw new CommandPermissionException(this.getMessage("historycommand-cannot-view-own-history"), this.getPermission(3));
+      throw new CommandPermissionException(this.getMessage("cannot-view-own-history"), this.getPermission(3));
     }
 
   }
@@ -128,15 +127,15 @@ public class HistoryCommand extends PluginCommand {
     wildcard.addParent(this.plugin.getRootPermission(), true);
     this.addPermission(wildcard);
     // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.plugin.getMessage("historycommand-permission-description"), PermissionDefault.TRUE);
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.TRUE);
     base.addParent(wildcard, true);
     this.addPermission(base);
     // add ability to view your own ban history
-    final Permission own = new Permission(prefix + this.getName() + "." + this.plugin.getMessage("historycommand-own-permission-name"), this.plugin.getMessage("pardoncommand-own-permission-name"), PermissionDefault.TRUE);
+    final Permission own = new Permission(prefix + this.getName() + "." + this.getMessage("own-permission-name"), this.plugin.getMessage("own-permission-description"), PermissionDefault.TRUE);
     own.addParent(base, true);
     this.addPermission(own);
     // add ability to view the ban history of others
-    final Permission others = new Permission(prefix + this.getName() + "." + this.plugin.getMessage("historycommand-others-permission-name"), this.plugin.getMessage("pardoncommand-others-permission-name"), PermissionDefault.OP);
+    final Permission others = new Permission(prefix + this.getName() + "." + this.getMessage("others-permission-name"), this.plugin.getMessage("others-permission-description"), PermissionDefault.OP);
     others.addParent(base, true);
     this.addPermission(others);
   }
