@@ -1,5 +1,6 @@
 Changelog for BanHammer (v2.0.0-SNAPSHOT)
 
+2012-07-27 19:07:27 +0100    fix NPE (James Richardson)
 2012-07-27 19:06:21 +0100    code clean up and copyright notices (James Richardson)
 2012-07-27 19:04:56 +0100    finished refactoring (James Richardson)
 2012-07-27 19:02:25 +0100    remove reload command (James Richardson)
