@@ -60,9 +60,8 @@ public class KickCommand extends PluginCommand {
     if (this.player.isOnline()) {
       this.player.kickPlayer(this.getSimpleFormattedMessage("kicked-notification", this.reason));
       logger.info(this.getFormattedSummaryMessage(sender.getName()));
-      this.server.broadcast(this.getSimpleFormattedMessage("kickcommand-player-kicked", this.player.getName()), "banhammer.notify");
-      this.server.broadcast(this.getSimpleFormattedMessage("kickcommand-player-kicked-reason", this.reason), "banhammer.notify");
     }
+    player = null;
   }
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
