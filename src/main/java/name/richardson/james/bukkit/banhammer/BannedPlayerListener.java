@@ -18,14 +18,7 @@
 package name.richardson.james.bukkit.banhammer;
 
 import java.net.InetAddress;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -43,7 +36,6 @@ import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
 import name.richardson.james.bukkit.banhammer.ban.BanSummary;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
-import name.richardson.james.bukkit.banhammer.persistence.OldBanRecord;
 import name.richardson.james.bukkit.utilities.internals.Logger;
 import name.richardson.james.bukkit.utilities.plugin.Localisable;
 
@@ -53,23 +45,23 @@ public class BannedPlayerListener implements Listener, Localisable {
     PLAYER_BANNED,
     PLAYER_PARDONED
   }
-  
+
   public static final String NOTIFY_PERMISSION = "banhammer.notify";
-  
+
   /** The logger for this class */
   private static final Logger logger = new Logger(BannedPlayerListener.class);
-  
+
   /** The BanHammer API */
   private final BanHandler handler;
-  
+
   /** The Alias API */
   private final AliasHandler aliasHandler;
-  
+
   /** A cache of currently banned players and their active bans */
   private final BannedPlayersCache cache;
-  
+
   /** The BanHammer plugin */
-  private BanHammer plugin;
+  private final BanHammer plugin;
 
   public BannedPlayerListener(final BanHammer plugin) {
     this.aliasHandler = plugin.getAliasHandler();
@@ -86,7 +78,7 @@ public class BannedPlayerListener implements Listener, Localisable {
   }
 
   public Locale getLocale() {
-    return plugin.getLocale();
+    return this.plugin.getLocale();
   }
 
   public String getMessage(String key) {
@@ -94,7 +86,7 @@ public class BannedPlayerListener implements Listener, Localisable {
     return this.plugin.getMessage(key);
   }
 
-  public String getSimpleFormattedMessage(String key, final Object argument) {
+  public String getSimpleFormattedMessage(final String key, final Object argument) {
     final Object[] arguments = { argument };
     return this.getSimpleFormattedMessage(key, arguments);
   }
@@ -104,39 +96,46 @@ public class BannedPlayerListener implements Listener, Localisable {
     return this.plugin.getSimpleFormattedMessage(key, arguments);
   }
 
-  
   @EventHandler(priority = EventPriority.HIGH)
   public void onPlayerBanned(final BanHammerPlayerBannedEvent event) {
     final Player player = Bukkit.getServer().getPlayer(event.getPlayerName());
     final BanRecord record = event.getRecord();
-    cache.set(event.getPlayerName(), record);
-    if (player != null) player.kickPlayer(record.getReason());
-    if (!event.isSilent()) this.broadcast(record, BroadcastMessageType.PLAYER_BANNED);
+    this.cache.set(event.getPlayerName(), record);
+    if (player != null) {
+      player.kickPlayer(record.getReason());
+    }
+    if (!event.isSilent()) {
+      this.broadcast(record, BroadcastMessageType.PLAYER_BANNED);
+    }
   }
-  
+
   @EventHandler(priority = EventPriority.HIGH)
   public void onPlayerJoin(final PlayerJoinEvent event) {
-    if (this.aliasHandler == null) return;
+    if (this.aliasHandler == null) {
+      return;
+    }
     final String playerName = event.getPlayer().getName();
     final InetAddress address = event.getPlayer().getAddress().getAddress();
     final Set<String> aliases = this.aliasHandler.getPlayersNames(address);
     logger.debug("Checking alias of " + playerName + ".");
     for (final String alias : aliases) {
       if (this.cache.contains(alias.toLowerCase())) {
-        BanRecord ban = this.cache.get(alias.toLowerCase());
-        String reason = this.getSimpleFormattedMessage("alias-ban-reason", ban.getPlayer().getName());
+        final BanRecord ban = this.cache.get(alias.toLowerCase());
+        final String reason = this.getSimpleFormattedMessage("alias-ban-reason", ban.getPlayer().getName());
         this.handler.banPlayer(playerName, ban, reason);
         break;
       }
     }
   }
-  
+
   @EventHandler(priority = EventPriority.HIGH)
   public void onPlayerLogin(final PlayerLoginEvent event) {
     final String playerName = event.getPlayer().getName().toLowerCase();
     logger.debug("Checking if " + playerName + " is banned.");
-    if (!this.cache.contains(playerName)) return;
-    BanRecord ban = this.cache.get(playerName);
+    if (!this.cache.contains(playerName)) {
+      return;
+    }
+    final BanRecord ban = this.cache.get(playerName);
     String message = null;
     switch (ban.getType()) {
     case TEMPORARY:
@@ -147,19 +146,21 @@ public class BannedPlayerListener implements Listener, Localisable {
     BannedPlayerListener.logger.debug(String.format("Blocked %s from connecting due to an active ban.", playerName));
     event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message);
   }
-  
+
   @EventHandler(priority = EventPriority.HIGHEST)
   public void onPlayerPardoned(final BanHammerPlayerPardonedEvent event) {
     this.cache.remove(event.getPlayerName());
-    if (!event.isSilent()) this.broadcast(event.getRecord(), BroadcastMessageType.PLAYER_PARDONED);
+    if (!event.isSilent()) {
+      this.broadcast(event.getRecord(), BroadcastMessageType.PLAYER_PARDONED);
+    }
   }
-  
-  private void broadcast(BanRecord ban, BroadcastMessageType type) {
+
+  private void broadcast(final BanRecord ban, final BroadcastMessageType type) {
     final Server server = Bukkit.getServer();
     final Object[] arguments = { ban.getPlayer().getName(), ban.getCreater().getName() };
     switch (type) {
     case PLAYER_BANNED:
-      BanSummary summary = new BanSummary(this.plugin, ban);
+      final BanSummary summary = new BanSummary(this.plugin, ban);
       server.broadcast(this.getSimpleFormattedMessage("ban-broadcast-message", arguments), NOTIFY_PERMISSION);
       server.broadcast(summary.getReason(), NOTIFY_PERMISSION);
       server.broadcast(summary.getLength(), NOTIFY_PERMISSION);
@@ -167,5 +168,5 @@ public class BannedPlayerListener implements Listener, Localisable {
       server.broadcast(this.getSimpleFormattedMessage("pardon-broadcast-message", arguments), NOTIFY_PERMISSION);
     }
   }
-  
+
 }

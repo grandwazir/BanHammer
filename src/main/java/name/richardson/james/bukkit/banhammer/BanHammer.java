@@ -21,13 +21,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-
 
 import com.avaje.ebean.EbeanServer;
 
@@ -55,9 +51,9 @@ import name.richardson.james.bukkit.utilities.persistence.SQLStorage;
 import name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin;
 
 public class BanHammer extends SkeletonPlugin {
-  
+
   public static final DateFormat DATE_FORMAT = SimpleDateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.SHORT);
-  
+
   /** Reference to the Alias API */
   private AliasHandler aliasHandler;
 
@@ -66,11 +62,11 @@ public class BanHammer extends SkeletonPlugin {
 
   /** The storage for this plugin */
   private SQLStorage database;
-  
+
   public AliasHandler getAliasHandler() {
     return this.aliasHandler;
   }
-  
+
   public String getArtifactID() {
     return "ban-hammer";
   }
@@ -84,12 +80,14 @@ public class BanHammer extends SkeletonPlugin {
     return this.configuration.getBanLimits();
   }
 
+  @Override
   public EbeanServer getDatabase() {
-    return database.getEbeanServer();
+    return this.database.getEbeanServer();
   }
 
+  @Override
   public List<Class<?>> getDatabaseClasses() {
-    List<Class<?>> classes = new LinkedList<Class<?>>();
+    final List<Class<?>> classes = new LinkedList<Class<?>>();
     classes.add(BanRecord.class);
     classes.add(PlayerRecord.class);
     classes.add(OldBanRecord.class);
@@ -106,7 +104,7 @@ public class BanHammer extends SkeletonPlugin {
   }
 
   public SQLStorage getSQLStorage() {
-    return database;
+    return this.database;
   }
 
   @Override
@@ -119,7 +117,7 @@ public class BanHammer extends SkeletonPlugin {
 
   @Override
   protected void registerCommands() {
-    CommandManager commandManager = new CommandManager(this);
+    final CommandManager commandManager = new CommandManager(this);
     this.getCommand("bh").setExecutor(commandManager);
     final PluginCommand banCommand = new BanCommand(this);
     final PluginCommand kickCommand = new KickCommand(this);
@@ -149,7 +147,7 @@ public class BanHammer extends SkeletonPlugin {
 
   @Override
   protected void setupPersistence() throws SQLException {
-    database = new MigratedSQLStorage(this);
+    this.database = new MigratedSQLStorage(this);
   }
 
   private void hookAlias() {

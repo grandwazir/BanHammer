@@ -86,5 +86,4 @@ public class BanHammerConfiguration extends PluginConfiguration {
     this.save();
   }
 
-  
 }
