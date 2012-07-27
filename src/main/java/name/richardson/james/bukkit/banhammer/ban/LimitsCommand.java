@@ -53,7 +53,7 @@ public class LimitsCommand extends PluginCommand {
         colour = ChatColor.RED;
       }
       final Object[] arguments = { limit.getKey(), TimeFormatter.millisToLongDHMS(limit.getValue()) };
-      sender.sendMessage(colour + this.getSimpleFormattedMessage("limitscommand-detail", arguments));
+      sender.sendMessage(colour + this.getSimpleFormattedMessage("detail", arguments));
     }
   }
 
@@ -65,7 +65,7 @@ public class LimitsCommand extends PluginCommand {
     final Object[] arguments = { size };
     final double[] limits = { 0, 1, 2 };
     final String[] formats = { this.getMessage("no-limits"), this.getMessage("one-limit"), this.getMessage("many-limits") };
-    return this.getChoiceFormattedMessage("limitscommand-header", arguments, formats, limits);
+    return this.getChoiceFormattedMessage("header", arguments, formats, limits);
   }
 
   private void registerPermissions() {

@@ -25,7 +25,7 @@ import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
-import name.richardson.james.bukkit.banhammer.persistence.OldBanRecord;
+import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
@@ -53,25 +53,26 @@ public class PardonCommand extends PluginCommand {
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+    final BanRecord ban = handler.getPlayerBan(player.getName());
+    
+    if (ban != null) {
 
-    if (handler.isPlayerBanned(player.getName())) {
-
-      if (sender.hasPermission(this.getPermission(3)) && !record.getCreatedBy().equalsIgnoreCase(sender.getName())) {
+      if (sender.hasPermission(this.getPermission(3)) && !ban.getCreater().getName().equalsIgnoreCase(sender.getName())) {
         this.handler.pardonPlayer(this.player.getName(), sender.getName(), true);
         this.player.setBanned(false);
-        sender.sendMessage(this.getSimpleFormattedMessage("pardoncommand-response-message", this.player.getName()));
+        sender.sendMessage(this.getSimpleFormattedMessage("response-message", this.player.getName()));
         return;
-      } else if (!record.getCreatedBy().equalsIgnoreCase(sender.getName())) {
-        throw new CommandPermissionException(this.getMessage("pardoncommand-cannot-pardon-others-bans"), this.getPermission(3));
+      } else if (!ban.getCreater().getName().equalsIgnoreCase(sender.getName())) {
+        throw new CommandPermissionException(this.getMessage("cannot-pardon-others-bans"), this.getPermission(3));
       }
 
-      if (sender.hasPermission(this.getPermission(2)) && record.getCreatedBy().equalsIgnoreCase(sender.getName())) {
+      if (sender.hasPermission(this.getPermission(2)) && ban.getCreater().getName().equalsIgnoreCase(sender.getName())) {
         this.handler.pardonPlayer(this.player.getName(), sender.getName(), true);
         this.player.setBanned(false);
-        sender.sendMessage(this.getSimpleFormattedMessage("pardoncommand-response-message", this.player.getName()));
+        sender.sendMessage(this.getSimpleFormattedMessage("response-message", this.player.getName()));
         return;
-      } else if (record.getCreatedBy().equalsIgnoreCase(sender.getName())) {
-        throw new CommandPermissionException(this.getMessage("pardoncommand-cannot-pardon-own-bans"), this.getPermission(3));
+      } else if (ban.getCreater().getName().equalsIgnoreCase(sender.getName())) {
+        throw new CommandPermissionException(this.getMessage("cannot-pardon-own-bans"), this.getPermission(3));
       }
 
     } else {
@@ -88,7 +89,6 @@ public class PardonCommand extends PluginCommand {
     }
   }
 
-
   private OfflinePlayer matchPlayer(final String name) {
     return this.server.getOfflinePlayer(name);
   }
@@ -101,15 +101,15 @@ public class PardonCommand extends PluginCommand {
     wildcard.addParent(this.plugin.getRootPermission(), true);
     this.addPermission(wildcard);
     // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.plugin.getMessage("pardoncommand-permission-description"), PermissionDefault.OP);
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
     base.addParent(wildcard, true);
     this.addPermission(base);
     // add ability to pardon your own bans
-    final Permission own = new Permission(prefix + this.getName() + "." + this.plugin.getMessage("pardoncommand-own-permission-name"), this.plugin.getMessage("pardoncommand-own-permission-description"), PermissionDefault.OP);
+    final Permission own = new Permission(prefix + this.getName() + "." + this.getMessage("own-permission-name"), this.getMessage("own-permission-description"), PermissionDefault.OP);
     own.addParent(base, true);
     this.addPermission(own);
     // add ability to pardon the bans of others
-    final Permission others = new Permission(prefix + this.getName() + "." + this.plugin.getMessage("pardoncommand-others-permission-name"), this.plugin.getMessage("pardoncommand-others-permission-description"), PermissionDefault.OP);
+    final Permission others = new Permission(prefix + this.getName() + "." + this.getMessage("others-permission-name"), this.getMessage("others-permission-description"), PermissionDefault.OP);
     others.addParent(base, true);
     this.addPermission(others);
   }
