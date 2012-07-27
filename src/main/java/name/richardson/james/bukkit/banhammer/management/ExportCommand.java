@@ -24,14 +24,16 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.banhammer.DatabaseHandler;
+import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.OldBanRecord;
+import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.command.PluginCommand;
 import name.richardson.james.bukkit.utilities.internals.Logger;
+import name.richardson.james.bukkit.utilities.persistence.SQLStorage;
 
 @ConsoleCommand
 public class ExportCommand extends PluginCommand {
@@ -43,13 +45,13 @@ public class ExportCommand extends PluginCommand {
   private final Server server;
 
   /** The database handler for this plugin. */
-  private final DatabaseHandler database;
+  private final SQLStorage database;
 
   public ExportCommand(final BanHammer plugin) {
     super(plugin);
     logger.setPrefix("[BanHammer] ");
     this.server = plugin.getServer();
-    this.database = plugin.getDatabaseHandler();
+    this.database = plugin.getSQLStorage();
     this.registerPermissions();
   }
 
@@ -61,11 +63,13 @@ public class ExportCommand extends PluginCommand {
    */
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     int exported = 0;
-    for (final Object record : this.database.list(OldBanRecord.class)) {
-      final OldBanRecord ban = (OldBanRecord) record;
-      final OfflinePlayer player = this.server.getOfflinePlayer(ban.getPlayer());
-      player.setBanned(true);
-      exported++;
+    for (final Object record : this.database.list(PlayerRecord.class)) {
+      final PlayerRecord playerRecord = (PlayerRecord) record;
+      if (playerRecord.isBanned()) {
+        final OfflinePlayer player = this.server.getOfflinePlayer(playerRecord.getName());
+        player.setBanned(true);
+        exported++;
+      }
     }
     logger.info(this.getFormattedLogMessage(sender.getName(), exported));
     sender.sendMessage(this.getFormattedResponseMessage(sender.getName(), exported));
@@ -92,7 +96,7 @@ public class ExportCommand extends PluginCommand {
     final Object[] arguments = { bans, name };
     final double[] limits = { 0, 1, 2 };
     final String[] formats = { this.getMessage("no-bans"), this.getMessage("one-ban"), this.getMessage("many-bans") };
-    return this.getChoiceFormattedMessage("export-summary-result", arguments, formats, limits);
+    return this.getChoiceFormattedMessage("summary-result", arguments, formats, limits);
   }
 
   /**
@@ -107,7 +111,7 @@ public class ExportCommand extends PluginCommand {
     final Object[] arguments = { bans, name };
     final double[] limits = { 0, 1, 2 };
     final String[] formats = { this.getMessage("no-bans"), this.getMessage("one-ban"), this.getMessage("many-bans") };
-    return this.getChoiceFormattedMessage("export-response-message", arguments, formats, limits);
+    return this.getChoiceFormattedMessage("response-message", arguments, formats, limits);
   }
 
   private void registerPermissions() {
