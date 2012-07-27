@@ -19,7 +19,7 @@ package name.richardson.james.bukkit.banhammer.api;
 
 import java.util.List;
 
-import name.richardson.james.bukkit.banhammer.BanRecord;
+import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 
 public interface BanHammerAPI {
 

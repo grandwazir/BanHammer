@@ -2,8 +2,7 @@ package name.richardson.james.bukkit.banhammer.api;
 
 import org.bukkit.event.Event;
 
-import name.richardson.james.bukkit.banhammer.BanRecord;
-import name.richardson.james.bukkit.banhammer.BanRecord.Type;
+import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 
 public class BanHammerPlayerBannedEvent extends Event {
 
@@ -13,29 +12,24 @@ public class BanHammerPlayerBannedEvent extends Event {
 
   private final BanRecord record;
 
-  public BanHammerPlayerBannedEvent(BanRecord record) {
+  private boolean silent;
+
+  public BanHammerPlayerBannedEvent(BanRecord record, boolean silent) {
     this.record = record;
-    this.playerName = record.getPlayer().getPlayerName();
+    this.playerName = record.getPlayer().getName();
+    this.silent = silent;
   }
 
   public String getPlayerName() {
     return playerName;
   }
   
-  public String getReason() {
-    return record.getReason();
-  }
-  
-  public long getExpiresAt() {
-    return record.getExpiresAt();
-  }
-  
-  public BanRecord.Type getBanType() {
-    return record.getType();
-  }
-  
   public BanRecord getRecord() {
     return record;
+  }
+  
+  public boolean isSilent() {
+    return silent;
   }
   
 }

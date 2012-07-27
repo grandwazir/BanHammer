@@ -6,8 +6,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-import name.richardson.james.bukkit.banhammer.BanRecord;
-import name.richardson.james.bukkit.banhammer.migration.OldBanRecord;
+import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
+import name.richardson.james.bukkit.banhammer.persistence.OldBanRecord;
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
 import name.richardson.james.bukkit.utilities.plugin.Localisable;
 import name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin;
@@ -41,7 +41,7 @@ public class BanSummary implements Localisable {
 
   public String getHeader() {
     final String date = dateFormatCreatedAt.format(record.getCreatedAt());
-    final Object[] arguments = { this.record.getPlayer().getPlayerName(), this.record.getCreatedBy().getPlayerName(), date };
+    final Object[] arguments = { this.record.getPlayer().getName(), this.record.getCreater().getName(), date };
     return this.getSimpleFormattedMessage("bansummary-header", arguments);
   }
 

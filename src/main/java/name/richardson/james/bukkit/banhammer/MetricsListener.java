@@ -35,7 +35,7 @@ public class MetricsListener extends AbstractMetricsListener {
   }
   
   public void onPlayerBanned(BanHammerPlayerBannedEvent event) {
-    switch (event.getBanType()) {
+    switch (event.getRecord().getType()) {
       case PERMENANT:
         permenantBans++;
         totalPermenantBans++;
@@ -48,7 +48,7 @@ public class MetricsListener extends AbstractMetricsListener {
   public void onPlayerPardoned(BanHammerPlayerPardonedEvent event) {
     pardonedBans++;
     totalPardonedBans++;
-    switch (event.getBanType()) {
+    switch (event.getRecord().getType()) {
       case PERMENANT:
         totalPermenantBans--;
       case TEMPORARY:

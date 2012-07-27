@@ -86,12 +86,5 @@ public class BanHammerConfiguration extends PluginConfiguration {
     this.save();
   }
 
-  public boolean isDatabaseUpgraded() {
-    return this.configuration.getBoolean("upgrade-database");
-  }
-  
-  public void setDatabaseUpgraded(final boolean value) {
-    this.configuration.set("upgrade-database", value);
-  }
   
 }

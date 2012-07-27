@@ -19,21 +19,20 @@ package name.richardson.james.bukkit.banhammer;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
-import javax.persistence.PersistenceException;
 
 import com.avaje.ebean.EbeanServer;
 
 import name.richardson.james.bukkit.alias.Alias;
 import name.richardson.james.bukkit.alias.AliasHandler;
-import name.richardson.james.bukkit.alias.DatabaseHandler;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
 import name.richardson.james.bukkit.banhammer.ban.BanCommand;
 import name.richardson.james.bukkit.banhammer.ban.CheckCommand;
@@ -46,37 +45,32 @@ import name.richardson.james.bukkit.banhammer.kick.KickCommand;
 import name.richardson.james.bukkit.banhammer.management.ExportCommand;
 import name.richardson.james.bukkit.banhammer.management.ImportCommand;
 import name.richardson.james.bukkit.banhammer.management.ReloadCommand;
-import name.richardson.james.bukkit.banhammer.migration.OldBanRecord;
+import name.richardson.james.bukkit.banhammer.migration.MigratedSQLStorage;
+import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
+import name.richardson.james.bukkit.banhammer.persistence.OldBanRecord;
+import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.utilities.command.CommandManager;
 import name.richardson.james.bukkit.utilities.command.PluginCommand;
 import name.richardson.james.bukkit.utilities.persistence.SQLStorage;
 import name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin;
 
 public class BanHammer extends SkeletonPlugin {
-
+  
+  public static final DateFormat DATE_FORMAT = SimpleDateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.SHORT);
+  
   /** Reference to the Alias API */
   private AliasHandler aliasHandler;
 
   /** BanHammer configuration */
   private BanHammerConfiguration configuration;
 
-  /** A set of banned players */
-  private final Map<String, CachedBan> bannedPlayerNames = new HashMap<String, CachedBan>();
-
+  /** The storage for this plugin */
   private SQLStorage database;
   
-  public SQLStorage getSQLStorage() {
-    return database;
-  }
-  
-  public EbeanServer getDatabase() {
-    return database.getEbeanServer();
-  }
-
   public AliasHandler getAliasHandler() {
     return this.aliasHandler;
   }
-
+  
   public String getArtifactID() {
     return "ban-hammer";
   }
@@ -90,8 +84,16 @@ public class BanHammer extends SkeletonPlugin {
     return this.configuration.getBanLimits();
   }
 
-  public Map<String, CachedBan> getBannedPlayers() {
-    return Collections.unmodifiableMap(this.bannedPlayerNames);
+  public EbeanServer getDatabase() {
+    return database.getEbeanServer();
+  }
+
+  public List<Class<?>> getDatabaseClasses() {
+    List<Class<?>> classes = new LinkedList<Class<?>>();
+    classes.add(BanRecord.class);
+    classes.add(PlayerRecord.class);
+    classes.add(OldBanRecord.class);
+    return classes;
   }
 
   /**
@@ -103,47 +105,8 @@ public class BanHammer extends SkeletonPlugin {
     return new BanHandler(parentClass, this);
   }
 
-  public void reloadBannedPlayers() {
-    this.loadBans();
-  }
-
-  private String getFormattedBanCount(final int count) {
-    final Object[] arguments = { count };
-    final double[] limits = { 0, 1, 2 };
-    final String[] formats = { this.getMessage("no-bans"), this.getMessage("one-ban"), this.getMessage("many-bans") };
-    return this.getChoiceFormattedMessage("bans-loaded", arguments, formats, limits);
-  }
-  
-  private String getFormattedBanMigrationCount(final int count) {
-    final Object[] arguments = { count };
-    final double[] limits = { 0, 1, 2 };
-    final String[] formats = { this.getMessage("no-bans"), this.getMessage("one-ban"), this.getMessage("many-bans") };
-    return this.getChoiceFormattedMessage("bans-migrated", arguments, formats, limits);
-  }
-
-  private void hookAlias() {
-    final Alias plugin = (Alias) this.getServer().getPluginManager().getPlugin("Alias");
-    if (plugin == null) {
-      this.logger.warning("Unable to hook Alias.");
-    } else {
-      this.logger.info("Using " + plugin.getDescription().getFullName() + ".");
-      this.aliasHandler = plugin.getHandler(BanHammer.class);
-    }
-  }
-
-  private void loadBans() {
-    this.bannedPlayerNames.clear();
-    for (final Object record : this.database.list(BanRecord.class)) {
-      final BanRecord ban = (BanRecord) record;
-      if (ban.isActive()) {
-        this.bannedPlayerNames.put(ban.getPlayer().getPlayerName().toLowerCase(), new CachedBan(ban));
-      }
-    }
-    this.logger.info(this.getFormattedBanCount(this.database.count(OldBanRecord.class)));
-  }
-
-  protected Map<String, CachedBan> getModifiableBannedPlayers() {
-    return this.bannedPlayerNames;
+  public SQLStorage getSQLStorage() {
+    return database;
   }
 
   @Override
@@ -186,28 +149,17 @@ public class BanHammer extends SkeletonPlugin {
 
   @Override
   protected void setupPersistence() throws SQLException {
-    database = new SQLStorage(this);
-    if (!this.configuration.isDatabaseUpgraded()) this.migrateRecords();
+    database = new MigratedSQLStorage(this);
   }
 
-  private void migrateRecords() {
-    BanHandler handler = this.getHandler(this.getClass());
-    List<? extends Object> bans = this.database.list(OldBanRecord.class);
-    for (Object record : bans) {
-      final OldBanRecord ban = (OldBanRecord) record;
-      handler.migrateRecord(ban);
+  private void hookAlias() {
+    final Alias plugin = (Alias) this.getServer().getPluginManager().getPlugin("Alias");
+    if (plugin == null) {
+      this.logger.warning("Unable to hook Alias.");
+    } else {
+      this.logger.info("Using " + plugin.getDescription().getFullName() + ".");
+      this.aliasHandler = plugin.getHandler(BanHammer.class);
     }
-    logger.info(this.getFormattedBanMigrationCount(bans.size()));
-    this.configuration.setDatabaseUpgraded(true);
-  }
-  
-  public List<Class<?>> getDatabaseClasses() {
-    List<Class<?>> classes = new LinkedList<Class<?>>();
-    classes.add(BanRecord.class);
-    classes.add(PlayerRecord.class);
-    classes.add(OldBanRecord.class);
-    this.logger.info(classes.toString());
-    return classes;
   }
 
 }

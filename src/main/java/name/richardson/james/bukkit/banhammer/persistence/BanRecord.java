@@ -1,56 +1,149 @@
 package name.richardson.james.bukkit.banhammer.persistence;
 
-import name.richardson.james.bukkit.banhammer.PlayerRecord;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.util.Date;
 
-public interface BanRecord {
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.avaje.ebean.validation.NotNull;
+
+@Entity
+@Table(name="banhammer_bans")
+public class BanRecord {
 
   public enum State {
     NORMAL,
-    PARDONED,
-    EXPIRED
+    EXPIRED,
+    PARDONED
   }
   
   public enum Type {
-    TEMPORARY,
-    PERMENANT
+    PERMENANT,
+    TEMPORARY
   }
   
-  public PlayerRecord getPlayer();
+  @Id
+  @GeneratedValue(strategy=GenerationType.AUTO)
+  private int id;
   
-  public void setPlayer(PlayerRecord player);
+  @NotNull
+  private int playerId;
   
-  public int getPlayerId();
+  @NotNull
+  private int creatorId;
   
-  public void setPlayerId(int playerId);
+  @NotNull
+  @Temporal(TemporalType.TIMESTAMP)
+  private Timestamp createdAt;
   
-  public void setId(int id);
+  @NotNull
+  private String reason;
   
-  public int getId();
+  @Temporal(TemporalType.TIMESTAMP)
+  private Timestamp expiresAt;
   
-  public void setCreatedAt(long time);
+  @NotNull
+  private State state;
   
-  public long getCreatedAt(long time);
+  @ManyToOne(targetEntity=PlayerRecord.class)
+  @JoinColumn(name="player_id")
+  private PlayerRecord player;
   
-  public PlayerRecord getCreater();
+  @ManyToOne(optional=false)
+  @JoinColumn(name="creator_id")
+  private PlayerRecord creator;
   
-  public void setCreator(PlayerRecord creator);
+  public Timestamp getCreatedAt() {
+    return this.createdAt;
+  }
+
+  public Timestamp getCreatedAt(long time) {
+    return createdAt;
+  }
+
+  @ManyToOne(targetEntity=PlayerRecord.class)
+  public PlayerRecord getCreater() {
+    return creator;
+  }
+
+  public int getCreatorId() {
+    return creatorId;
+  }
+
+  public Timestamp getExpiresAt() {
+    return expiresAt;
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  @ManyToOne(targetEntity=PlayerRecord.class)
+  public PlayerRecord getPlayer() {
+    return player;
+  }
+
+  public int getPlayerId() {
+    return playerId;
+  }
   
-  public void setCreatorId(int creatorId);
+  public String getReason() {
+    return reason;
+  }
+
+  public State getState() {
+    final Timestamp now = new Timestamp(System.currentTimeMillis());
+    return (now.after(this.expiresAt)) ? State.EXPIRED : state;
+  }
+
+  public BanRecord.Type getType() {
+    return (this.expiresAt == null) ? BanRecord.Type.PERMENANT : BanRecord.Type.TEMPORARY;
+  }
+
+  public void setCreatedAt(Timestamp time) {
+    this.createdAt = time;
+  }
+
+  public void setCreator(PlayerRecord creator) {
+    this.creator = creator;
+  }
+
+  public void setCreatorId(int id) {
+    this.creatorId = id;
+  }
   
-  public int getCreatorId();
+  public void setExpiresAt(Timestamp expiresAt) {
+    this.expiresAt = expiresAt; 
+  }
   
-  public void setReason(String reason);
-  
-  public String getReason();
-  
-  public State getState();
-  
-  public void setState(State state);
-  
-  public Type getType();
-  
-  public void setExpiresAt(long expiresAt);
-  
-  public long getExpiresAt();
+
+  public void setId(int id) {
+    this.id = id;
+  }
+
+  public void setPlayer(PlayerRecord player) {
+    this.player = player;
+  }
+
+  public void setPlayerId(int playerId) {
+    this.playerId = playerId;
+  }
+
+  public void setReason(String reason) {
+    this.reason = reason;
+  }
+
+  public void setState(State state) {
+    this.state = state;
+  }
   
 }
