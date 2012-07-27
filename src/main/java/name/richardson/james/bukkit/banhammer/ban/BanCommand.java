@@ -43,20 +43,20 @@ import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
 @ConsoleCommand
 public class BanCommand extends PluginCommand {
 
+  /** Reference to the BanHammer plugin */
+  private final BanHammer plugin;
+  
   /** Reference to the BanHammer API */
   private final BanHandler handler;
-
-  /** The player who we are going to ban */
-  private OfflinePlayer player;
 
   /** A instance of the Bukkit server. */
   private final Server server;
 
-  /** Reference to the BanHammer plugin */
-  private final BanHammer plugin;
+  /** The name of the player who we are going to ban */
+  private OfflinePlayer player;
 
   /** How long in milliseconds to ban the player for */
-  private Long time;
+  private long time;
 
   /** The reason given for the player's ban */
   private String reason;
@@ -73,12 +73,12 @@ public class BanCommand extends PluginCommand {
 
     if (this.isBanLengthAuthorised(sender, this.time)) {
       if (!this.handler.banPlayer(this.player.getName(), sender.getName(), this.reason, this.time, true)) {
-        sender.sendMessage(this.getSimpleFormattedMessage("bancommand-player-already-banned", this.player.getName()));
+        sender.sendMessage(this.getSimpleFormattedMessage("player-already-banned", this.player.getName()));
       } else {
-        sender.sendMessage(this.getSimpleFormattedMessage("bancommand-player-banned", this.player.getName()));
+        sender.sendMessage(this.getSimpleFormattedMessage("player-banned", this.player.getName()));
       }
     } else {
-      throw new CommandPermissionException(this.getMessage("bancommand-ban-time-too-long"), this.getPermission(0));
+      throw new CommandPermissionException(this.getMessage("ban-time-too-long"), this.getPermission(0));
     }
   }
 
@@ -141,14 +141,14 @@ public class BanCommand extends PluginCommand {
     wildcard.addParent(this.plugin.getRootPermission(), true);
     this.addPermission(wildcard);
     // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("bancommand-permission-description"), PermissionDefault.OP);
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
     base.addParent(this.plugin.getRootPermission(), true);
     this.addPermission(base);
     // create permissions for individual ban limits
     final Map<String, Long> limits = this.plugin.getBanLimits();
     if (!limits.isEmpty()) {
       for (final Entry<String, Long> limit : limits.entrySet()) {
-        Permission permission = new Permission(base.getName() + "." + limit.getKey(), "bancommand-limit-description", PermissionDefault.OP);
+        Permission permission = new Permission(base.getName() + "." + limit.getKey(), this.getSimpleFormattedMessage("permission-limit-description", TimeFormatter.millisToLongDHMS(limit.getValue())), PermissionDefault.OP);
         permission.addParent(wildcard, true);
         this.addPermission(permission);
       }
