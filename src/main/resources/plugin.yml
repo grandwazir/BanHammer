@@ -2,7 +2,6 @@ name: BanHammer
 main: name.richardson.james.bukkit.banhammer.BanHammer
 description: Bans, kicks and records.
 version: ${project.version}
-database: true
 commands:
   kick:
     description: 'Kicks a specified player from the server.'

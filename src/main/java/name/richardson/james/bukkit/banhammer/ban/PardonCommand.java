@@ -53,9 +53,8 @@ public class PardonCommand extends PluginCommand {
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final OldBanRecord record = this.handler.getPlayerBan(this.player.getName());
 
-    if (record != null) {
+    if (handler.isPlayerBanned(player.getName())) {
 
       if (sender.hasPermission(this.getPermission(3)) && !record.getCreatedBy().equalsIgnoreCase(sender.getName())) {
         this.handler.pardonPlayer(this.player.getName(), sender.getName(), true);

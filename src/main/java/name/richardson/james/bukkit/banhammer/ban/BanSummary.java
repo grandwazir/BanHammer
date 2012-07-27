@@ -3,8 +3,10 @@ package name.richardson.james.bukkit.banhammer.ban;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
+import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.banhammer.migration.OldBanRecord;
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
 import name.richardson.james.bukkit.utilities.plugin.Localisable;
@@ -14,7 +16,7 @@ public class BanSummary implements Localisable {
 
   private final SkeletonPlugin plugin;
 
-  private final OldBanRecord record;
+  private final BanRecord record;
 
   private static final DateFormat dateFormatLength = new SimpleDateFormat("MMM d H:mm a ");
 
@@ -22,8 +24,8 @@ public class BanSummary implements Localisable {
 
   private String tz;
 
-  public BanSummary(final SkeletonPlugin plugin, final OldBanRecord record) {
-    this.record = record;
+  public BanSummary(final SkeletonPlugin plugin, final BanRecord ban) {
+    this.record = ban;
     this.plugin = plugin;
     this.tz = Calendar.getInstance(this.getLocale()).getTimeZone().getID();
   }
@@ -39,12 +41,12 @@ public class BanSummary implements Localisable {
 
   public String getHeader() {
     final String date = dateFormatCreatedAt.format(record.getCreatedAt());
-    final Object[] arguments = { this.record.getPlayer(), this.record.getCreatedBy(), date };
+    final Object[] arguments = { this.record.getPlayer().getPlayerName(), this.record.getCreatedBy().getPlayerName(), date };
     return this.getSimpleFormattedMessage("bansummary-header", arguments);
   }
 
   public String getLength() {
-    if (this.record.getType() == OldBanRecord.Type.PERMENANT) {
+    if (this.record.getType() == BanRecord.Type.PERMENANT) {
       return this.getSimpleFormattedMessage("bansummary-length", this.getMessage("permanent"));
     } else {
       long length = this.record.getExpiresAt() - this.record.getCreatedAt();

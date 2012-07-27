@@ -1,5 +1,12 @@
-Changelog for BanHammer (v1.10.2-SNAPSHOT)
+Changelog for BanHammer (v2.0.0-SNAPSHOT)
 
+2012-07-27 00:28:33 +0100    major work towards 2.0.0 - refactored database model - can now pardon bans without deleting them; fixes #6, #26 - metrics implemented - better caching method for faster logins - custom BanHammer events (James Richardson)
+2012-07-26 22:27:25 +0100    starting to create new database model (James Richardson)
+2012-07-26 21:12:25 +0100    starting process to remodel database (James Richardson)
+2012-07-26 21:09:01 +0100    delete database handler (James Richardson)
+
+v1.10.2
+2012-06-30 21:02:39 +0100    update changelog (James Richardson)
 2012-06-30 20:59:25 +0100    fix not populating banned player list on startup (James Richardson)
 
 v1.10.1

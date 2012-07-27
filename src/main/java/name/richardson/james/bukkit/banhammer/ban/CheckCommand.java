@@ -28,6 +28,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
+import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
 import name.richardson.james.bukkit.banhammer.migration.OldBanRecord;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
@@ -56,19 +57,20 @@ public class CheckCommand extends PluginCommand {
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final OldBanRecord ban = this.handler.getPlayerBan(this.player.getName());
+    final List<BanRecord> bans = this.handler.getPlayerBans(player.getName());
 
-    if ((ban != null) && ban.isActive()) {
+    for (BanRecord ban : bans) {
+      if (!ban.isActive()) continue;
       final BanSummary summary = new BanSummary(this.plugin, ban);
       sender.sendMessage(summary.getHeader());
       sender.sendMessage(summary.getReason());
       sender.sendMessage(summary.getLength());
-      if (ban.getType() == OldBanRecord.Type.TEMPORARY) {
+      if (ban.getType() == BanRecord.Type.TEMPORARY) {
         sender.sendMessage(summary.getExpiresAt());
       }
-    } else {
-      sender.sendMessage(this.getSimpleFormattedMessage("checkcommand-player-is-not-banned", this.player.getName()));
-    }
+      return;
+    } 
+    sender.sendMessage(this.getSimpleFormattedMessage("checkcommand-player-is-not-banned", this.player.getName()));
   }
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {

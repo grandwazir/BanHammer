@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -198,6 +199,15 @@ public class BanHammer extends SkeletonPlugin {
     }
     logger.info(this.getFormattedBanMigrationCount(bans.size()));
     this.configuration.setDatabaseUpgraded(true);
+  }
+  
+  public List<Class<?>> getDatabaseClasses() {
+    List<Class<?>> classes = new LinkedList<Class<?>>();
+    classes.add(BanRecord.class);
+    classes.add(PlayerRecord.class);
+    classes.add(OldBanRecord.class);
+    this.logger.info(classes.toString());
+    return classes;
   }
 
 }
