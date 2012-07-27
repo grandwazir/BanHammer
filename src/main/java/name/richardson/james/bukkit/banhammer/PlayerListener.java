@@ -65,10 +65,10 @@ public class PlayerListener implements Listener, Localisable {
   private final BanHammer plugin;
 
   public PlayerListener(final BanHammer plugin) {
+    this.plugin = plugin;
     this.aliasHandler = plugin.getAliasHandler();
     this.handler = plugin.getHandler(PlayerListener.class);
     this.cache = new BanRecordCache(this.plugin.getSQLStorage());
-    this.plugin = plugin;
     logger.setPrefix("[BanHammer] ");
     Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
   }
