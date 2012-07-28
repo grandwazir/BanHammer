@@ -19,19 +19,30 @@ package name.richardson.james.bukkit.banhammer;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.avaje.ebean.EbeanServer;
 
+import org.bukkit.Bukkit;
+
 import name.richardson.james.bukkit.banhammer.api.API;
+import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerBannedEvent;
+import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.utilities.internals.Handler;
+import name.richardson.james.bukkit.utilities.internals.Logger;
 
 public class BanHandler extends Handler implements API {
 
+  /* Logger for this class */
+  private static final Logger logger = new Logger(BanHandler.class);
+  
   /* The database used by this handler */
   private final EbeanServer database;
+
+  private final BanHammer plugin;
 
   /**
    * Instantiates a new ban handler.
@@ -41,6 +52,7 @@ public class BanHandler extends Handler implements API {
    */
   public BanHandler(final Class<?> parentClass, final BanHammer plugin) {
     super(parentClass);
+    this.plugin = plugin;
     this.database = plugin.getDatabase();
     logger.setPrefix(plugin.getLoggerPrefix());
   }
@@ -60,10 +72,15 @@ public class BanHandler extends Handler implements API {
     ban.setPlayer(player);
     ban.setCreator(creator);
     ban.setReason(reason);
+    ban.setState(BanRecord.State.NORMAL);
     ban.setCreatedAt(new Timestamp(now));
     if (banLength != 0) ban.setExpiresAt(new Timestamp(now + banLength));
     Object[] records = { player, creator, ban };
     database.save(Arrays.asList(records));
+    BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(ban, !notify);
+    Bukkit.getServer().getPluginManager().callEvent(event);
+    Object[] arguments = { playerName, senderName, reason};
+    logger.info(plugin.getSimpleFormattedMessage(this.getClass().getSimpleName().toLowerCase() + ".log-banned-player", arguments));
     return true;
   }
 
@@ -74,8 +91,8 @@ public class BanHandler extends Handler implements API {
    * String)
    */
   public List<BanRecord> getPlayerBans(String playerName) {
-    // TODO Auto-generated method stub
-    return null;
+    final PlayerRecord playerRecord = PlayerRecord.find(database, playerName);
+    return (playerRecord == null) ? new LinkedList<BanRecord>() : playerRecord.getBans();
   }
 
   /*
@@ -85,8 +102,8 @@ public class BanHandler extends Handler implements API {
    * .String)
    */
   public boolean isPlayerBanned(String playerName) {
-    // TODO Auto-generated method stub
-    return false;
+    final PlayerRecord playerRecord = PlayerRecord.find(database, playerName);
+    return (playerRecord == null) ? false : playerRecord.isBanned();
   }
 
   /*
@@ -96,8 +113,19 @@ public class BanHandler extends Handler implements API {
    * , java.lang.String, boolean)
    */
   public boolean pardonPlayer(String playerName, String senderName, boolean notify) {
-    // TODO Auto-generated method stub
-    return false;
+    final PlayerRecord playerRecord = PlayerRecord.find(database, playerName);
+    if (playerRecord != null && playerRecord.isBanned()) {
+      final BanRecord banRecord = playerRecord.getActiveBan();
+      BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(banRecord, !notify);
+      database.delete(playerRecord.getActiveBan());
+      Bukkit.getServer().getPluginManager().callEvent(event);
+      Object[] arguments = { playerName, senderName};
+      logger.info(plugin.getSimpleFormattedMessage(this.getClass().getSimpleName().toLowerCase() + ".log-pardoned-player", arguments));
+      return true;
+    } else {
+      return false;
+    }
+    
   }
 
   /**
@@ -117,10 +145,13 @@ public class BanHandler extends Handler implements API {
     ban.setPlayer(player);
     ban.setCreator(creator);
     ban.setReason(reason);
+    ban.setState(BanRecord.State.NORMAL);
     ban.setCreatedAt(sourceBan.getCreatedAt());
     if (sourceBan.getExpiresAt().getTime() != 0) ban.setExpiresAt(sourceBan.getExpiresAt());
     Object[] records = { player, creator, ban };
     database.save(Arrays.asList(records));
+    Object[] arguments = { playerName, sourceBan.getCreator().getName(), reason};
+    logger.info(plugin.getSimpleFormattedMessage(this.getClass().getSimpleName().toLowerCase() + ".log-banned-player", arguments));
     return true;
   }
 

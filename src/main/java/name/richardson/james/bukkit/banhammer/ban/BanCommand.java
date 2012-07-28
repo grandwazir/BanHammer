@@ -43,32 +43,45 @@ import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
 @ConsoleCommand
 public class BanCommand extends PluginCommand {
 
-  /** Reference to the BanHammer plugin */
+  /** Reference to the BanHammer plugin. */
   private final BanHammer plugin;
 
-  /** Reference to the BanHammer API */
+  /** Reference to the BanHammer API. */
   private final BanHandler handler;
 
   /** A instance of the Bukkit server. */
   private final Server server;
 
-  /** The name of the player who we are going to ban */
+  /** The name of the player who we are going to ban. */
   private OfflinePlayer player;
 
-  /** How long in milliseconds to ban the player for */
+  /** How long in milliseconds to ban the player for. */
   private long time;
 
-  /** The reason given for the player's ban */
+  /** The reason given for the player's ban. */
   private String reason;
 
-  public BanCommand(final BanHammer plugin) {
+  /** The ban limis. */
+  private Map<String, Long> limits;
+
+  /**
+   * Instantiates a new BanCommand.
+   *
+   * @param plugin the plugin that this command belongs to
+   * @param limits the registered ban limits to use
+   */
+  public BanCommand(final BanHammer plugin, Map<String, Long> limits) {
     super(plugin);
     this.plugin = plugin;
+    this.limits = limits;
     this.server = plugin.getServer();
     this.handler = plugin.getHandler(BanCommand.class);
     this.registerPermissions();
   }
 
+  /* (non-Javadoc)
+   * @see name.richardson.james.bukkit.utilities.command.Command#execute(org.bukkit.command.CommandSender)
+   */
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
 
     if (this.isBanLengthAuthorised(sender, this.time)) {
@@ -82,6 +95,9 @@ public class BanCommand extends PluginCommand {
     }
   }
 
+  /* (non-Javadoc)
+   * @see name.richardson.james.bukkit.utilities.command.Command#parseArguments(java.lang.String[], org.bukkit.command.CommandSender)
+   */
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
     final LinkedList<String> args = new LinkedList<String>();
     args.addAll(Arrays.asList(arguments));
@@ -94,8 +110,8 @@ public class BanCommand extends PluginCommand {
 
     if ((args.size() != 0) && args.get(0).startsWith("t:")) {
       final String time = args.remove(0).replaceAll("t:", "");
-      if (this.plugin.getBanLimits().containsKey(time)) {
-        this.time = this.plugin.getBanLimits().get(time);
+      if (limits.containsKey(time)) {
+        this.time = limits.get(time);
       } else {
         this.time = TimeFormatter.parseTime(time);
       }
@@ -110,6 +126,13 @@ public class BanCommand extends PluginCommand {
     }
   }
 
+  /**
+   * Checks if is ban length authorised.
+   *
+   * @param sender the sender
+   * @param banLength the ban length
+   * @return true, if is ban length authorised
+   */
   private boolean isBanLengthAuthorised(final CommandSender sender, final long banLength) {
     if (sender instanceof CommandSender) {
       return true;
@@ -117,7 +140,7 @@ public class BanCommand extends PluginCommand {
     if ((banLength == 0) && !sender.hasPermission(this.getPermission(0))) {
       return false;
     } else {
-      for (final Entry<String, Long> limit : this.plugin.getBanLimits().entrySet()) {
+      for (final Entry<String, Long> limit : limits.entrySet()) {
         if (sender.hasPermission(this.getPermission(1).getName() + "." + limit.getKey()) && (banLength <= limit.getValue())) {
           return true;
         }
@@ -126,6 +149,12 @@ public class BanCommand extends PluginCommand {
     return false;
   }
 
+  /**
+   * Match a String with an OfflinePlayer.
+   *
+   * @param name the name to match
+   * @return the offline player
+   */
   private OfflinePlayer matchPlayer(final String name) {
     final List<Player> players = this.server.matchPlayer(name);
     if (players.isEmpty()) {
@@ -135,6 +164,9 @@ public class BanCommand extends PluginCommand {
     }
   }
 
+  /**
+   * Register permissions.
+   */
   private void registerPermissions() {
     final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
     final String wildcardDescription = String.format(this.plugin.getMessage("plugincommand.wildcard-permission-description"), this.getName());
@@ -147,7 +179,6 @@ public class BanCommand extends PluginCommand {
     base.addParent(this.plugin.getRootPermission(), true);
     this.addPermission(base);
     // create permissions for individual ban limits
-    final Map<String, Long> limits = this.plugin.getBanLimits();
     if (!limits.isEmpty()) {
       for (final Entry<String, Long> limit : limits.entrySet()) {
         final Permission permission = new Permission(base.getName() + "." + limit.getKey(), this.getSimpleFormattedMessage("permission-limit-description", TimeFormatter.millisToLongDHMS(limit.getValue())), PermissionDefault.OP);

@@ -24,7 +24,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.banhammer.BanHandler;
+import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
@@ -38,9 +38,6 @@ public class PurgeCommand extends PluginCommand {
   /** The logger for this class . */
   private final static Logger logger = new Logger(PurgeCommand.class);
 
-  /** A reference to the BanHammer API. */
-  private final BanHandler handler;
-
   /** A instance of the Bukkit server. */
   private final Server server;
 
@@ -49,13 +46,18 @@ public class PurgeCommand extends PluginCommand {
 
   public PurgeCommand(final BanHammer plugin) {
     super(plugin);
-    this.handler = plugin.getHandler(PurgeCommand.class);
     this.server = plugin.getServer();
     this.registerPermissions();
   }
 
   public void execute(final CommandSender sender) throws CommandPermissionException, CommandUsageException {
-    final int i = this.handler.removePlayerBans(this.handler.getPlayerBans(this.player.getName()));
+    final PlayerRecord playerRecord = PlayerRecord.find(plugin.getDatabase(), player.getName());
+    int i = 0;
+    if (playerRecord != null) {
+      i = playerRecord.getBans().size();
+      playerRecord.getBans().clear();
+      plugin.getDatabase().save(playerRecord);
+    }
     sender.sendMessage(this.getFormattedResponseMessage(i));
     logger.info(this.getFormattedSummaryMessage(i, sender.getName()));
   }
@@ -73,14 +75,14 @@ public class PurgeCommand extends PluginCommand {
     final Object[] arguments = { total, this.player.getName() };
     final double[] limits = { 0, 1, 2 };
     final String[] formats = { this.getMessage("no-bans").toLowerCase(), this.getMessage("one-ban").toLowerCase(), this.getMessage("many-bans").toLowerCase() };
-    return this.getChoiceFormattedMessage("purgecommand-response-message", arguments, formats, limits);
+    return this.getChoiceFormattedMessage("response-message", arguments, formats, limits);
   }
 
   private String getFormattedSummaryMessage(final int total, final String name) {
     final Object[] arguments = { total, this.player.getName(), name };
     final double[] limits = { 0, 1, 2 };
     final String[] formats = { this.getMessage("no-bans").toLowerCase(), this.getMessage("one-ban").toLowerCase(), this.getMessage("many-bans").toLowerCase() };
-    return this.getChoiceFormattedMessage("purgecommand-summary-result", arguments, formats, limits);
+    return this.getChoiceFormattedMessage("summary-result", arguments, formats, limits);
   }
 
   private OfflinePlayer matchPlayer(final String name) {

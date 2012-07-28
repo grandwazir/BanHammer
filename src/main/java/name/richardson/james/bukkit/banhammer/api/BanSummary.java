@@ -47,7 +47,8 @@ public class BanSummary implements Localisable {
   /* (non-Javadoc)
    * @see name.richardson.james.bukkit.utilities.plugin.Localisable#getChoiceFormattedMessage(java.lang.String, java.lang.Object[], java.lang.String[], double[])
    */
-  public String getChoiceFormattedMessage(final String key, final Object[] arguments, final String[] formats, final double[] limits) {
+  public String getChoiceFormattedMessage(String key, final Object[] arguments, final String[] formats, final double[] limits) {
+    key = this.getClass().getSimpleName().toLowerCase() + "." + key;
     return this.plugin.getChoiceFormattedMessage(key, arguments, formats, limits);
   }
 
@@ -96,7 +97,8 @@ public class BanSummary implements Localisable {
   /* (non-Javadoc)
    * @see name.richardson.james.bukkit.utilities.plugin.Localisable#getMessage(java.lang.String)
    */
-  public String getMessage(final String key) {
+  public String getMessage(String key) {
+    key = this.getClass().getSimpleName().toLowerCase() + "." + key;
     return this.plugin.getMessage(key);
   }
 
@@ -123,15 +125,16 @@ public class BanSummary implements Localisable {
   /* (non-Javadoc)
    * @see name.richardson.james.bukkit.utilities.plugin.Localisable#getSimpleFormattedMessage(java.lang.String, java.lang.Object)
    */
-  public String getSimpleFormattedMessage(final String key, final Object argument) {
-    final Object[] arguments = { argument };
-    return this.plugin.getSimpleFormattedMessage(key, arguments);
+  public String getSimpleFormattedMessage(String key, final Object argument) {
+    key = this.getClass().getSimpleName().toLowerCase() + "." + key;
+    return this.plugin.getSimpleFormattedMessage(key, argument);
   }
 
   /* (non-Javadoc)
    * @see name.richardson.james.bukkit.utilities.plugin.Localisable#getSimpleFormattedMessage(java.lang.String, java.lang.Object[])
    */
-  public String getSimpleFormattedMessage(final String key, final Object[] arguments) {
+  public String getSimpleFormattedMessage(String key, final Object[] arguments) {
+    key = this.getClass().getSimpleName().toLowerCase() + "." + key;
     return this.plugin.getSimpleFormattedMessage(key, arguments);
   }
 

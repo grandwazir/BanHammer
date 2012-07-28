@@ -154,6 +154,7 @@ public class PlayerListener implements Listener, Localisable {
    */
   @EventHandler(priority = EventPriority.HIGH)
   public void onPlayerBanned(final BanHammerPlayerBannedEvent event) {
+    logger.debug("BanHammerPlayerBannedEvent received");
     final Player player = Bukkit.getServer().getPlayer(event.getPlayerName());
     final BanRecord record = event.getRecord();
     this.cache.set(event.getPlayerName(), record);
@@ -172,6 +173,7 @@ public class PlayerListener implements Listener, Localisable {
    */
   @EventHandler(priority = EventPriority.NORMAL)
   public void onPlayerKicked(final PlayerKickEvent event) {
+    logger.debug("PlayerKickEvent received");
     final Object[] arguments = { event.getPlayer(), event.getReason() };
     event.setLeaveMessage(this.getSimpleFormattedMessage("kick-broadcast", arguments));
   }
@@ -202,8 +204,9 @@ public class PlayerListener implements Listener, Localisable {
    * 
    * @param event the event
    */
-  @EventHandler(priority = EventPriority.HIGHEST)
+  @EventHandler(priority = EventPriority.HIGH)
   public void onPlayerPardoned(final BanHammerPlayerPardonedEvent event) {
+    logger.debug("BanHammerPlayerPardonedEvent received");
     this.cache.remove(event.getPlayerName());
     if (!event.isSilent()) {
       this.broadcast(event.getRecord(), BroadcastMessageType.PLAYER_PARDONED);
@@ -222,11 +225,13 @@ public class PlayerListener implements Listener, Localisable {
     switch (type) {
     case PLAYER_BANNED:
       final BanSummary summary = new BanSummary(this.plugin, ban);
-      server.broadcast(this.getSimpleFormattedMessage("ban-broadcast-message", arguments), NOTIFY_PERMISSION);
+      server.broadcast(this.getSimpleFormattedMessage("ban-broadcast", arguments), NOTIFY_PERMISSION);
       server.broadcast(summary.getReason(), NOTIFY_PERMISSION);
       server.broadcast(summary.getLength(), NOTIFY_PERMISSION);
+      break;
     case PLAYER_PARDONED:
-      server.broadcast(this.getSimpleFormattedMessage("pardon-broadcast-message", arguments), NOTIFY_PERMISSION);
+      server.broadcast(this.getSimpleFormattedMessage("pardon-broadcast", arguments), NOTIFY_PERMISSION);
+      break;
     }
   }
 
@@ -237,7 +242,7 @@ public class PlayerListener implements Listener, Localisable {
    * @return true, if is player banned
    */
   private boolean isPlayerBanned(final Player player) {
-    this.logger.debug("Checking if " + player.getName() + "is banned.");
+    this.logger.debug("Checking if " + player.getName() + " is banned.");
     if (this.cache.contains(player.getName())) {
       return true;
     }
@@ -256,7 +261,7 @@ public class PlayerListener implements Listener, Localisable {
         }
       }
     }
-    this.logger.debug(player.getName() + "is not banned.");
+    this.logger.debug(player.getName() + " is not banned.");
     return false;
   }
 

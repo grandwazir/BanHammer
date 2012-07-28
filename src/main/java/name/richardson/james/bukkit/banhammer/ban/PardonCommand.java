@@ -26,6 +26,7 @@ import org.bukkit.permissions.PermissionDefault;
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.BanHandler;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
+import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
@@ -53,25 +54,26 @@ public class PardonCommand extends PluginCommand {
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final BanRecord ban = this.handler.getPlayerBan(this.player.getName());
+    final PlayerRecord playerRecord = PlayerRecord.find(plugin.getDatabase(), player.getName());
 
-    if (ban != null) {
-
-      if (sender.hasPermission(this.getPermission(3)) && !ban.getCreator().getName().equalsIgnoreCase(sender.getName())) {
+    if (playerRecord != null && playerRecord.isBanned()) {
+      final BanRecord banRecord = playerRecord.getActiveBan();
+      
+      if (sender.hasPermission(this.getPermission(3)) && !banRecord.getCreator().getName().equalsIgnoreCase(sender.getName())) {
         this.handler.pardonPlayer(this.player.getName(), sender.getName(), true);
         this.player.setBanned(false);
         sender.sendMessage(this.getSimpleFormattedMessage("response-message", this.player.getName()));
         return;
-      } else if (!ban.getCreator().getName().equalsIgnoreCase(sender.getName())) {
+      } else if (!banRecord.getCreator().getName().equalsIgnoreCase(sender.getName())) {
         throw new CommandPermissionException(this.getMessage("cannot-pardon-others-bans"), this.getPermission(3));
       }
 
-      if (sender.hasPermission(this.getPermission(2)) && ban.getCreator().getName().equalsIgnoreCase(sender.getName())) {
+      if (sender.hasPermission(this.getPermission(2)) && banRecord.getCreator().getName().equalsIgnoreCase(sender.getName())) {
         this.handler.pardonPlayer(this.player.getName(), sender.getName(), true);
         this.player.setBanned(false);
         sender.sendMessage(this.getSimpleFormattedMessage("response-message", this.player.getName()));
         return;
-      } else if (ban.getCreator().getName().equalsIgnoreCase(sender.getName())) {
+      } else if (banRecord.getCreator().getName().equalsIgnoreCase(sender.getName())) {
         throw new CommandPermissionException(this.getMessage("cannot-pardon-own-bans"), this.getPermission(3));
       }
 

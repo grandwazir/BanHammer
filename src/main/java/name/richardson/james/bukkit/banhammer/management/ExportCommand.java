@@ -17,6 +17,8 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.management;
 
+import com.avaje.ebean.EbeanServer;
+
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
@@ -31,7 +33,6 @@ import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.command.PluginCommand;
 import name.richardson.james.bukkit.utilities.internals.Logger;
-import name.richardson.james.bukkit.utilities.persistence.SQLStorage;
 
 @ConsoleCommand
 public class ExportCommand extends PluginCommand {
@@ -43,13 +44,13 @@ public class ExportCommand extends PluginCommand {
   private final Server server;
 
   /** The database handler for this plugin. */
-  private final SQLStorage database;
+  private final EbeanServer database;
 
   public ExportCommand(final BanHammer plugin) {
     super(plugin);
     logger.setPrefix("[BanHammer] ");
     this.server = plugin.getServer();
-    this.database = plugin.getSQLStorage();
+    this.database = plugin.getDatabase();
     this.registerPermissions();
   }
 
@@ -61,7 +62,7 @@ public class ExportCommand extends PluginCommand {
    */
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     int exported = 0;
-    for (final Object record : this.database.list(PlayerRecord.class)) {
+    for (final Object record : PlayerRecord.list(database)) {
       final PlayerRecord playerRecord = (PlayerRecord) record;
       if (playerRecord.isBanned()) {
         final OfflinePlayer player = this.server.getOfflinePlayer(playerRecord.getName());

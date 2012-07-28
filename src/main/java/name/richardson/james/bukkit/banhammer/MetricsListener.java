@@ -31,16 +31,16 @@ import name.richardson.james.bukkit.utilities.metrics.Metrics.Plotter;
 public class MetricsListener extends AbstractMetricsListener {
 
   /** The number of permenant bans made since the server started. */
-  private int permenantBans;
+  private int permenantBans = 0;
 
   /** The number of temporary bans made since the server started. */
-  private int temporaryBans;
+  private int temporaryBans = 0;
 
   /** The number of bans pardoned since the server started. */
-  private int pardonedBans;
+  private int pardonedBans = 0;
 
   /** The total number of permenant bans made by this server. */
-  private int totalPermenantBans;
+  private int totalPermanentBans;
 
   /** The total number of temporary bans made by this server. */
   private int totalTemporaryBans;
@@ -72,10 +72,12 @@ public class MetricsListener extends AbstractMetricsListener {
     switch (event.getRecord().getType()) {
     case PERMANENT:
       this.permenantBans++;
-      this.totalPermenantBans++;
+      this.totalPermanentBans++;
+      break;
     case TEMPORARY:
       this.temporaryBans++;
       this.totalTemporaryBans++;
+      break;
     }
   }
 
@@ -89,9 +91,11 @@ public class MetricsListener extends AbstractMetricsListener {
     this.totalPardonedBans++;
     switch (event.getRecord().getType()) {
     case PERMANENT:
-      this.totalPermenantBans--;
+      this.totalPermanentBans--;
+      break;
     case TEMPORARY:
       this.totalTemporaryBans--;
+      break;
     }
   }
 
@@ -100,50 +104,45 @@ public class MetricsListener extends AbstractMetricsListener {
    */
   @Override
   protected void setupCustomMetrics() {
+
     // Create a graph to show the total amount of kits issued.
     final Graph graph = this.metrics.createGraph("Realtime Ban Statistics");
-    graph.addPlotter(new Plotter("Permenant bans") {
+    graph.addPlotter(new Plotter("Permanent bans") {
       @Override
       public int getValue() {
-        final int i = MetricsListener.this.permenantBans;
-        return i;
+        return MetricsListener.this.permenantBans;
       }
     });
     graph.addPlotter(new Plotter("Temporary bans") {
       @Override
       public int getValue() {
-        final int i = MetricsListener.this.temporaryBans;
-        return i;
+        return MetricsListener.this.temporaryBans;
       }
     });
     graph.addPlotter(new Plotter("Pardoned bans") {
       @Override
       public int getValue() {
-        final int i = MetricsListener.this.pardonedBans;
-        return i;
+        return MetricsListener.this.pardonedBans;
       }
     });
     // Create a graph to show total ban statistics
     final Graph graph2 = this.metrics.createGraph("Overall Ban Statistics");
-    graph2.addPlotter(new Plotter("Permenant bans") {
+    graph2.addPlotter(new Plotter("Permanent bans") {
       @Override
       public int getValue() {
-        final int i = MetricsListener.this.totalPermenantBans;
-        return i;
+        return MetricsListener.this.totalPermanentBans;
       }
     });
     graph2.addPlotter(new Plotter("Temporary bans") {
       @Override
       public int getValue() {
-        final int i = MetricsListener.this.totalTemporaryBans;
-        return i;
+        return MetricsListener.this.totalTemporaryBans;
       }
     });
     graph2.addPlotter(new Plotter("Pardoned bans") {
       @Override
       public int getValue() {
-        final int i = MetricsListener.this.totalPardonedBans;
-        return i;
+        return MetricsListener.this.totalPardonedBans;
       }
     });
   }
@@ -152,7 +151,7 @@ public class MetricsListener extends AbstractMetricsListener {
    * Sets the initial values to report with Metrics.
    */
   private void setInitialValues() {
-    this.totalPermenantBans = BanRecord.getPermanentBanCount(database);
+    this.totalPermanentBans = BanRecord.getPermanentBanCount(database);
     this.totalTemporaryBans = BanRecord.getTemporaryBanCount(database);
     this.totalPardonedBans = BanRecord.getPardonedBanCount(database);
   }

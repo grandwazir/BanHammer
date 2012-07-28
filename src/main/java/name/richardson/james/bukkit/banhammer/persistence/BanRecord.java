@@ -119,7 +119,7 @@ public class BanRecord {
    * @param database the database
    * @return all the bans in the database
    */
-  public static List<BanRecord> listAll(final EbeanServer database) {
+  public static List<BanRecord> list(final EbeanServer database) {
     return database.find(BanRecord.class).findList();
   }
 
@@ -350,5 +350,5 @@ public class BanRecord {
   public void setState(final State state) {
     this.state = state;
   }
-
+  
 }

@@ -1,5 +1,10 @@
 Changelog for BanHammer (v2.0.0-SNAPSHOT)
 
+2012-07-28 15:52:08 +0100    minor typos (James Richardson)
+2012-07-28 15:47:54 +0100    documentation and clean up (James Richardson)
+2012-07-28 12:49:25 +0100    more refactoring (James Richardson)
+2012-07-28 11:55:58 +0100    switching to using EbeanServer (James Richardson)
+2012-07-28 11:50:30 +0100    refactoring (James Richardson)
 2012-07-27 19:12:57 +0100    missing localisation (James Richardson)
 2012-07-27 19:09:15 +0100    add event handlers (James Richardson)
 2012-07-27 19:07:27 +0100    fix NPE (James Richardson)

@@ -28,9 +28,9 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.banhammer.BanHandler;
 import name.richardson.james.bukkit.banhammer.api.BanSummary;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
+import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
@@ -40,9 +40,6 @@ import name.richardson.james.bukkit.utilities.command.PluginCommand;
 @ConsoleCommand
 public class CheckCommand extends PluginCommand {
 
-  /** Reference to the BanHammer API */
-  private final BanHandler handler;
-
   /** The player who we are going to check and see if they are banned */
   private OfflinePlayer player;
 
@@ -51,15 +48,15 @@ public class CheckCommand extends PluginCommand {
 
   public CheckCommand(final BanHammer plugin) {
     super(plugin);
-    this.handler = plugin.getHandler(CheckCommand.class);
     this.server = plugin.getServer();
     this.registerPermissions();
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final BanRecord ban = this.handler.getPlayerBan(this.player.getName());
+    final PlayerRecord playerRecord = PlayerRecord.find(plugin.getDatabase(), player.getName());
 
-    if (ban != null) {
+    if ((playerRecord != null) && playerRecord.isBanned()) {
+      final BanRecord ban = playerRecord.getActiveBan();
       final BanSummary summary = new BanSummary(this.plugin, ban);
       sender.sendMessage(summary.getHeader());
       sender.sendMessage(summary.getReason());

@@ -142,7 +142,7 @@ public class BanHammer extends SkeletonPlugin {
   protected void registerCommands() {
     final CommandManager commandManager = new CommandManager(this);
     this.getCommand("bh").setExecutor(commandManager);
-    final PluginCommand banCommand = new BanCommand(this);
+    final PluginCommand banCommand = new BanCommand(this, this.configuration.getBanLimits());
     final PluginCommand kickCommand = new KickCommand(this);
     final PluginCommand pardonCommand = new PardonCommand(this);
     // register commands
@@ -152,7 +152,7 @@ public class BanHammer extends SkeletonPlugin {
     commandManager.addCommand(new HistoryCommand(this));
     commandManager.addCommand(new ImportCommand(this));
     commandManager.addCommand(kickCommand);
-    commandManager.addCommand(new LimitsCommand(this));
+    commandManager.addCommand(new LimitsCommand(this, this.configuration.getBanLimits()));
     commandManager.addCommand(pardonCommand);
     commandManager.addCommand(new PurgeCommand(this));
     commandManager.addCommand(new RecentCommand(this));

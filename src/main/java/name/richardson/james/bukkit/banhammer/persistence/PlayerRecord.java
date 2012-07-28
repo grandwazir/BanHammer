@@ -54,6 +54,16 @@ public class PlayerRecord {
     return database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
   }
 
+  /**
+   * Get a list containing all players.
+   * 
+   * @param database the database
+   * @return all the players in the database
+   */
+  public static List<PlayerRecord> list(final EbeanServer database) {
+    return database.find(PlayerRecord.class).findList();
+  }
+  
   /** The id. */
   @Id
   private int id;

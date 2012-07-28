@@ -112,7 +112,8 @@ public class BanRecordCache {
    * @param playerName the player name
    */
   private void checkBanIsValid(final String playerName) {
-    if (this.cache.get(playerName).getState() != BanRecord.State.NORMAL) {
+    final BanRecord ban = this.cache.get(playerName);
+    if (ban != null && (ban.getState() != BanRecord.State.NORMAL)) {
       this.cache.remove(playerName);
     }
   }

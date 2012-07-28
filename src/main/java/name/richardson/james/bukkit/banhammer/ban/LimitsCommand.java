@@ -17,6 +17,7 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.ban;
 
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
@@ -36,16 +37,20 @@ import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
 public class LimitsCommand extends PluginCommand {
 
   private final BanHammer plugin;
+  
+  /* The ban limits */
+  private final Map<String, Long> limits;
 
-  public LimitsCommand(final BanHammer plugin) {
+  public LimitsCommand(final BanHammer plugin, Map<String, Long> limits) {
     super(plugin);
     this.plugin = plugin;
+    this.limits = limits;
     this.registerPermissions();
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    sender.sendMessage(this.getFormattedMessageHeader(this.plugin.getBanLimits().size()));
-    for (final Entry<String, Long> limit : this.plugin.getBanLimits().entrySet()) {
+    sender.sendMessage(this.getFormattedMessageHeader(limits.size()));
+    for (final Entry<String, Long> limit : limits.entrySet()) {
       ChatColor colour;
       if (sender.hasPermission("banhammer.ban." + limit.getKey())) {
         colour = ChatColor.GREEN;

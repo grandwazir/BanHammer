@@ -24,7 +24,6 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.banhammer.BanHandler;
 import name.richardson.james.bukkit.banhammer.api.BanSummary;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
@@ -37,20 +36,17 @@ import name.richardson.james.bukkit.utilities.command.PluginCommand;
 public class RecentCommand extends PluginCommand {
 
   public static final int DEFAULT_LIMIT = 5;
-
-  private final BanHandler handler;
-
+  
   /** The number of bans to return */
   private int count;
 
   public RecentCommand(final BanHammer plugin) {
     super(plugin);
-    this.handler = plugin.getHandler(this.getClass());
     this.registerPermissions();
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final List<BanRecord> bans = this.handler.getPlayerBans(this.count);
+    final List<BanRecord> bans = BanRecord.getRecentBans(this.plugin.getDatabase(), count);
 
     if (!bans.isEmpty()) {
       sender.sendMessage(this.getFormattedMessageHeader(bans.size()));
