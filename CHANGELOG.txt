@@ -1,5 +1,6 @@
 Changelog for BanHammer (v2.0.0-SNAPSHOT)
 
+2012-07-28 17:32:56 +0100    bug fixes for release (James Richardson)
 2012-07-28 15:52:08 +0100    minor typos (James Richardson)
 2012-07-28 15:47:54 +0100    documentation and clean up (James Richardson)
 2012-07-28 12:49:25 +0100    more refactoring (James Richardson)

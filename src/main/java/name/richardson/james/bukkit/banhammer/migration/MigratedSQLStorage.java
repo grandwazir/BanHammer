@@ -66,10 +66,9 @@ public class MigratedSQLStorage extends SQLStorage {
    * @see name.richardson.james.bukkit.utilities.persistence.SQLStorage#beforeDatabaseDrop()
    */
   @Override
-  @SuppressWarnings("unchecked")
   protected void beforeDatabaseDrop() {
     try {
-      this.legacyRecords = (List<OldBanRecord>) this.list(OldBanRecord.class);
+      this.legacyRecords = this.getEbeanServer().find(OldBanRecord.class).findList();
       this.logger.warning(this.getFormattedBanMigrationCount("records-to-migrate", this.legacyRecords.size()));
     } catch (final PersistenceException exception) {
       this.legacyRecords = new LinkedList<OldBanRecord>();

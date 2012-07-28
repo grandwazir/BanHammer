@@ -22,7 +22,7 @@ import java.util.Locale;
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
-import name.richardson.james.bukkit.utilities.plugin.Localisable;
+import name.richardson.james.bukkit.utilities.localisation.Localisable;
 import name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin;
 
 public class BanSummary implements Localisable {

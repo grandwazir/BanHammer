@@ -29,7 +29,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerPreLoginEvent;
 
 import name.richardson.james.bukkit.alias.AliasHandler;
 import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerBannedEvent;
@@ -37,7 +37,7 @@ import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
 import name.richardson.james.bukkit.banhammer.api.BanSummary;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.utilities.internals.Logger;
-import name.richardson.james.bukkit.utilities.plugin.Localisable;
+import name.richardson.james.bukkit.utilities.localisation.Localisable;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -159,7 +159,8 @@ public class PlayerListener implements Listener, Localisable {
     final BanRecord record = event.getRecord();
     this.cache.set(event.getPlayerName(), record);
     if (player != null) {
-      player.kickPlayer(record.getReason());
+      final String message = this.getSimpleFormattedMessage("banned", record.getReason());
+      player.kickPlayer(message);
     }
     if (!event.isSilent()) {
       this.broadcast(record, BroadcastMessageType.PLAYER_BANNED);
@@ -184,18 +185,19 @@ public class PlayerListener implements Listener, Localisable {
    * @param event the event
    */
   @EventHandler(priority = EventPriority.HIGH)
-  public void onPlayerLogin(final PlayerLoginEvent event) {
-    if (this.isPlayerBanned(event.getPlayer())) {
-      final BanRecord ban = this.cache.get(event.getPlayer().getName());
+  public void onPlayerLogin(final PlayerPreLoginEvent event) {
+    if (this.isPlayerBanned(event.getName(), event.getAddress())) {
+      final BanRecord ban = this.cache.get(event.getName());
       String message = null;
       switch (ban.getType()) {
       case TEMPORARY:
         message = this.getSimpleFormattedMessage("temporarily-banned", BanHammer.DATE_FORMAT.format(ban.getExpiresAt()));
+        break;
       default:
         message = this.getSimpleFormattedMessage("permenantly-banned", ban.getReason());
       }
-      this.logger.debug(String.format("Blocked %s from connecting due to an active ban.", event.getPlayer().getName()));
-      event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message);
+      this.logger.debug(String.format("Blocked %s from connecting due to an active ban.", event.getName()));
+      event.disallow(PlayerPreLoginEvent.Result.KICK_BANNED, message);
     }
   }
 
@@ -241,27 +243,26 @@ public class PlayerListener implements Listener, Localisable {
    * @param player the player
    * @return true, if is player banned
    */
-  private boolean isPlayerBanned(final Player player) {
-    this.logger.debug("Checking if " + player.getName() + " is banned.");
-    if (this.cache.contains(player.getName())) {
+  private boolean isPlayerBanned(final String playerName, InetAddress address) {
+    this.logger.debug("Checking if " + playerName + " is banned.");
+    if (this.cache.contains(playerName)) {
       return true;
     }
     // check if the player has an active alias
     if (this.aliasHandler != null) {
-      this.logger.debug(" - Checking alias of " + player.getName() + ".");
-      final InetAddress address = player.getAddress().getAddress();
+      this.logger.debug("Checking for alias of " + playerName + ".");
       final Set<String> aliases = this.aliasHandler.getPlayersNames(address);
       for (final String alias : aliases) {
         // if the player has a banned alias, ban this player.
         if (this.cache.contains(alias.toLowerCase())) {
           final BanRecord ban = this.cache.get(alias.toLowerCase());
           final String reason = this.getSimpleFormattedMessage("alias-ban-reason", ban.getPlayer().getName());
-          this.handler.banPlayer(player.getName(), ban, reason, true);
+          this.handler.banPlayer(playerName, ban, reason, true);
           return true;
         }
       }
     }
-    this.logger.debug(player.getName() + " is not banned.");
+    this.logger.debug(playerName + " is not banned.");
     return false;
   }
 

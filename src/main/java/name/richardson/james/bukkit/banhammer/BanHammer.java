@@ -57,7 +57,7 @@ public class BanHammer extends SkeletonPlugin {
    * This is used across the plugin for representing dates to the user, for
    * example in replies to commands or notifications of ban lengths.
    */
-  public static final DateFormat DATE_FORMAT = SimpleDateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.SHORT);
+  public static final DateFormat DATE_FORMAT = new SimpleDateFormat("d MMMMM yyyy HH:mm (z)");
 
   /** Reference to the Alias API. */
   private AliasHandler aliasHandler;
@@ -214,7 +214,7 @@ public class BanHammer extends SkeletonPlugin {
   private void hookAlias() {
     final Alias plugin = (Alias) this.getServer().getPluginManager().getPlugin("Alias");
     if (plugin == null) {
-      this.logger.warning("Unable to hook Alias.");
+      this.logger.warning(this.getMessage("unable-to-hook-alias"));
     } else {
       this.logger.info("Using " + plugin.getDescription().getFullName() + ".");
       this.aliasHandler = plugin.getHandler(BanHammer.class);
