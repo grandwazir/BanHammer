@@ -214,7 +214,7 @@ public class BanHammer extends SkeletonPlugin {
   private void hookAlias() {
     final Alias plugin = (Alias) this.getServer().getPluginManager().getPlugin("Alias");
     if (plugin == null) {
-      this.logger.warning(this.getMessage("unable-to-hook-alias"));
+      this.logger.warning(this.getMessage("banhammer.unable-to-hook-alias"));
     } else {
       this.logger.info("Using " + plugin.getDescription().getFullName() + ".");
       this.aliasHandler = plugin.getHandler(BanHammer.class);
