@@ -21,50 +21,53 @@ import java.io.IOException;
 
 import com.avaje.ebean.EbeanServer;
 
-import org.bukkit.plugin.java.JavaPlugin;
-
 import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerBannedEvent;
 import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.utilities.metrics.AbstractMetricsListener;
 import name.richardson.james.bukkit.utilities.metrics.Metrics.Graph;
 import name.richardson.james.bukkit.utilities.metrics.Metrics.Plotter;
-import name.richardson.james.bukkit.utilities.persistence.SQLStorage;
 
 public class MetricsListener extends AbstractMetricsListener {
 
-  /** The number of permenant bans made since the server started */
+  /** The number of permenant bans made since the server started. */
   private int permenantBans;
 
-  /** The number of temporary bans made since the server started */
+  /** The number of temporary bans made since the server started. */
   private int temporaryBans;
 
-  /** The number of bans pardoned since the server started */
+  /** The number of bans pardoned since the server started. */
   private int pardonedBans;
 
-  /** The total number of permenant bans made by this server */
+  /** The total number of permenant bans made by this server. */
   private int totalPermenantBans;
 
-  /** The total number of temporary bans made by this server */
+  /** The total number of temporary bans made by this server. */
   private int totalTemporaryBans;
 
-  /** The total number of pardoned bans made by this server */
+  /** The total number of pardoned bans made by this server. */
   private int totalPardonedBans;
 
+  /** The database. */
   private final EbeanServer database;
 
+  /**
+   * Instantiates a new metrics listener.
+   *
+   * @param plugin the plugin that this listener belongs to.
+   * @throws IOException Signals that an I/O exception has occurred.
+   */
   public MetricsListener(final BanHammer plugin) throws IOException {
     super(plugin);
     this.database = plugin.getDatabase();
-    this.setInitalValues();
+    this.setInitialValues();
   }
 
-  private void setInitalValues() {
-    this.totalPermenantBans = BanRecord.getPermenantBanCount(database);
-    this.totalTemporaryBans = BanRecord.getTemporaryBanCount(database);
-    this.totalPardonedBans = BanRecord.getPardonedBanCount(database);
-  }
-
+  /**
+   * When a player is banned, increment the statistics.
+   *
+   * @param event the event
+   */
   public void onPlayerBanned(final BanHammerPlayerBannedEvent event) {
     switch (event.getRecord().getType()) {
     case PERMENANT:
@@ -76,6 +79,11 @@ public class MetricsListener extends AbstractMetricsListener {
     }
   }
 
+  /**
+   * When a player is pardoned, increment the statistics.
+   *
+   * @param event the event
+   */
   public void onPlayerPardoned(final BanHammerPlayerPardonedEvent event) {
     this.pardonedBans++;
     this.totalPardonedBans++;
@@ -87,6 +95,9 @@ public class MetricsListener extends AbstractMetricsListener {
     }
   }
 
+  /* (non-Javadoc)
+   * @see name.richardson.james.bukkit.utilities.metrics.AbstractMetricsListener#setupCustomMetrics()
+   */
   @Override
   protected void setupCustomMetrics() {
     // Create a graph to show the total amount of kits issued.
@@ -135,6 +146,15 @@ public class MetricsListener extends AbstractMetricsListener {
         return i;
       }
     });
+  }
+
+  /**
+   * Sets the initial values to report with Metrics.
+   */
+  private void setInitialValues() {
+    this.totalPermenantBans = BanRecord.getPermenantBanCount(database);
+    this.totalTemporaryBans = BanRecord.getTemporaryBanCount(database);
+    this.totalPardonedBans = BanRecord.getPardonedBanCount(database);
   }
 
 }

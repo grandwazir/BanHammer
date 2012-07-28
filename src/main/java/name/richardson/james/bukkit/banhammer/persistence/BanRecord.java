@@ -66,6 +66,16 @@ public class BanRecord {
     return database.find(BanRecord.class).where().eq("state", 2).findRowCount();
   }
   
+  public static List<BanRecord> listAll(final EbeanServer database) {
+    return database.find(BanRecord.class).findList();
+  }
+  
+  
+  public static List<BanRecord> listActive(final EbeanServer database) {
+    return database.find(BanRecord.class).where().eq("state", State.NORMAL).findList();
+  }
+  
+  
   @Id
   private int id;
 

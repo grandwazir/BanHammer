@@ -29,21 +29,41 @@ import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
 
 public class BanHammerConfiguration extends PluginConfiguration {
 
+  /** The configured ban limits. */
   private final Map<String, Long> limits = new LinkedHashMap<String, Long>();
 
+  /**
+   * Instantiates a new BanHammer configuration.
+   *
+   * @param plugin the plugin that this configuration belongs to.
+   * @throws IOException Signals that an I/O exception has occurred.
+   */
   public BanHammerConfiguration(final BanHammer plugin) throws IOException {
     super(plugin);
     this.setBanLimits();
   }
 
+  /**
+   * Gets the ban limits.
+   *
+   * @return the ban limits
+   */
   public Map<String, Long> getBanLimits() {
     return Collections.unmodifiableMap(this.limits);
   }
 
+  /**
+   * Checks if is alias should be enabled.
+   *
+   * @return true, if is alias is enabled
+   */
   public boolean isAliasEnabled() {
     return this.configuration.getBoolean("alias-plugin.enabled");
   }
 
+  /**
+   * Read and sets the ban limits.
+   */
   public void setBanLimits() {
     this.limits.clear();
     this.logger.debug(String.format("Registering ban limits"));
@@ -60,6 +80,9 @@ public class BanHammerConfiguration extends PluginConfiguration {
     }
   }
 
+  /* (non-Javadoc)
+   * @see name.richardson.james.bukkit.utilities.persistence.YAMLStorage#setDefaults()
+   */
   @Override
   public void setDefaults() throws IOException {
     this.logger.debug(String.format("Apply default configuration."));

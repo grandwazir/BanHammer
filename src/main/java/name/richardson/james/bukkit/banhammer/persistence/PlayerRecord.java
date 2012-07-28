@@ -26,29 +26,27 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.validation.NotNull;
 
+import name.richardson.james.bukkit.banhammer.persistence.BanRecord.State;
 import name.richardson.james.bukkit.utilities.persistence.SQLStorage;
 
 @Entity()
 @Table(name="banhammer_players")
 public class PlayerRecord {
 
-  public static boolean exists(final SQLStorage storage, final String playerName) {
-    final PlayerRecord record = storage.getEbeanServer().find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
+  public static boolean exists(final EbeanServer database, final String playerName) {
+    final PlayerRecord record = database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
     return (record != null);
   }
 
-  public static PlayerRecord find(final SQLStorage storage, final String playerName) {
-    PlayerRecord record = storage.getEbeanServer().find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
-    if (record == null) {
-      record = new PlayerRecord();
-      record.setName(playerName);
-      storage.save(record);
-      // Have to do a double find to get around primary keys not being set
-      record = PlayerRecord.find(storage, playerName);
-    }
-    return record;
+  public static PlayerRecord find(final EbeanServer database, final String playerName) {
+    return database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
+  }
+  
+  public static List<PlayerRecord> findBanned(final EbeanServer database) {
+    return database.find(PlayerRecord.class).where().eq("state", State.NORMAL).findList();
   }
 
   @Id

@@ -20,25 +20,48 @@ package name.richardson.james.bukkit.banhammer;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import com.avaje.ebean.EbeanServer;
+
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
-import name.richardson.james.bukkit.utilities.persistence.SQLStorage;
 
 public class BanRecordCache {
 
+  /** The underlying HashMap. */
   private final HashMap<String, BanRecord> cache = new LinkedHashMap<String, BanRecord>();
 
-  private final SQLStorage storage;
+  /** The database containing the BanRecords. */
+  private final EbeanServer database;
 
-  public BanRecordCache(final SQLStorage storage) {
-    this.storage = storage;
+  /**
+   * Instantiates a new ban record cache.
+   *
+   * @param database the database containing the BanRecords
+   */
+  public BanRecordCache(final EbeanServer database) {
+    this.database = database;
+    this.load();
   }
 
+  /**
+   * Check if the cache contains a specific player.
+   * 
+   * This method also validates if the ban is still active before returning.
+   *
+   * @param playerName the player name to look for
+   * @return true, if successful
+   */
   public boolean contains(final String playerName) {
     this.checkBanIsValid(playerName);
     return this.cache.containsKey(playerName);
   }
 
+  /**
+   * Gets details about a banned player.
+   *
+   * @param playerName the player name to look for
+   * @return the relevant ban record
+   */
   public BanRecord get(final String playerName) {
     if (this.cache.get(playerName) == null) {
       this.set(playerName);
@@ -46,34 +69,60 @@ public class BanRecordCache {
     return this.cache.get(playerName);
   }
 
-  public void reload() {
-    for (final Object record : this.storage.list(PlayerRecord.class)) {
-      final PlayerRecord player = (PlayerRecord) record;
-      if (player.isBanned()) {
-        this.cache.put(player.getName(), null);
-      }
-    }
-  }
-
+  /**
+   * Removes the player from the ban cache.
+   *
+   * @param playerName the player name to remove
+   */
   public void remove(final String playerName) {
     this.cache.remove(playerName);
   }
 
+  /**
+   * Place the player in the ban cache and lookup the relevant ban.
+   *
+   * @param playerName the player name to look up
+   */
   public void set(final String playerName) {
-    this.cache.put(playerName, PlayerRecord.find(this.storage, playerName).getActiveBan());
+    this.cache.put(playerName, PlayerRecord.find(this.database, playerName).getActiveBan());
   }
 
+  /**
+   * Place the player and in the ban cache with the the ban provided. 
+   *
+   * @param playerName the player name
+   * @param ban the ban
+   */
   public void set(final String playerName, final BanRecord ban) {
     this.cache.put(playerName, ban);
   }
 
+  /**
+   * The total number of players in the cache.
+   *
+   * @return the number of players
+   */
   public int size() {
     return this.cache.size();
   }
 
+  /**
+   * Check to see if the ban is still valid.
+   *
+   * @param playerName the player name
+   */
   private void checkBanIsValid(final String playerName) {
     if (this.cache.get(playerName).getState() != BanRecord.State.NORMAL) {
       this.cache.remove(playerName);
+    }
+  }
+
+  /**
+   * Load the cache will details of all current active bans.
+   */
+  private void load() {
+    for (final BanRecord ban : BanRecord.listActive(database)) {
+      this.cache.put(ban.getPlayer().getName(), null);
     }
   }
 
