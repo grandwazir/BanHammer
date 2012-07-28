@@ -51,11 +51,11 @@ public class MetricsListener extends AbstractMetricsListener {
   /** The total number of pardoned bans made by this server */
   private int totalPardonedBans;
 
-  private final SQLStorage database;
+  private final EbeanServer database;
 
   public MetricsListener(final BanHammer plugin) throws IOException {
     super(plugin);
-    this.database = plugin.getSQLStorage();
+    this.database = plugin.getDatabase();
     this.setInitalValues();
   }
 

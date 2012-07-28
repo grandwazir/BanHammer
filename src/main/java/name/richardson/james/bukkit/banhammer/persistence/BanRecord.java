@@ -30,6 +30,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.validation.NotNull;
 
 import name.richardson.james.bukkit.utilities.persistence.SQLStorage;
@@ -49,20 +50,20 @@ public class BanRecord {
     TEMPORARY
   }
 
-  public static List<BanRecord> getRecentBans(final SQLStorage storage, final int count) {
-    return storage.getEbeanServer().find(BanRecord.class).setMaxRows(count).orderBy().desc("createdAt").findList();
+  public static List<BanRecord> getRecentBans(final EbeanServer database, final int count) {
+    return database.find(BanRecord.class).setMaxRows(count).orderBy().desc("createdAt").findList();
   }
 
-  public static int getTemporaryBanCount(final SQLStorage storage) {
-    return storage.getEbeanServer().find(BanRecord.class).where().isNotNull("expiresAt").findRowCount();
+  public static int getTemporaryBanCount(final EbeanServer database) {
+    return database.find(BanRecord.class).where().isNotNull("expiresAt").findRowCount();
   }
   
-  public static int getPermenantBanCount(final SQLStorage storage) {
-    return storage.getEbeanServer().find(BanRecord.class).where().isNull("expiresAt").findRowCount();
+  public static int getPermenantBanCount(final EbeanServer database) {
+    return database.find(BanRecord.class).where().isNull("expiresAt").findRowCount();
   }
   
-  public static int getPardonedBanCount(final SQLStorage storage) {
-    return storage.getEbeanServer().find(BanRecord.class).where().eq("state", 2).findRowCount();
+  public static int getPardonedBanCount(final EbeanServer database) {
+    return database.find(BanRecord.class).where().eq("state", 2).findRowCount();
   }
   
   @Id

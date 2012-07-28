@@ -23,7 +23,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import com.avaje.ebean.EbeanServer;
 
@@ -61,28 +60,46 @@ public class BanHammer extends SkeletonPlugin {
    */
   public static final DateFormat DATE_FORMAT = SimpleDateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.SHORT);
 
-  /** Reference to the Alias API */
+  /** Reference to the Alias API. */
   private AliasHandler aliasHandler;
 
-  /** BanHammer configuration */
+  /** BanHammer configuration. */
   private BanHammerConfiguration configuration;
 
-  /** The storage for this plugin */
+  /** The storage for this plugin. */
   private SQLStorage database;
 
+  /**
+   * Gets the alias handler.
+   * 
+   * @return the alias handler
+   */
   public AliasHandler getAliasHandler() {
     return this.aliasHandler;
   }
 
+  /*
+   * (non-Javadoc)
+   * @see
+   * name.richardson.james.bukkit.utilities.updater.Updatable#getArtifactID()
+   */
   public String getArtifactID() {
     return "ban-hammer";
   }
 
+  /*
+   * (non-Javadoc)
+   * @see org.bukkit.plugin.java.JavaPlugin#getDatabase()
+   */
   @Override
   public EbeanServer getDatabase() {
     return this.database.getEbeanServer();
   }
 
+  /*
+   * (non-Javadoc)
+   * @see org.bukkit.plugin.java.JavaPlugin#getDatabaseClasses()
+   */
   @Override
   public List<Class<?>> getDatabaseClasses() {
     final List<Class<?>> classes = new LinkedList<Class<?>>();
@@ -93,14 +110,21 @@ public class BanHammer extends SkeletonPlugin {
   }
 
   /**
-   * This returns a handler to allow access to the BanHammer API.
+   * This returns a new handler to allow access to the BanHammer API.
    * 
+   * @param parentClass the class that the handler belongs to
    * @return A new BanHandler instance.
    */
   public BanHandler getHandler(final Class<?> parentClass) {
     return new BanHandler(parentClass, this);
   }
 
+  /*
+   * (non-Javadoc)
+   * @see
+   * name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin#loadConfiguration
+   * ()
+   */
   @Override
   protected void loadConfiguration() throws IOException {
     this.configuration = new BanHammerConfiguration(this);
@@ -109,6 +133,12 @@ public class BanHammer extends SkeletonPlugin {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * @see
+   * name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin#registerCommands
+   * ()
+   */
   @Override
   protected void registerCommands() {
     final CommandManager commandManager = new CommandManager(this);
@@ -133,20 +163,23 @@ public class BanHammer extends SkeletonPlugin {
     this.getCommand("pardon").setExecutor(pardonCommand);
   }
 
+  /*
+   * (non-Javadoc)
+   * @see
+   * name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin#registerEvents
+   * ()
+   */
   @Override
   protected void registerEvents() {
     new PlayerListener(this);
   }
 
-  protected void setupMetrics() throws IOException {
-    new MetricsListener(this);
-  }
-
+  /*
+   * (non-Javadoc)
+   * @see name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin#
+   * registerPermissions()
+   */
   @Override
-  protected void setupPersistence() throws SQLException {
-    this.database = new MigratedSQLStorage(this);
-  }
-
   protected void registerPermissions() {
     // register notify permission
     final String prefix = this.getDescription().getName().toLowerCase() + ".";
@@ -155,6 +188,30 @@ public class BanHammer extends SkeletonPlugin {
     this.addPermission(notify);
   }
 
+  /*
+   * (non-Javadoc)
+   * @see
+   * name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin#setupMetrics()
+   */
+  @Override
+  protected void setupMetrics() throws IOException {
+    new MetricsListener(this);
+  }
+
+  /*
+   * (non-Javadoc)
+   * @see
+   * name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin#setupPersistence
+   * ()
+   */
+  @Override
+  protected void setupPersistence() throws SQLException {
+    this.database = new MigratedSQLStorage(this);
+  }
+
+  /**
+   * Hook the alias plugin and load a handler if it exists.
+   */
   private void hookAlias() {
     final Alias plugin = (Alias) this.getServer().getPluginManager().getPlugin("Alias");
     if (plugin == null) {
