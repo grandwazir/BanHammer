@@ -1,4 +1,7 @@
 name.richardson.james.bukkit.banhammer
+name.richardson.james.bukkit.banhammer.api
 name.richardson.james.bukkit.banhammer.ban
 name.richardson.james.bukkit.banhammer.kick
 name.richardson.james.bukkit.banhammer.management
+name.richardson.james.bukkit.banhammer.migration
+name.richardson.james.bukkit.banhammer.persistence
