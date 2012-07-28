@@ -57,21 +57,21 @@ public class PardonCommand extends PluginCommand {
 
     if (ban != null) {
 
-      if (sender.hasPermission(this.getPermission(3)) && !ban.getCreater().getName().equalsIgnoreCase(sender.getName())) {
+      if (sender.hasPermission(this.getPermission(3)) && !ban.getCreator().getName().equalsIgnoreCase(sender.getName())) {
         this.handler.pardonPlayer(this.player.getName(), sender.getName(), true);
         this.player.setBanned(false);
         sender.sendMessage(this.getSimpleFormattedMessage("response-message", this.player.getName()));
         return;
-      } else if (!ban.getCreater().getName().equalsIgnoreCase(sender.getName())) {
+      } else if (!ban.getCreator().getName().equalsIgnoreCase(sender.getName())) {
         throw new CommandPermissionException(this.getMessage("cannot-pardon-others-bans"), this.getPermission(3));
       }
 
-      if (sender.hasPermission(this.getPermission(2)) && ban.getCreater().getName().equalsIgnoreCase(sender.getName())) {
+      if (sender.hasPermission(this.getPermission(2)) && ban.getCreator().getName().equalsIgnoreCase(sender.getName())) {
         this.handler.pardonPlayer(this.player.getName(), sender.getName(), true);
         this.player.setBanned(false);
         sender.sendMessage(this.getSimpleFormattedMessage("response-message", this.player.getName()));
         return;
-      } else if (ban.getCreater().getName().equalsIgnoreCase(sender.getName())) {
+      } else if (ban.getCreator().getName().equalsIgnoreCase(sender.getName())) {
         throw new CommandPermissionException(this.getMessage("cannot-pardon-own-bans"), this.getPermission(3));
       }
 

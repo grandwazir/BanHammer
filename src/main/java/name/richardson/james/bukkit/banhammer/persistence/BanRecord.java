@@ -34,8 +34,8 @@ import com.avaje.ebean.validation.NotNull;
 
 import name.richardson.james.bukkit.utilities.persistence.SQLStorage;
 
-@Entity
-@Table(name = "banhammer_bans")
+@Entity()
+@Table(name="banhammer_bans")
 public class BanRecord {
 
   public enum State {
@@ -53,8 +53,19 @@ public class BanRecord {
     return storage.getEbeanServer().find(BanRecord.class).setMaxRows(count).orderBy().desc("createdAt").findList();
   }
 
+  public static int getTemporaryBanCount(final SQLStorage storage) {
+    return storage.getEbeanServer().find(BanRecord.class).where().isNotNull("expiresAt").findRowCount();
+  }
+  
+  public static int getPermenantBanCount(final SQLStorage storage) {
+    return storage.getEbeanServer().find(BanRecord.class).where().isNull("expiresAt").findRowCount();
+  }
+  
+  public static int getPardonedBanCount(final SQLStorage storage) {
+    return storage.getEbeanServer().find(BanRecord.class).where().eq("state", 2).findRowCount();
+  }
+  
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
   private int id;
 
   @NotNull
@@ -93,7 +104,7 @@ public class BanRecord {
   }
 
   @ManyToOne(targetEntity = PlayerRecord.class)
-  public PlayerRecord getCreater() {
+  public PlayerRecord getCreator() {
     return this.creator;
   }
 
@@ -123,6 +134,7 @@ public class BanRecord {
   }
 
   public State getState() {
+    if (this.expiresAt == null) return this.state;
     final Timestamp now = new Timestamp(System.currentTimeMillis());
     return (now.after(this.expiresAt)) ? State.EXPIRED : this.state;
   }
@@ -137,6 +149,7 @@ public class BanRecord {
 
   public void setCreator(final PlayerRecord creator) {
     this.creator = creator;
+    this.creatorId = creator.getId();
   }
 
   public void setCreatorId(final int id) {
@@ -153,6 +166,7 @@ public class BanRecord {
 
   public void setPlayer(final PlayerRecord player) {
     this.player = player;
+    this.playerId = player.getId();
   }
 
   public void setPlayerId(final int playerId) {
@@ -166,5 +180,7 @@ public class BanRecord {
   public void setState(final State state) {
     this.state = state;
   }
+
+
 
 }

@@ -43,7 +43,7 @@ public class BanHandler extends Handler implements API {
     if (!this.isPlayerBanned(playerName)) {
       /** Get the various database records required */
       final PlayerRecord playerRecord = PlayerRecord.find(this.database, playerName);
-      final PlayerRecord creatorRecord = record.getCreater();
+      final PlayerRecord creatorRecord = record.getCreator();
       final BanRecord banRecord = new BanRecord();
 
       /** Set the specifics of the ban */
@@ -77,8 +77,9 @@ public class BanHandler extends Handler implements API {
       /** Set the specifics of the ban */
       banRecord.setCreatedAt(now);
       banRecord.setPlayer(playerRecord);
-      banRecord.setCreator(playerRecord);
+      banRecord.setCreator(creatorRecord);
       banRecord.setReason(reason);
+      banRecord.setState(BanRecord.State.NORMAL);
       if (banLength != 0) {
         banRecord.setExpiresAt(new Timestamp(System.currentTimeMillis() + banLength));
       }

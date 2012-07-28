@@ -19,13 +19,17 @@ package name.richardson.james.bukkit.banhammer;
 
 import java.io.IOException;
 
+import com.avaje.ebean.EbeanServer;
+
 import org.bukkit.plugin.java.JavaPlugin;
 
 import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerBannedEvent;
 import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
+import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.utilities.metrics.AbstractMetricsListener;
 import name.richardson.james.bukkit.utilities.metrics.Metrics.Graph;
 import name.richardson.james.bukkit.utilities.metrics.Metrics.Plotter;
+import name.richardson.james.bukkit.utilities.persistence.SQLStorage;
 
 public class MetricsListener extends AbstractMetricsListener {
 
@@ -47,8 +51,18 @@ public class MetricsListener extends AbstractMetricsListener {
   /** The total number of pardoned bans made by this server */
   private int totalPardonedBans;
 
-  public MetricsListener(final JavaPlugin plugin) throws IOException {
+  private final SQLStorage database;
+
+  public MetricsListener(final BanHammer plugin) throws IOException {
     super(plugin);
+    this.database = plugin.getSQLStorage();
+    this.setInitalValues();
+  }
+
+  private void setInitalValues() {
+    this.totalPermenantBans = BanRecord.getPermenantBanCount(database);
+    this.totalTemporaryBans = BanRecord.getTemporaryBanCount(database);
+    this.totalPardonedBans = BanRecord.getPardonedBanCount(database);
   }
 
   public void onPlayerBanned(final BanHammerPlayerBannedEvent event) {

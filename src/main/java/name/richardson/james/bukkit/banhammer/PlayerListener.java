@@ -164,7 +164,7 @@ public class PlayerListener implements Listener, Localisable {
 
   private void broadcast(final BanRecord ban, final BroadcastMessageType type) {
     final Server server = Bukkit.getServer();
-    final Object[] arguments = { ban.getPlayer().getName(), ban.getCreater().getName() };
+    final Object[] arguments = { ban.getPlayer().getName(), ban.getCreator().getName() };
     switch (type) {
     case PLAYER_BANNED:
       final BanSummary summary = new BanSummary(this.plugin, ban);

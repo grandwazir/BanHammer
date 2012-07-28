@@ -132,11 +132,11 @@ public class HistoryCommand extends PluginCommand {
     base.addParent(wildcard, true);
     this.addPermission(base);
     // add ability to view your own ban history
-    final Permission own = new Permission(prefix + this.getName() + "." + this.getMessage("own-permission-name"), this.plugin.getMessage("own-permission-description"), PermissionDefault.TRUE);
+    final Permission own = new Permission(prefix + this.getName() + "." + this.getMessage("own-permission-name"), this.getMessage("own-permission-description"), PermissionDefault.TRUE);
     own.addParent(base, true);
     this.addPermission(own);
     // add ability to view the ban history of others
-    final Permission others = new Permission(prefix + this.getName() + "." + this.getMessage("others-permission-name"), this.plugin.getMessage("others-permission-description"), PermissionDefault.OP);
+    final Permission others = new Permission(prefix + this.getName() + "." + this.getMessage("others-permission-name"), this.getMessage("others-permission-description"), PermissionDefault.OP);
     others.addParent(base, true);
     this.addPermission(others);
   }

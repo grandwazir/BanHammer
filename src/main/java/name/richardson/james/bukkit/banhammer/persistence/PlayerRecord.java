@@ -30,8 +30,8 @@ import com.avaje.ebean.validation.NotNull;
 
 import name.richardson.james.bukkit.utilities.persistence.SQLStorage;
 
-@Entity
-@Table(name = "banhammer_players")
+@Entity()
+@Table(name="banhammer_players")
 public class PlayerRecord {
 
   public static boolean exists(final SQLStorage storage, final String playerName) {
@@ -41,17 +41,18 @@ public class PlayerRecord {
 
   public static PlayerRecord find(final SQLStorage storage, final String playerName) {
     PlayerRecord record = storage.getEbeanServer().find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
-    if (record != null) {
+    if (record == null) {
       record = new PlayerRecord();
       record.setName(playerName);
-      storage.getEbeanServer().save(record);
+      storage.save(record);
+      // Have to do a double find to get around primary keys not being set
+      record = PlayerRecord.find(storage, playerName);
     }
     return record;
   }
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private long id;
+  private int id;
 
   @NotNull
   private String name;
@@ -81,7 +82,7 @@ public class PlayerRecord {
     return this.createdBans;
   }
 
-  public long getId() {
+  public int getId() {
     return this.id;
   }
 
@@ -106,7 +107,7 @@ public class PlayerRecord {
     this.createdBans = records;
   }
 
-  public void setId(final long id) {
+  public void setId(final int id) {
     this.id = id;
   }
 

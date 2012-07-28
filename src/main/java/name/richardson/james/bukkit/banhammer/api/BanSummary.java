@@ -49,7 +49,7 @@ public class BanSummary implements Localisable {
 
   public String getHeader() {
     final String date = BanHammer.DATE_FORMAT.format(this.record.getCreatedAt());
-    final Object[] arguments = { this.record.getPlayer().getName(), this.record.getCreater().getName(), date };
+    final Object[] arguments = { this.record.getPlayer().getName(), this.record.getCreator().getName(), date };
     return this.getSimpleFormattedMessage("header", arguments);
   }
 
@@ -76,7 +76,7 @@ public class BanSummary implements Localisable {
 
   public String getSelfHeader() {
     final String date = BanHammer.DATE_FORMAT.format(this.record.getCreatedAt());
-    final Object[] arguments = { this.record.getCreater().getName(), date };
+    final Object[] arguments = { this.record.getCreator().getName(), date };
     return this.getSimpleFormattedMessage("self-header", arguments);
   }
 

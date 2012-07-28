@@ -54,6 +54,11 @@ import name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin;
 
 public class BanHammer extends SkeletonPlugin {
 
+  /**
+   * The date format used by BanHammer.
+   * This is used across the plugin for representing dates to the user, for
+   * example in replies to commands or notifications of ban lengths.
+   */
   public static final DateFormat DATE_FORMAT = SimpleDateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.SHORT);
 
   /** Reference to the Alias API */
@@ -71,15 +76,6 @@ public class BanHammer extends SkeletonPlugin {
 
   public String getArtifactID() {
     return "ban-hammer";
-  }
-
-  public BanHammerConfiguration getBanHammerConfiguration() {
-    return this.configuration;
-  }
-
-  public Map<String, Long> getBanLimits() {
-    this.logger.debug(this.configuration.getBanLimits().toString());
-    return this.configuration.getBanLimits();
   }
 
   @Override
@@ -103,10 +99,6 @@ public class BanHammer extends SkeletonPlugin {
    */
   public BanHandler getHandler(final Class<?> parentClass) {
     return new BanHandler(parentClass, this);
-  }
-
-  public SQLStorage getSQLStorage() {
-    return this.database;
   }
 
   @Override
@@ -139,11 +131,6 @@ public class BanHammer extends SkeletonPlugin {
     this.getCommand("ban").setExecutor(banCommand);
     this.getCommand("kick").setExecutor(kickCommand);
     this.getCommand("pardon").setExecutor(pardonCommand);
-    // register notify permission
-    final String prefix = this.getDescription().getName().toLowerCase() + ".";
-    final Permission notify = new Permission(prefix + this.getMessage("banhammer.notify-permission-name"), this.getMessage("banhammer.notify-permission-description"), PermissionDefault.TRUE);
-    notify.addParent(this.getRootPermission(), true);
-    this.addPermission(notify);
   }
 
   @Override
@@ -151,9 +138,21 @@ public class BanHammer extends SkeletonPlugin {
     new PlayerListener(this);
   }
 
+  protected void setupMetrics() throws IOException {
+    new MetricsListener(this);
+  }
+
   @Override
   protected void setupPersistence() throws SQLException {
     this.database = new MigratedSQLStorage(this);
+  }
+
+  protected void registerPermissions() {
+    // register notify permission
+    final String prefix = this.getDescription().getName().toLowerCase() + ".";
+    final Permission notify = new Permission(prefix + this.getMessage("banhammer.notify-permission-name"), this.getMessage("banhammer.notify-permission-description"), PermissionDefault.TRUE);
+    notify.addParent(this.getRootPermission(), true);
+    this.addPermission(notify);
   }
 
   private void hookAlias() {
