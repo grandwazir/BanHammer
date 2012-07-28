@@ -32,14 +32,24 @@ import name.richardson.james.bukkit.utilities.persistence.SQLStorage;
 
 public class MigratedSQLStorage extends SQLStorage {
 
+  /** The logger. */
   private final Logger logger = new Logger(this.getClass());
 
+  /** The legacy records to migrate */
   private List<OldBanRecord> legacyRecords;
 
+  /**
+   * Instantiates a new migrated sql storage.
+   *
+   * @param plugin the plugin
+   */
   public MigratedSQLStorage(final BanHammer plugin) {
     super(plugin);
   }
 
+  /* (non-Javadoc)
+   * @see name.richardson.james.bukkit.utilities.persistence.SQLStorage#afterDatabaseCreate()
+   */
   @Override
   protected void afterDatabaseCreate() {
     if (!this.legacyRecords.isEmpty()) {
@@ -52,6 +62,9 @@ public class MigratedSQLStorage extends SQLStorage {
     }
   }
 
+  /* (non-Javadoc)
+   * @see name.richardson.james.bukkit.utilities.persistence.SQLStorage#beforeDatabaseDrop()
+   */
   @Override
   @SuppressWarnings("unchecked")
   protected void beforeDatabaseDrop() {
@@ -63,6 +76,13 @@ public class MigratedSQLStorage extends SQLStorage {
     }
   }
 
+  /**
+   * Gets the formatted ban migration count message
+   *
+   * @param key the resource bundle key
+   * @param count the number of legacy bans
+   * @return the localised message
+   */
   private String getFormattedBanMigrationCount(final String key, final int count) {
     final Object[] arguments = { count };
     final double[] limits = { 0, 1, 2 };
@@ -70,10 +90,15 @@ public class MigratedSQLStorage extends SQLStorage {
     return this.getChoiceFormattedMessage(key, arguments, formats, limits);
   }
 
+  /**
+   * Migrate a legacy record to the new format.
+   *
+   * @param record the record to migrate
+   */
   private void migrateRecord(final OldBanRecord record) {
     /** Get the various database records required */
-    final PlayerRecord playerRecord = PlayerRecord.find(this, record.getPlayer());
-    final PlayerRecord creatorRecord = PlayerRecord.find(this, record.getCreatedBy());
+    final PlayerRecord playerRecord = this.getPlayerRecord(record.getPlayer());
+    final PlayerRecord creatorRecord = this.getPlayerRecord(record.getCreatedBy());
     final BanRecord banRecord = new BanRecord();
     /** Set the specifics of the ban */
     banRecord.setCreatedAt(new Timestamp(record.getCreatedAt()));
@@ -85,6 +110,23 @@ public class MigratedSQLStorage extends SQLStorage {
     /** Save records */
     final Object[] records = { playerRecord, creatorRecord, banRecord };
     this.getEbeanServer().save(records);
+  }
+  
+  /**
+   * Gets the database record for a player.
+   * 
+   * @param playerName the player name
+   * @return the player record
+   */
+  private PlayerRecord getPlayerRecord(String playerName) {
+    if (!PlayerRecord.exists(this.getEbeanServer(), playerName)) {
+      PlayerRecord playerRecord = new PlayerRecord();
+      playerRecord.setName(playerName);
+      this.getEbeanServer().save(playerRecord);
+      return PlayerRecord.find(this.getEbeanServer(), playerName);
+    } else {
+      return PlayerRecord.find(this.getEbeanServer(), playerName);
+    }
   }
 
 }
