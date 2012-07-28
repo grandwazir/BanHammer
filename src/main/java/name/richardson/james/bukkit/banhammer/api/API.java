@@ -24,80 +24,41 @@ import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 public interface API {
 
   /**
-   * Ban a player from the server and prevent them from logging in. If the
-   * player is online when they are banned they will be kicked.
-   * 
-   * @param playerName
-   *          The name player that is to be banned
-   * @param senderName
-   *          The name of the person doing the banning. If called by a plugin
-   *          without user intervention this should be the name of the plugin.
-   * @param reason
-   *          The reason why the player has been banned.
-   * @param expiryTime
-   *          A Long representing how many milliseconds the player should be
-   *          banned for. For permanent bans you should specify 0.
-   * @param notify
-   *          if true, players are not notified of the ban.
-   * @return true if the ban has been successfully created. Will return false if
-   *         the player is already banned.
+   * Ban a player from the server.
+   *
+   * @param playerName the name of the player to ban
+   * @param senderName the name of the player/plugin requesting the ban
+   * @param reason the reason for the ban
+   * @param banLength the length of the ban in milliseconds
+   * @param notify if true, broadcast a message to notify players
+   * @return true, if successful
    */
-  public boolean banPlayer(String playerName, String senderName, String reason, Long banLength, boolean notify);
-
+  public boolean banPlayer(String playerName, String senderName, String reason, long banLength, boolean notify);
+  
   /**
-   * Get the details of all bans associated with a specific player. This will
-   * provide a CachedBan providing access to all the related data, but no
-   * ability to change or modify the actual record.
-   * 
-   * @param player
-   *          The name of the player to check (search is case insensitive).
-   * @return a list with the details of all bans associated with the player. If
-   *         no bans are on record, the list will be empty.
+   * Pardon a player and allow them to login to the server again
+   *
+   * @param playerName the name of the player to pardon
+   * @param senderName the name of the player/plugin requesting the pardon
+   * @param notify if true, broadcast a message to notify players
+   * @return true, if successful
    */
-  public List<BanRecord> getPlayerBans(String playerName);
-
+  public boolean pardonPlayer(String playerName, String senderName, boolean notify);
+  
   /**
-   * Check to see if a player is currently banned. This only checks to see if
-   * the player has an active ban, one that is preventing them from logging into
-   * the server. Previous bans are not taken into account.
-   * 
-   * @param player
-   *          The name of the player to check.
-   * @return true if the player is currently banned, false if they are not.
+   * Checks if a player is currently banned.
+   *
+   * @param playerName the name of the player
+   * @return true, if is player banned
    */
   public boolean isPlayerBanned(String playerName);
-
+   
   /**
-   * Pardon a player (remove any active bans) and allow them to login once more.
-   * 
-   * @param player
-   *          - The player that is to be pardoned.
-   * @param senderName
-   *          - The name of the person doing the pardoning. If called by a
-   *          plugin without user intervention this should be the name of the
-   *          plugin.
-   * @param notify
-   *          - if true, players are not notified of the ban.
-   * @return true if the ban has been successfully repealed. Will return false
-   *         if the player was not banned in the first place.
+   * Gets all bans made against a player.
+   *
+   * @param playerName the name of the player
+   * @return the player's bans
    */
-  public boolean pardonPlayer(String playerName, String senderName, Boolean notify);
-
-  /**
-   * Remove a ban from the database
-   * 
-   * @param ban
-   *          - The CachedBan to convert into a BanRecord and remove.
-   */
-  public boolean removePlayerBan(BanRecord ban);
-
-  /**
-   * Remove bans from the database
-   * 
-   * @param ban
-   *          - A Set of CachedBans to convert into a BanRecords and remove.
-   * @return the number of bans removed.
-   */
-  public int removePlayerBans(List<BanRecord> bans);
+  public List<BanRecord> getPlayerBans(String playerName);
 
 }

@@ -21,20 +21,39 @@ import org.bukkit.event.HandlerList;
 
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class BanHammerPlayerBannedEvent.
+ */
 public class BanHammerPlayerBannedEvent extends BanHammerPlayerEvent {
 
+  /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 768545683909385614L;
 
+  /** The Constant handlers. */
   private static final HandlerList handlers = new HandlerList();
-  
+
+  /*
+   * (non-Javadoc)
+   * @see org.bukkit.event.Event#getHandlerList()
+   */
   public static HandlerList getHandlerList() {
-    return handlers;
+    return BanHammerPlayerBannedEvent.handlers;
   }
-  
+
+  /*
+   * (non-Javadoc)
+   * @see name.richardson.james.bukkit.banhammer.api.BanHammerPlayerEvent#BanHammerPlayerEvent()
+   */
   public BanHammerPlayerBannedEvent(final BanRecord record, final boolean silent) {
     super(record, silent);
   }
-  
+
+  /*
+   * (non-Javadoc)
+   * @see org.bukkit.event.Event#getHandlers()
+   */
+  @Override
   public HandlerList getHandlers() {
     return handlers;
   }

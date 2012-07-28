@@ -24,32 +24,65 @@ import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 
 public abstract class BanHammerPlayerEvent extends Event {
 
+  /** The constant listener handlers. */
   private static final HandlerList handlers = new HandlerList();
-  
+
+  /** The constant serialVersionUID. */
   private static final long serialVersionUID = 1L;
 
+  /** The player name. */
   private final String playerName;
 
+  /** The ban record. */
   private final BanRecord record;
 
+  /** If this event is silent. */
   private final boolean silent;
 
+  /**
+   * Instantiates a new BanHammer player event.
+   * 
+   * @param record the BanRecord associated with this event
+   * @param silent if this event should be silent to players
+   */
   public BanHammerPlayerEvent(final BanRecord record, final boolean silent) {
     this.record = record;
     this.playerName = record.getPlayer().getName();
     this.silent = silent;
   }
 
+  /**
+   * Gets the name of the player banned.
+   * 
+   * @return the player name
+   */
   public String getPlayerName() {
     return this.playerName;
   }
 
+  /**
+   * Gets the BanRecord associated with this event.
+   *
+   * @return the record
+   */
   public BanRecord getRecord() {
     return this.record;
   }
 
+  /**
+   * Checks if this event should be silent.
+   *
+   * @return true, if players should not be notified
+   */
   public boolean isSilent() {
     return this.silent;
+  }
+  
+  /* (non-Javadoc)
+   * @see org.bukkit.event.Event#getHandlers()
+   */
+  public HandlerList getHandlers() {
+    return handlers;
   }
 
 }

@@ -34,7 +34,6 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import name.richardson.james.bukkit.alias.AliasHandler;
 import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerBannedEvent;
 import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
-import name.richardson.james.bukkit.banhammer.api.BanHandler;
 import name.richardson.james.bukkit.banhammer.api.BanSummary;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.utilities.internals.Logger;
@@ -252,7 +251,7 @@ public class PlayerListener implements Listener, Localisable {
         if (this.cache.contains(alias.toLowerCase())) {
           final BanRecord ban = this.cache.get(alias.toLowerCase());
           final String reason = this.getSimpleFormattedMessage("alias-ban-reason", ban.getPlayer().getName());
-          this.handler.banPlayer(player.getName(), ban, reason);
+          this.handler.banPlayer(player.getName(), ban, reason, true);
           return true;
         }
       }

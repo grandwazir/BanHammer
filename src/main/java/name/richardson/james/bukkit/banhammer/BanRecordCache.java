@@ -35,7 +35,7 @@ public class BanRecordCache {
 
   /**
    * Instantiates a new ban record cache.
-   *
+   * 
    * @param database the database containing the BanRecords
    */
   public BanRecordCache(final EbeanServer database) {
@@ -47,7 +47,7 @@ public class BanRecordCache {
    * Check if the cache contains a specific player.
    * 
    * This method also validates if the ban is still active before returning.
-   *
+   * 
    * @param playerName the player name to look for
    * @return true, if successful
    */
@@ -58,7 +58,7 @@ public class BanRecordCache {
 
   /**
    * Gets details about a banned player.
-   *
+   * 
    * @param playerName the player name to look for
    * @return the relevant ban record
    */
@@ -71,7 +71,7 @@ public class BanRecordCache {
 
   /**
    * Removes the player from the ban cache.
-   *
+   * 
    * @param playerName the player name to remove
    */
   public void remove(final String playerName) {
@@ -80,7 +80,7 @@ public class BanRecordCache {
 
   /**
    * Place the player in the ban cache and lookup the relevant ban.
-   *
+   * 
    * @param playerName the player name to look up
    */
   public void set(final String playerName) {
@@ -88,8 +88,8 @@ public class BanRecordCache {
   }
 
   /**
-   * Place the player and in the ban cache with the the ban provided. 
-   *
+   * Place the player and in the ban cache with the the ban provided.
+   * 
    * @param playerName the player name
    * @param ban the ban
    */
@@ -99,7 +99,7 @@ public class BanRecordCache {
 
   /**
    * The total number of players in the cache.
-   *
+   * 
    * @return the number of players
    */
   public int size() {
@@ -108,7 +108,7 @@ public class BanRecordCache {
 
   /**
    * Check to see if the ban is still valid.
-   *
+   * 
    * @param playerName the player name
    */
   private void checkBanIsValid(final String playerName) {
@@ -121,7 +121,7 @@ public class BanRecordCache {
    * Load the cache will details of all current active bans.
    */
   private void load() {
-    for (final BanRecord ban : BanRecord.listActive(database)) {
+    for (final BanRecord ban : BanRecord.listActive(this.database)) {
       this.cache.put(ban.getPlayer().getName(), null);
     }
   }

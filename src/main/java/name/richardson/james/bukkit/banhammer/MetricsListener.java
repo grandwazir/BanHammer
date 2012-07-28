@@ -70,7 +70,7 @@ public class MetricsListener extends AbstractMetricsListener {
    */
   public void onPlayerBanned(final BanHammerPlayerBannedEvent event) {
     switch (event.getRecord().getType()) {
-    case PERMENANT:
+    case PERMANENT:
       this.permenantBans++;
       this.totalPermenantBans++;
     case TEMPORARY:
@@ -88,7 +88,7 @@ public class MetricsListener extends AbstractMetricsListener {
     this.pardonedBans++;
     this.totalPardonedBans++;
     switch (event.getRecord().getType()) {
-    case PERMENANT:
+    case PERMANENT:
       this.totalPermenantBans--;
     case TEMPORARY:
       this.totalTemporaryBans--;
@@ -152,7 +152,7 @@ public class MetricsListener extends AbstractMetricsListener {
    * Sets the initial values to report with Metrics.
    */
   private void setInitialValues() {
-    this.totalPermenantBans = BanRecord.getPermenantBanCount(database);
+    this.totalPermenantBans = BanRecord.getPermanentBanCount(database);
     this.totalTemporaryBans = BanRecord.getTemporaryBanCount(database);
     this.totalPardonedBans = BanRecord.getPardonedBanCount(database);
   }

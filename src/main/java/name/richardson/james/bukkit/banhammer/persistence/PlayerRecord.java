@@ -20,8 +20,6 @@ package name.richardson.james.bukkit.banhammer.persistence;
 import java.util.List;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -29,38 +27,54 @@ import javax.persistence.Table;
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.validation.NotNull;
 
-import name.richardson.james.bukkit.banhammer.persistence.BanRecord.State;
-import name.richardson.james.bukkit.utilities.persistence.SQLStorage;
-
 @Entity()
-@Table(name="banhammer_players")
+@Table(name = "banhammer_players")
 public class PlayerRecord {
 
+  /**
+   * Check if a PlayerRecord exists for this player.
+   * 
+   * @param database the database to use
+   * @param playerName the player name
+   * @return true, if successful
+   */
   public static boolean exists(final EbeanServer database, final String playerName) {
     final PlayerRecord record = database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
     return (record != null);
   }
 
+  /**
+   * Find a PlayerRecord matching a specific player.
+   * 
+   * @param database the database
+   * @param playerName the player name
+   * @return the player record
+   */
   public static PlayerRecord find(final EbeanServer database, final String playerName) {
     return database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
   }
-  
-  public static List<PlayerRecord> findBanned(final EbeanServer database) {
-    return database.find(PlayerRecord.class).where().eq("state", State.NORMAL).findList();
-  }
 
+  /** The id. */
   @Id
   private int id;
 
+  /** The name. */
   @NotNull
   private String name;
 
+  /** The bans. */
   @OneToMany(mappedBy = "player", targetEntity = BanRecord.class)
   private List<BanRecord> bans;
 
+  /** The created bans. */
   @OneToMany(mappedBy = "creator", targetEntity = BanRecord.class)
   private List<BanRecord> createdBans;
 
+  /**
+   * Gets the active ban.
+   * 
+   * @return the active ban
+   */
   public BanRecord getActiveBan() {
     for (final BanRecord ban : this.bans) {
       if (ban.getState() == BanRecord.State.NORMAL) {
@@ -70,24 +84,49 @@ public class PlayerRecord {
     return null;
   }
 
+  /**
+   * Gets the bans.
+   * 
+   * @return the bans
+   */
   @OneToMany(targetEntity = BanRecord.class)
   public List<BanRecord> getBans() {
     return this.bans;
   }
 
+  /**
+   * Gets the created bans.
+   * 
+   * @return the created bans
+   */
   @OneToMany(targetEntity = BanRecord.class)
   public List<BanRecord> getCreatedBans() {
     return this.createdBans;
   }
 
+  /**
+   * Gets the id.
+   * 
+   * @return the id
+   */
   public int getId() {
     return this.id;
   }
 
+  /**
+   * Gets the name.
+   * 
+   * @return the name
+   */
   public String getName() {
     return this.name;
   }
 
+  /**
+   * Checks if is banned.
+   * 
+   * @return true, if is banned
+   */
   public boolean isBanned() {
     for (final BanRecord ban : this.bans) {
       if (ban.getState() == BanRecord.State.NORMAL) {
@@ -97,18 +136,38 @@ public class PlayerRecord {
     return false;
   }
 
+  /**
+   * Sets the bans.
+   * 
+   * @param records the new bans
+   */
   public void setBans(final List<BanRecord> records) {
     this.bans = records;
   }
 
+  /**
+   * Sets the created bans.
+   * 
+   * @param records the new created bans
+   */
   public void setCreatedBans(final List<BanRecord> records) {
     this.createdBans = records;
   }
 
+  /**
+   * Sets the id.
+   * 
+   * @param id the new id
+   */
   public void setId(final int id) {
     this.id = id;
   }
 
+  /**
+   * Sets the name.
+   * 
+   * @param name the new name
+   */
   public void setName(final String name) {
     this.name = name;
   }
