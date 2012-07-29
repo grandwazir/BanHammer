@@ -108,7 +108,7 @@ public class HistoryCommand extends PluginCommand {
     final Object[] arguments = { size, name };
     final double[] limits = { 0, 1, 2 };
     final String[] formats = { this.getMessage("no-ban").toLowerCase(), this.getMessage("one-ban").toLowerCase(), this.getMessage("many-bans") };
-    return this.getChoiceFormattedMessage("historycommand-header", arguments, formats, limits);
+    return this.getChoiceFormattedMessage("header", arguments, formats, limits);
   }
 
   private OfflinePlayer matchPlayer(final String name) {
