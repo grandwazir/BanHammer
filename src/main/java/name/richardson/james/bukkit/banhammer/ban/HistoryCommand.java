@@ -50,7 +50,7 @@ public class HistoryCommand extends PluginCommand {
   private final Server server;
 
   /** The player whos history we are going to check */
-  private OfflinePlayer player;
+  private String playerName;
 
   public HistoryCommand(final BanHammer plugin) {
     super(plugin);
@@ -61,19 +61,19 @@ public class HistoryCommand extends PluginCommand {
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final List<BanRecord> bans = this.handler.getPlayerBans(this.player.getName());
+    final List<BanRecord> bans = this.handler.getPlayerBans(this.playerName);
 
-    if (sender.hasPermission(this.getPermission(3)) && !this.player.getName().equalsIgnoreCase(sender.getName())) {
+    if (sender.hasPermission(this.getPermission(3)) && !this.playerName.equalsIgnoreCase(sender.getName())) {
       this.displayHistory(bans, sender);
       return;
-    } else if (!this.player.getName().equalsIgnoreCase(sender.getName())) {
+    } else if (!this.playerName.equalsIgnoreCase(sender.getName())) {
       throw new CommandPermissionException(this.getMessage("cannot-view-others-history"), this.getPermission(3));
     }
 
-    if (sender.hasPermission(this.getPermission(2)) && this.player.getName().equalsIgnoreCase(sender.getName())) {
+    if (sender.hasPermission(this.getPermission(2)) && this.playerName.equalsIgnoreCase(sender.getName())) {
       this.displayHistory(bans, sender);
       return;
-    } else if (this.player.getName().equalsIgnoreCase(sender.getName())) {
+    } else if (this.playerName.equalsIgnoreCase(sender.getName())) {
       throw new CommandPermissionException(this.getMessage("cannot-view-own-history"), this.getPermission(3));
     }
 
@@ -84,15 +84,15 @@ public class HistoryCommand extends PluginCommand {
       if (sender instanceof ConsoleCommandSender) {
         throw new CommandArgumentException(this.getMessage("must-specify-a-player"), this.getMessage("name-autocompletion"));
       }
-      this.player = (OfflinePlayer) sender;
+      this.playerName = sender.getName();
     } else {
-      this.player = this.matchPlayer(arguments[0]);
+      this.playerName = this.matchPlayer(arguments[0]);
     }
 
   }
 
   private void displayHistory(final List<BanRecord> bans, final CommandSender sender) {
-    sender.sendMessage(this.getFormattedMessageHeader(bans.size(), this.player.getName()));
+    sender.sendMessage(this.getFormattedMessageHeader(bans.size(), this.playerName));
     for (final BanRecord ban : bans) {
       final BanSummary summary = new BanSummary(this.plugin, ban);
       sender.sendMessage(summary.getSelfHeader());
@@ -111,12 +111,12 @@ public class HistoryCommand extends PluginCommand {
     return this.getChoiceFormattedMessage("header", arguments, formats, limits);
   }
 
-  private OfflinePlayer matchPlayer(final String name) {
+  private String matchPlayer(final String name) {
     final List<Player> players = this.server.matchPlayer(name);
     if (players.isEmpty()) {
-      return this.server.getOfflinePlayer(name);
+      return name;
     } else {
-      return players.get(0);
+      return players.get(0).getName();
     }
   }
 

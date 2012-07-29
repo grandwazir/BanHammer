@@ -38,20 +38,9 @@ import name.richardson.james.bukkit.banhammer.api.BanSummary;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.utilities.internals.Logger;
 import name.richardson.james.bukkit.utilities.localisation.Localisable;
+import name.richardson.james.bukkit.utilities.localisation.Localised;
 
-// TODO: Auto-generated Javadoc
-/**
- * The listener interface for receiving player events.
- * The class that is interested in processing a player
- * event implements this interface, and the object created
- * with that class is registered with a component using the
- * component's <code>addPlayerListener<code> method. When
- * the player event occurs, that object's appropriate
- * method is invoked.
- * 
- * @see PlayerEvent
- */
-public class PlayerListener implements Listener, Localisable {
+public class PlayerListener extends Localised implements Listener {
 
   /**
    * The types of message that can be broadcasted in response to events.
@@ -89,64 +78,16 @@ public class PlayerListener implements Listener, Localisable {
    * @param plugin the plugin
    */
   public PlayerListener(final BanHammer plugin) {
+    super(plugin);
     this.plugin = plugin;
     this.aliasHandler = plugin.getAliasHandler();
     this.handler = plugin.getHandler(PlayerListener.class);
     this.cache = new BanRecordCache(plugin.getDatabase());
     this.logger.setPrefix(plugin.getLoggerPrefix());
     Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
+    this.logger.info(this.getFormattedBanCount(this.cache.size()));
   }
-
-  /*
-   * (non-Javadoc)
-   * @see name.richardson.james.bukkit.utilities.plugin.Localisable#
-   * getChoiceFormattedMessage(java.lang.String, java.lang.Object[],
-   * java.lang.String[], double[])
-   */
-  public String getChoiceFormattedMessage(String key, final Object[] arguments, final String[] formats, final double[] limits) {
-    key = this.getClass().getSimpleName().toLowerCase() + "." + key;
-    return this.plugin.getChoiceFormattedMessage(key, arguments, formats, limits);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see name.richardson.james.bukkit.utilities.plugin.Localisable#getLocale()
-   */
-  public Locale getLocale() {
-    return this.plugin.getLocale();
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see
-   * name.richardson.james.bukkit.utilities.plugin.Localisable#getMessage(java
-   * .lang.String)
-   */
-  public String getMessage(String key) {
-    key = this.getClass().getSimpleName().toLowerCase() + "." + key;
-    return this.plugin.getMessage(key);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see name.richardson.james.bukkit.utilities.plugin.Localisable#
-   * getSimpleFormattedMessage(java.lang.String, java.lang.Object)
-   */
-  public String getSimpleFormattedMessage(final String key, final Object argument) {
-    final Object[] arguments = { argument };
-    return this.getSimpleFormattedMessage(key, arguments);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see name.richardson.james.bukkit.utilities.plugin.Localisable#
-   * getSimpleFormattedMessage(java.lang.String, java.lang.Object[])
-   */
-  public String getSimpleFormattedMessage(String key, final Object[] arguments) {
-    key = this.getClass().getSimpleName().toLowerCase() + "." + key;
-    return this.plugin.getSimpleFormattedMessage(key, arguments);
-  }
-
+  
   /**
    * When a player is banned, update the cache and inform players.
    * 
@@ -191,7 +132,7 @@ public class PlayerListener implements Listener, Localisable {
       String message = null;
       switch (ban.getType()) {
       case TEMPORARY:
-        message = this.getSimpleFormattedMessage("temporarily-banned", BanHammer.DATE_FORMAT.format(ban.getExpiresAt()));
+        message = this.getSimpleFormattedMessage("temporarily-banned", BanHammer.LONG_DATE_FORMAT.format(ban.getExpiresAt()));
         break;
       default:
         message = this.getSimpleFormattedMessage("permenantly-banned", ban.getReason());
@@ -235,6 +176,13 @@ public class PlayerListener implements Listener, Localisable {
       server.broadcast(this.getSimpleFormattedMessage("pardon-broadcast", arguments), NOTIFY_PERMISSION);
       break;
     }
+  }
+
+  private String getFormattedBanCount(final int size) {
+    final Object[] arguments = { size };
+    final double[] limits = { 0, 1, 2 };
+    final String[] formats = { this.getMessage("no-bans").toLowerCase(), this.getMessage("one-ban").toLowerCase(), this.getMessage("many-bans") };
+    return this.getChoiceFormattedMessage("bans-loaded", arguments, formats, limits);
   }
 
   /**

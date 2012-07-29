@@ -58,7 +58,7 @@ public class BanSummary implements Localisable {
    * @return the expires at
    */
   public String getExpiresAt() {
-    final String expiryDateString = BanHammer.DATE_FORMAT.format(this.record.getExpiresAt());
+    final String expiryDateString = BanHammer.SHORT_DATE_FORMAT.format(this.record.getExpiresAt());
     return this.getSimpleFormattedMessage("expires", expiryDateString);
   }
 
@@ -68,7 +68,7 @@ public class BanSummary implements Localisable {
    * @return the header
    */
   public String getHeader() {
-    final String date = BanHammer.DATE_FORMAT.format(this.record.getCreatedAt());
+    final String date = BanHammer.SHORT_DATE_FORMAT.format(this.record.getCreatedAt());
     final Object[] arguments = { this.record.getPlayer().getName(), this.record.getCreator().getName(), date };
     return this.getSimpleFormattedMessage("header", arguments);
   }
@@ -117,7 +117,7 @@ public class BanSummary implements Localisable {
    * @return the self header
    */
   public String getSelfHeader() {
-    final String date = BanHammer.DATE_FORMAT.format(this.record.getCreatedAt());
+    final String date = BanHammer.SHORT_DATE_FORMAT.format(this.record.getCreatedAt());
     final Object[] arguments = { this.record.getCreator().getName(), date };
     return this.getSimpleFormattedMessage("self-header", arguments);
   }

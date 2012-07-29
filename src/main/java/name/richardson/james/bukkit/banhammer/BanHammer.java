@@ -57,8 +57,10 @@ public class BanHammer extends SkeletonPlugin {
    * This is used across the plugin for representing dates to the user, for
    * example in replies to commands or notifications of ban lengths.
    */
-  public static final DateFormat DATE_FORMAT = new SimpleDateFormat("d MMMMM yyyy HH:mm (z)");
+  public static final DateFormat LONG_DATE_FORMAT = new SimpleDateFormat("d MMMMM yyyy HH:mm (z)");
 
+  public static final DateFormat SHORT_DATE_FORMAT = new SimpleDateFormat("d MMM yyyy HH:mm (z)");
+  
   /** Reference to the Alias API. */
   private AliasHandler aliasHandler;
 

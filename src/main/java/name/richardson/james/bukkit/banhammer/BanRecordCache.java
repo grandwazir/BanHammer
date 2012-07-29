@@ -26,7 +26,7 @@ import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 
 public class BanRecordCache {
-
+  
   /** The underlying HashMap. */
   private final HashMap<String, BanRecord> cache = new LinkedHashMap<String, BanRecord>();
 
@@ -52,7 +52,6 @@ public class BanRecordCache {
    * @return true, if successful
    */
   public boolean contains(final String playerName) {
-    this.checkBanIsValid(playerName);
     return this.cache.containsKey(playerName);
   }
 
@@ -63,10 +62,7 @@ public class BanRecordCache {
    * @return the relevant ban record
    */
   public BanRecord get(final String playerName) {
-    if (this.cache.get(playerName) == null) {
-      this.set(playerName);
-    }
-    return this.cache.get(playerName);
+    return cache.get(playerName);
   }
 
   /**
@@ -107,23 +103,14 @@ public class BanRecordCache {
   }
 
   /**
-   * Check to see if the ban is still valid.
-   * 
-   * @param playerName the player name
-   */
-  private void checkBanIsValid(final String playerName) {
-    final BanRecord ban = this.cache.get(playerName);
-    if (ban != null && (ban.getState() != BanRecord.State.NORMAL)) {
-      this.cache.remove(playerName);
-    }
-  }
-
-  /**
    * Load the cache will details of all current active bans.
    */
   private void load() {
-    for (final BanRecord ban : BanRecord.listActive(this.database)) {
-      this.cache.put(ban.getPlayer().getName(), null);
+    for (final PlayerRecord player : PlayerRecord.list(database)) {
+      if (player.isBanned()) {
+        this.cache.put(player.getName(), player.getActiveBan());
+        System.out.print(player.getActiveBan().getState());
+      }
     }
   }
 
