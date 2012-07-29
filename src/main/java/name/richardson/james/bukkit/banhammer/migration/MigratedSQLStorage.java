@@ -50,6 +50,7 @@ public class MigratedSQLStorage extends SQLStorage {
    */
   @Override
   protected void afterDatabaseCreate() {
+    logger.debug("Migrating records");
     if (!this.legacyRecords.isEmpty()) {
       int migrated = 0;
       for (final OldBanRecord ban : this.legacyRecords) {

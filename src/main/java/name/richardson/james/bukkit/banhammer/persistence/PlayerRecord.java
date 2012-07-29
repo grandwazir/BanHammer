@@ -20,6 +20,7 @@ package name.richardson.james.bukkit.banhammer.persistence;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -99,7 +100,7 @@ public class PlayerRecord {
    * 
    * @return the bans
    */
-  @OneToMany(targetEntity = BanRecord.class)
+  @OneToMany(targetEntity = BanRecord.class, fetch=FetchType.EAGER)
   public List<BanRecord> getBans() {
     return this.bans;
   }
@@ -109,7 +110,7 @@ public class PlayerRecord {
    * 
    * @return the created bans
    */
-  @OneToMany(targetEntity = BanRecord.class)
+  @OneToMany(targetEntity = BanRecord.class, fetch=FetchType.LAZY)
   public List<BanRecord> getCreatedBans() {
     return this.createdBans;
   }

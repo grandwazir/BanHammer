@@ -20,10 +20,13 @@ package name.richardson.james.bukkit.banhammer.persistence;
 import java.sql.Timestamp;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -127,14 +130,6 @@ public class BanRecord {
   @Id
   private int id;
 
-  /** The player id. */
-  @NotNull
-  private int playerId;
-
-  /** The creator id. */
-  @NotNull
-  private int creatorId;
-
   /** The created at. */
   @NotNull
   @Temporal(TemporalType.TIMESTAMP)
@@ -153,13 +148,13 @@ public class BanRecord {
   private State state;
 
   /** The player. */
-  @ManyToOne(targetEntity = PlayerRecord.class)
-  @JoinColumn(name = "player_id")
+  @ManyToOne(targetEntity = PlayerRecord.class, fetch=FetchType.EAGER)
+  @PrimaryKeyJoinColumn(name="playerId", referencedColumnName="id")
   private PlayerRecord player;
 
   /** The creator. */
-  @ManyToOne(optional = false)
-  @JoinColumn(name = "creator_id")
+  @ManyToOne(targetEntity = PlayerRecord.class, fetch=FetchType.EAGER)
+  @PrimaryKeyJoinColumn(name="creatorId", referencedColumnName="id")
   private PlayerRecord creator;
 
   /**
@@ -192,15 +187,6 @@ public class BanRecord {
   }
 
   /**
-   * Gets the creator id.
-   * 
-   * @return the creator id
-   */
-  public int getCreatorId() {
-    return this.creatorId;
-  }
-
-  /**
    * Gets the expires at.
    * 
    * @return the expires at
@@ -223,18 +209,8 @@ public class BanRecord {
    * 
    * @return the player
    */
-  @ManyToOne(targetEntity = PlayerRecord.class)
   public PlayerRecord getPlayer() {
     return this.player;
-  }
-
-  /**
-   * Gets the player id.
-   * 
-   * @return the player id
-   */
-  public int getPlayerId() {
-    return this.playerId;
   }
 
   /**
@@ -284,16 +260,6 @@ public class BanRecord {
    */
   public void setCreator(final PlayerRecord creator) {
     this.creator = creator;
-    this.creatorId = creator.getId();
-  }
-
-  /**
-   * Sets the creator id.
-   * 
-   * @param id the new creator id
-   */
-  public void setCreatorId(final int id) {
-    this.creatorId = id;
   }
 
   /**
@@ -321,17 +287,8 @@ public class BanRecord {
    */
   public void setPlayer(final PlayerRecord player) {
     this.player = player;
-    this.playerId = player.getId();
   }
 
-  /**
-   * Sets the player id.
-   * 
-   * @param playerId the new player id
-   */
-  public void setPlayerId(final int playerId) {
-    this.playerId = playerId;
-  }
 
   /**
    * Sets the reason.
