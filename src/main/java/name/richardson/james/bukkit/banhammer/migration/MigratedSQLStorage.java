@@ -18,6 +18,7 @@
 package name.richardson.james.bukkit.banhammer.migration;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,9 +32,6 @@ import name.richardson.james.bukkit.utilities.internals.Logger;
 import name.richardson.james.bukkit.utilities.persistence.SQLStorage;
 
 public class MigratedSQLStorage extends SQLStorage {
-
-  /** The logger. */
-  private final Logger logger = new Logger(this.getClass());
 
   /** The legacy records to migrate */
   private List<OldBanRecord> legacyRecords;
@@ -71,6 +69,7 @@ public class MigratedSQLStorage extends SQLStorage {
       this.legacyRecords = this.getEbeanServer().find(OldBanRecord.class).findList();
       this.logger.warning(this.getFormattedBanMigrationCount("records-to-migrate", this.legacyRecords.size()));
     } catch (final PersistenceException exception) {
+      exception.printStackTrace();
       this.legacyRecords = new LinkedList<OldBanRecord>();
     }
   }
@@ -104,11 +103,11 @@ public class MigratedSQLStorage extends SQLStorage {
     banRecord.setPlayer(playerRecord);
     banRecord.setCreator(creatorRecord);
     banRecord.setReason(record.getReason());
-    banRecord.setExpiresAt(new Timestamp(record.getExpiresAt()));
+    if (record.getExpiresAt() != 0) banRecord.setExpiresAt(new Timestamp(record.getExpiresAt()));
     banRecord.setState(BanRecord.State.NORMAL);
     /** Save records */
     final Object[] records = { playerRecord, creatorRecord, banRecord };
-    this.getEbeanServer().save(records);
+    this.getEbeanServer().save(Arrays.asList(records));
   }
   
   /**

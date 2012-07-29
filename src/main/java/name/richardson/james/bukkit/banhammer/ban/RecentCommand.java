@@ -31,6 +31,7 @@ import name.richardson.james.bukkit.utilities.command.CommandPermissionException
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.command.PluginCommand;
+import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
 
 @ConsoleCommand
 public class RecentCommand extends PluginCommand {
@@ -60,7 +61,7 @@ public class RecentCommand extends PluginCommand {
         }
       }
     } else {
-      sender.sendMessage(this.getMessage("no-bans"));
+      sender.sendMessage(ColourFormatter.replace("&", this.getMessage("no-bans")));
     }
   }
 
