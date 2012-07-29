@@ -64,9 +64,9 @@ public class BanHandler extends Handler implements API {
    * java.lang.String, java.lang.String, long, boolean)
    */
   public boolean banPlayer(String playerName, String senderName, String reason, long banLength, boolean notify) {
-    final PlayerRecord player = this.getPlayerRecord(playerName);
+    final PlayerRecord player = PlayerRecord.find(database, playerName);
     if (player.isBanned()) return false;
-    final PlayerRecord creator = this.getPlayerRecord(senderName);
+    final PlayerRecord creator = PlayerRecord.find(database, playerName);
     final BanRecord ban = new BanRecord();
     final long now = System.currentTimeMillis();
     ban.setPlayer(player);
@@ -75,8 +75,7 @@ public class BanHandler extends Handler implements API {
     ban.setState(BanRecord.State.NORMAL);
     ban.setCreatedAt(new Timestamp(now));
     if (banLength != 0) ban.setExpiresAt(new Timestamp(now + banLength));
-    Object[] records = { player, creator, ban };
-    database.save(Arrays.asList(records));
+    database.save(ban);
     BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(ban, !notify);
     Bukkit.getServer().getPluginManager().callEvent(event);
     Object[] arguments = { playerName, senderName, reason};
@@ -138,7 +137,7 @@ public class BanHandler extends Handler implements API {
    * @return true, if successful
    */
   protected boolean banPlayer(String playerName, BanRecord sourceBan, String reason, boolean notify) {
-    final PlayerRecord player = this.getPlayerRecord(playerName);
+    final PlayerRecord player = PlayerRecord.find(database, playerName);
     if (player.isBanned()) return false;
     final PlayerRecord creator = sourceBan.getCreator();
     final BanRecord ban = new BanRecord();
@@ -148,28 +147,10 @@ public class BanHandler extends Handler implements API {
     ban.setState(BanRecord.State.NORMAL);
     ban.setCreatedAt(sourceBan.getCreatedAt());
     if (sourceBan.getExpiresAt().getTime() != 0) ban.setExpiresAt(sourceBan.getExpiresAt());
-    Object[] records = { player, creator, ban };
-    database.save(Arrays.asList(records));
+    database.save(ban);
     Object[] arguments = { playerName, sourceBan.getCreator().getName(), reason};
     logger.info(plugin.getSimpleFormattedMessage(this.getClass().getSimpleName().toLowerCase() + ".log-banned-player", arguments));
     return true;
-  }
-
-  /**
-   * Gets the database record for a player.
-   * 
-   * @param playerName the player name
-   * @return the player record
-   */
-  private PlayerRecord getPlayerRecord(String playerName) {
-    if (!PlayerRecord.exists(database, playerName)) {
-      PlayerRecord playerRecord = new PlayerRecord();
-      playerRecord.setName(playerName);
-      database.save(playerRecord);
-      return PlayerRecord.find(database, playerName);
-    } else {
-      return PlayerRecord.find(database, playerName);
-    }
   }
 
 }

@@ -19,6 +19,7 @@ package name.richardson.james.bukkit.banhammer.persistence;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -52,8 +53,14 @@ public class PlayerRecord {
    * @return the player record
    */
   public static PlayerRecord find(final EbeanServer database, final String playerName) {
-    return database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
+    PlayerRecord record = database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
+    if (record == null) {
+      record = new PlayerRecord();
+      record.setName(playerName); 
+    } 
+    return record;
   }
+  
 
   /**
    * Get a list containing all players.
@@ -100,7 +107,7 @@ public class PlayerRecord {
    * 
    * @return the bans
    */
-  @OneToMany(targetEntity = BanRecord.class, fetch=FetchType.EAGER)
+  @OneToMany(targetEntity = BanRecord.class, fetch=FetchType.EAGER, cascade=CascadeType.PERSIST)
   public List<BanRecord> getBans() {
     return this.bans;
   }
@@ -110,7 +117,7 @@ public class PlayerRecord {
    * 
    * @return the created bans
    */
-  @OneToMany(targetEntity = BanRecord.class, fetch=FetchType.LAZY)
+  @OneToMany(targetEntity = BanRecord.class, fetch=FetchType.LAZY, cascade=CascadeType.PERSIST)
   public List<BanRecord> getCreatedBans() {
     return this.createdBans;
   }
