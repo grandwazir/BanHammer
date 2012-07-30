@@ -17,18 +17,13 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.api;
 
-import java.util.Locale;
-
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
 import name.richardson.james.bukkit.utilities.localisation.Localisable;
-import name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin;
+import name.richardson.james.bukkit.utilities.localisation.Localised;
 
-public class BanSummary implements Localisable {
-
-  /** The plugin with the resource bundles. */
-  private final SkeletonPlugin plugin;
+public class BanSummary extends Localised {
 
   /** The record we are linked with. */
   private final BanRecord record;
@@ -39,17 +34,9 @@ public class BanSummary implements Localisable {
    * @param plugin the plugin containing the resource bundles
    * @param ban the ban record to summarize
    */
-  public BanSummary(final SkeletonPlugin plugin, final BanRecord ban) {
+  public BanSummary(final Localisable plugin, final BanRecord ban) {
+    super(plugin);
     this.record = ban;
-    this.plugin = plugin;
-  }
-
-  /* (non-Javadoc)
-   * @see name.richardson.james.bukkit.utilities.plugin.Localisable#getChoiceFormattedMessage(java.lang.String, java.lang.Object[], java.lang.String[], double[])
-   */
-  public String getChoiceFormattedMessage(String key, final Object[] arguments, final String[] formats, final double[] limits) {
-    key = this.getClass().getSimpleName().toLowerCase() + "." + key;
-    return this.plugin.getChoiceFormattedMessage(key, arguments, formats, limits);
   }
 
   /**
@@ -87,21 +74,6 @@ public class BanSummary implements Localisable {
     }
   }
 
-  /* (non-Javadoc)
-   * @see name.richardson.james.bukkit.utilities.plugin.Localisable#getLocale()
-   */
-  public Locale getLocale() {
-    return this.plugin.getLocale();
-  }
-
-  /* (non-Javadoc)
-   * @see name.richardson.james.bukkit.utilities.plugin.Localisable#getMessage(java.lang.String)
-   */
-  public String getMessage(String key) {
-    key = this.getClass().getSimpleName().toLowerCase() + "." + key;
-    return this.plugin.getMessage(key);
-  }
-
   /**
    * Gets the reason for this ban.
    *
@@ -120,22 +92,6 @@ public class BanSummary implements Localisable {
     final String date = BanHammer.SHORT_DATE_FORMAT.format(this.record.getCreatedAt());
     final Object[] arguments = { this.record.getCreator().getName(), date };
     return this.getSimpleFormattedMessage("self-header", arguments);
-  }
-
-  /* (non-Javadoc)
-   * @see name.richardson.james.bukkit.utilities.plugin.Localisable#getSimpleFormattedMessage(java.lang.String, java.lang.Object)
-   */
-  public String getSimpleFormattedMessage(String key, final Object argument) {
-    key = this.getClass().getSimpleName().toLowerCase() + "." + key;
-    return this.plugin.getSimpleFormattedMessage(key, argument);
-  }
-
-  /* (non-Javadoc)
-   * @see name.richardson.james.bukkit.utilities.plugin.Localisable#getSimpleFormattedMessage(java.lang.String, java.lang.Object[])
-   */
-  public String getSimpleFormattedMessage(String key, final Object[] arguments) {
-    key = this.getClass().getSimpleName().toLowerCase() + "." + key;
-    return this.plugin.getSimpleFormattedMessage(key, arguments);
   }
 
 }
