@@ -147,7 +147,7 @@ public class PlayerRecord {
    * @return true, if is banned
    */
   public boolean isBanned() {
-    for (final BanRecord ban : this.bans) {
+    for (final BanRecord ban : this.getBans()) {
       if (ban.getState() == BanRecord.State.NORMAL) {
         return true;
       }

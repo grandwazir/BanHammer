@@ -61,6 +61,8 @@ public class MetricsListener extends AbstractMetricsListener {
     super(plugin);
     this.database = plugin.getDatabase();
     this.setInitialValues();
+    this.setupCustomMetrics();
+    this.metrics.start();
   }
 
   /**
@@ -102,8 +104,7 @@ public class MetricsListener extends AbstractMetricsListener {
   /* (non-Javadoc)
    * @see name.richardson.james.bukkit.utilities.metrics.AbstractMetricsListener#setupCustomMetrics()
    */
-  @Override
-  protected void setupCustomMetrics() {
+  private void setupCustomMetrics() {
 
     // Create a graph to show the total amount of kits issued.
     final Graph graph = this.metrics.createGraph("Realtime Ban Statistics");

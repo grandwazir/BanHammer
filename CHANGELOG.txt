@@ -1,5 +1,6 @@
 Changelog for BanHammer (v2.0.0-SNAPSHOT)
 
+2012-07-29 16:20:29 +0100    fixing bug with HistoryCommand (James Richardson)
 2012-07-29 15:07:06 +0100    preparing for snapshot (James Richardson)
 2012-07-29 15:05:16 +0100    key typo (James Richardson)
 2012-07-29 14:59:22 +0100    return false if entity is a new record (James Richardson)
