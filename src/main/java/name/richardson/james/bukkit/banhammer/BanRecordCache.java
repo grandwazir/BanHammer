@@ -109,7 +109,6 @@ public class BanRecordCache {
     for (final PlayerRecord player : PlayerRecord.list(database)) {
       if (player.isBanned()) {
         this.cache.put(player.getName(), player.getActiveBan());
-        System.out.print(player.getActiveBan().getState());
       }
     }
   }
