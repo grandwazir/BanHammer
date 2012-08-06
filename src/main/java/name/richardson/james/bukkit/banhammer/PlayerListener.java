@@ -159,7 +159,7 @@ public class PlayerListener extends LoggableListener {
       server.broadcast(summary.getLength(), this.permission.getName());
       break;
     case PLAYER_PARDONED:
-      server.broadcast(this.localisation.getMessage(this, "ban-broadcast", arguments), this.permission.getName());
+      server.broadcast(this.localisation.getMessage(this, "pardon-broadcast", arguments), this.permission.getName());
       break;
     }
   }

@@ -85,8 +85,12 @@ public class BanCommand extends AbstractCommand {
    * .command.CommandSender)
    */
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    if (this.immunePlayers.contains(this.player.getName()) && !this.getPermissionManager().hasPlayerPermission(sender, this.getPermissionManager().getRootPermission().getName())) {
-      throw new CommandPermissionException(this.getLocalisation().getMessage(this, "player-immune"), this.getPermissionManager().getRootPermission());
+    if (this.immunePlayers.contains(this.player.getName()) || this.player.isOp()) {
+      if (!this.getPermissionManager().hasPlayerPermission(sender, this.getPermissionManager().getRootPermission().getName())) {
+      throw new CommandPermissionException(
+          this.getLocalisation().getMessage(this, "player-immune"), 
+          this.getPermissionManager().getRootPermission());
+      }  
     }
     if (this.isBanLengthAuthorised(sender, this.time)) {
       if (!this.handler.banPlayer(this.player.getName(), sender.getName(), this.reason, this.time, true)) {

@@ -1,5 +1,6 @@
 Changelog for BanHammer (v2.0.0-SNAPSHOT)
 
+2012-08-06 10:21:34 +0100    allow admin immunity (James Richardson)
 2012-08-06 10:01:12 +0100    major refactoring (James Richardson)
 2012-08-06 05:42:45 +0100    refactor to use latest bukkitutil version (James Richardson)
 2012-08-06 02:36:14 +0100    change to use parent pom (James Richardson)

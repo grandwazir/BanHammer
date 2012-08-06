@@ -50,7 +50,6 @@ public class BanHammerConfiguration extends PluginConfiguration {
    * @return the ban limits
    */
   public Map<String, Long> getBanLimits() {
-    System.out.print(this.limits);
     return Collections.unmodifiableMap(this.limits);
   }
 
