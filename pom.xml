@@ -1,190 +1,32 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>name.richardson.james.bukkit</groupId>
   <artifactId>ban-hammer</artifactId>
   <version>2.0.0-SNAPSHOT</version>
   <name>BanHammer</name>
   <description>Bans, kicks and records.</description>
-  <url>http://grandwazir.github.com/${project.name}/</url>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-
-  <scm>
-    <!-- Github repo -->
-    <connection>scm:git:git://github.com/grandwazir/BanHammer.git/</connection>
-    <developerConnection>scm:git:git@github.com:grandwazir/BanHammer.git</developerConnection>
-    <url>https://github.com/grandwazir/BanHammer</url>
-  </scm>
-
-  <licenses>
-    <license>
-      <name>General Public License (Version 3)</name>
-      <url>http://www.gnu.org/licenses/gpl-3.0-standalone.html</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-
-  <developers>
-    <developer>
-      <id>grandwazir</id>
-      <name>James Richardson</name>
-      <email>grandwazir@armathia.net</email>
-      <url>${project.url}</url>
-      <roles>
-        <role>developer</role>
-      </roles>
-      <timezone>0</timezone>
-    </developer>
-  </developers>
-
-  <distributionManagement>  
-    <repository>  
-      <!-- Publish the versioned releases here -->  
-      <id>release</id>
-      <name>Simple Release Repository</name>  
-      <url>scp://repository.james.richardson.name/srv/www/repository.james.richardson.name/releases</url>  
-      <!-- Get rid of ugly time stamp suffixes -->
-      <uniqueVersion>false</uniqueVersion>
-    </repository>
-    <snapshotRepository>
-      <!-- Publish snapshots here -->  
-      <id>snapshot</id>
-      <name>Simple Snapshot Repository</name>  
-      <url>scp://repository.james.richardson.name/srv/www/repository.james.richardson.name/snapshots</url>  
-      <!-- Get rid of ugly time stamp suffixes -->
-      <uniqueVersion>true</uniqueVersion>
-    </snapshotRepository>
-  </distributionManagement> 
-
-
-
-  <repositories>
-    <!-- Bukkit repository -->
-    <repository>
-      <id>bukkit-repo</id>
-      <url>http://repo.bukkit.org/content/groups/public</url>
-    </repository>  
-    <!-- My repository -->
-    <repository>
-      <id>my-repo</id>
-      <url>http://repository.james.richardson.name</url>
-    </repository>  
-  </repositories>
+  <parent>
+     <groupId>name.richardson.james.bukkit</groupId>
+     <artifactId>parent-pom</artifactId>
+     <version>2</version>
+  </parent>
 
   <dependencies>
      <dependency>
            <groupId>name.richardson.james.bukkit</groupId>
-           <artifactId>alias</artifactId>
-           <version>1.0.2</version>
+           <artifactId>bukkit-utilities</artifactId>
+           <version>4.1.0-SNAPSHOT</version>
      </dependency>
+     <dependencies>
      <dependency>
-	   <groupId>name.richardson.james.bukkit</groupId>
-	   <artifactId>bukkit-utilities</artifactId>
-	   <version>4.0.0-SNAPSHOT</version>
+           <groupId>name.richardson.james.bukkit</groupId>
+           <artifactId>alias</artifactId>
+           <version>1.2.0-SNAPSHOT</version>
      </dependency>
   </dependencies>
 
-<reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.4</version>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>dependencies</report>
-              <report>distribution-management</report>
-              <report>index</report>
-              <report>issue-tracking</report>
-              <report>license</report>
-              <report>scm</report>
-              <report>project-team</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.8.1</version>
-        <configuration>
-          <show>private</show>
-          <nohelp>true</nohelp>
-        </configuration>      
-      </plugin>
-    </plugins>
-  </reporting>
-
   <build>
-
-      <resources>
-        <resource>
-          <directory>src/main/resources</directory>
-          <filtering>true</filtering>
-        </resource>
-      </resources>
-
       <plugins>
-
-          <plugin>
-              <groupId>com.github.github</groupId>
-              <artifactId>downloads-maven-plugin</artifactId>
-              <version>0.4</version>
-              <configuration>
-                <description>${project.version} release of ${project.name}</description>
-                <override>true</override>
-                <includeAttached>false</includeAttached>
-              </configuration>
-              <executions>
-                <execution>
-                  <goals>
-                    <goal>upload</goal>
-                  </goals>
-                  <phase>deploy</phase>
-                </execution>
-              </executions>
-          </plugin>
-
-              
-
-          <plugin>
-              <groupId>com.github.danielflower.mavenplugins</groupId>
-              <!-- Generate a changelog based on github commits -->  
-              <artifactId>maven-gitlog-plugin</artifactId>
-              <version>1.4.7</version>
-              <configuration>
-                  <reportTitle>Changelog for ${project.name} (v${project.version})</reportTitle>
-                  <verbose>true</verbose>
-                  <outputDirectory>${basedir}</outputDirectory>
-                  <generatePlainTextChangeLog>true</generatePlainTextChangeLog>
-                  <plainTextChangeLogFilename>CHANGELOG.txt</plainTextChangeLogFilename>
-                  <generateSimpleHTMLChangeLog>false</generateSimpleHTMLChangeLog>
-                  <generateHTMLTableOnlyChangeLog>false</generateHTMLTableOnlyChangeLog>
-              </configuration>
-              <executions>
-                <execution>
-                      <goals>
-                          <goal>generate</goal>
-                      </goals>
-                  </execution>
-              </executions>
-          </plugin>
-
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-release-plugin</artifactId>
-            <version>2.2.2</version>
-            <configuration>
-                <localCheckout>true</localCheckout>
-                <!-- Push and tag release changes myself rather than let Maven do it -->  
-                <pushChanges>false</pushChanges>
-                <preparationGoals>process-sources</preparationGoals>
-                <tagNameFormat>v@{project.version}</tagNameFormat>   
-            </configuration>
-          </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-shade-plugin</artifactId>
@@ -205,32 +47,6 @@
                 </configuration>
               </execution>
             </executions>
-          </plugin>
-          
-          <plugin>
-            <groupId>com.github.github</groupId>
-             <artifactId>site-maven-plugin</artifactId>
-             <version>0.5</version>
-             <configuration>
-               <message>Building site for ${project.version}</message>
-             </configuration>
-             <executions>
-               <execution>
-                 <goals>
-                   <goal>site</goal>
-                 </goals>
-                 <phase>site</phase>
-               </execution>
-             </executions>
-          </plugin>
-
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>2.3.2</version>
-            <configuration>            
-                <compilerVersion>1.5</compilerVersion>
-            </configuration>
           </plugin>
       </plugins>
   </build>
