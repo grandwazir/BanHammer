@@ -20,6 +20,7 @@ package name.richardson.james.bukkit.banhammer;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -74,10 +75,13 @@ public class BanHammerConfiguration extends PluginConfiguration {
         final Long length = TimeFormatter.parseTime(section.getString(key));
         this.limits.put(name, length);
       } catch (final NumberFormatException e) {
-        // this.logger.debug(String.format("Ban limit '%s' specifies an invalid number format.",
-        // key));
+        this.getLogger().warning(this, "limit-invalid", key);
       }
     }
+  }
+  
+  public List<String> getImmunePlayers() {
+    return this.getConfiguration().getStringList("immune-players");
   }
 
 }

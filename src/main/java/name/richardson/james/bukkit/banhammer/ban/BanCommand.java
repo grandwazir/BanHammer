@@ -61,14 +61,17 @@ public class BanCommand extends AbstractCommand {
   /** The ban limis. */
   private Map<String, Long> limits;
 
+  private final List<String> immunePlayers;
+
   /**
    * Instantiates a new BanCommand.
    * 
    * @param plugin the plugin that this command belongs to
    * @param limits the registered ban limits to use
    */
-  public BanCommand(final BanHammer plugin, Map<String, Long> limits) {
+  public BanCommand(final BanHammer plugin, Map<String, Long> limits, List<String> immunePlayers) {
     super(plugin, true);
+    this.immunePlayers = immunePlayers;
     this.limits = limits;
     this.registerLimitPermissions();
     this.server = plugin.getServer();
@@ -82,6 +85,9 @@ public class BanCommand extends AbstractCommand {
    * .command.CommandSender)
    */
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+    if (this.immunePlayers.contains(this.player.getName()) && !this.getPermissionManager().hasPlayerPermission(sender, this.getPermissionManager().getRootPermission().getName())) {
+      throw new CommandPermissionException(this.getLocalisation().getMessage(this, "player-immune"), this.getPermissionManager().getRootPermission());
+    }
     if (this.isBanLengthAuthorised(sender, this.time)) {
       if (!this.handler.banPlayer(this.player.getName(), sender.getName(), this.reason, this.time, true)) {
         sender.sendMessage(this.getLocalisation().getMessage(this, "player-already-banned", this.player.getName()));

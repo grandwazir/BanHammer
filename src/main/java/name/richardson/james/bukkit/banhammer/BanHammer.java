@@ -149,7 +149,7 @@ public final class BanHammer extends AbstractPlugin {
   protected void registerCommands() {
     final CommandManager commandManager = new CommandManager(this);
     this.getCommand("bh").setExecutor(commandManager);
-    final Command banCommand = new BanCommand(this, this.configuration.getBanLimits());
+    final Command banCommand = new BanCommand(this, this.configuration.getBanLimits(), this.configuration.getImmunePlayers());
     final Command kickCommand = new KickCommand(this);
     final Command pardonCommand = new PardonCommand(this);
     // register commands

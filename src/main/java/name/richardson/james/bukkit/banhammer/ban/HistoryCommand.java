@@ -90,7 +90,7 @@ public class HistoryCommand extends AbstractCommand {
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
     if (arguments.length == 0) {
       if (sender instanceof ConsoleCommandSender) {
-        throw new CommandArgumentException(this.getLocalisation().getMessage(this, "specify-a-player"), null);
+        throw new CommandArgumentException(this.getLocalisation().getMessage(BanHammer.class, "must-specify-player"), null);
       }
       this.playerName = sender.getName();
     } else {

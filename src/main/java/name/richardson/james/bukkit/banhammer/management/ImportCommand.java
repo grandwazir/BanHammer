@@ -70,7 +70,7 @@ public class ImportCommand extends AbstractCommand {
     }
 
     this.formatter.setMessage(this, "bans-imported");
-    this.formatter.setArguments(total);
+    this.formatter.setArguments(imported);
     sender.sendMessage(this.formatter.getMessage());
     if (imported != total) {
       this.formatter.setMessage(this, "bans-failed");

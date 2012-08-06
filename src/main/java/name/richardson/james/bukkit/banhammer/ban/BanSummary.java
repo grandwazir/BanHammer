@@ -47,7 +47,7 @@ public class BanSummary {
    */
   public String getExpiresAt() {
     final String expiryDateString = BanHammer.SHORT_DATE_FORMAT.format(this.record.getExpiresAt());
-    return this.localisation.getMessage("expires", expiryDateString);
+    return this.localisation.getMessage(this, "expires", expiryDateString);
   }
 
   /**
@@ -91,7 +91,7 @@ public class BanSummary {
    */
   public String getSelfHeader() {
     final String date = BanHammer.SHORT_DATE_FORMAT.format(this.record.getCreatedAt());
-    return this.localisation.getMessage("self-header", this.record.getCreator().getName(), date);
+    return this.localisation.getMessage(this, "self-header", this.record.getCreator().getName(), date);
   }
 
 }

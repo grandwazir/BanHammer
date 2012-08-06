@@ -8,5 +8,6 @@ ban-limits:
   short: 1d
   medium: 3d
   long: 7d
+immune-players: {}
 alias-plugin:
   enabled: true

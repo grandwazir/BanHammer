@@ -63,7 +63,7 @@ public class ExportCommand extends AbstractCommand {
         exported++;
       }
     }
-    this.formatter.setArguments(this, exported);
+    this.formatter.setArguments(exported);
     sender.sendMessage(this.formatter.getMessage());
   }
 
