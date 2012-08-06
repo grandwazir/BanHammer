@@ -27,9 +27,6 @@ import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
  */
 public class BanHammerPlayerBannedEvent extends BanHammerPlayerEvent {
 
-  /** The Constant serialVersionUID. */
-  private static final long serialVersionUID = 768545683909385614L;
-
   /** The Constant handlers. */
   private static final HandlerList handlers = new HandlerList();
 
@@ -43,7 +40,8 @@ public class BanHammerPlayerBannedEvent extends BanHammerPlayerEvent {
 
   /*
    * (non-Javadoc)
-   * @see name.richardson.james.bukkit.banhammer.api.BanHammerPlayerEvent#BanHammerPlayerEvent()
+   * @see name.richardson.james.bukkit.banhammer.api.BanHammerPlayerEvent#
+   * BanHammerPlayerEvent()
    */
   public BanHammerPlayerBannedEvent(final BanRecord record, final boolean silent) {
     super(record, silent);

@@ -43,9 +43,6 @@ import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
 @ConsoleCommand
 public class BanCommand extends AbstractCommand {
 
-  /** Reference to the BanHammer plugin. */
-  private final BanHammer plugin;
-
   /** Reference to the BanHammer API. */
   private final BanHandler handler;
 
@@ -66,20 +63,23 @@ public class BanCommand extends AbstractCommand {
 
   /**
    * Instantiates a new BanCommand.
-   *
+   * 
    * @param plugin the plugin that this command belongs to
    * @param limits the registered ban limits to use
    */
   public BanCommand(final BanHammer plugin, Map<String, Long> limits) {
     super(plugin, true);
-    this.plugin = plugin;
     this.limits = limits;
+    this.registerLimitPermissions();
     this.server = plugin.getServer();
     this.handler = plugin.getHandler();
   }
 
-  /* (non-Javadoc)
-   * @see name.richardson.james.bukkit.utilities.command.Command#execute(org.bukkit.command.CommandSender)
+  /*
+   * (non-Javadoc)
+   * @see
+   * name.richardson.james.bukkit.utilities.command.Command#execute(org.bukkit
+   * .command.CommandSender)
    */
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     if (this.isBanLengthAuthorised(sender, this.time)) {
@@ -93,15 +93,18 @@ public class BanCommand extends AbstractCommand {
     }
   }
 
-  /* (non-Javadoc)
-   * @see name.richardson.james.bukkit.utilities.command.Command#parseArguments(java.lang.String[], org.bukkit.command.CommandSender)
+  /*
+   * (non-Javadoc)
+   * @see
+   * name.richardson.james.bukkit.utilities.command.Command#parseArguments(java
+   * .lang.String[], org.bukkit.command.CommandSender)
    */
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
     final LinkedList<String> args = new LinkedList<String>();
     args.addAll(Arrays.asList(arguments));
 
     if (args.size() == 0) {
-      throw new CommandArgumentException(this.getLocalisation().getMessage(this, "must-specify-player"), null);
+      throw new CommandArgumentException(this.getLocalisation().getMessage(BanHammer.class, "must-specify-player"), null);
     } else {
       this.player = this.matchPlayer(args.remove(0));
     }
@@ -125,7 +128,7 @@ public class BanCommand extends AbstractCommand {
 
   /**
    * Checks if is ban length authorised.
-   *
+   * 
    * @param sender the sender
    * @param banLength the ban length
    * @return true, if is ban length authorised
@@ -146,7 +149,7 @@ public class BanCommand extends AbstractCommand {
 
   /**
    * Match a String with an OfflinePlayer.
-   *
+   * 
    * @param name the name to match
    * @return the offline player
    */
@@ -158,20 +161,12 @@ public class BanCommand extends AbstractCommand {
       return players.get(0);
     }
   }
-
-  /**
-   * Register permissions.
-   */
-  protected void registerPermissions(boolean wildcard) {
-    super.registerPermissions(wildcard);
-    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
-    // create permissions for individual ban limits
+  
+  private void registerLimitPermissions() {
+    final String prefix = this.getRootPermission().getName().replace("*", "");
     if (!limits.isEmpty()) {
       for (final Entry<String, Long> limit : limits.entrySet()) {
-        final Permission permission = new Permission(
-            prefix + this.getName() + "." + limit.getKey(), 
-            this.getLocalisation().getMessage(this, "permission-limit-description", TimeFormatter.millisToLongDHMS(limit.getValue())), 
-            PermissionDefault.OP);
+        final Permission permission = new Permission(prefix + "." + limit.getKey(), this.getLocalisation().getMessage(this, "permission-limit-description", TimeFormatter.millisToLongDHMS(limit.getValue())), PermissionDefault.OP);
         permission.addParent(this.getRootPermission(), true);
         this.getPermissionManager().addPermission(permission, false);
       }

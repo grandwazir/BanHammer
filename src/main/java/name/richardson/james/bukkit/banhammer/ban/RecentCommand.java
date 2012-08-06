@@ -36,7 +36,7 @@ import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 public class RecentCommand extends AbstractCommand {
 
   public static final int DEFAULT_LIMIT = 5;
-  
+
   /** The number of bans to return */
   private int count;
 
@@ -48,12 +48,9 @@ public class RecentCommand extends AbstractCommand {
     super(plugin, false);
     this.database = plugin.getDatabase();
     this.formatter = new ChoiceFormatter(this.getLocalisation());
-    this.formatter.setLimits(1,2);
+    this.formatter.setLimits(1, 2);
     this.formatter.setMessage(this, "header");
-    this.formatter.setFormats(
-        this.getLocalisation().getMessage(BanHammer.class, "one-ban"),
-        this.getLocalisation().getMessage(BanHammer.class, "many-bans")
-    );
+    this.formatter.setFormats(this.getLocalisation().getMessage(BanHammer.class, "one-ban"), this.getLocalisation().getMessage(BanHammer.class, "many-bans"));
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
@@ -87,6 +84,5 @@ public class RecentCommand extends AbstractCommand {
       }
     }
   }
-
 
 }

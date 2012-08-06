@@ -18,6 +18,7 @@
 package name.richardson.james.bukkit.banhammer.migration;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,15 +38,17 @@ public class MigratedSQLStorage extends SQLStorage {
 
   /**
    * Instantiates a new migrated sql storage.
-   *
+   * 
    * @param plugin the plugin
    */
   public MigratedSQLStorage(final BanHammer plugin, DatabaseConfiguration configuration, List<Class<?>> classes) {
     super(plugin, configuration, classes);
   }
 
-  /* (non-Javadoc)
-   * @see name.richardson.james.bukkit.utilities.persistence.SQLStorage#afterDatabaseCreate()
+  /*
+   * (non-Javadoc)
+   * @see name.richardson.james.bukkit.utilities.persistence.SQLStorage#
+   * afterDatabaseCreate()
    */
   @Override
   protected void afterDatabaseCreate() {
@@ -59,8 +62,10 @@ public class MigratedSQLStorage extends SQLStorage {
     }
   }
 
-  /* (non-Javadoc)
-   * @see name.richardson.james.bukkit.utilities.persistence.SQLStorage#beforeDatabaseDrop()
+  /*
+   * (non-Javadoc)
+   * @see name.richardson.james.bukkit.utilities.persistence.SQLStorage#
+   * beforeDatabaseDrop()
    */
   @Override
   protected void beforeDatabaseDrop() {
@@ -68,18 +73,17 @@ public class MigratedSQLStorage extends SQLStorage {
       this.legacyRecords = this.getEbeanServer().find(OldBanRecord.class).findList();
       this.getLogger().warning(this, "records-to-migrate", this.legacyRecords.size());
     } catch (final PersistenceException exception) {
-      exception.printStackTrace();
-      this.legacyRecords = new LinkedList<OldBanRecord>();
+      this.legacyRecords = new ArrayList<OldBanRecord>();
     }
   }
-  
+
   protected void beforeDatabaseCreate() {
     this.getClasses().remove(OldBanRecord.class);
   }
 
   /**
    * Migrate a legacy record to the new format.
-   *
+   * 
    * @param record the record to migrate
    */
   private void migrateRecord(final OldBanRecord record) {
@@ -98,7 +102,7 @@ public class MigratedSQLStorage extends SQLStorage {
     final Object[] records = { playerRecord, creatorRecord, banRecord };
     this.getEbeanServer().save(Arrays.asList(records));
   }
-  
+
   /**
    * Gets the database record for a player.
    * 

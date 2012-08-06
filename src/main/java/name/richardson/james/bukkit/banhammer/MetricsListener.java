@@ -59,7 +59,7 @@ public class MetricsListener implements Listener {
 
   /**
    * Instantiates a new metrics listener.
-   *
+   * 
    * @param plugin the plugin that this listener belongs to.
    * @throws IOException Signals that an I/O exception has occurred.
    */
@@ -73,10 +73,10 @@ public class MetricsListener implements Listener {
 
   /**
    * When a player is banned, increment the statistics.
-   *
+   * 
    * @param event the event
    */
-  @EventHandler(priority=EventPriority.MONITOR)
+  @EventHandler(priority = EventPriority.MONITOR)
   public void onPlayerBanned(final BanHammerPlayerBannedEvent event) {
     switch (event.getRecord().getType()) {
     case PERMANENT:
@@ -92,10 +92,10 @@ public class MetricsListener implements Listener {
 
   /**
    * When a player is pardoned, increment the statistics.
-   *
+   * 
    * @param event the event
    */
-  @EventHandler(priority=EventPriority.MONITOR)
+  @EventHandler(priority = EventPriority.MONITOR)
   public void onPlayerPardoned(final BanHammerPlayerPardonedEvent event) {
     this.pardonedBans++;
     this.totalPardonedBans++;
@@ -109,8 +109,11 @@ public class MetricsListener implements Listener {
     }
   }
 
-  /* (non-Javadoc)
-   * @see name.richardson.james.bukkit.utilities.metrics.AbstractMetricsListener#setupCustomMetrics()
+  /*
+   * (non-Javadoc)
+   * @see
+   * name.richardson.james.bukkit.utilities.metrics.AbstractMetricsListener#
+   * setupCustomMetrics()
    */
   private void setupCustomMetrics() {
 

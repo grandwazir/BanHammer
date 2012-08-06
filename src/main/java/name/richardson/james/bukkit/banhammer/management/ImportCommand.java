@@ -35,7 +35,7 @@ import name.richardson.james.bukkit.utilities.formatters.StringFormatter;
 public class ImportCommand extends AbstractCommand {
 
   private final ChoiceFormatter formatter;
-  
+
   /** A instance of the Bukkit server. */
   private final Server server;
 
@@ -50,12 +50,8 @@ public class ImportCommand extends AbstractCommand {
     this.handler = plugin.getHandler();
     this.server = plugin.getServer();
     this.formatter = new ChoiceFormatter(this.getLocalisation());
-    this.formatter.setLimits(0,1,2);
-    this.formatter.setFormats(
-        this.getLocalisation().getMessage(BanHammer.class, "no-bans"),
-        this.getLocalisation().getMessage(BanHammer.class, "one-ban"),
-        this.getLocalisation().getMessage(BanHammer.class, "many-bans")
-    );
+    this.formatter.setLimits(0, 1, 2);
+    this.formatter.setFormats(this.getLocalisation().getMessage(BanHammer.class, "no-bans"), this.getLocalisation().getMessage(BanHammer.class, "one-ban"), this.getLocalisation().getMessage(BanHammer.class, "many-bans"));
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
@@ -81,13 +77,11 @@ public class ImportCommand extends AbstractCommand {
       this.formatter.setArguments(total - imported);
       sender.sendMessage(this.formatter.getMessage());
     }
-    
+
   }
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
     this.reason = (arguments.length == 0) ? this.getLocalisation().getMessage(this, "default-reason") : StringFormatter.combineString(arguments, " ");
   }
-
-
 
 }

@@ -39,9 +39,9 @@ import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 public class PardonCommand extends AbstractCommand {
 
   private Permission own;
-  
+
   private Permission others;
-  
+
   /** A reference to the BanHammer API. */
   private final BanHandler handler;
 
@@ -64,7 +64,7 @@ public class PardonCommand extends AbstractCommand {
 
     if (handler.isPlayerBanned(player.getName())) {
       final BanRecord banRecord = PlayerRecord.find(database, player.getName()).getActiveBan();
-      
+
       if (sender.hasPermission(others) && !banRecord.getCreator().getName().equalsIgnoreCase(sender.getName())) {
         this.handler.pardonPlayer(this.player.getName(), sender.getName(), true);
         this.player.setBanned(false);
@@ -91,7 +91,7 @@ public class PardonCommand extends AbstractCommand {
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
     if (arguments.length == 0) {
-      throw new CommandArgumentException(this.getLocalisation().getMessage(this, "must-specify-a-player"), null);
+      throw new CommandArgumentException(this.getLocalisation().getMessage(BanHammer.class, "must-specify-a-player"), null);
     } else {
       this.player = this.matchPlayer(arguments[0]);
     }

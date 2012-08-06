@@ -26,12 +26,12 @@ public class BanSummary {
 
   /** The record we are linked with. */
   private final BanRecord record;
-  
+
   private final Localisation localisation;
 
   /**
    * Instantiates a new ban summary.
-   *
+   * 
    * @param plugin the plugin containing the resource bundles
    * @param ban the ban record to summarize
    */
@@ -51,8 +51,9 @@ public class BanSummary {
   }
 
   /**
-   * Gets a header summary for this ban. This includes the name of the player, who banned them and when.
-   *
+   * Gets a header summary for this ban. This includes the name of the player,
+   * who banned them and when.
+   * 
    * @return the header
    */
   public String getHeader() {
@@ -62,7 +63,7 @@ public class BanSummary {
 
   /**
    * Gets a human readable version of the ban length.
-   *
+   * 
    * @return the length
    */
   public String getLength() {
@@ -76,7 +77,7 @@ public class BanSummary {
 
   /**
    * Gets the reason for this ban.
-   *
+   * 
    * @return the reason
    */
   public String getReason() {
@@ -85,7 +86,7 @@ public class BanSummary {
 
   /**
    * Gets the self header.
-   *
+   * 
    * @return the self header
    */
   public String getSelfHeader() {

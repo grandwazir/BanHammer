@@ -57,7 +57,7 @@ public final class BanHammer extends AbstractPlugin {
   public static final DateFormat LONG_DATE_FORMAT = new SimpleDateFormat("d MMMMM yyyy HH:mm (z)");
 
   public static final DateFormat SHORT_DATE_FORMAT = new SimpleDateFormat("d MMM yyyy HH:mm (z)");
-  
+
   /** Reference to the Alias API. */
   private AliasHandler aliasHandler;
 
@@ -132,6 +132,7 @@ public final class BanHammer extends AbstractPlugin {
    */
   @Override
   protected void loadConfiguration() throws IOException {
+    super.loadConfiguration();
     this.configuration = new BanHammerConfiguration(this);
     if (this.configuration.isAliasEnabled()) {
       this.hookAlias();
@@ -189,10 +190,7 @@ public final class BanHammer extends AbstractPlugin {
     super.setPermissions();
     // register notify permission
     final String prefix = this.getDescription().getName().toLowerCase() + ".";
-    this.notify = new Permission(
-        prefix + this.getLocalisation().getMessage(this, "notify-permission-name"), 
-        this.getLocalisation().getMessage(this, "notify-permission-description"), 
-        PermissionDefault.TRUE);
+    this.notify = new Permission(prefix + this.getLocalisation().getMessage(this, "notify-permission-name"), this.getLocalisation().getMessage(this, "notify-permission-description"), PermissionDefault.TRUE);
     this.getPermissionManager().addPermission(notify, true);
   }
 

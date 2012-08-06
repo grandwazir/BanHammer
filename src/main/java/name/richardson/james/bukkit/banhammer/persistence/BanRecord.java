@@ -147,13 +147,13 @@ public class BanRecord {
   private State state;
 
   /** The player. */
-  @ManyToOne(targetEntity = PlayerRecord.class, fetch=FetchType.EAGER, cascade=CascadeType.PERSIST)
-  @PrimaryKeyJoinColumn(name="playerId", referencedColumnName="id")
+  @ManyToOne(targetEntity = PlayerRecord.class, fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+  @PrimaryKeyJoinColumn(name = "playerId", referencedColumnName = "id")
   private PlayerRecord player;
 
   /** The creator. */
-  @ManyToOne(targetEntity = PlayerRecord.class, fetch=FetchType.EAGER, cascade=CascadeType.PERSIST)
-  @PrimaryKeyJoinColumn(name="creatorId", referencedColumnName="id")
+  @ManyToOne(targetEntity = PlayerRecord.class, fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+  @PrimaryKeyJoinColumn(name = "creatorId", referencedColumnName = "id")
   private PlayerRecord creator;
 
   /**
@@ -288,7 +288,6 @@ public class BanRecord {
     this.player = player;
   }
 
-
   /**
    * Sets the reason.
    * 
@@ -306,5 +305,5 @@ public class BanRecord {
   public void setState(final State state) {
     this.state = state;
   }
-  
+
 }

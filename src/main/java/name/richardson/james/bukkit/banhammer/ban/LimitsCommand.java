@@ -44,14 +44,10 @@ public class LimitsCommand extends AbstractCommand {
     super(plugin, false);
     this.limits = limits;
     this.formatter = new ChoiceFormatter(this.getLocalisation());
-    this.formatter.setLimits(0,1,2);
+    this.formatter.setLimits(0, 1, 2);
     this.formatter.setMessage(this, "limits");
     this.formatter.setArguments(limits.size());
-    this.formatter.setFormats(
-        this.getLocalisation().getMessage(BanHammer.class, "no-limit"),
-        this.getLocalisation().getMessage(BanHammer.class, "one-limits"),
-        this.getLocalisation().getMessage(BanHammer.class, "many-limits")
-    );
+    this.formatter.setFormats(this.getLocalisation().getMessage(BanHammer.class, "no-limit"), this.getLocalisation().getMessage(BanHammer.class, "one-limits"), this.getLocalisation().getMessage(BanHammer.class, "many-limits"));
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {

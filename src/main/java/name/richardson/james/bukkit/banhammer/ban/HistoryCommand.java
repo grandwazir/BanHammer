@@ -40,9 +40,9 @@ import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 public class HistoryCommand extends AbstractCommand {
 
   private Permission own;
-  
+
   private Permission others;
-  
+
   /** Reference to the BanHammer API */
   private final BanHandler handler;
 
@@ -63,13 +63,9 @@ public class HistoryCommand extends AbstractCommand {
     this.plugin = plugin;
     this.server = plugin.getServer();
     this.formatter = new ChoiceFormatter(this.getLocalisation());
-    this.formatter.setLimits(0,1,2);
+    this.formatter.setLimits(0, 1, 2);
     this.formatter.setMessage(this, "header");
-    this.formatter.setFormats(
-        this.getLocalisation().getMessage(BanHammer.class, "no-bans"),
-        this.getLocalisation().getMessage(BanHammer.class, "one-ban"),
-        this.getLocalisation().getMessage(BanHammer.class, "many-bans")
-    );
+    this.formatter.setFormats(this.getLocalisation().getMessage(BanHammer.class, "no-bans"), this.getLocalisation().getMessage(BanHammer.class, "one-ban"), this.getLocalisation().getMessage(BanHammer.class, "many-bans"));
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
@@ -129,19 +125,13 @@ public class HistoryCommand extends AbstractCommand {
   @Override
   protected void registerPermissions(boolean wildcard) {
     super.registerPermissions(wildcard);
-    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
+    final String prefix = this.getRootPermission().getName().replace("*", "");
     // add ability to view your own ban history
-    final Permission own = new Permission(
-        prefix + this.getName() + "." + this.getLocalisation().getMessage(this, "own-permission-name"), 
-        this.getLocalisation().getMessage(this, "own-permission-description"), 
-        PermissionDefault.TRUE);
+    own = new Permission(prefix + "." + this.getLocalisation().getMessage(this, "own-permission-name"), this.getLocalisation().getMessage(this, "own-permission-description"), PermissionDefault.TRUE);
     own.addParent(this.getRootPermission(), true);
     this.getPermissionManager().addPermission(own, false);
     // add ability to view the ban history of others
-    final Permission others = new Permission(
-        prefix + this.getName() + "." + this.getLocalisation().getMessage(this, "others-permission-name"), 
-        this.getLocalisation().getMessage(this, "others-permission-description"), 
-        PermissionDefault.OP);
+    others = new Permission(prefix + "." + this.getLocalisation().getMessage(this, "others-permission-name"), this.getLocalisation().getMessage(this, "others-permission-description"), PermissionDefault.OP);
     others.addParent(this.getRootPermission(), true);
     this.getPermissionManager().addPermission(others, false);
   }

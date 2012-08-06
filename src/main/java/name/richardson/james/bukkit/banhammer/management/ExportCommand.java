@@ -48,16 +48,11 @@ public class ExportCommand extends AbstractCommand {
     this.server = plugin.getServer();
     this.database = plugin.getDatabase();
     this.formatter = new ChoiceFormatter(this.getLocalisation());
-    this.formatter.setLimits(0,1,2);
+    this.formatter.setLimits(0, 1, 2);
     this.formatter.setMessage(this, "bans-exported");
-    this.formatter.setFormats(
-        this.getLocalisation().getMessage(BanHammer.class, "no-bans"),
-        this.getLocalisation().getMessage(BanHammer.class, "one-ban"),
-        this.getLocalisation().getMessage(BanHammer.class, "many-bans")
-    );
+    this.formatter.setFormats(this.getLocalisation().getMessage(BanHammer.class, "no-bans"), this.getLocalisation().getMessage(BanHammer.class, "one-ban"), this.getLocalisation().getMessage(BanHammer.class, "many-bans"));
   }
 
-  
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     int exported = 0;
     for (final Object record : PlayerRecord.list(database)) {
@@ -81,5 +76,5 @@ public class ExportCommand extends AbstractCommand {
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
     return;
   }
-  
+
 }

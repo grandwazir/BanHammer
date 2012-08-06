@@ -27,6 +27,7 @@ import org.bukkit.Bukkit;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
+import name.richardson.james.bukkit.banhammer.persistence.BanRecord.State;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.utilities.logging.Logger;
 
@@ -34,10 +35,10 @@ public class BanHandler {
 
   /* Logger for this class */
   private final Logger logger;
-  
+
   /* The database used by this handler */
   private final EbeanServer database;
-  
+
   /**
    * Instantiates a new ban handler.
    * 
@@ -58,7 +59,7 @@ public class BanHandler {
   public boolean banPlayer(String playerName, String senderName, String reason, long banLength, boolean notify) {
     final PlayerRecord player = PlayerRecord.find(database, playerName);
     if (player.isBanned()) return false;
-    final PlayerRecord creator = PlayerRecord.find(database, playerName);
+    final PlayerRecord creator = PlayerRecord.find(database, senderName);
     final BanRecord ban = new BanRecord();
     final long now = System.currentTimeMillis();
     ban.setPlayer(player);
@@ -107,14 +108,15 @@ public class BanHandler {
     if (playerRecord != null && playerRecord.isBanned()) {
       final BanRecord banRecord = playerRecord.getActiveBan();
       BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(banRecord, !notify);
-      database.delete(playerRecord.getActiveBan());
+      banRecord.setState(State.PARDONED);
+      database.save(banRecord);
       Bukkit.getServer().getPluginManager().callEvent(event);
       logger.info(this, "player-pardoned", playerName, senderName);
       return true;
     } else {
       return false;
     }
-    
+
   }
 
   /**

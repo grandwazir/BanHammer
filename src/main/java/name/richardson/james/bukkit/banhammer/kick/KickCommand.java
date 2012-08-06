@@ -58,14 +58,14 @@ public class KickCommand extends AbstractCommand {
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
     if (arguments.length == 0) {
-      throw new CommandArgumentException(this.getLocalisation().getMessage(this, "must-specify-player"), null);
+      throw new CommandArgumentException(this.getLocalisation().getMessage(BanHammer.class, "must-specify-player"), null);
     }
-    
+
     this.player = this.matchPlayer(arguments[0]);
     if (this.player == null) {
-      throw new CommandArgumentException(this.getLocalisation().getMessage(this, "must-specify-player"), null);
+      throw new CommandArgumentException(this.getLocalisation().getMessage(BanHammer.class, "must-specify-player"), null);
     }
-    
+
     if (arguments.length > 1) {
       final String[] elements = new String[arguments.length - 1];
       System.arraycopy(arguments, 1, elements, 0, arguments.length - 1);

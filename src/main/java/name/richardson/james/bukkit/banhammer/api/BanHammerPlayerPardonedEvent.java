@@ -23,9 +23,6 @@ import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 
 public class BanHammerPlayerPardonedEvent extends BanHammerPlayerEvent {
 
-  /** The Constant serialVersionUID. */
-  private static final long serialVersionUID = 768545683909385614L;
-
   /** The event handlers. */
   private static final HandlerList handlers = new HandlerList();
 

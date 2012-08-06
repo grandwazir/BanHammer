@@ -34,7 +34,7 @@ public class BanHammerConfiguration extends PluginConfiguration {
 
   /**
    * Instantiates a new BanHammer configuration.
-   *
+   * 
    * @param plugin the plugin that this configuration belongs to.
    * @throws IOException Signals that an I/O exception has occurred.
    */
@@ -45,16 +45,17 @@ public class BanHammerConfiguration extends PluginConfiguration {
 
   /**
    * Gets the ban limits.
-   *
+   * 
    * @return the ban limits
    */
   public Map<String, Long> getBanLimits() {
+    System.out.print(this.limits);
     return Collections.unmodifiableMap(this.limits);
   }
 
   /**
    * Checks if is alias should be enabled.
-   *
+   * 
    * @return true, if is alias is enabled
    */
   public boolean isAliasEnabled() {
@@ -73,7 +74,8 @@ public class BanHammerConfiguration extends PluginConfiguration {
         final Long length = TimeFormatter.parseTime(section.getString(key));
         this.limits.put(name, length);
       } catch (final NumberFormatException e) {
-        // this.logger.debug(String.format("Ban limit '%s' specifies an invalid number format.", key));
+        // this.logger.debug(String.format("Ban limit '%s' specifies an invalid number format.",
+        // key));
       }
     }
   }

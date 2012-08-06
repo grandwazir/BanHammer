@@ -50,13 +50,9 @@ public class PurgeCommand extends AbstractCommand {
     this.database = plugin.getDatabase();
     this.server = plugin.getServer();
     this.formatter = new ChoiceFormatter(this.getLocalisation());
-    this.formatter.setLimits(0,1,2);
+    this.formatter.setLimits(0, 1, 2);
     this.formatter.setMessage(this, "purged");
-    this.formatter.setFormats(
-        this.getLocalisation().getMessage(BanHammer.class, "no-bans"),
-        this.getLocalisation().getMessage(BanHammer.class, "one-ban"),
-        this.getLocalisation().getMessage(BanHammer.class, "many-bans")
-    );
+    this.formatter.setFormats(this.getLocalisation().getMessage(BanHammer.class, "no-bans"), this.getLocalisation().getMessage(BanHammer.class, "one-ban"), this.getLocalisation().getMessage(BanHammer.class, "many-bans"));
   }
 
   public void execute(final CommandSender sender) throws CommandPermissionException, CommandUsageException {

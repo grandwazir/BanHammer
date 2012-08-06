@@ -57,11 +57,10 @@ public class PlayerRecord {
     PlayerRecord record = database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
     if (record == null) {
       record = new PlayerRecord();
-      record.setName(playerName); 
-    } 
+      record.setName(playerName);
+    }
     return record;
   }
-  
 
   /**
    * Get a list containing all players.
@@ -72,7 +71,7 @@ public class PlayerRecord {
   public static List<PlayerRecord> list(final EbeanServer database) {
     return database.find(PlayerRecord.class).findList();
   }
-  
+
   /** The id. */
   @Id
   private int id;
@@ -108,7 +107,7 @@ public class PlayerRecord {
    * 
    * @return the bans
    */
-  @OneToMany(targetEntity = BanRecord.class, fetch=FetchType.EAGER, cascade=CascadeType.PERSIST)
+  @OneToMany(targetEntity = BanRecord.class, fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
   public List<BanRecord> getBans() {
     return (this.bans == null) ? new LinkedList<BanRecord>() : this.bans;
   }
@@ -118,7 +117,7 @@ public class PlayerRecord {
    * 
    * @return the created bans
    */
-  @OneToMany(targetEntity = BanRecord.class, fetch=FetchType.LAZY, cascade=CascadeType.PERSIST)
+  @OneToMany(targetEntity = BanRecord.class, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
   public List<BanRecord> getCreatedBans() {
     return this.createdBans;
   }

@@ -26,10 +26,7 @@ public abstract class BanHammerPlayerEvent extends Event {
 
   /** The constant listener handlers. */
   private static final HandlerList handlers = new HandlerList();
-
-  /** The constant serialVersionUID. */
-  private static final long serialVersionUID = 1L;
-
+  
   /** The player name. */
   private final String playerName;
 
@@ -62,7 +59,7 @@ public abstract class BanHammerPlayerEvent extends Event {
 
   /**
    * Gets the BanRecord associated with this event.
-   *
+   * 
    * @return the record
    */
   public BanRecord getRecord() {
@@ -71,14 +68,15 @@ public abstract class BanHammerPlayerEvent extends Event {
 
   /**
    * Checks if this event should be silent.
-   *
+   * 
    * @return true, if players should not be notified
    */
   public boolean isSilent() {
     return this.silent;
   }
-  
-  /* (non-Javadoc)
+
+  /*
+   * (non-Javadoc)
    * @see org.bukkit.event.Event#getHandlers()
    */
   public HandlerList getHandlers() {
