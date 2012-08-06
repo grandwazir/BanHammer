@@ -1,5 +1,12 @@
-debugging: true
+debugging: false
 automatic-updates:
   enabled: true
-  method: automatic
+  method: notify
   branch: stable
+ban-limits:
+  warning: 1h
+  short: 1d
+  medium: 3d
+  long: 7d
+alias-plugin:
+  enabled: true

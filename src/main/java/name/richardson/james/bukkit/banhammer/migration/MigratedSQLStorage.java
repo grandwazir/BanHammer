@@ -26,9 +26,8 @@ import javax.persistence.PersistenceException;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
-import name.richardson.james.bukkit.banhammer.persistence.OldBanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
-import name.richardson.james.bukkit.utilities.internals.Logger;
+import name.richardson.james.bukkit.utilities.configuration.DatabaseConfiguration;
 import name.richardson.james.bukkit.utilities.persistence.SQLStorage;
 
 public class MigratedSQLStorage extends SQLStorage {
@@ -41,8 +40,8 @@ public class MigratedSQLStorage extends SQLStorage {
    *
    * @param plugin the plugin
    */
-  public MigratedSQLStorage(final BanHammer plugin) {
-    super(plugin);
+  public MigratedSQLStorage(final BanHammer plugin, DatabaseConfiguration configuration, List<Class<?>> classes) {
+    super(plugin, configuration, classes);
   }
 
   /* (non-Javadoc)
@@ -50,14 +49,13 @@ public class MigratedSQLStorage extends SQLStorage {
    */
   @Override
   protected void afterDatabaseCreate() {
-    logger.debug("Migrating records");
     if (!this.legacyRecords.isEmpty()) {
       int migrated = 0;
       for (final OldBanRecord ban : this.legacyRecords) {
         this.migrateRecord(ban);
         migrated++;
       }
-      this.logger.info(this.getFormattedBanMigrationCount("records-migrated", migrated));
+      this.getLogger().info(this, "records-migrated", migrated);
     }
   }
 
@@ -68,25 +66,15 @@ public class MigratedSQLStorage extends SQLStorage {
   protected void beforeDatabaseDrop() {
     try {
       this.legacyRecords = this.getEbeanServer().find(OldBanRecord.class).findList();
-      this.logger.warning(this.getFormattedBanMigrationCount("records-to-migrate", this.legacyRecords.size()));
+      this.getLogger().warning(this, "records-to-migrate", this.legacyRecords.size());
     } catch (final PersistenceException exception) {
       exception.printStackTrace();
       this.legacyRecords = new LinkedList<OldBanRecord>();
     }
   }
-
-  /**
-   * Gets the formatted ban migration count message
-   *
-   * @param key the resource bundle key
-   * @param count the number of legacy bans
-   * @return the localised message
-   */
-  private String getFormattedBanMigrationCount(final String key, final int count) {
-    final Object[] arguments = { count };
-    final double[] limits = { 0, 1, 2 };
-    final String[] formats = { this.getMessage("no-bans"), this.getMessage("one-ban"), this.getMessage("many-bans") };
-    return this.getChoiceFormattedMessage(key, arguments, formats, limits);
+  
+  protected void beforeDatabaseCreate() {
+    this.getClasses().remove(OldBanRecord.class);
   }
 
   /**

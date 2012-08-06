@@ -19,26 +19,25 @@ package name.richardson.james.bukkit.banhammer.ban;
 
 import java.util.List;
 
+import com.avaje.ebean.EbeanServer;
+
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.banhammer.api.BanSummary;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
+import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
-import name.richardson.james.bukkit.utilities.command.PluginCommand;
 
 @ConsoleCommand
-public class CheckCommand extends PluginCommand {
+public class CheckCommand extends AbstractCommand {
 
   /** The player who we are going to check and see if they are banned */
   private OfflinePlayer player;
@@ -46,18 +45,19 @@ public class CheckCommand extends PluginCommand {
   /** A instance of the Bukkit server. */
   private final Server server;
 
+  private final EbeanServer database;
+
   public CheckCommand(final BanHammer plugin) {
-    super(plugin);
+    super(plugin, false);
+    this.database = plugin.getDatabase();
     this.server = plugin.getServer();
-    this.registerPermissions();
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final PlayerRecord playerRecord = PlayerRecord.find(plugin.getDatabase(), player.getName());
-
+    final PlayerRecord playerRecord = PlayerRecord.find(database, player.getName());
     if ((playerRecord != null) && playerRecord.isBanned()) {
       final BanRecord ban = playerRecord.getActiveBan();
-      final BanSummary summary = new BanSummary(this.plugin, ban);
+      final BanSummary summary = new BanSummary(this.getLocalisation(), ban);
       sender.sendMessage(summary.getHeader());
       sender.sendMessage(summary.getReason());
       sender.sendMessage(summary.getLength());
@@ -65,21 +65,19 @@ public class CheckCommand extends PluginCommand {
         sender.sendMessage(summary.getExpiresAt());
       }
     } else {
-      sender.sendMessage(this.getSimpleFormattedMessage("player-is-not-banned", this.player.getName()));
+      sender.sendMessage(this.getLocalisation().getMessage(this, "player-is-not-banned", this.player.getName()));
     }
-
   }
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
     if (arguments.length == 0) {
       if (sender instanceof ConsoleCommandSender) {
-        throw new CommandArgumentException(this.getMessage("must-specify-a-player"), this.getMessage("name-autocompletion"));
+        throw new CommandArgumentException(this.getLocalisation().getMessage(this, "specify-a-player"), null);
       }
       this.player = (OfflinePlayer) sender;
     } else {
       this.player = this.matchPlayer(arguments[0]);
     }
-
   }
 
   private OfflinePlayer matchPlayer(final String name) {
@@ -89,14 +87,6 @@ public class CheckCommand extends PluginCommand {
     } else {
       return players.get(0);
     }
-  }
-
-  private void registerPermissions() {
-    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
-    // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
-    base.addParent(this.plugin.getRootPermission(), true);
-    this.addPermission(base);
   }
 
 }

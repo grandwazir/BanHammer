@@ -22,34 +22,40 @@ import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
+import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
-import name.richardson.james.bukkit.utilities.command.PluginCommand;
+import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
 
 @ConsoleCommand
-public class LimitsCommand extends PluginCommand {
+public class LimitsCommand extends AbstractCommand {
 
-  private final BanHammer plugin;
-  
   /* The ban limits */
   private final Map<String, Long> limits;
 
+  private final ChoiceFormatter formatter;
+
   public LimitsCommand(final BanHammer plugin, Map<String, Long> limits) {
-    super(plugin);
-    this.plugin = plugin;
+    super(plugin, false);
     this.limits = limits;
-    this.registerPermissions();
+    this.formatter = new ChoiceFormatter(this.getLocalisation());
+    this.formatter.setLimits(0,1,2);
+    this.formatter.setMessage(this, "limits");
+    this.formatter.setArguments(limits.size());
+    this.formatter.setFormats(
+        this.getLocalisation().getMessage(BanHammer.class, "no-limit"),
+        this.getLocalisation().getMessage(BanHammer.class, "one-limits"),
+        this.getLocalisation().getMessage(BanHammer.class, "many-limits")
+    );
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    sender.sendMessage(this.getFormattedMessageHeader(limits.size()));
+    sender.sendMessage(this.formatter.getMessage());
     for (final Entry<String, Long> limit : limits.entrySet()) {
       ChatColor colour;
       if (sender.hasPermission("banhammer.ban." + limit.getKey())) {
@@ -57,28 +63,12 @@ public class LimitsCommand extends PluginCommand {
       } else {
         colour = ChatColor.RED;
       }
-      final Object[] arguments = { limit.getKey(), TimeFormatter.millisToLongDHMS(limit.getValue()) };
-      sender.sendMessage(colour + this.getSimpleFormattedMessage("detail", arguments));
+      sender.sendMessage(colour + this.getLocalisation().getMessage(this, "list-item", limit.getKey(), TimeFormatter.millisToLongDHMS(limit.getValue())));
     }
   }
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
     return;
-  }
-
-  private String getFormattedMessageHeader(final int size) {
-    final Object[] arguments = { size };
-    final double[] limits = { 0, 1, 2 };
-    final String[] formats = { this.getMessage("no-limits"), this.getMessage("one-limit"), this.getMessage("many-limits") };
-    return this.getChoiceFormattedMessage("header", arguments, formats, limits);
-  }
-
-  private void registerPermissions() {
-    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
-    // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.TRUE);
-    base.addParent(this.plugin.getRootPermission(), true);
-    this.addPermission(base);
   }
 
 }

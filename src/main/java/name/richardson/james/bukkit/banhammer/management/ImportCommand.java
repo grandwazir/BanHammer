@@ -20,25 +20,22 @@ package name.richardson.james.bukkit.banhammer.management;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.banhammer.BanHandler;
+import name.richardson.james.bukkit.banhammer.api.BanHandler;
+import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
-import name.richardson.james.bukkit.utilities.command.PluginCommand;
+import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 import name.richardson.james.bukkit.utilities.formatters.StringFormatter;
-import name.richardson.james.bukkit.utilities.internals.Logger;
 
 @ConsoleCommand
-public class ImportCommand extends PluginCommand {
+public class ImportCommand extends AbstractCommand {
 
-  /** The logger for this class . */
-  private final static Logger logger = new Logger(ImportCommand.class);
-
+  private final ChoiceFormatter formatter;
+  
   /** A instance of the Bukkit server. */
   private final Server server;
 
@@ -49,68 +46,48 @@ public class ImportCommand extends PluginCommand {
   private String reason;
 
   public ImportCommand(final BanHammer plugin) {
-    super(plugin);
-    logger.setPrefix("[BanHammer] ");
-    this.handler = plugin.getHandler(ImportCommand.class);
+    super(plugin, false);
+    this.handler = plugin.getHandler();
     this.server = plugin.getServer();
-    this.registerPermissions();
+    this.formatter = new ChoiceFormatter(this.getLocalisation());
+    this.formatter.setLimits(0,1,2);
+    this.formatter.setFormats(
+        this.getLocalisation().getMessage(BanHammer.class, "no-bans"),
+        this.getLocalisation().getMessage(BanHammer.class, "one-ban"),
+        this.getLocalisation().getMessage(BanHammer.class, "many-bans")
+    );
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     final int total = this.server.getBannedPlayers().size();
-    int imported = 0;
     final long time = 0;
-    final String name = sender.getName();
+    final String importer = sender.getName();
+    int imported = 0;
 
-    // Import and ban all players
     for (final OfflinePlayer player : this.server.getBannedPlayers()) {
-      if (this.handler.banPlayer(player.getName(), name, this.reason, time, false)) {
+      if (this.handler.banPlayer(player.getName(), importer, this.reason, time, false)) {
         player.setBanned(false);
         imported = imported + 1;
       } else {
-        logger.warning(this.getSimpleFormattedMessage("player-already-banned", player.getName()));
+        this.getLogger().warning(this, "unable-to-import", player.getName());
       }
     }
 
-    logger.info(this.getFormattedLogMessage(name, imported, total));
+    this.formatter.setMessage(this, "bans-imported");
+    this.formatter.setArguments(total);
+    sender.sendMessage(this.formatter.getMessage());
     if (imported != total) {
-      sender.sendMessage(this.getFormattedFailedImportMessage(total - imported));
+      this.formatter.setMessage(this, "bans-failed");
+      this.formatter.setArguments(total - imported);
+      sender.sendMessage(this.formatter.getMessage());
     }
-    sender.sendMessage(this.getFormattedResponseMessage(imported));
-
+    
   }
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
-    this.reason = (arguments.length == 0) ? this.getMessage("default-reason") : StringFormatter.combineString(arguments, " ");
+    this.reason = (arguments.length == 0) ? this.getLocalisation().getMessage(this, "default-reason") : StringFormatter.combineString(arguments, " ");
   }
 
-  private String getFormattedFailedImportMessage(final int imported) {
-    final Object[] arguments = { imported };
-    final double[] limits = { 0, 1, 2 };
-    final String[] formats = { this.getMessage("no-bans"), this.getMessage("one-ban"), this.getMessage("many-bans") };
-    return this.getChoiceFormattedMessage("response-failed-imports", arguments, formats, limits);
-  }
 
-  private String getFormattedLogMessage(final String name, final int imported, final int total) {
-    final Object[] arguments = { imported, total, name };
-    final double[] limits = { 0, 1, 2 };
-    final String[] formats = { this.getMessage("no-bans").toLowerCase(), this.getMessage("one-ban").toLowerCase(), this.getMessage("many-bans").toLowerCase() };
-    return this.getChoiceFormattedMessage("summary-result", arguments, formats, limits);
-  }
-
-  private String getFormattedResponseMessage(final int imported) {
-    final Object[] arguments = { imported };
-    final double[] limits = { 0, 1, 2 };
-    final String[] formats = { this.getMessage("no-bans"), this.getMessage("one-ban"), this.getMessage("many-bans") };
-    return this.getChoiceFormattedMessage("response-message", arguments, formats, limits);
-  }
-
-  private void registerPermissions() {
-    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
-    // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
-    base.addParent(this.plugin.getRootPermission(), true);
-    this.addPermission(base);
-  }
 
 }

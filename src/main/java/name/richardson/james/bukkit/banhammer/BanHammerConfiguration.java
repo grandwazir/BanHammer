@@ -58,7 +58,7 @@ public class BanHammerConfiguration extends PluginConfiguration {
    * @return true, if is alias is enabled
    */
   public boolean isAliasEnabled() {
-    return this.configuration.getBoolean("alias-plugin.enabled");
+    return this.getConfiguration().getBoolean("alias-plugin.enabled");
   }
 
   /**
@@ -66,47 +66,16 @@ public class BanHammerConfiguration extends PluginConfiguration {
    */
   public void setBanLimits() {
     this.limits.clear();
-    this.logger.debug(String.format("Registering ban limits"));
-    final ConfigurationSection section = this.configuration.getConfigurationSection("ban-limits");
+    final ConfigurationSection section = this.getConfiguration().getConfigurationSection("ban-limits");
     for (final String key : section.getKeys(false)) {
       try {
         final String name = key;
         final Long length = TimeFormatter.parseTime(section.getString(key));
         this.limits.put(name, length);
-        this.logger.debug(String.format("Creating new ban limit %s with a maximum time of %s (%d).", name, section.getString(key), length));
       } catch (final NumberFormatException e) {
-        this.logger.debug(String.format("Ban limit '%s' specifies an invalid number format.", key));
+        // this.logger.debug(String.format("Ban limit '%s' specifies an invalid number format.", key));
       }
     }
-  }
-
-  /* (non-Javadoc)
-   * @see name.richardson.james.bukkit.utilities.persistence.YAMLStorage#setDefaults()
-   */
-  @Override
-  public void setDefaults() throws IOException {
-    this.logger.debug(String.format("Apply default configuration."));
-    final org.bukkit.configuration.file.YamlConfiguration defaults = this.getDefaults();
-    this.configuration.setDefaults(defaults);
-    this.configuration.options().copyDefaults(true);
-    // set an example kit if necessary
-    if (!this.configuration.isConfigurationSection("ban-limits")) {
-      this.logger.debug("Creating example ban limits.");
-      this.configuration.createSection("ban-limits");
-      final ConfigurationSection section = this.configuration.getConfigurationSection("ban-limits");
-      section.set("warning", "1h");
-      section.set("short", "1d");
-      section.set("medium", "3d");
-      section.set("long", "7d");
-    }
-    // set default alias settings
-    if (!this.configuration.isConfigurationSection("alias-plugin")) {
-      this.logger.debug("Creating default alias settings.");
-      this.configuration.createSection("alias-plugin");
-      final ConfigurationSection section = this.configuration.getConfigurationSection("alias-plugin");
-      section.set("enabled", false);
-    }
-    this.save();
   }
 
 }

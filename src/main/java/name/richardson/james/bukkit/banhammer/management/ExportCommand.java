@@ -22,23 +22,18 @@ import com.avaje.ebean.EbeanServer;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
+import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
-import name.richardson.james.bukkit.utilities.command.PluginCommand;
-import name.richardson.james.bukkit.utilities.internals.Logger;
+import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 
 @ConsoleCommand
-public class ExportCommand extends PluginCommand {
-
-  /** The logger for this class . */
-  private final static Logger logger = new Logger(ExportCommand.class);
+public class ExportCommand extends AbstractCommand {
 
   /** A instance of the Bukkit server. */
   private final Server server;
@@ -46,20 +41,23 @@ public class ExportCommand extends PluginCommand {
   /** The database handler for this plugin. */
   private final EbeanServer database;
 
+  private final ChoiceFormatter formatter;
+
   public ExportCommand(final BanHammer plugin) {
-    super(plugin);
-    logger.setPrefix("[BanHammer] ");
+    super(plugin, false);
     this.server = plugin.getServer();
     this.database = plugin.getDatabase();
-    this.registerPermissions();
+    this.formatter = new ChoiceFormatter(this.getLocalisation());
+    this.formatter.setLimits(0,1,2);
+    this.formatter.setMessage(this, "bans-exported");
+    this.formatter.setFormats(
+        this.getLocalisation().getMessage(BanHammer.class, "no-bans"),
+        this.getLocalisation().getMessage(BanHammer.class, "one-ban"),
+        this.getLocalisation().getMessage(BanHammer.class, "many-bans")
+    );
   }
 
-  /*
-   * (non-Javadoc)
-   * @see
-   * name.richardson.james.bukkit.utilities.command.Command#execute(org.bukkit
-   * .command.CommandSender)
-   */
+  
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     int exported = 0;
     for (final Object record : PlayerRecord.list(database)) {
@@ -70,8 +68,8 @@ public class ExportCommand extends PluginCommand {
         exported++;
       }
     }
-    logger.info(this.getFormattedLogMessage(sender.getName(), exported));
-    sender.sendMessage(this.getFormattedResponseMessage(sender.getName(), exported));
+    this.formatter.setArguments(this, exported);
+    sender.sendMessage(this.formatter.getMessage());
   }
 
   /*
@@ -83,42 +81,5 @@ public class ExportCommand extends PluginCommand {
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
     return;
   }
-
-  /**
-   * Gets the formatted result message for use in logging in the server log.
-   * 
-   * @param name the name of the CommandSender
-   * @param bans the number of bans which were exported
-   * @return the formatted log message
-   */
-  private String getFormattedLogMessage(final String name, final int bans) {
-    final Object[] arguments = { bans, name };
-    final double[] limits = { 0, 1, 2 };
-    final String[] formats = { this.getMessage("no-bans"), this.getMessage("one-ban"), this.getMessage("many-bans") };
-    return this.getChoiceFormattedMessage("summary-result", arguments, formats, limits);
-  }
-
-  /**
-   * Gets the formatted response message for use in replying to the
-   * CommandSender.
-   * 
-   * @param name the name of the CommandSender
-   * @param bans the number of bans which were exported
-   * @return the formatted response message
-   */
-  private String getFormattedResponseMessage(final String name, final int bans) {
-    final Object[] arguments = { bans, name };
-    final double[] limits = { 0, 1, 2 };
-    final String[] formats = { this.getMessage("no-bans"), this.getMessage("one-ban"), this.getMessage("many-bans") };
-    return this.getChoiceFormattedMessage("response-message", arguments, formats, limits);
-  }
-
-  private void registerPermissions() {
-    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
-    // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
-    base.addParent(this.plugin.getRootPermission(), true);
-    this.addPermission(base);
-  }
-
+  
 }

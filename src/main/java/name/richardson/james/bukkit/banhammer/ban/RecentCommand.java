@@ -19,40 +19,51 @@ package name.richardson.james.bukkit.banhammer.ban;
 
 import java.util.List;
 
+import com.avaje.ebean.EbeanServer;
+
 import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.banhammer.api.BanSummary;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
+import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
-import name.richardson.james.bukkit.utilities.command.PluginCommand;
-import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
+import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 
 @ConsoleCommand
-public class RecentCommand extends PluginCommand {
+public class RecentCommand extends AbstractCommand {
 
   public static final int DEFAULT_LIMIT = 5;
   
   /** The number of bans to return */
   private int count;
 
+  private EbeanServer database;
+
+  private ChoiceFormatter formatter;
+
   public RecentCommand(final BanHammer plugin) {
-    super(plugin);
-    this.registerPermissions();
+    super(plugin, false);
+    this.database = plugin.getDatabase();
+    this.formatter = new ChoiceFormatter(this.getLocalisation());
+    this.formatter.setLimits(1,2);
+    this.formatter.setMessage(this, "header");
+    this.formatter.setFormats(
+        this.getLocalisation().getMessage(BanHammer.class, "one-ban"),
+        this.getLocalisation().getMessage(BanHammer.class, "many-bans")
+    );
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final List<BanRecord> bans = BanRecord.getRecentBans(this.plugin.getDatabase(), count);
+    final List<BanRecord> bans = BanRecord.getRecentBans(database, count);
 
     if (!bans.isEmpty()) {
-      sender.sendMessage(this.getFormattedMessageHeader(bans.size()));
+      this.formatter.setArguments(bans.size());
+      sender.sendMessage(this.formatter.getMessage());
       for (final BanRecord ban : bans) {
-        final BanSummary summary = new BanSummary(this.plugin, ban);
+        final BanSummary summary = new BanSummary(this.getLocalisation(), ban);
         sender.sendMessage(summary.getHeader());
         sender.sendMessage(summary.getReason());
         sender.sendMessage(summary.getLength());
@@ -61,7 +72,7 @@ public class RecentCommand extends PluginCommand {
         }
       }
     } else {
-      sender.sendMessage(ColourFormatter.replace("&", this.getMessage("no-bans")));
+      sender.sendMessage(this.getLocalisation().getMessage(this, "no-bans-made"));
     }
   }
 
@@ -72,24 +83,10 @@ public class RecentCommand extends PluginCommand {
       try {
         this.count = Integer.parseInt(arguments[0]);
       } catch (final NumberFormatException exception) {
-        throw new CommandArgumentException(this.getMessage("must-specify-valid-number"), this.getSimpleFormattedMessage("default", RecentCommand.DEFAULT_LIMIT));
+        this.count = DEFAULT_LIMIT;
       }
     }
   }
 
-  private String getFormattedMessageHeader(final int size) {
-    final Object[] arguments = { size };
-    final double[] limits = { 1, 2 };
-    final String[] formats = { this.getMessage("only-ban"), this.getMessage("many-bans") };
-    return this.getChoiceFormattedMessage("header", arguments, formats, limits);
-  }
-
-  private void registerPermissions() {
-    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
-    // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
-    base.addParent(this.plugin.getRootPermission(), true);
-    this.addPermission(base);
-  }
 
 }

@@ -31,17 +31,17 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.banhammer.BanHandler;
+import name.richardson.james.bukkit.banhammer.api.BanHandler;
+import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
-import name.richardson.james.bukkit.utilities.command.PluginCommand;
 import name.richardson.james.bukkit.utilities.formatters.StringFormatter;
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
 
 @ConsoleCommand
-public class BanCommand extends PluginCommand {
+public class BanCommand extends AbstractCommand {
 
   /** Reference to the BanHammer plugin. */
   private final BanHammer plugin;
@@ -71,27 +71,25 @@ public class BanCommand extends PluginCommand {
    * @param limits the registered ban limits to use
    */
   public BanCommand(final BanHammer plugin, Map<String, Long> limits) {
-    super(plugin);
+    super(plugin, true);
     this.plugin = plugin;
     this.limits = limits;
     this.server = plugin.getServer();
-    this.handler = plugin.getHandler(BanCommand.class);
-    this.registerPermissions();
+    this.handler = plugin.getHandler();
   }
 
   /* (non-Javadoc)
    * @see name.richardson.james.bukkit.utilities.command.Command#execute(org.bukkit.command.CommandSender)
    */
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-
     if (this.isBanLengthAuthorised(sender, this.time)) {
       if (!this.handler.banPlayer(this.player.getName(), sender.getName(), this.reason, this.time, true)) {
-        sender.sendMessage(this.getSimpleFormattedMessage("player-already-banned", this.player.getName()));
+        sender.sendMessage(this.getLocalisation().getMessage(this, "player-already-banned", this.player.getName()));
       } else {
-        sender.sendMessage(this.getSimpleFormattedMessage("player-banned", this.player.getName()));
+        sender.sendMessage(this.getLocalisation().getMessage(this, "player-banned", this.player.getName()));
       }
     } else {
-      throw new CommandPermissionException(this.getMessage("ban-time-too-long"), this.getPermission(0));
+      throw new CommandPermissionException(this.getLocalisation().getMessage(this, "ban-time-too-long"), this.getRootPermission());
     }
   }
 
@@ -103,7 +101,7 @@ public class BanCommand extends PluginCommand {
     args.addAll(Arrays.asList(arguments));
 
     if (args.size() == 0) {
-      throw new CommandArgumentException(this.getMessage("must-specify-a-player"), this.getMessage("name-autocompletion"));
+      throw new CommandArgumentException(this.getLocalisation().getMessage(this, "must-specify-player"), null);
     } else {
       this.player = this.matchPlayer(args.remove(0));
     }
@@ -118,9 +116,8 @@ public class BanCommand extends PluginCommand {
     } else {
       this.time = 0;
     }
-
     if (args.isEmpty()) {
-      throw new CommandArgumentException(this.getMessage("must-specify-a-reason"), this.getMessage("reason-hint"));
+      throw new CommandArgumentException(this.getLocalisation().getMessage(this, "must-specify-a-reason"), this.getLocalisation().getMessage(this, "reason-hint"));
     } else {
       this.reason = StringFormatter.combineString(args, " ");
     }
@@ -134,14 +131,12 @@ public class BanCommand extends PluginCommand {
    * @return true, if is ban length authorised
    */
   private boolean isBanLengthAuthorised(final CommandSender sender, final long banLength) {
-    if (sender instanceof CommandSender) {
-      return true;
-    }
-    if ((banLength == 0) && !sender.hasPermission(this.getPermission(0))) {
+    if (sender instanceof CommandSender) return true;
+    if ((banLength == 0) && !sender.hasPermission(this.getRootPermission())) {
       return false;
     } else {
       for (final Entry<String, Long> limit : limits.entrySet()) {
-        if (sender.hasPermission(this.getPermission(1).getName() + "." + limit.getKey()) && (banLength <= limit.getValue())) {
+        if (sender.hasPermission(this.getRootPermission().getName().replace("*", "") + "." + limit.getKey()) && (banLength <= limit.getValue())) {
           return true;
         }
       }
@@ -167,23 +162,18 @@ public class BanCommand extends PluginCommand {
   /**
    * Register permissions.
    */
-  private void registerPermissions() {
+  protected void registerPermissions(boolean wildcard) {
+    super.registerPermissions(wildcard);
     final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
-    final String wildcardDescription = String.format(this.plugin.getMessage("plugincommand.wildcard-permission-description"), this.getName());
-    // create the wildcard permission
-    final Permission wildcard = new Permission(prefix + this.getName() + ".*", wildcardDescription, PermissionDefault.OP);
-    wildcard.addParent(this.plugin.getRootPermission(), true);
-    this.addPermission(wildcard);
-    // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
-    base.addParent(this.plugin.getRootPermission(), true);
-    this.addPermission(base);
     // create permissions for individual ban limits
     if (!limits.isEmpty()) {
       for (final Entry<String, Long> limit : limits.entrySet()) {
-        final Permission permission = new Permission(base.getName() + "." + limit.getKey(), this.getSimpleFormattedMessage("permission-limit-description", TimeFormatter.millisToLongDHMS(limit.getValue())), PermissionDefault.OP);
-        permission.addParent(wildcard, true);
-        this.addPermission(permission);
+        final Permission permission = new Permission(
+            prefix + this.getName() + "." + limit.getKey(), 
+            this.getLocalisation().getMessage(this, "permission-limit-description", TimeFormatter.millisToLongDHMS(limit.getValue())), 
+            PermissionDefault.OP);
+        permission.addParent(this.getRootPermission(), true);
+        this.getPermissionManager().addPermission(permission, false);
       }
     }
   }

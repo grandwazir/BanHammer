@@ -21,14 +21,18 @@ import java.io.IOException;
 
 import com.avaje.ebean.EbeanServer;
 
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+
 import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerBannedEvent;
 import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
-import name.richardson.james.bukkit.utilities.metrics.AbstractMetricsListener;
+import name.richardson.james.bukkit.utilities.listener.Listener;
+import name.richardson.james.bukkit.utilities.metrics.Metrics;
 import name.richardson.james.bukkit.utilities.metrics.Metrics.Graph;
 import name.richardson.james.bukkit.utilities.metrics.Metrics.Plotter;
 
-public class MetricsListener extends AbstractMetricsListener {
+public class MetricsListener implements Listener {
 
   /** The number of permenant bans made since the server started. */
   private int permenantBans = 0;
@@ -51,6 +55,8 @@ public class MetricsListener extends AbstractMetricsListener {
   /** The database. */
   private final EbeanServer database;
 
+  private final Metrics metrics;
+
   /**
    * Instantiates a new metrics listener.
    *
@@ -58,8 +64,8 @@ public class MetricsListener extends AbstractMetricsListener {
    * @throws IOException Signals that an I/O exception has occurred.
    */
   public MetricsListener(final BanHammer plugin) throws IOException {
-    super(plugin);
     this.database = plugin.getDatabase();
+    this.metrics = new Metrics(plugin);
     this.setInitialValues();
     this.setupCustomMetrics();
     this.metrics.start();
@@ -70,6 +76,7 @@ public class MetricsListener extends AbstractMetricsListener {
    *
    * @param event the event
    */
+  @EventHandler(priority=EventPriority.MONITOR)
   public void onPlayerBanned(final BanHammerPlayerBannedEvent event) {
     switch (event.getRecord().getType()) {
     case PERMANENT:
@@ -88,6 +95,7 @@ public class MetricsListener extends AbstractMetricsListener {
    *
    * @param event the event
    */
+  @EventHandler(priority=EventPriority.MONITOR)
   public void onPlayerPardoned(final BanHammerPlayerPardonedEvent event) {
     this.pardonedBans++;
     this.totalPardonedBans++;

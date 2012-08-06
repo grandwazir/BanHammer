@@ -15,10 +15,9 @@
  * You should have received a copy of the GNU General Public License along with
  * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.bukkit.banhammer;
+package name.richardson.james.bukkit.banhammer.api;
 
 import java.sql.Timestamp;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,35 +25,28 @@ import com.avaje.ebean.EbeanServer;
 
 import org.bukkit.Bukkit;
 
-import name.richardson.james.bukkit.banhammer.api.API;
-import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerBannedEvent;
-import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
+import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
-import name.richardson.james.bukkit.utilities.internals.Handler;
-import name.richardson.james.bukkit.utilities.internals.Logger;
+import name.richardson.james.bukkit.utilities.logging.Logger;
 
-public class BanHandler extends Handler implements API {
+public class BanHandler {
 
   /* Logger for this class */
-  private static final Logger logger = new Logger(BanHandler.class);
+  private final Logger logger;
   
   /* The database used by this handler */
   private final EbeanServer database;
-
-  private final BanHammer plugin;
-
+  
   /**
    * Instantiates a new ban handler.
    * 
    * @param parentClass the parent class
    * @param plugin the plugin
    */
-  public BanHandler(final Class<?> parentClass, final BanHammer plugin) {
-    super(parentClass);
-    this.plugin = plugin;
+  public BanHandler(final BanHammer plugin) {
     this.database = plugin.getDatabase();
-    logger.setPrefix(plugin.getLoggerPrefix());
+    this.logger = plugin.getCustomLogger();
   }
 
   /*
@@ -78,8 +70,7 @@ public class BanHandler extends Handler implements API {
     database.save(ban);
     BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(ban, !notify);
     Bukkit.getServer().getPluginManager().callEvent(event);
-    Object[] arguments = { playerName, senderName, reason};
-    logger.info(plugin.getSimpleFormattedMessage(this.getClass().getSimpleName().toLowerCase() + ".log-banned-player", arguments));
+    logger.info(this, "player-banned", playerName, senderName, reason);
     return true;
   }
 
@@ -118,8 +109,7 @@ public class BanHandler extends Handler implements API {
       BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(banRecord, !notify);
       database.delete(playerRecord.getActiveBan());
       Bukkit.getServer().getPluginManager().callEvent(event);
-      Object[] arguments = { playerName, senderName};
-      logger.info(plugin.getSimpleFormattedMessage(this.getClass().getSimpleName().toLowerCase() + ".log-pardoned-player", arguments));
+      logger.info(this, "player-pardoned", playerName, senderName);
       return true;
     } else {
       return false;
@@ -136,7 +126,7 @@ public class BanHandler extends Handler implements API {
    * @param notify if true, broadcast a message to notify players
    * @return true, if successful
    */
-  protected boolean banPlayer(String playerName, BanRecord sourceBan, String reason, boolean notify) {
+  public boolean banPlayer(String playerName, BanRecord sourceBan, String reason, boolean notify) {
     final PlayerRecord player = PlayerRecord.find(database, playerName);
     if (player.isBanned()) return false;
     final PlayerRecord creator = sourceBan.getCreator();
@@ -148,8 +138,7 @@ public class BanHandler extends Handler implements API {
     ban.setCreatedAt(sourceBan.getCreatedAt());
     if (sourceBan.getExpiresAt().getTime() != 0) ban.setExpiresAt(sourceBan.getExpiresAt());
     database.save(ban);
-    Object[] arguments = { playerName, sourceBan.getCreator().getName(), reason};
-    logger.info(plugin.getSimpleFormattedMessage(this.getClass().getSimpleName().toLowerCase() + ".log-banned-player", arguments));
+    logger.info(this, "player-banned", playerName, sourceBan.getCreator().getName(), reason);
     return true;
   }
 

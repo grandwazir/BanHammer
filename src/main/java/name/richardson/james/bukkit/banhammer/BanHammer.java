@@ -31,6 +31,7 @@ import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.alias.Alias;
 import name.richardson.james.bukkit.alias.AliasHandler;
+import name.richardson.james.bukkit.banhammer.api.BanHandler;
 import name.richardson.james.bukkit.banhammer.ban.BanCommand;
 import name.richardson.james.bukkit.banhammer.ban.CheckCommand;
 import name.richardson.james.bukkit.banhammer.ban.HistoryCommand;
@@ -42,21 +43,17 @@ import name.richardson.james.bukkit.banhammer.kick.KickCommand;
 import name.richardson.james.bukkit.banhammer.management.ExportCommand;
 import name.richardson.james.bukkit.banhammer.management.ImportCommand;
 import name.richardson.james.bukkit.banhammer.migration.MigratedSQLStorage;
+import name.richardson.james.bukkit.banhammer.migration.OldBanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
-import name.richardson.james.bukkit.banhammer.persistence.OldBanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
+import name.richardson.james.bukkit.utilities.command.Command;
 import name.richardson.james.bukkit.utilities.command.CommandManager;
-import name.richardson.james.bukkit.utilities.command.PluginCommand;
+import name.richardson.james.bukkit.utilities.configuration.DatabaseConfiguration;
 import name.richardson.james.bukkit.utilities.persistence.SQLStorage;
-import name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin;
+import name.richardson.james.bukkit.utilities.plugin.AbstractPlugin;
 
-public class BanHammer extends SkeletonPlugin {
+public final class BanHammer extends AbstractPlugin {
 
-  /**
-   * The date format used by BanHammer.
-   * This is used across the plugin for representing dates to the user, for
-   * example in replies to commands or notifications of ban lengths.
-   */
   public static final DateFormat LONG_DATE_FORMAT = new SimpleDateFormat("d MMMMM yyyy HH:mm (z)");
 
   public static final DateFormat SHORT_DATE_FORMAT = new SimpleDateFormat("d MMM yyyy HH:mm (z)");
@@ -69,6 +66,10 @@ public class BanHammer extends SkeletonPlugin {
 
   /** The storage for this plugin. */
   private SQLStorage database;
+
+  private BanHandler handler;
+
+  private Permission notify;
 
   /**
    * Gets the alias handler.
@@ -116,8 +117,11 @@ public class BanHammer extends SkeletonPlugin {
    * @param parentClass the class that the handler belongs to
    * @return A new BanHandler instance.
    */
-  public BanHandler getHandler(final Class<?> parentClass) {
-    return new BanHandler(parentClass, this);
+  public BanHandler getHandler() {
+    if (this.handler == null) {
+      this.handler = new BanHandler(this);
+    }
+    return this.handler;
   }
 
   /*
@@ -144,9 +148,9 @@ public class BanHammer extends SkeletonPlugin {
   protected void registerCommands() {
     final CommandManager commandManager = new CommandManager(this);
     this.getCommand("bh").setExecutor(commandManager);
-    final PluginCommand banCommand = new BanCommand(this, this.configuration.getBanLimits());
-    final PluginCommand kickCommand = new KickCommand(this);
-    final PluginCommand pardonCommand = new PardonCommand(this);
+    final Command banCommand = new BanCommand(this, this.configuration.getBanLimits());
+    final Command kickCommand = new KickCommand(this);
+    final Command pardonCommand = new PardonCommand(this);
     // register commands
     commandManager.addCommand(banCommand);
     commandManager.addCommand(new CheckCommand(this));
@@ -171,8 +175,8 @@ public class BanHammer extends SkeletonPlugin {
    * ()
    */
   @Override
-  protected void registerEvents() {
-    new PlayerListener(this);
+  protected void registerListeners() {
+    new PlayerListener(this, notify);
   }
 
   /*
@@ -181,12 +185,15 @@ public class BanHammer extends SkeletonPlugin {
    * registerPermissions()
    */
   @Override
-  protected void registerPermissions() {
+  protected void setPermissions() {
+    super.setPermissions();
     // register notify permission
     final String prefix = this.getDescription().getName().toLowerCase() + ".";
-    final Permission notify = new Permission(prefix + this.getMessage("banhammer.notify-permission-name"), this.getMessage("banhammer.notify-permission-description"), PermissionDefault.TRUE);
-    notify.addParent(this.getRootPermission(), true);
-    this.addPermission(notify);
+    this.notify = new Permission(
+        prefix + this.getLocalisation().getMessage(this, "notify-permission-name"), 
+        this.getLocalisation().getMessage(this, "notify-permission-description"), 
+        PermissionDefault.TRUE);
+    this.getPermissionManager().addPermission(notify, true);
   }
 
   /*
@@ -206,8 +213,14 @@ public class BanHammer extends SkeletonPlugin {
    * ()
    */
   @Override
-  protected void setupPersistence() throws SQLException {
-    this.database = new MigratedSQLStorage(this);
+  protected void establishPersistence() throws SQLException {
+    try {
+      this.database = new MigratedSQLStorage(this, new DatabaseConfiguration(this), this.getDatabaseClasses());
+      this.database.initalise();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
   /**
@@ -216,10 +229,10 @@ public class BanHammer extends SkeletonPlugin {
   private void hookAlias() {
     final Alias plugin = (Alias) this.getServer().getPluginManager().getPlugin("Alias");
     if (plugin == null) {
-      this.logger.warning(this.getMessage("banhammer.unable-to-hook-alias"));
+      this.getLogger().warning(this.getLocalisation().getMessage(this, "unable-to-hook-alias"));
     } else {
-      this.logger.info("Using " + plugin.getDescription().getFullName() + ".");
-      this.aliasHandler = plugin.getHandler(BanHammer.class);
+      this.getLogger().info(this.getLocalisation().getMessage(this, "alias-hooked", plugin.getDescription().getFullName() + "."));
+      this.aliasHandler = plugin.getHandler();
     }
   }
 

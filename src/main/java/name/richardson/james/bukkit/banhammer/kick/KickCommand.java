@@ -22,23 +22,17 @@ import java.util.List;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
+import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
-import name.richardson.james.bukkit.utilities.command.PluginCommand;
 import name.richardson.james.bukkit.utilities.formatters.StringFormatter;
-import name.richardson.james.bukkit.utilities.internals.Logger;
 
 @ConsoleCommand
-public class KickCommand extends PluginCommand {
-
-  /** The logger for this class . */
-  private final static Logger logger = new Logger(KickCommand.class);
+public class KickCommand extends AbstractCommand {
 
   /** A instance of the Bukkit server. */
   private final Server server;
@@ -50,40 +44,35 @@ public class KickCommand extends PluginCommand {
   private String reason;
 
   public KickCommand(final BanHammer plugin) {
-    super(plugin);
-    logger.setPrefix("[BanHammer] ");
+    super(plugin, false);
     this.server = plugin.getServer();
-    this.registerPermissions();
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     if (this.player.isOnline()) {
-      this.player.kickPlayer(this.getSimpleFormattedMessage("kick-reason", this.reason));
-      logger.info(this.getFormattedSummaryMessage(sender.getName()));
+      this.player.kickPlayer(this.reason);
+      this.getLogger().info(this, "kicked", player.getName(), sender.getName());
     }
     this.player = null;
   }
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
     if (arguments.length == 0) {
-      throw new CommandArgumentException(this.getMessage("must-specify-a-player"), this.getMessage("name-autocompletion"));
+      throw new CommandArgumentException(this.getLocalisation().getMessage(this, "must-specify-player"), null);
     }
+    
     this.player = this.matchPlayer(arguments[0]);
     if (this.player == null) {
-      throw new CommandArgumentException(this.getMessage("must-specify-a-player"), this.getMessage("name-autocompletion"));
+      throw new CommandArgumentException(this.getLocalisation().getMessage(this, "must-specify-player"), null);
     }
+    
     if (arguments.length > 1) {
       final String[] elements = new String[arguments.length - 1];
       System.arraycopy(arguments, 1, elements, 0, arguments.length - 1);
       this.reason = StringFormatter.combineString(elements, " ");
     } else {
-      this.reason = this.getMessage("default-reason");
+      this.reason = this.getLocalisation().getMessage(this, "default-reason");
     }
-  }
-
-  private String getFormattedSummaryMessage(final String sender) {
-    final Object[] arguments = { this.player.getName(), sender, this.reason };
-    return this.getSimpleFormattedMessage("summary-result", arguments);
   }
 
   private Player matchPlayer(final String name) {
@@ -92,14 +81,6 @@ public class KickCommand extends PluginCommand {
       return null;
     }
     return players.get(0);
-  }
-
-  private void registerPermissions() {
-    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
-    // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
-    base.addParent(this.plugin.getRootPermission(), true);
-    this.addPermission(base);
   }
 
 }
