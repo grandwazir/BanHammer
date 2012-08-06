@@ -65,6 +65,7 @@ public class MetricsListener implements Listener {
    */
   public MetricsListener(final BanHammer plugin) throws IOException {
     this.database = plugin.getDatabase();
+    plugin.getServer().getPluginManager().registerEvents(this, plugin);
     this.metrics = new Metrics(plugin);
     this.setInitialValues();
     this.setupCustomMetrics();

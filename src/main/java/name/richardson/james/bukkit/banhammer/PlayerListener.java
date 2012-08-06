@@ -179,7 +179,7 @@ public class PlayerListener extends LoggableListener {
       this.getLogger().debug(this, "checking-for-alias", playerName);
       final List<PlayerNameRecord> aliases = this.aliasHandler.getPlayersNames(address);
       for (final PlayerNameRecord alias : aliases) {
-        record = PlayerRecord.find(database, playerName);
+        record = PlayerRecord.find(database, alias.getPlayerName());
         if (record.isBanned()) {
           final String reason = this.localisation.getMessage(this, "alias-ban-reason", record.getName());
           this.handler.banPlayer(playerName, record.getActiveBan(), reason, true);
