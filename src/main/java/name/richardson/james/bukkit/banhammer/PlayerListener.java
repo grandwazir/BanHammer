@@ -101,17 +101,6 @@ public class PlayerListener extends LoggableListener {
   }
 
   /**
-   * When a player is kicked, set the leave message.
-   * 
-   * @param event the event
-   */
-  @EventHandler(priority = EventPriority.LOW)
-  public void onPlayerKicked(final PlayerKickEvent event) {
-    event.setReason(this.localisation.getMessage(this, "kick-message", event.getReason()));
-    event.setLeaveMessage(this.localisation.getMessage(this, "kick-broadcast", event.getPlayer(), event.getReason()));
-  }
-
-  /**
    * When a player logins, check to see if they are banned.
    * 
    * @param event the event
