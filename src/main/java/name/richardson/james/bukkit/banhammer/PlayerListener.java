@@ -18,7 +18,7 @@
 package name.richardson.james.bukkit.banhammer;
 
 import java.net.InetAddress;
-import java.util.List;
+import java.util.Collection;
 
 import com.avaje.ebean.EbeanServer;
 
@@ -28,7 +28,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerPreLoginEvent;
 import org.bukkit.permissions.Permission;
 
@@ -129,8 +128,15 @@ public class PlayerListener extends LoggableListener {
   @EventHandler(priority = EventPriority.HIGH)
   public void onPlayerPardoned(final BanHammerPlayerPardonedEvent event) {
     if (!event.isSilent()) this.broadcast(event.getRecord(), BroadcastMessageType.PLAYER_PARDONED);
+    if (this.aliasHandler != null) {
+      final String reason = this.localisation.getMessage(this, "alias-ban-reason", "");
+      if (event.getRecord().getReason().contains(reason)) {
+        final String alias = event.getRecord().getReason().replace(reason, "");
+        this.aliasHandler.deassociatePlayer(event.getPlayerName(), alias);
+      }
+    }
   }
-
+  
   /**
    * Broadcast notification message to the server.
    * 
@@ -166,7 +172,7 @@ public class PlayerListener extends LoggableListener {
       return record;
     } else if (this.aliasHandler != null) {
       this.getLogger().debug(this, "checking-for-alias", playerName);
-      final List<PlayerNameRecord> aliases = this.aliasHandler.getPlayersNames(address);
+      final Collection<PlayerNameRecord> aliases = this.aliasHandler.getPlayersNames(address);
       for (final PlayerNameRecord alias : aliases) {
         record = PlayerRecord.find(database, alias.getPlayerName());
         if (record.isBanned()) {
