@@ -24,6 +24,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
+import name.richardson.james.bukkit.banhammer.PlayerListener;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
@@ -50,7 +51,7 @@ public class KickCommand extends AbstractCommand {
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     if (this.player.isOnline()) {
-      this.player.kickPlayer(this.reason);
+      this.player.kickPlayer(this.getLocalisation().getMessage(PlayerListener.class, "kick-message", this.reason));
       this.getLogger().info(this, "kicked", player.getName(), sender.getName());
     }
     this.player = null;
