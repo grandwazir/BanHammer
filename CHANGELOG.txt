@@ -1,5 +1,7 @@
 Changelog for BanHammer (v2.0.0-SNAPSHOT)
 
+2012-08-08 05:21:05 +0100    fix key lookup error (James Richardson)
+2012-08-08 05:20:16 +0100    fix alias intergration (James Richardson)
 2012-08-08 04:01:05 +0100    automatically deassociate players in alias when pardoned (James Richardson)
 2012-08-08 03:28:38 +0100    remove altering the other kick message ourselves (James Richardson)
 2012-08-08 03:22:45 +0100    fix kick message (James Richardson)
