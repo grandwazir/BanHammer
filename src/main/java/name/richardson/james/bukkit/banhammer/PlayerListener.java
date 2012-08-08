@@ -131,7 +131,7 @@ public class PlayerListener extends LoggableListener {
     if (this.aliasHandler != null) {
       final String reason = this.localisation.getMessage(this, "alias-ban-reason", "");
       if (event.getRecord().getReason().contains(reason)) {
-        final String alias = event.getRecord().getReason().replace(reason, "");
+        final String alias = event.getRecord().getReason().replaceAll(reason ,"");
         this.aliasHandler.deassociatePlayer(event.getPlayerName(), alias);
       }
     }
