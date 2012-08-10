@@ -1,5 +1,6 @@
 Changelog for BanHammer (v2.0.1-SNAPSHOT)
 
+2012-08-10 11:49:52 +0100    use PlayerLoginEvent if server is running in offline mode. (James Richardson)
 2012-08-09 11:17:06 +0100    new README (James Richardson)
 
 v2.0.0
