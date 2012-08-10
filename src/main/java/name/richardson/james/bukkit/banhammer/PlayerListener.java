@@ -28,6 +28,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerPreLoginEvent;
 import org.bukkit.permissions.Permission;
 
@@ -68,6 +70,8 @@ public class PlayerListener extends LoggableListener {
 
   private EbeanServer database;
 
+  private boolean onlineMode;
+  
   /**
    * Instantiates a new player listener.
    * 
@@ -80,6 +84,8 @@ public class PlayerListener extends LoggableListener {
     this.permission = notify;
     this.database = plugin.getDatabase();
     this.localisation = plugin.getLocalisation();
+    this.onlineMode = plugin.getServer().getOnlineMode();
+    if (!this.onlineMode) plugin.getCustomLogger().warning(this, "insecure-mode");
   }
 
   /**
@@ -117,6 +123,23 @@ public class PlayerListener extends LoggableListener {
         message = this.localisation.getMessage(this, "permenantly-banned", record.getActiveBan().getReason());
       }
       event.disallow(PlayerPreLoginEvent.Result.KICK_BANNED, message);
+    }
+  }
+  
+  @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled=true)
+  public void onPlayerLogin(final PlayerLoginEvent event) {
+    if (this.onlineMode) return;
+    PlayerRecord record = this.isPlayerBanned(event.getPlayer().getName(), event.getAddress());
+    if (record != null) {
+      String message = null;
+      switch (record.getActiveBan().getType()) {
+      case TEMPORARY:
+        message = this.localisation.getMessage(this, "temporarily-banned", BanHammer.LONG_DATE_FORMAT.format(record.getActiveBan().getExpiresAt()));
+        break;
+      default:
+        message = this.localisation.getMessage(this, "permenantly-banned", record.getActiveBan().getReason());
+      }
+      event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message);
     }
   }
 
