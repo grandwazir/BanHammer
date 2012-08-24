@@ -5,6 +5,10 @@
   <name>BanHammer</name>
   <description>Bans, kicks and records.</description>
 
+  <properties>
+    <bukkitdevuploader.changeLog>Please see the [changelog](${project.url}wiki/Feature-changes) on GitHub.</bukkitdevuploader.changeLog>
+  </properties>
+
   <parent>
      <groupId>name.richardson.james.bukkit</groupId>
      <artifactId>parent-pom</artifactId>
@@ -53,7 +57,19 @@
               </execution>
             </executions>
           </plugin>
+         <plugin>
+           <groupId>name.richardson.james.maven</groupId>
+           <artifactId>bukkit-dev-uploader</artifactId>
+           <version>1.0.0</version>
+           <executions>
+            <execution>
+              <goals>
+                <goal>upload</goal>
+              </goals>
+              <phase>deploy</phase>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
   </build>
-
 </project>
