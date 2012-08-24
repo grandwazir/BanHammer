@@ -43,6 +43,12 @@
                       <include>name.richardson.james.bukkit:bukkit-utilities</include>
                     </includes>
                   </artifactSet>
+                  <relocations>
+                    <relocation>
+                      <pattern>name.richardson.james.bukkit.utilities</pattern>
+                      <shadedPattern>name.richardson.james.bukkit.banhammer.utilities</shadedPattern>
+                    </relocation>
+                  </relocations>
                 </configuration>
               </execution>
             </executions>
