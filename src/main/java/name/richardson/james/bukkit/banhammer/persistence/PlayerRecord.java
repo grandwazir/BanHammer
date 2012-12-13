@@ -81,7 +81,7 @@ public class PlayerRecord {
   private String name;
 
   /** The bans. */
-  @OneToMany(mappedBy = "player", targetEntity = BanRecord.class)
+  @OneToMany(mappedBy = "player", targetEntity = BanRecord.class, cascade={CascadeType.REMOVE})
   private List<BanRecord> bans;
 
   /** The created bans. */

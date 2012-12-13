@@ -60,8 +60,7 @@ public class PurgeCommand extends AbstractCommand {
     int i = 0;
     if (playerRecord != null) {
       i = playerRecord.getBans().size();
-      playerRecord.getBans().clear();
-      database.save(playerRecord);
+      database.delete((playerRecord.getBans()));
     }
     this.formatter.setArguments(i, player.getName());
     sender.sendMessage(this.formatter.getMessage());
@@ -70,7 +69,7 @@ public class PurgeCommand extends AbstractCommand {
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
     if (arguments.length == 0) {
-      throw new CommandArgumentException(this.getLocalisation().getMessage(this, "specify-a-player"), null);
+      throw new CommandArgumentException(this.getLocalisation().getMessage(BanHammer.class, "must-specify-player"), null);
     } else {
       this.player = this.matchPlayer(arguments[0]);
     }
