@@ -28,9 +28,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerPreLoginEvent;
 import org.bukkit.permissions.Permission;
 
 import name.richardson.james.bukkit.alias.AliasHandler;
@@ -122,7 +120,7 @@ public class PlayerListener extends LoggableListener {
       default:
         message = this.localisation.getMessage(this, "permenantly-banned", record.getActiveBan().getReason());
       }
-      event.disallow(PlayerPreLoginEvent.Result.KICK_BANNED, message);
+      event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, message);
     }
   }
   
