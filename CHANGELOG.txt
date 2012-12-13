@@ -1,5 +1,6 @@
 Changelog for BanHammer (v2.0.3-SNAPSHOT)
 
+2012-08-24 17:08:36 +0100    update changelog (James Richardson)
 
 v2.0.2
 2012-08-24 16:55:58 +0100    add link to changelog (James Richardson)
