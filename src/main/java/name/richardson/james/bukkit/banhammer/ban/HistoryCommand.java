@@ -46,9 +46,6 @@ public class HistoryCommand extends AbstractCommand {
   /** Reference to the BanHammer API */
   private final BanHandler handler;
 
-  /** Reference to the BanHammer plugin */
-  private final BanHammer plugin;
-
   /** A instance of the Bukkit server. */
   private final Server server;
 
@@ -60,7 +57,6 @@ public class HistoryCommand extends AbstractCommand {
   public HistoryCommand(final BanHammer plugin) {
     super(plugin, true);
     this.handler = plugin.getHandler();
-    this.plugin = plugin;
     this.server = plugin.getServer();
     this.formatter = new ChoiceFormatter(this.getLocalisation());
     this.formatter.setLimits(0, 1, 2);
