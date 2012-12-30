@@ -1,5 +1,8 @@
-Changelog for BanHammer (v2.0.3-SNAPSHOT)
+Changelog for BanHammer (v2.0.4-SNAPSHOT)
 
+
+v2.0.3
+2012-12-13 23:24:11 +0000    Purge command now works correctly (fixes #38 and #41) (James Richardson)
 2012-12-13 23:04:38 +0000    remove deprecated reference to old bukkit api (James Richardson)
 2012-12-13 22:57:16 +0000    remove unused field (James Richardson)
 2012-12-13 22:56:00 +0000    updated to latest default pom (James Richardson)

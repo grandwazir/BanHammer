@@ -25,6 +25,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.PersistenceException;
 import javax.persistence.Table;
 
 import com.avaje.ebean.EbeanServer;
@@ -42,8 +43,14 @@ public class PlayerRecord {
    * @return true, if successful
    */
   public static boolean exists(final EbeanServer database, final String playerName) {
-    final PlayerRecord record = database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
-    return (record != null);
+		try {
+		  final PlayerRecord record = database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
+		  return (record != null);
+		} catch (PersistenceException exception) {
+			if (!exception.getLocalizedMessage().contains("Unique expecting 0 or 1 rows")) throw exception;
+			PlayerRecord.removeDuplicates(database, playerName);
+		  return PlayerRecord.exists(database, playerName);
+		}
   }
 
   /**
@@ -54,14 +61,38 @@ public class PlayerRecord {
    * @return the player record
    */
   public static PlayerRecord find(final EbeanServer database, final String playerName) {
-    PlayerRecord record = database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
-    if (record == null) {
-      record = new PlayerRecord();
-      record.setName(playerName);
-    }
-    return record;
+		try {
+			PlayerRecord record = database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
+		  if (record == null) {
+		      record = new PlayerRecord();
+		      record.setName(playerName);
+		  }
+		  return record;
+		} catch (PersistenceException exception) {
+			if (!exception.getLocalizedMessage().contains("Unique expecting 0 or 1 rows")) throw exception;
+			PlayerRecord.removeDuplicates(database, playerName);
+		  return PlayerRecord.find(database, playerName);
+	  }
   }
-
+  
+  /**
+   * Delete duplicate player records.
+   * 
+   * This happened due to a bug introduced around version 2.0. I thought it was not a major problem
+   * but it appears to be causing issues for many players. This will automatically fix any issues as they are found.
+   * 
+   * @param database the database
+   * @param playerName the player name
+   * @return the player record
+   */
+  private static void removeDuplicates(final EbeanServer database, final String playerName) {
+	  final List<PlayerRecord> records = database.find(PlayerRecord.class).where().ieq("name", playerName).findList();
+	  for (PlayerRecord record : records) {
+	  	if (record.getCreatedBans().size() == 0 && record.getBans().size() == 0) database.delete(record);
+	  }
+	  if (database.find(PlayerRecord.class).where().ieq("name", playerName).findList().size() > 1) throw new IllegalStateException("Duplicates present in Banhammer database!");
+  }
+  
   /**
    * Get a list containing all players.
    * 
