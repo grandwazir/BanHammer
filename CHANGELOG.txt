@@ -1,5 +1,6 @@
 Changelog for BanHammer (v2.0.4-SNAPSHOT)
 
+2012-12-30 01:34:21 +0000    build against latest Bukkit (James Richardson)
 2012-12-30 01:25:59 +0000    automatically clean up duplicate PlayerRecords, fixes #40 (James Richardson)
 
 v2.0.3
