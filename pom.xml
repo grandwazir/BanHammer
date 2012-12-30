@@ -12,7 +12,7 @@
   <parent>
      <groupId>name.richardson.james.bukkit</groupId>
      <artifactId>default-pom</artifactId>
-     <version>2</version>
+     <version>3</version>
   </parent>
 
   <repositories>

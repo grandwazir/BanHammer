@@ -1,5 +1,6 @@
 Changelog for BanHammer (v2.0.4-SNAPSHOT)
 
+2012-12-30 01:25:59 +0000    automatically clean up duplicate PlayerRecords, fixes #40 (James Richardson)
 
 v2.0.3
 2012-12-13 23:24:11 +0000    Purge command now works correctly (fixes #38 and #41) (James Richardson)
