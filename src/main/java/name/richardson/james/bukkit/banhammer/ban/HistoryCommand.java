@@ -85,7 +85,7 @@ public class HistoryCommand extends AbstractCommand {
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
     if (arguments.length == 0) {
-      if (sender instanceof ConsoleCommandSender) {
+      if (!(sender instanceof Player)) {
         throw new CommandArgumentException(this.getLocalisation().getMessage(BanHammer.class, "must-specify-player"), null);
       }
       this.playerName = sender.getName();
