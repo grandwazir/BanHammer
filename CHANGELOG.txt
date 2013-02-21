@@ -1,5 +1,6 @@
 Changelog for BanHammer (v2.0.5-SNAPSHOT)
 
+2013-02-21 23:36:52 +0000    PurgeCommand now works correctly, fixes #43 (James Richardson)
 2013-01-03 01:42:45 +0000    Change CommandSender check in history and check commands. (UMC)
 
 v2.0.4

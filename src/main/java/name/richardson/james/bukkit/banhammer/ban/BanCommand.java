@@ -26,6 +26,7 @@ import java.util.Map.Entry;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
@@ -62,6 +63,9 @@ public class BanCommand extends AbstractCommand {
   private Map<String, Long> limits;
 
   private final List<String> immunePlayers;
+  
+  /** The wildcard permission needed for banning permeantly **/
+  private final Permission wildcardPermission;
 
   /**
    * Instantiates a new BanCommand.
@@ -76,6 +80,7 @@ public class BanCommand extends AbstractCommand {
     this.registerLimitPermissions();
     this.server = plugin.getServer();
     this.handler = plugin.getHandler();
+    this.wildcardPermission = this.getPermissionManager().getPermission(this.getRootPermission().getName() + ".*");
   }
 
   /*
@@ -89,7 +94,7 @@ public class BanCommand extends AbstractCommand {
       if (!this.getPermissionManager().hasPlayerPermission(sender, this.getPermissionManager().getRootPermission().getName())) {
       throw new CommandPermissionException(
           this.getLocalisation().getMessage(this, "player-immune"), 
-          this.getPermissionManager().getRootPermission());
+          this.wildcardPermission);
       }  
     }
     if (this.isBanLengthAuthorised(sender, this.time)) {
@@ -99,7 +104,7 @@ public class BanCommand extends AbstractCommand {
         sender.sendMessage(this.getLocalisation().getMessage(this, "player-banned", this.player.getName()));
       }
     } else {
-      throw new CommandPermissionException(this.getLocalisation().getMessage(this, "ban-time-too-long"), this.getRootPermission());
+      throw new CommandPermissionException(this.getLocalisation().getMessage(this, "ban-time-too-long"), this.wildcardPermission);
     }
   }
 
@@ -144,12 +149,12 @@ public class BanCommand extends AbstractCommand {
    * @return true, if is ban length authorised
    */
   private boolean isBanLengthAuthorised(final CommandSender sender, final long banLength) {
-    if (sender instanceof CommandSender) return true;
-    if ((banLength == 0) && !sender.hasPermission(this.getRootPermission())) {
+    if (sender instanceof ConsoleCommandSender) return true;
+    if ((banLength == 0) && !this.getPermissionManager().hasPlayerPermission(sender, this.wildcardPermission)) {
       return false;
     } else {
       for (final Entry<String, Long> limit : limits.entrySet()) {
-        if (sender.hasPermission(this.getRootPermission().getName().replace("*", "") + "." + limit.getKey()) && (banLength <= limit.getValue())) {
+        if (this.getPermissionManager().hasPlayerPermission(sender, this.getRootPermission().getName().replace("*", "") + "." + limit.getKey()) && (banLength <= limit.getValue())) {
           return true;
         }
       }
