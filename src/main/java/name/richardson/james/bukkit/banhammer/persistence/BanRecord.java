@@ -65,6 +65,23 @@ public class BanRecord {
   }
 
   /**
+   * Removes bans without an optimistic lock error
+   * One of these days I will learn why it always throws these.
+   * 
+   * @param database the database
+   * @param bans the bans to delete
+   * @return the number of bans deleted.
+   */
+  public static int deleteBans(EbeanServer database, List<BanRecord> bans) {
+    int i = 0;
+    for (BanRecord ban : bans) {
+      i++;
+      database.createSqlUpdate("DELETE from banhammer_bans WHERE id='" + ban.getId()+ "'").execute();
+    }
+    return i;
+  }
+  
+  /**
    * Gets the total number of pardoned bans.
    * 
    * @param database the database
@@ -124,7 +141,7 @@ public class BanRecord {
   public static List<BanRecord> list(final EbeanServer database) {
     return database.find(BanRecord.class).findList();
   }
-
+  
   /** The id. */
   @Id
   private int id;
@@ -147,12 +164,12 @@ public class BanRecord {
   private State state;
 
   /** The player. */
-  @ManyToOne(targetEntity = PlayerRecord.class, fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+  @ManyToOne(targetEntity = PlayerRecord.class, fetch = FetchType.EAGER, cascade={CascadeType.PERSIST})
   @PrimaryKeyJoinColumn(name = "playerId", referencedColumnName = "id")
   private PlayerRecord player;
 
   /** The creator. */
-  @ManyToOne(targetEntity = PlayerRecord.class, fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+  @ManyToOne(targetEntity = PlayerRecord.class, fetch = FetchType.EAGER, cascade={CascadeType.PERSIST})
   @PrimaryKeyJoinColumn(name = "creatorId", referencedColumnName = "id")
   private PlayerRecord creator;
 

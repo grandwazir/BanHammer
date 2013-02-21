@@ -17,6 +17,10 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.ban;
 
+import java.util.List;
+
+import javax.persistence.OptimisticLockException;
+
 import com.avaje.ebean.EbeanServer;
 
 import org.bukkit.OfflinePlayer;
@@ -24,6 +28,7 @@ import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
+import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
@@ -59,8 +64,7 @@ public class PurgeCommand extends AbstractCommand {
     final PlayerRecord playerRecord = PlayerRecord.find(database, player.getName());
     int i = 0;
     if (playerRecord != null) {
-      i = playerRecord.getBans().size();
-      database.delete((playerRecord.getBans()));
+      i = BanRecord.deleteBans(database, playerRecord.getBans());
     }
     this.formatter.setArguments(i, player.getName());
     sender.sendMessage(this.formatter.getMessage());

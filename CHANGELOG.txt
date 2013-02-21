@@ -1,5 +1,9 @@
-Changelog for BanHammer (v2.0.4-SNAPSHOT)
+Changelog for BanHammer (v2.0.5-SNAPSHOT)
 
+2013-01-03 01:42:45 +0000    Change CommandSender check in history and check commands. (UMC)
+
+v2.0.4
+2012-12-30 01:35:22 +0000    commit changelog (James Richardson)
 2012-12-30 01:34:21 +0000    build against latest Bukkit (James Richardson)
 2012-12-30 01:25:59 +0000    automatically clean up duplicate PlayerRecords, fixes #40 (James Richardson)
 
