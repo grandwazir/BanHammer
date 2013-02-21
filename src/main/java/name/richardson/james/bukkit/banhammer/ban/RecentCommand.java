@@ -19,10 +19,6 @@ package name.richardson.james.bukkit.banhammer.ban;
 
 import java.util.List;
 
-import com.avaje.ebean.EbeanServer;
-
-import org.bukkit.command.CommandSender;
-
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
@@ -31,6 +27,10 @@ import name.richardson.james.bukkit.utilities.command.CommandPermissionException
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
+
+import org.bukkit.command.CommandSender;
+
+import com.avaje.ebean.EbeanServer;
 
 @ConsoleCommand
 public class RecentCommand extends AbstractCommand {

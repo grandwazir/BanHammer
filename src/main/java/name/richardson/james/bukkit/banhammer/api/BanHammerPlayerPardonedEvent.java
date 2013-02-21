@@ -17,9 +17,9 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.api;
 
-import org.bukkit.event.HandlerList;
-
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
+
+import org.bukkit.event.HandlerList;
 
 public class BanHammerPlayerPardonedEvent extends BanHammerPlayerEvent {
 

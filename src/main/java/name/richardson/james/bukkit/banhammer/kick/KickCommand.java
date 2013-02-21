@@ -19,10 +19,6 @@ package name.richardson.james.bukkit.banhammer.kick;
 
 import java.util.List;
 
-import org.bukkit.Server;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.PlayerListener;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
@@ -31,6 +27,10 @@ import name.richardson.james.bukkit.utilities.command.CommandPermissionException
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.formatters.StringFormatter;
+
+import org.bukkit.Server;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 @ConsoleCommand
 public class KickCommand extends AbstractCommand {
