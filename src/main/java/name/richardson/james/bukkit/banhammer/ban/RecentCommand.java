@@ -69,7 +69,7 @@ public class RecentCommand extends AbstractCommand {
         }
       }
     } else {
-      sender.sendMessage(this.getLocalisation().getMessage(this, "no-bans-made"));
+      sender.sendMessage(this.getLocalisation().getMessage(this, "no-bans"));
     }
   }
 
