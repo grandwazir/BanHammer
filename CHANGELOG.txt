@@ -1,5 +1,8 @@
-Changelog for BanHammer (v2.0.5-SNAPSHOT)
+Changelog for BanHammer (v2.0.6-SNAPSHOT)
 
+
+v2.0.5
+2013-02-21 23:56:54 +0000    update changelog (James Richardson)
 2013-02-21 23:54:30 +0000    organised imports (James Richardson)
 2013-02-21 23:53:29 +0000    fix typo in localisation key (James Richardson)
 2013-02-21 23:51:06 +0000    BanCommand now respects limits, fixes #46 (James Richardson)

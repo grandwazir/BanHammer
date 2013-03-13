@@ -182,7 +182,7 @@ public class BanCommand extends AbstractCommand {
     if (!limits.isEmpty()) {
       for (final Entry<String, Long> limit : limits.entrySet()) {
         final Permission permission = new Permission(prefix + "." + limit.getKey(), this.getLocalisation().getMessage(this, "permission-limit-description", TimeFormatter.millisToLongDHMS(limit.getValue())), PermissionDefault.OP);
-        permission.addParent(this.getRootPermission(), true);
+        permission.addParent(this.getRootPermission(), false);
         this.getPermissionManager().addPermission(permission, false);
       }
     }
