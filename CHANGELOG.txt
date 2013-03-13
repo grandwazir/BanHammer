@@ -1,5 +1,9 @@
-Changelog for BanHammer (v2.0.6-SNAPSHOT)
+Changelog for BanHammer (v2.0.7-SNAPSHOT)
 
+
+v2.0.6
+2013-03-13 19:28:37 +0000    colour codes added to message (James Richardson)
+2013-03-13 19:27:31 +0000    fixes #48 banhammer limits not being applied correctly (James Richardson)
 
 v2.0.5
 2013-02-21 23:56:54 +0000    update changelog (James Richardson)

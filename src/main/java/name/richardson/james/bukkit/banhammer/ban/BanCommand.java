@@ -150,6 +150,7 @@ public class BanCommand extends AbstractCommand {
    */
   private boolean isBanLengthAuthorised(final CommandSender sender, final long banLength) {
     if (sender instanceof ConsoleCommandSender) return true;
+    if (this.getPermissionManager().hasPlayerPermission(sender, this.wildcardPermission)) return true;
     if ((banLength == 0) && !this.getPermissionManager().hasPlayerPermission(sender, this.wildcardPermission)) {
       return false;
     } else {
