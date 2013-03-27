@@ -17,6 +17,7 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.ban;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
@@ -28,6 +29,7 @@ import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import com.avaje.ebean.EbeanServer;
@@ -83,6 +85,11 @@ public class RecentCommand extends AbstractCommand {
         this.count = DEFAULT_LIMIT;
       }
     }
+  }
+  
+  public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] arguments) {
+    List<String> list = new ArrayList<String>();
+    return list;
   }
 
 }

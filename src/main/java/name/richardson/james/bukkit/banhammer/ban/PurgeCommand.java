@@ -17,6 +17,9 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.ban;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
@@ -29,7 +32,9 @@ import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.avaje.ebean.EbeanServer;
 
@@ -78,6 +83,16 @@ public class PurgeCommand extends AbstractCommand {
 
   private OfflinePlayer matchPlayer(final String name) {
     return this.server.getOfflinePlayer(name);
+  }
+  
+  public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] arguments) {
+    List<String> list = new ArrayList<String>();
+    if (arguments.length <= 1) {
+      for (Player player : this.server.getOnlinePlayers()) {
+        list.add(player.getName());
+      }
+    }
+    return list;
   }
 
 }

@@ -17,6 +17,9 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.ban;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
@@ -29,7 +32,9 @@ import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
@@ -103,6 +108,16 @@ public class PardonCommand extends AbstractCommand {
     this.addPermission(own);
     Permission others = this.getPermissionManager().createPermission(this, "others", PermissionDefault.OP, this.getPermissions().get(0), true);
     this.addPermission(others);
+  }
+  
+  public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] arguments) {
+    List<String> list = new ArrayList<String>();
+    if (arguments.length <= 1) {
+      for (Player player : this.server.getOnlinePlayers()) {
+        list.add(player.getName());
+      }
+    }
+    return list;
   }
 
 }

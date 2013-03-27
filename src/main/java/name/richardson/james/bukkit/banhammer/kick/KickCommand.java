@@ -17,6 +17,7 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.kick;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
@@ -29,6 +30,7 @@ import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.formatters.StringFormatter;
 
 import org.bukkit.Server;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -84,6 +86,16 @@ public class KickCommand extends AbstractCommand {
       return null;
     }
     return players.get(0);
+  }
+  
+  public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] arguments) {
+    List<String> list = new ArrayList<String>();
+    if (arguments.length <= 1) {
+      for (Player player : this.server.getOnlinePlayers()) {
+        list.add(player.getName());
+      }
+    }
+    return list;
   }
 
 }

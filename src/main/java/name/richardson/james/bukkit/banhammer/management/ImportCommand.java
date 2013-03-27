@@ -17,6 +17,9 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.management;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
@@ -29,6 +32,7 @@ import name.richardson.james.bukkit.utilities.formatters.StringFormatter;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 @ConsoleCommand
@@ -82,6 +86,11 @@ public class ImportCommand extends AbstractCommand {
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
     this.reason = (arguments.length == 0) ? this.getLocalisation().getMessage(this, "default-reason") : StringFormatter.combineString(arguments, " ");
+  }
+  
+  public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] arguments) {
+    List<String> list = new ArrayList<String>();
+    return list;
   }
 
 }
