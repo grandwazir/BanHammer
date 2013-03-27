@@ -199,11 +199,17 @@ public class BanCommand extends AbstractCommand {
     List<String> list = new ArrayList<String>();
     if (arguments.length <= 1) {
       for (Player player : this.server.getOnlinePlayers()) {
-        list.add(player.getName());
+        if (arguments.length < 1) {
+          list.add(player.getName());
+        } else if (player.getName().startsWith(arguments[0])) {
+          list.add(player.getName());
+        }
       }
     } else if (arguments.length == 2 && arguments[1].startsWith("t:")) {
       for (String key : this.limits.keySet()) {
-        list.add("t:" + key);
+        if (key.startsWith(arguments[1].replace("t:", ""))) {
+          list.add("t:" + key);
+        }
       }
     } 
     return list;
