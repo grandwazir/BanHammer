@@ -47,7 +47,7 @@ public class PurgeCommand extends AbstractCommand {
   private ChoiceFormatter formatter;
 
   public PurgeCommand(final BanHammer plugin) {
-    super(plugin, false);
+    super(plugin);
     this.database = plugin.getDatabase();
     this.server = plugin.getServer();
     this.formatter = new ChoiceFormatter(this.getLocalisation());
@@ -64,7 +64,7 @@ public class PurgeCommand extends AbstractCommand {
     }
     this.formatter.setArguments(i, player.getName());
     sender.sendMessage(this.formatter.getMessage());
-    this.getLogger().info(this, "log-purged", player.getName(), sender.getName());
+    this.getLogger().info(this.getLocalisation().getMessage(this, "log-purged", player.getName(), sender.getName()));
   }
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {

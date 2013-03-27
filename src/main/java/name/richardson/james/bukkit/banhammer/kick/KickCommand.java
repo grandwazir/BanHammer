@@ -45,7 +45,7 @@ public class KickCommand extends AbstractCommand {
   private String reason;
 
   public KickCommand(final BanHammer plugin) {
-    super(plugin, false);
+    super(plugin);
     this.server = plugin.getServer();
   }
 
@@ -54,7 +54,7 @@ public class KickCommand extends AbstractCommand {
       this.player.kickPlayer(this.getLocalisation().getMessage(PlayerListener.class, "kick-message", this.reason));
       server.broadcast(this.getLocalisation().getMessage(this, "kick-broadcast", player.getName(), sender.getName()), "banhammer.notify");
       server.broadcast(this.getLocalisation().getMessage(this, "reason", reason), "banhammer.notify");
-      this.getLogger().info(this, "kicked", player.getName(), sender.getName());
+      this.getLogger().info(this.getLocalisation().getMessage(this, "kicked", player.getName(), sender.getName()));
     }
     this.player = null;
   }

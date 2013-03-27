@@ -44,7 +44,7 @@ public class ExportCommand extends AbstractCommand {
   private final ChoiceFormatter formatter;
 
   public ExportCommand(final BanHammer plugin) {
-    super(plugin, false);
+    super(plugin);
     this.server = plugin.getServer();
     this.database = plugin.getDatabase();
     this.formatter = new ChoiceFormatter(this.getLocalisation());

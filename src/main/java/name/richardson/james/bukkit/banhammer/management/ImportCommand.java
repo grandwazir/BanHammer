@@ -46,7 +46,7 @@ public class ImportCommand extends AbstractCommand {
   private String reason;
 
   public ImportCommand(final BanHammer plugin) {
-    super(plugin, false);
+    super(plugin);
     this.handler = plugin.getHandler();
     this.server = plugin.getServer();
     this.formatter = new ChoiceFormatter(this.getLocalisation());
@@ -65,7 +65,7 @@ public class ImportCommand extends AbstractCommand {
         player.setBanned(false);
         imported = imported + 1;
       } else {
-        this.getLogger().warning(this, "unable-to-import", player.getName());
+        this.getLogger().warning(this.getLocalisation().getMessage(this, "unable-to-import", player.getName()));
       }
     }
 

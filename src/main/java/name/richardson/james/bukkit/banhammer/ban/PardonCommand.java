@@ -38,10 +38,6 @@ import com.avaje.ebean.EbeanServer;
 @ConsoleCommand
 public class PardonCommand extends AbstractCommand {
 
-  private Permission own;
-
-  private Permission others;
-
   /** A reference to the BanHammer API. */
   private final BanHandler handler;
 
@@ -54,10 +50,11 @@ public class PardonCommand extends AbstractCommand {
   private EbeanServer database;
 
   public PardonCommand(final BanHammer plugin) {
-    super(plugin, true);
+    super(plugin);
     this.database = plugin.getDatabase();
     this.handler = plugin.getHandler();
     this.server = plugin.getServer();
+    this.registerPermissions();
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
@@ -65,22 +62,22 @@ public class PardonCommand extends AbstractCommand {
     if (handler.isPlayerBanned(player.getName())) {
       final BanRecord banRecord = PlayerRecord.find(database, player.getName()).getActiveBan();
 
-      if (sender.hasPermission(others) && !banRecord.getCreator().getName().equalsIgnoreCase(sender.getName())) {
+      if (sender.hasPermission(this.getPermissions().get(2)) && !banRecord.getCreator().getName().equalsIgnoreCase(sender.getName())) {
         this.handler.pardonPlayer(this.player.getName(), sender.getName(), true);
         this.player.setBanned(false);
         sender.sendMessage(this.getLocalisation().getMessage(this, "pardoned", this.player.getName()));
         return;
       } else if (!banRecord.getCreator().getName().equalsIgnoreCase(sender.getName())) {
-        throw new CommandPermissionException(this.getLocalisation().getMessage(this, "cannot-pardon-others-bans"), others);
+        throw new CommandPermissionException(this.getLocalisation().getMessage(this, "cannot-pardon-others-bans"), this.getPermissions().get(2));
       }
 
-      if (sender.hasPermission(own) && banRecord.getCreator().getName().equalsIgnoreCase(sender.getName())) {
+      if (sender.hasPermission(this.getPermissions().get(1)) && banRecord.getCreator().getName().equalsIgnoreCase(sender.getName())) {
         this.handler.pardonPlayer(this.player.getName(), sender.getName(), true);
         this.player.setBanned(false);
         sender.sendMessage(this.getLocalisation().getMessage(this, "pardoned", this.player.getName()));
         return;
       } else if (banRecord.getCreator().getName().equalsIgnoreCase(sender.getName())) {
-        throw new CommandPermissionException(this.getLocalisation().getMessage(this, "cannot-pardon-own-bans"), own);
+        throw new CommandPermissionException(this.getLocalisation().getMessage(this, "cannot-pardon-own-bans"), this.getPermissions().get(1));
       }
 
     } else {
@@ -101,16 +98,11 @@ public class PardonCommand extends AbstractCommand {
     return this.server.getOfflinePlayer(name);
   }
 
-  protected void registerPermissions(boolean wildcard) {
-    super.registerPermissions(wildcard);
-    final String prefix = this.getPermissionManager().getRootPermission().getName().replace("*", "");
-    own = new Permission(prefix + this.getName() + "." + this.getLocalisation().getMessage(this, "own-permission-name"), this.getLocalisation().getMessage(this, "own-permission-description"), PermissionDefault.OP);
-    own.addParent(this.getRootPermission(), true);
-    this.getPermissionManager().addPermission(own, false);
-    // add ability to pardon the bans of others
-    others = new Permission(prefix + this.getName() + "." + this.getLocalisation().getMessage(this, "others-permission-name"), this.getLocalisation().getMessage(this, "others-permission-description"), PermissionDefault.OP);
-    others.addParent(this.getRootPermission(), true);
-    this.getPermissionManager().addPermission(others, false);
+  private void registerPermissions() {
+    Permission own = this.getPermissionManager().createPermission(this, "own", PermissionDefault.OP, this.getPermissions().get(0), true);
+    this.addPermission(own);
+    Permission others = this.getPermissionManager().createPermission(this, "others", PermissionDefault.OP, this.getPermissions().get(0), true);
+    this.addPermission(others);
   }
 
 }

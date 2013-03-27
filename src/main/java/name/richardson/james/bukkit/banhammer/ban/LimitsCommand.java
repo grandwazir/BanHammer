@@ -41,7 +41,7 @@ public class LimitsCommand extends AbstractCommand {
   private final ChoiceFormatter formatter;
 
   public LimitsCommand(final BanHammer plugin, Map<String, Long> limits) {
-    super(plugin, false);
+    super(plugin);
     this.limits = limits;
     this.formatter = new ChoiceFormatter(this.getLocalisation());
     this.formatter.setLimits(0, 1, 2);

@@ -38,10 +38,6 @@ import org.bukkit.permissions.PermissionDefault;
 @ConsoleCommand
 public class HistoryCommand extends AbstractCommand {
 
-  private Permission own;
-
-  private Permission others;
-
   /** Reference to the BanHammer API */
   private final BanHandler handler;
 
@@ -54,30 +50,31 @@ public class HistoryCommand extends AbstractCommand {
   private final ChoiceFormatter formatter;
 
   public HistoryCommand(final BanHammer plugin) {
-    super(plugin, true);
+    super(plugin);
     this.handler = plugin.getHandler();
     this.server = plugin.getServer();
     this.formatter = new ChoiceFormatter(this.getLocalisation());
     this.formatter.setLimits(0, 1, 2);
     this.formatter.setMessage(this, "header");
     this.formatter.setFormats(this.getLocalisation().getMessage(BanHammer.class, "no-bans"), this.getLocalisation().getMessage(BanHammer.class, "one-ban"), this.getLocalisation().getMessage(BanHammer.class, "many-bans"));
+    this.registerPermissions();
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     final List<BanRecord> bans = this.handler.getPlayerBans(this.playerName);
 
-    if (sender.hasPermission(own) && !this.playerName.equalsIgnoreCase(sender.getName())) {
+    if (sender.hasPermission(this.getPermissions().get(1)) && !this.playerName.equalsIgnoreCase(sender.getName())) {
       this.displayHistory(bans, sender);
       return;
     } else if (!this.playerName.equalsIgnoreCase(sender.getName())) {
-      throw new CommandPermissionException(this.getLocalisation().getMessage(this, "cannot-view-others-history"), others);
+      throw new CommandPermissionException(this.getLocalisation().getMessage(this, "cannot-view-others-history"), this.getPermissions().get(2));
     }
 
-    if (sender.hasPermission(others) && this.playerName.equalsIgnoreCase(sender.getName())) {
+    if (sender.hasPermission(this.getPermissions().get(2)) && this.playerName.equalsIgnoreCase(sender.getName())) {
       this.displayHistory(bans, sender);
       return;
     } else if (this.playerName.equalsIgnoreCase(sender.getName())) {
-      throw new CommandPermissionException(this.getLocalisation().getMessage(this, "cannot-view-own-history"), own);
+      throw new CommandPermissionException(this.getLocalisation().getMessage(this, "cannot-view-own-history"), this.getPermissions().get(1));
     }
 
   }
@@ -117,18 +114,13 @@ public class HistoryCommand extends AbstractCommand {
     }
   }
 
-  @Override
-  protected void registerPermissions(boolean wildcard) {
-    super.registerPermissions(wildcard);
-    final String prefix = this.getRootPermission().getName().replace("*", "");
+  private void registerPermissions() {
     // add ability to view your own ban history
-    own = new Permission(prefix + "." + this.getLocalisation().getMessage(this, "own-permission-name"), this.getLocalisation().getMessage(this, "own-permission-description"), PermissionDefault.TRUE);
-    own.addParent(this.getRootPermission(), true);
-    this.getPermissionManager().addPermission(own, false);
+    Permission own = this.getPermissionManager().createPermission(this, "own", PermissionDefault.TRUE, this.getPermissions().get(0), true);
+    this.addPermission(own);
     // add ability to view the ban history of others
-    others = new Permission(prefix + "." + this.getLocalisation().getMessage(this, "others-permission-name"), this.getLocalisation().getMessage(this, "others-permission-description"), PermissionDefault.OP);
-    others.addParent(this.getRootPermission(), true);
-    this.getPermissionManager().addPermission(others, false);
+    Permission others = this.getPermissionManager().createPermission(this, "others", PermissionDefault.OP, this.getPermissions().get(0), true);
+    this.addPermission(others);
   }
 
 }

@@ -45,7 +45,7 @@ public class RecentCommand extends AbstractCommand {
   private ChoiceFormatter formatter;
 
   public RecentCommand(final BanHammer plugin) {
-    super(plugin, false);
+    super(plugin);
     this.database = plugin.getDatabase();
     this.formatter = new ChoiceFormatter(this.getLocalisation());
     this.formatter.setLimits(1, 2);

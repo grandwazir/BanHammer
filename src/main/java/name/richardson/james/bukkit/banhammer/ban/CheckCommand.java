@@ -47,7 +47,7 @@ public class CheckCommand extends AbstractCommand {
   private final EbeanServer database;
 
   public CheckCommand(final BanHammer plugin) {
-    super(plugin, false);
+    super(plugin);
     this.database = plugin.getDatabase();
     this.server = plugin.getServer();
   }
