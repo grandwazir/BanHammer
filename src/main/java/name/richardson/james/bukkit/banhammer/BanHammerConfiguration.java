@@ -74,7 +74,7 @@ public class BanHammerConfiguration extends PluginConfiguration {
         final Long length = TimeFormatter.parseTime(section.getString(key));
         this.limits.put(name, length);
       } catch (final NumberFormatException e) {
-        this.getLogger().warning(this, "limit-invalid", key);
+        this.getLogger().warning(this.getLocalisation().getMessage(this, "limit-invalid", key));
       }
     }
   }

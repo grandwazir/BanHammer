@@ -83,7 +83,7 @@ public class PlayerListener extends LoggableListener {
     this.database = plugin.getDatabase();
     this.localisation = plugin.getLocalisation();
     this.onlineMode = plugin.getServer().getOnlineMode();
-    if (!this.onlineMode) plugin.getCustomLogger().warning(this, "insecure-mode");
+    if (!this.onlineMode) plugin.getCustomLogger().warning(plugin.getLocalisation().getMessage(this, "insecure-mode"));
   }
 
   /**
@@ -187,12 +187,12 @@ public class PlayerListener extends LoggableListener {
    * @return true, if is player banned
    */
   private PlayerRecord isPlayerBanned(final String playerName, InetAddress address) {
-    this.getLogger().debug(this, "checking-for-bans", playerName);
+    this.getLogger().debug(String.format("Checking for bans for %s.", playerName));
     PlayerRecord record = PlayerRecord.find(database, playerName);
     if (record.isBanned()) {
       return record;
     } else if (this.aliasHandler != null) {
-      this.getLogger().debug(this, "checking-for-alias", playerName);
+      this.getLogger().debug(String.format("Checking for alias  of %s.", playerName));
       final Collection<PlayerNameRecord> aliases = this.aliasHandler.getPlayersNames(address);
       for (final PlayerNameRecord alias : aliases) {
         record = PlayerRecord.find(database, alias.getPlayerName());
@@ -203,7 +203,7 @@ public class PlayerListener extends LoggableListener {
         }
       }
     }
-    this.getLogger().debug(this, "player-not-banned", playerName);
+    this.getLogger().debug("Player is not banned");
     return null;
   }
 
