@@ -107,7 +107,6 @@ public final class BanHammer extends AbstractPlugin {
     final List<Class<?>> classes = new LinkedList<Class<?>>();
     classes.add(BanRecord.class);
     classes.add(PlayerRecord.class);
-    classes.add(OldBanRecord.class);
     return classes;
   }
 
