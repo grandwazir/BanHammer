@@ -1,5 +1,7 @@
 Changelog for BanHammer (v2.1.0-SNAPSHOT)
 
+2013-03-27 15:10:20 +0000    fix duplicate names appearing for tab completion (James Richardson)
+2013-03-27 06:03:15 +0000    changelog and version bump (James Richardson)
 2013-03-27 05:48:49 +0000    added offline player tab completion (James Richardson)
 2013-03-27 05:17:46 +0000    complete partial player names (James Richardson)
 2013-03-27 05:16:50 +0000    complete partial arguments (James Richardson)
