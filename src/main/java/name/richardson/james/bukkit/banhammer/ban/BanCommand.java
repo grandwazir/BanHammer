@@ -17,6 +17,7 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.ban;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,6 +36,7 @@ import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -191,6 +193,20 @@ public class BanCommand extends AbstractCommand {
         this.addPermission(permission);
       }
     }
+  }
+
+  public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] arguments) {
+    List<String> list = new ArrayList<String>();
+    if (arguments.length <= 1) {
+      for (Player player : this.server.getOnlinePlayers()) {
+        list.add(player.getName());
+      }
+    } else if (arguments.length == 2 && arguments[1].startsWith("t:")) {
+      for (String key : this.limits.keySet()) {
+        list.add("t:" + key);
+      }
+    } 
+    return list;
   }
 
 }
