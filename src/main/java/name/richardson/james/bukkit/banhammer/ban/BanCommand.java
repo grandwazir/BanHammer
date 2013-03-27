@@ -59,14 +59,12 @@ public class BanCommand extends AbstractCommand {
   /** The reason given for the player's ban. */
   private String reason;
 
-  /** The ban limis. */
+  /** The ban limit. */
   private Map<String, Long> limits;
 
+  /** A list of players who are not allowed to be banned normally */
   private final List<String> immunePlayers;
   
-  /** The wildcard permission needed for banning permeantly **/
-  private final Permission wildcardPermission;
-
   /**
    * Instantiates a new BanCommand.
    * 
@@ -93,7 +91,7 @@ public class BanCommand extends AbstractCommand {
       if (!this.getPermissionManager().hasPlayerPermission(sender, this.getPermissionManager().getRootPermission().getName())) {
       throw new CommandPermissionException(
           this.getLocalisation().getMessage(this, "player-immune"), 
-          this.wildcardPermission);
+          this.getPermissionManager().getRootPermission());
       }  
     }
     if (this.isBanLengthAuthorised(sender, this.time)) {
@@ -103,7 +101,7 @@ public class BanCommand extends AbstractCommand {
         sender.sendMessage(this.getLocalisation().getMessage(this, "player-banned", this.player.getName()));
       }
     } else {
-      throw new CommandPermissionException(this.getLocalisation().getMessage(this, "ban-time-too-long"), this.wildcardPermission);
+      throw new CommandPermissionException(this.getLocalisation().getMessage(this, "ban-time-too-long"), this.getPermissions().get(0));
     }
   }
 
@@ -149,13 +147,19 @@ public class BanCommand extends AbstractCommand {
    */
   private boolean isBanLengthAuthorised(final CommandSender sender, final long banLength) {
     if (sender instanceof ConsoleCommandSender) return true;
-    if (this.getPermissionManager().hasPlayerPermission(sender, this.wildcardPermission)) return true;
-    if ((banLength == 0) && !this.getPermissionManager().hasPlayerPermission(sender, this.wildcardPermission)) {
-      return false;
-    } else {
-      for (final Entry<String, Long> limit : limits.entrySet()) {
-        if (this.getPermissionManager().hasPlayerPermission(sender, this.getRootPermission().getName().replace("*", "") + "." + limit.getKey()) && (banLength <= limit.getValue())) {
+    for (Permission permission : this.getPermissions()) {
+      if (this.getPermissionManager().hasPlayerPermission(sender, permission)) {
+        // If they have banhammer.ban allow the ban regardless.
+        if (permission == this.getPermissions().get(0)) {
           return true;
+        // otherwise check limits
+        } else {
+          int index = permission.getName().lastIndexOf(".");
+          String key = permission.getName().substring(index + 1);
+          long limit = this.limits.get(key);
+          if (banLength <= limit) {
+            return true;
+          }
         }
       }
     }
