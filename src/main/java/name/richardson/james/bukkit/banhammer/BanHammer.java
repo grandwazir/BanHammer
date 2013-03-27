@@ -213,7 +213,7 @@ public final class BanHammer extends AbstractPlugin {
   @Override
   protected void establishPersistence() throws SQLException {
     try {
-      this.database = new MigratedSQLStorage(this, new DatabaseConfiguration(this), this.getDatabaseClasses());
+      this.database = new SQLStorage(this, new DatabaseConfiguration(this), this.getDatabaseClasses());
       this.database.initalise();
     } catch (IOException e) {
       // TODO Auto-generated catch block
