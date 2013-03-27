@@ -19,7 +19,9 @@ package name.richardson.james.bukkit.banhammer.persistence;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -145,10 +147,12 @@ public class BanRecord {
   
   public static List<String> getBannedPlayersThatStartWith(final EbeanServer database, String name) {
     List<String> names = new ArrayList<String>();
+    Set<String> temp = new LinkedHashSet<String>();
     List<BanRecord> records = database.find(BanRecord.class).where().istartsWith("player.name", name).findList();
     for (BanRecord record : records) {
-      names.add(record.getPlayer().getName());
+      temp.add(record.getPlayer().getName());
     }
+    names.addAll(temp);
     return names;
   }
   
