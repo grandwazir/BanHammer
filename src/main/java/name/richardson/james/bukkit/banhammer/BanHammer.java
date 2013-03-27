@@ -186,7 +186,7 @@ public final class BanHammer extends AbstractPlugin {
   protected void setPermissions() {
     super.setPermissions();
     // register notify permission
-    this.getPermissionManager().createPermission(this, "banhammer.notify", PermissionDefault.TRUE);
+    notify = this.getPermissionManager().createPermission(this, "banhammer.notify", PermissionDefault.TRUE);
   }
 
   /*

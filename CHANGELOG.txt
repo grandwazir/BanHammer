@@ -1,5 +1,19 @@
-Changelog for BanHammer (v2.0.7-SNAPSHOT)
+Changelog for BanHammer (v2.0.8-SNAPSHOT)
 
+2013-03-27 04:41:40 +0000    log breakages (James Richardson)
+2013-03-27 04:39:23 +0000    fix breakages (James Richardson)
+2013-03-27 04:35:47 +0000    referencing old ban record (James Richardson)
+2013-03-27 04:35:19 +0000    remove migration support from pre 2.0.0 versions (James Richardson)
+2013-03-27 04:33:29 +0000    tab completion of all commands (James Richardson)
+2013-03-27 04:31:28 +0000    tab completion of player names (James Richardson)
+2013-03-27 04:30:17 +0000    tab completion of limits and player names (James Richardson)
+2013-03-27 04:26:42 +0000    new style permissions (James Richardson)
+2013-03-27 04:16:49 +0000    add new permission styles (James Richardson)
+2013-03-27 04:04:57 +0000    update permissions to new style (James Richardson)
+2013-03-27 03:56:40 +0000    update dependencies (James Richardson)
+
+v2.0.7
+2013-03-13 19:39:46 +0000    fixes #49 banning players for arbitary amounts of time (James Richardson)
 
 v2.0.6
 2013-03-13 19:28:37 +0000    colour codes added to message (James Richardson)
