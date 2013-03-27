@@ -1,5 +1,6 @@
 Changelog for BanHammer (v2.0.8-SNAPSHOT)
 
+2013-03-27 04:45:56 +0000    fix NPE when pardoning players (James Richardson)
 2013-03-27 04:41:40 +0000    log breakages (James Richardson)
 2013-03-27 04:39:23 +0000    fix breakages (James Richardson)
 2013-03-27 04:35:47 +0000    referencing old ban record (James Richardson)
