@@ -25,6 +25,7 @@ import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord.State;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
+import name.richardson.james.bukkit.utilities.localisation.Localisation;
 import name.richardson.james.bukkit.utilities.logging.Logger;
 
 import org.bukkit.Bukkit;
@@ -39,6 +40,9 @@ public class BanHandler {
   /* The database used by this handler */
   private final EbeanServer database;
 
+  /* Localisation messages for BanHammer */
+  private Localisation localisation;
+
   /**
    * Instantiates a new ban handler.
    * 
@@ -48,6 +52,7 @@ public class BanHandler {
   public BanHandler(final BanHammer plugin) {
     this.database = plugin.getDatabase();
     this.logger = plugin.getCustomLogger();
+    this.localisation = plugin.getLocalisation();
   }
 
   /*
@@ -71,7 +76,7 @@ public class BanHandler {
     database.save(ban);
     BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(ban, !notify);
     Bukkit.getServer().getPluginManager().callEvent(event);
-    logger.info(this, "player-banned", playerName, senderName, reason);
+    logger.info(this.localisation.getMessage(this, "player-banned", playerName, senderName, reason));
     return true;
   }
 
@@ -111,7 +116,7 @@ public class BanHandler {
       banRecord.setState(State.PARDONED);
       database.save(banRecord);
       Bukkit.getServer().getPluginManager().callEvent(event);
-      logger.info(this, "player-pardoned", playerName, senderName);
+      logger.info(this.localisation.getMessage(this, "player-pardoned", playerName, senderName));
       return true;
     } else {
       return false;
@@ -140,7 +145,7 @@ public class BanHandler {
     ban.setCreatedAt(sourceBan.getCreatedAt());
     if (sourceBan.getExpiresAt().getTime() != 0) ban.setExpiresAt(sourceBan.getExpiresAt());
     database.save(ban);
-    logger.info(this, "player-banned", playerName, sourceBan.getCreator().getName(), reason);
+    logger.info(this.localisation.getMessage(this, "player-banned", playerName, sourceBan.getCreator().getName(), reason));
     return true;
   }
 

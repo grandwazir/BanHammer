@@ -74,13 +74,12 @@ public class BanCommand extends AbstractCommand {
    * @param limits the registered ban limits to use
    */
   public BanCommand(final BanHammer plugin, Map<String, Long> limits, List<String> immunePlayers) {
-    super(plugin, true);
+    super(plugin);
     this.immunePlayers = immunePlayers;
     this.limits = limits;
     this.registerLimitPermissions();
     this.server = plugin.getServer();
     this.handler = plugin.getHandler();
-    this.wildcardPermission = this.getPermissionManager().getPermission(this.getRootPermission().getName() + ".*");
   }
 
   /*
@@ -179,12 +178,13 @@ public class BanCommand extends AbstractCommand {
   }
   
   private void registerLimitPermissions() {
-    final String prefix = this.getRootPermission().getName().replace("*", "");
+    final Permission parent = this.getPermissions().get(0);
     if (!limits.isEmpty()) {
       for (final Entry<String, Long> limit : limits.entrySet()) {
-        final Permission permission = new Permission(prefix + "." + limit.getKey(), this.getLocalisation().getMessage(this, "permission-limit-description", TimeFormatter.millisToLongDHMS(limit.getValue())), PermissionDefault.OP);
-        permission.addParent(this.getRootPermission(), false);
-        this.getPermissionManager().addPermission(permission, false);
+        final Permission permission = new Permission(parent.getName() + "." + limit.getKey(), this.getLocalisation().getMessage(this, "permission-limit-description", TimeFormatter.millisToLongDHMS(limit.getValue())), PermissionDefault.OP);
+        permission.addParent(parent, true);
+        this.getPermissionManager().addPermission(permission);
+        this.addPermission(permission);
       }
     }
   }
