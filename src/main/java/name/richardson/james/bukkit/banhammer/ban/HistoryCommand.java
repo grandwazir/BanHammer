@@ -69,14 +69,14 @@ public class HistoryCommand extends AbstractCommand {
       this.displayHistory(bans, sender);
       return;
     } else if (!this.playerName.equalsIgnoreCase(sender.getName())) {
-      throw new CommandPermissionException(this.getLocalisation().getMessage(this, "cannot-view-others-history"), this.getPermissions().get(2));
+      throw new CommandPermissionException(null, this.getPermissions().get(1));
     }
 
     if (sender.hasPermission(this.getPermissions().get(2)) && this.playerName.equalsIgnoreCase(sender.getName())) {
       this.displayHistory(bans, sender);
       return;
     } else if (this.playerName.equalsIgnoreCase(sender.getName())) {
-      throw new CommandPermissionException(this.getLocalisation().getMessage(this, "cannot-view-own-history"), this.getPermissions().get(1));
+      throw new CommandPermissionException(null, this.getPermissions().get(2));
     }
 
   }
