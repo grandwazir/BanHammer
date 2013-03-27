@@ -37,8 +37,6 @@ import name.richardson.james.bukkit.banhammer.ban.RecentCommand;
 import name.richardson.james.bukkit.banhammer.kick.KickCommand;
 import name.richardson.james.bukkit.banhammer.management.ExportCommand;
 import name.richardson.james.bukkit.banhammer.management.ImportCommand;
-import name.richardson.james.bukkit.banhammer.migration.MigratedSQLStorage;
-import name.richardson.james.bukkit.banhammer.migration.OldBanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.utilities.command.Command;
@@ -188,9 +186,7 @@ public final class BanHammer extends AbstractPlugin {
   protected void setPermissions() {
     super.setPermissions();
     // register notify permission
-    final String prefix = this.getDescription().getName().toLowerCase() + ".";
-    this.notify = new Permission(prefix + this.getLocalisation().getMessage(this, "notify-permission-name"), this.getLocalisation().getMessage(this, "notify-permission-description"), PermissionDefault.TRUE);
-    this.getPermissionManager().addPermission(notify, true);
+    this.getPermissionManager().createPermission(this, "banhammer.notify", PermissionDefault.TRUE);
   }
 
   /*
