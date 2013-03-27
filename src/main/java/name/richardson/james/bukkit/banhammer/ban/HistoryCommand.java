@@ -65,18 +65,18 @@ public class HistoryCommand extends AbstractCommand {
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     final List<BanRecord> bans = this.handler.getPlayerBans(this.playerName);
 
-    if (sender.hasPermission(this.getPermissions().get(1)) && !this.playerName.equalsIgnoreCase(sender.getName())) {
+    if (sender.hasPermission(this.getPermissions().get(2)) && !this.playerName.equalsIgnoreCase(sender.getName())) {
       this.displayHistory(bans, sender);
       return;
     } else if (!this.playerName.equalsIgnoreCase(sender.getName())) {
-      throw new CommandPermissionException(null, this.getPermissions().get(1));
+      throw new CommandPermissionException(null, this.getPermissions().get(2));
     }
 
-    if (sender.hasPermission(this.getPermissions().get(2)) && this.playerName.equalsIgnoreCase(sender.getName())) {
+    if (sender.hasPermission(this.getPermissions().get(1)) && this.playerName.equalsIgnoreCase(sender.getName())) {
       this.displayHistory(bans, sender);
       return;
     } else if (this.playerName.equalsIgnoreCase(sender.getName())) {
-      throw new CommandPermissionException(null, this.getPermissions().get(2));
+      throw new CommandPermissionException(null, this.getPermissions().get(1));
     }
 
   }
