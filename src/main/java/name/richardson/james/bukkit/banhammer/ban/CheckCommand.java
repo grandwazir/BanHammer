@@ -99,6 +99,9 @@ public class CheckCommand extends AbstractCommand {
         } else if (player.getName().startsWith(arguments[0])) {
           list.add(player.getName());
         }
+        if (arguments[0].length() >= 3) {
+          list.addAll(BanRecord.getBannedPlayersThatStartWith(database, arguments[0]));
+        }
       }
     }
     return list;

@@ -113,12 +113,8 @@ public class PardonCommand extends AbstractCommand {
   public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] arguments) {
     List<String> list = new ArrayList<String>();
     if (arguments.length <= 1) {
-      for (Player player : this.server.getOnlinePlayers()) {
-        if (arguments.length < 1) {
-          list.add(player.getName());
-        } else if (player.getName().startsWith(arguments[0])) {
-          list.add(player.getName());
-        }
+      if (arguments[0].length() >= 3) {
+        list.addAll(BanRecord.getBannedPlayersThatStartWith(database, arguments[0]));
       }
     }
     return list;

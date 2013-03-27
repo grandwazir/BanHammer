@@ -18,6 +18,7 @@
 package name.richardson.james.bukkit.banhammer.persistence;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -36,7 +37,7 @@ import com.avaje.ebean.validation.NotNull;
 @Entity()
 @Table(name = "banhammer_bans")
 public class BanRecord {
-
+  
   /**
    * The valid states of a BanRecord
    */
@@ -140,6 +141,15 @@ public class BanRecord {
    */
   public static List<BanRecord> list(final EbeanServer database) {
     return database.find(BanRecord.class).findList();
+  }
+  
+  public static List<String> getBannedPlayersThatStartWith(final EbeanServer database, String name) {
+    List<String> names = new ArrayList<String>();
+    List<BanRecord> records = database.find(BanRecord.class).where().istartsWith("player.name", name).findList();
+    for (BanRecord record : records) {
+      names.add(record.getPlayer().getName());
+    }
+    return names;
   }
   
   /** The id. */

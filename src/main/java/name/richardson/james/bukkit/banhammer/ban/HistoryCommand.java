@@ -37,6 +37,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
+import com.avaje.ebean.EbeanServer;
+
 @ConsoleCommand
 public class HistoryCommand extends AbstractCommand {
 
@@ -50,9 +52,12 @@ public class HistoryCommand extends AbstractCommand {
   private String playerName;
 
   private final ChoiceFormatter formatter;
+  
+  private final EbeanServer database;
 
   public HistoryCommand(final BanHammer plugin) {
     super(plugin);
+    this.database = plugin.getDatabase();
     this.handler = plugin.getHandler();
     this.server = plugin.getServer();
     this.formatter = new ChoiceFormatter(this.getLocalisation());
@@ -133,6 +138,9 @@ public class HistoryCommand extends AbstractCommand {
           list.add(player.getName());
         } else if (player.getName().startsWith(arguments[0])) {
           list.add(player.getName());
+        }
+        if (arguments[0].length() >= 3) {
+          list.addAll(BanRecord.getBannedPlayersThatStartWith(database, arguments[0]));
         }
       }
     }
