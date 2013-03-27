@@ -92,7 +92,11 @@ public class KickCommand extends AbstractCommand {
     List<String> list = new ArrayList<String>();
     if (arguments.length <= 1) {
       for (Player player : this.server.getOnlinePlayers()) {
-        list.add(player.getName());
+        if (arguments.length < 1) {
+          list.add(player.getName());
+        } else if (player.getName().startsWith(arguments[0])) {
+          list.add(player.getName());
+        }
       }
     }
     return list;
