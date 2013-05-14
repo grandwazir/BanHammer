@@ -19,6 +19,8 @@ package name.richardson.james.bukkit.banhammer.ban;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
@@ -112,11 +114,13 @@ public class PardonCommand extends AbstractCommand {
   
   public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] arguments) {
     List<String> list = new ArrayList<String>();
+    Set<String> temp = new TreeSet<String>();
     if (arguments.length <= 1) {
       if (arguments[0].length() >= 3) {
-        list.addAll(BanRecord.getBannedPlayersThatStartWith(database, arguments[0]));
+        temp.addAll(BanRecord.getBannedPlayersThatStartWith(database, arguments[0]));
       }
     }
+    list.addAll(list);
     return list;
   }
 

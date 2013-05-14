@@ -147,12 +147,10 @@ public class BanRecord {
   
   public static List<String> getBannedPlayersThatStartWith(final EbeanServer database, String name) {
     List<String> names = new ArrayList<String>();
-    Set<String> temp = new LinkedHashSet<String>();
     List<BanRecord> records = database.find(BanRecord.class).where().istartsWith("player.name", name).findList();
     for (BanRecord record : records) {
-      temp.add(record.getPlayer().getName());
+      names.add(record.getPlayer().getName());
     }
-    names.addAll(temp);
     return names;
   }
   

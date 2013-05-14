@@ -18,8 +18,12 @@
 package name.richardson.james.bukkit.banhammer.ban;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
+import name.richardson.james.bukkit.alias.persistence.PlayerNameRecord;
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
@@ -30,6 +34,7 @@ import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -132,18 +137,20 @@ public class HistoryCommand extends AbstractCommand {
 
   public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] arguments) {
     List<String> list = new ArrayList<String>();
+    Set<String> temp = new TreeSet<String>();
     if (arguments.length <= 1) {
-      for (Player player : this.server.getOnlinePlayers()) {
+      for (Player player : Bukkit.getServer().getOnlinePlayers()) {
         if (arguments.length < 1) {
-          list.add(player.getName());
+          temp.add(player.getName());
         } else if (player.getName().startsWith(arguments[0])) {
-          list.add(player.getName());
-        }
-        if (arguments[0].length() >= 3) {
-          list.addAll(BanRecord.getBannedPlayersThatStartWith(database, arguments[0]));
+          temp.add(player.getName());
         }
       }
+      if (arguments[0].length() >= 3) {
+        temp.addAll(PlayerNameRecord.getPlayersThatStartWith(database, arguments[0]));
+      }
     }
+    list.addAll(temp);
     return list;
   }
 
