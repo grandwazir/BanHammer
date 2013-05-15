@@ -1,5 +1,12 @@
-Changelog for BanHammer (v2.1.0-SNAPSHOT)
+Changelog for BanHammer (v2.1.1-SNAPSHOT)
 
+2013-05-15 00:56:07 +0100    fix tab completion (James Richardson)
+2013-05-15 00:19:52 +0100    build against latest versions (James Richardson)
+2013-03-28 11:36:48 +0000    added gh-pages as a submodule (James Richardson)
+2013-03-28 11:34:18 +0000    clean site directory (James Richardson)
+
+v2.1.0
+2013-03-27 22:12:53 +0000    changelog (James Richardson)
 2013-03-27 15:10:20 +0000    fix duplicate names appearing for tab completion (James Richardson)
 2013-03-27 06:03:15 +0000    changelog and version bump (James Richardson)
 2013-03-27 05:48:49 +0000    added offline player tab completion (James Richardson)
