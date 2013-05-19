@@ -4,7 +4,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>2.0.7</title>
+    <title>2.2.0</title>
     
     <meta name="author" content="James Richardson">
 
@@ -148,24 +148,44 @@
         
 
 
-<div class="alert">
-  <button type="button" class="close" data-dismiss="alert">&times;</button>
-  This is not the current version of the plugin.
-</div>
-
 <div class="page-header">
-  <h1>2.0.7  <small>Released on 13 March 2013</small></h1>
+  <h1>2.2.0  <small>Released on 19 May 2013</small></h1>
 </div>
 <ul class="inline">
-    <li><a href="http://repository.james.richardson.name/releases/name/richardson/james/bukkit/ban-hammer/2.0.7/ban-hammer-2.0.7.jar"><button class="btn btn-large btn-primary" type="button">Download</button></a></li>
-    <li><a href="https://github.com/grandwazir/Banhammer/tree/v2.0.7"><button class="btn btn-large" type="button">Source</button></a></li>
+    <li><a href="http://repository.james.richardson.name/releases/name/richardson/james/bukkit/ban-hammer/2.2.0/ban-hammer-2.2.0.jar"><button class="btn btn-large btn-primary" type="button">Download</button></a></li>
+    <li><a href="https://github.com/grandwazir/Banhammer/tree/v2.2.0"><button class="btn btn-large" type="button">Source</button></a></li>
 </ul>
 <div class="row-fluid">
   <div class="span12">
-    <h3 id='bug_fixes'>Bug fixes</h3>
+    <div class='alert'>
+  New commands have been added. You may need to update your configuration. 
+</div>
+<h2 id='new_features'>New features</h2>
 
 <ul>
-<li>Fixed an issue where players could not ban for a length of time shorter than forever with banhammer.ban.*</li>
+<li>Added audit command. Enables you to see how many bans a person has made.</li>
+
+<li>Added undo command. Enables you to undo a ban you have made by accident.</li>
+</ul>
+
+<h2 id='improvements'>Improvements</h2>
+
+<ul>
+<li>Improved formatting of the ban kick message.</li>
+
+<li>Tab completion is now more aware (will not provide names of players who are not banned when using /bh check for example).</li>
+
+<li>Added ban reason and ban time as an option for localisation in kick messages.</li>
+
+<li>Purge command works like pardon now (own and other permission nodes).</li>
+</ul>
+
+<h2 id='bug_fixes'>Bug fixes</h2>
+
+<ul>
+<li>Fixed issue where players with set limits were able to ban permanently.</li>
+
+<li>Fixed an issue where the banhammer.notify permission was not being registered correctly.</li>
 </ul>
   </div>
 </div>

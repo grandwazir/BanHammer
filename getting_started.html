@@ -96,6 +96,10 @@
   
     
       
+    
+  
+    
+      
       	
       	<li><a href="http://grandwazir.github.com/BanHammer/download.html">Download</a></li>
       	
@@ -232,6 +236,14 @@
 
 <p>Inactive bans are any bans which have expired so they would be past temporary bans.</p>
 
+<h3 id='undoing'>Undoing</h3>
+
+<p>You can undo a ban if you make a mistake. This is meant to be used shortly after you made the original ban and for that reason has a 1 minute time limit. This will erase all history of the ban from the database.</p>
+
+<p>To undo a ban made by yourself type <code>/bh undo</code>.</p>
+
+<p>To undo a ban made by another player type <code>/bh undo &lt;name&gt;</code>.</p>
+
 <h3 id='pardoning'>Pardoning</h3>
 
 <p>Pardoning a player will remove from the database any active bans and allow them to rejoin the server. I felt I was a bit mean to tom so I am going to pardon him now by typing <code>/pardon tom</code>.</p>
@@ -263,6 +275,28 @@
 <p>To view the ban history of someone else type <code>/bh history &lt;name&gt;</code>.</p>
 
 <p>To view your own type <code>/bh history</code>.</p>
+
+<h3 id='auditing_the_bans_of_a_player'>Auditing the bans of a player</h3>
+
+<p>You can also get a report of all the bans made by a player on your server. This includes the following details:‭</p>
+
+<ul>
+<li>How many bans they have made</li>
+
+<li>How many permanent bans they have issued</li>
+
+<li>How many temporary bans they have issued</li>
+
+<li>How many bans are still active</li>
+
+<li>How many bans have since expired</li>
+
+<li>How many bans that have been pardoned (by themselves or anyone else).</li>
+</ul>
+
+<p>To view an audit report of someone type <code>/bh audit &lt;name&gt;</code>.</p>
+
+<p>To view your own type <code>/bh audit</code>.</p>
 
 <h3 id='importing_and_exporting_bans'>Importing and exporting bans</h3>
 
@@ -314,6 +348,12 @@
 <dl>
   <dt>banhammer</dt>
   <dd>Allows access to everything in the plugin (defaults op).</dd>
+  <dt>banhammer.audit</dt>
+  <dd>Allow a player to audit bans made by anyone (defaults op).</dd>
+  <dt>banhammer.audit.own</dt>
+  <dd>Allow a player to audit their own bans (defaults true).</dd>
+  <dt>banhammer.audit.others</dt>
+  <dd>Allow a player to audit the bans of others (defaults op).</dd>
   <dt>banhammer.ban</dt>
   <dd>Allow a player to ban someome permanently (defaults op).</dd>
   <dt>banhammer.ban.[limit]</dt>
@@ -344,6 +384,14 @@
   <dd>Allow a player to purge the ban history of a player (defaults op).</dd>
   <dt>banhammer.recent</dt>
   <dd>Allow a player to see what bans have recently been made (defaults op).</dd>
+  <dt>banhammer.undo</dt>
+  <dd>Allow a player to undo the last ban made by any player (defaults op).</dd>
+  <dt>banhammer.undo.own</dt>
+  <dd>Allow a player to undo the last ban they made (defaults true).</dd>
+  <dt>banhammer.undo.others</dt>
+  <dd>Allow a player to undo the last ban made by anyone (defaults op).</dd>
+  <dt>banhammer.undo.unrestricted</dt>
+  <dd>Allow a player to undo bans made greater than 1 minute ago (defaults op).</dd>
 </dl>
   </div>
 </div>
