@@ -18,7 +18,6 @@
 package name.richardson.james.bukkit.banhammer.persistence;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
