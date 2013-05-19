@@ -32,10 +32,10 @@ import org.bukkit.permissions.PermissionDefault;
 
 import com.avaje.ebean.EbeanServer;
 
-import name.richardson.james.bukkit.alias.persistence.PlayerNameRecord;
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
+import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
@@ -146,7 +146,7 @@ public class HistoryCommand extends AbstractCommand {
         }
       }
       if (arguments[0].length() >= 3) {
-        temp.addAll(PlayerNameRecord.getPlayersThatStartWith(database, arguments[0]));
+        temp.addAll(PlayerRecord.getPlayersThatStartWith(database, arguments[0]));
       }
     }
     list.addAll(temp);

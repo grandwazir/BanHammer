@@ -17,6 +17,7 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.persistence;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -101,6 +102,25 @@ public class PlayerRecord {
    */
   public static List<PlayerRecord> list(final EbeanServer database) {
     return database.find(PlayerRecord.class).findList();
+  }
+  
+  public static List<String> getPlayersThatStartWith(final EbeanServer database, String name) {
+    List<String> names = new ArrayList<String>();
+    List<PlayerRecord> records = database.find(PlayerRecord.class).where().istartsWith("name", name).findList();
+    for (PlayerRecord record : records) {
+      names.add(record.getName());
+    }
+    return names;
+  }
+  
+  public static List<String> getBanCreatorsThatStartWith(final EbeanServer database, String name) {
+    List<String> names = new ArrayList<String>();
+    List<PlayerRecord> records = database.find(PlayerRecord.class).where().istartsWith("name", name).findList();
+    for (PlayerRecord record : records) {
+      if (record.getCreatedBans().size() == 0) continue;
+      names.add(record.getName());
+    }
+    return names;
   }
 
   /** The id. */

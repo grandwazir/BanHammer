@@ -41,6 +41,7 @@ import name.richardson.james.bukkit.banhammer.ban.PurgeCommand;
 import name.richardson.james.bukkit.banhammer.ban.RecentCommand;
 import name.richardson.james.bukkit.banhammer.ban.UndoCommand;
 import name.richardson.james.bukkit.banhammer.kick.KickCommand;
+import name.richardson.james.bukkit.banhammer.management.AuditCommand;
 import name.richardson.james.bukkit.banhammer.management.ExportCommand;
 import name.richardson.james.bukkit.banhammer.management.ImportCommand;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
@@ -152,6 +153,7 @@ public final class BanHammer extends AbstractPlugin {
     final Command pardonCommand = new PardonCommand(this);
     // register commands
     commandManager.addCommand(banCommand);
+    commandManager.addCommand(new AuditCommand(this));
     commandManager.addCommand(new CheckCommand(this));
     commandManager.addCommand(new ExportCommand(this));
     commandManager.addCommand(new HistoryCommand(this));
