@@ -104,7 +104,7 @@ public class CheckCommand extends AbstractCommand {
         }
       }
       if (arguments[0].length() >= 3) {
-        temp.addAll(BanRecord.getBannedPlayersThatStartWith(database, arguments[0]));
+        temp.addAll(PlayerRecord.getPlayersWithActiveBansThatStartWith(database, arguments[0]));
       }
     }
     list.addAll(temp);

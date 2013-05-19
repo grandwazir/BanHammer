@@ -127,7 +127,7 @@ public class PurgeCommand extends AbstractCommand {
           temp.add(player.getName());
         }         
         if (arguments[0].length() >= 3) {
-          temp.addAll(BanRecord.getBannedPlayersThatStartWith(database, arguments[0]));
+          temp.addAll(PlayerRecord.getPlayersWithBansThatStartWith(database, arguments[0]));
         }
       }
     }

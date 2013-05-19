@@ -122,7 +122,27 @@ public class PlayerRecord {
     }
     return names;
   }
-
+  
+  public static List<String> getPlayersWithActiveBansThatStartWith(final EbeanServer database, String name) {
+    List<String> names = new ArrayList<String>();
+    List<PlayerRecord> records = database.find(PlayerRecord.class).where().istartsWith("name", name).findList();
+    for (PlayerRecord record : records) {
+      if (!record.isBanned()) continue;
+      names.add(record.getName());
+    }
+    return names;
+  }
+  
+  public static List<String> getPlayersWithBansThatStartWith(final EbeanServer database, String name) {
+    List<String> names = new ArrayList<String>();
+    List<PlayerRecord> records = database.find(PlayerRecord.class).where().istartsWith("name", name).findList();
+    for (PlayerRecord record : records) {
+      if (record.getBans().size() == 0) continue;
+      names.add(record.getName());
+    }
+    return names;
+  }
+  
   /** The id. */
   @Id
   private int id;

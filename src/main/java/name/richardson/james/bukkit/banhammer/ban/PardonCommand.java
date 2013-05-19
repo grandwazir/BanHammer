@@ -116,7 +116,7 @@ public class PardonCommand extends AbstractCommand {
     Set<String> temp = new TreeSet<String>();
     if (arguments.length <= 1) {
       if (arguments[0].length() >= 3) {
-        temp.addAll(BanRecord.getBannedPlayersThatStartWith(database, arguments[0]));
+        temp.addAll(PlayerRecord.getPlayersWithActiveBansThatStartWith(database, arguments[0]));
       }
     }
     list.addAll(list);
