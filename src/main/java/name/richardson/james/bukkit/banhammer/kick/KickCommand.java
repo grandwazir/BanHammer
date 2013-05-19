@@ -53,10 +53,9 @@ public class KickCommand extends AbstractCommand {
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     if (this.player.isOnline()) {
-      this.player.kickPlayer(this.getLocalisation().getMessage(PlayerListener.class, "kick-message", this.reason));
+      this.player.kickPlayer(this.getLocalisation().getMessage(PlayerListener.class, "kicked", this.reason, sender.getName()));
       server.broadcast(this.getLocalisation().getMessage(this, "kick-broadcast", player.getName(), sender.getName()), "banhammer.notify");
       server.broadcast(this.getLocalisation().getMessage(this, "reason", reason), "banhammer.notify");
-      this.getLogger().info(this.getLocalisation().getMessage(this, "kicked", player.getName(), sender.getName()));
     }
     this.player = null;
   }

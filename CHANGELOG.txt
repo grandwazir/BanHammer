@@ -1,5 +1,6 @@
 Changelog for BanHammer (v2.1.1-SNAPSHOT)
 
+2013-05-19 14:49:36 +0100    add UndoCommand: fixes #56 (James Richardson)
 2013-05-19 13:20:13 +0100    added purge by ownership; fixes #11 (James Richardson)
 2013-05-19 12:37:38 +0100    organise imports (James Richardson)
 2013-05-15 01:03:21 +0100    update default pom (James Richardson)

@@ -95,8 +95,16 @@ public class PlayerListener extends LoggableListener {
   public void onPlayerBanned(final BanHammerPlayerBannedEvent event) {
     final Player player = Bukkit.getServer().getPlayer(event.getPlayerName());
     final BanRecord record = event.getRecord();
+    String message;
     if (player != null) {
-      player.kickPlayer(this.localisation.getMessage(this, "ban-kick-message", record.getReason()));
+      switch (record.getType()) {
+      case TEMPORARY:
+        message = this.localisation.getMessage(this, "temporarily-banned", record.getReason(), record.getCreator().getName(), BanHammer.LONG_DATE_FORMAT.format(record.getExpiresAt()));
+        break;
+      default:
+        message = this.localisation.getMessage(this, "permenantly-banned", record.getReason(), record.getCreator().getName());
+      }
+      player.kickPlayer(message);
     }
     if (!event.isSilent()) {
       this.broadcast(record, BroadcastMessageType.PLAYER_BANNED);
@@ -115,10 +123,10 @@ public class PlayerListener extends LoggableListener {
       String message = null;
       switch (record.getActiveBan().getType()) {
       case TEMPORARY:
-        message = this.localisation.getMessage(this, "temporarily-banned", BanHammer.LONG_DATE_FORMAT.format(record.getActiveBan().getExpiresAt()));
+        message = this.localisation.getMessage(this, "temporarily-banned", record.getActiveBan().getReason(), record.getActiveBan().getCreator().getName(), BanHammer.LONG_DATE_FORMAT.format(record.getActiveBan().getExpiresAt()));
         break;
       default:
-        message = this.localisation.getMessage(this, "permenantly-banned", record.getActiveBan().getReason());
+        message = this.localisation.getMessage(this, "permenantly-banned", record.getActiveBan().getReason(), record.getActiveBan().getCreator().getName());
       }
       event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, message);
     }
