@@ -39,6 +39,7 @@ import name.richardson.james.bukkit.banhammer.ban.LimitsCommand;
 import name.richardson.james.bukkit.banhammer.ban.PardonCommand;
 import name.richardson.james.bukkit.banhammer.ban.PurgeCommand;
 import name.richardson.james.bukkit.banhammer.ban.RecentCommand;
+import name.richardson.james.bukkit.banhammer.ban.UndoCommand;
 import name.richardson.james.bukkit.banhammer.kick.KickCommand;
 import name.richardson.james.bukkit.banhammer.management.ExportCommand;
 import name.richardson.james.bukkit.banhammer.management.ImportCommand;
@@ -160,6 +161,7 @@ public final class BanHammer extends AbstractPlugin {
     commandManager.addCommand(pardonCommand);
     commandManager.addCommand(new PurgeCommand(this));
     commandManager.addCommand(new RecentCommand(this));
+    commandManager.addCommand(new UndoCommand(this));
     // register commands again as root commands
     this.getCommand("ban").setExecutor(banCommand);
     this.getCommand("kick").setExecutor(kickCommand);

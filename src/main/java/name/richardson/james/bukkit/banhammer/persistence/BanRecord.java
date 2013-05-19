@@ -66,6 +66,19 @@ public class BanRecord {
   }
 
   /**
+   * Removes a ban without an optimistic lock error
+   * One of these days I will learn why it always throws these.
+   * 
+   * @param database the database
+   * @param ban the ban to delete
+   * @return the number of bans deleted.
+   */
+  public static int deleteBan(EbeanServer database, BanRecord ban) {
+    int i = database.createSqlUpdate("DELETE from banhammer_bans WHERE id='" + ban.getId()+ "'").execute();
+    return i;
+  }
+  
+  /**
    * Removes bans without an optimistic lock error
    * One of these days I will learn why it always throws these.
    * 

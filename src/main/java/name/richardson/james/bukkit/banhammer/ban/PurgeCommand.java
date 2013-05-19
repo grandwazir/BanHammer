@@ -80,7 +80,8 @@ public class PurgeCommand extends AbstractCommand {
       if (!own && (ban.getCreator().getName().equalsIgnoreCase(sender.getName()))) {
         playerBansIter.remove();
         continue;
-      } if (!others && (!ban.getCreator().getName().equalsIgnoreCase(sender.getName()))) {
+      } 
+      if (!others && (!ban.getCreator().getName().equalsIgnoreCase(sender.getName()))) {
         playerBansIter.remove();
         continue;
       }
