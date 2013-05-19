@@ -1,5 +1,6 @@
 Changelog for BanHammer (v2.1.1-SNAPSHOT)
 
+2013-05-19 15:34:05 +0100    fix banhammer.notify not registering correctly fixes #52, fixes #50 (James Richardson)
 2013-05-19 15:10:26 +0100    improved ban and kick notifications fixes #35, fixes #55. (James Richardson)
 2013-05-19 14:49:36 +0100    add UndoCommand: fixes #56 (James Richardson)
 2013-05-19 13:20:13 +0100    added purge by ownership; fixes #11 (James Richardson)

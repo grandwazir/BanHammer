@@ -159,7 +159,7 @@ public class BanCommand extends AbstractCommand {
           int index = permission.getName().lastIndexOf(".");
           String key = permission.getName().substring(index + 1);
           long limit = this.limits.get(key);
-          if (banLength <= limit) {
+          if (banLength <= limit && banLength != 0) {
             return true;
           }
         }
