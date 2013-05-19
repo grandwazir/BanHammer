@@ -20,17 +20,6 @@ package name.richardson.james.bukkit.banhammer;
 import java.net.InetAddress;
 import java.util.Collection;
 
-import name.richardson.james.bukkit.alias.AliasHandler;
-import name.richardson.james.bukkit.alias.persistence.PlayerNameRecord;
-import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerBannedEvent;
-import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
-import name.richardson.james.bukkit.banhammer.api.BanHandler;
-import name.richardson.james.bukkit.banhammer.ban.BanSummary;
-import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
-import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
-import name.richardson.james.bukkit.utilities.listener.LoggableListener;
-import name.richardson.james.bukkit.utilities.localisation.Localisation;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -41,6 +30,17 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.permissions.Permission;
 
 import com.avaje.ebean.EbeanServer;
+
+import name.richardson.james.bukkit.alias.AliasHandler;
+import name.richardson.james.bukkit.alias.persistence.PlayerNameRecord;
+import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerBannedEvent;
+import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
+import name.richardson.james.bukkit.banhammer.api.BanHandler;
+import name.richardson.james.bukkit.banhammer.ban.BanSummary;
+import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
+import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
+import name.richardson.james.bukkit.utilities.listener.LoggableListener;
+import name.richardson.james.bukkit.utilities.localisation.Localisation;
 
 public class PlayerListener extends LoggableListener {
 

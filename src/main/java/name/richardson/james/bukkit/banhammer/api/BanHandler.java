@@ -21,16 +21,16 @@ import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
+
+import com.avaje.ebean.EbeanServer;
+
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord.State;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.utilities.localisation.Localisation;
 import name.richardson.james.bukkit.utilities.logging.Logger;
-
-import org.bukkit.Bukkit;
-
-import com.avaje.ebean.EbeanServer;
 
 public class BanHandler {
 

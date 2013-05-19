@@ -23,10 +23,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.configuration.ConfigurationSection;
+
 import name.richardson.james.bukkit.utilities.configuration.PluginConfiguration;
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
-
-import org.bukkit.configuration.ConfigurationSection;
 
 public class BanHammerConfiguration extends PluginConfiguration {
 
