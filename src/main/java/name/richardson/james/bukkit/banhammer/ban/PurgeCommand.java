@@ -18,6 +18,7 @@
 package name.richardson.james.bukkit.banhammer.ban;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -27,6 +28,8 @@ import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
 import com.avaje.ebean.EbeanServer;
 
@@ -61,14 +64,32 @@ public class PurgeCommand extends AbstractCommand {
     this.formatter.setLimits(0, 1, 2);
     this.formatter.setMessage(this, "purged");
     this.formatter.setFormats(this.getLocalisation().getMessage(BanHammer.class, "no-bans"), this.getLocalisation().getMessage(BanHammer.class, "one-ban"), this.getLocalisation().getMessage(BanHammer.class, "many-bans"));
+    this.registerPermissions();
   }
 
   public void execute(final CommandSender sender) throws CommandPermissionException, CommandUsageException {
     final PlayerRecord playerRecord = PlayerRecord.find(database, player.getName());
+    final List<BanRecord> playerBans = playerRecord.getBans();
+    final Iterator<BanRecord> playerBansIter = playerBans.iterator();
+    final boolean own = this.getPermissionManager().hasPlayerPermission(sender, this.getPermissions().get(1));
+    final boolean others = this.getPermissionManager().hasPlayerPermission(sender, this.getPermissions().get(2));
     int i = 0;
-    if (playerRecord != null) {
-      i = BanRecord.deleteBans(database, playerRecord.getBans());
+    
+    while (playerBansIter.hasNext()) {
+      final BanRecord ban = playerBansIter.next();
+      if (!own && (ban.getCreator().getName().equalsIgnoreCase(sender.getName()))) {
+        playerBansIter.remove();
+        continue;
+      } if (!others && (!ban.getCreator().getName().equalsIgnoreCase(sender.getName()))) {
+        playerBansIter.remove();
+        continue;
+      }
     }
+    
+    if (playerRecord != null) {
+      i = BanRecord.deleteBans(this.database, playerBans);
+    }
+    
     this.formatter.setArguments(i, player.getName());
     sender.sendMessage(this.formatter.getMessage());
     this.getLogger().info(this.getLocalisation().getMessage(this, "log-purged", player.getName(), sender.getName()));
@@ -85,6 +106,13 @@ public class PurgeCommand extends AbstractCommand {
 
   private OfflinePlayer matchPlayer(final String name) {
     return this.server.getOfflinePlayer(name);
+  }
+  
+  private void registerPermissions() {
+    Permission own = this.getPermissionManager().createPermission(this, "own", PermissionDefault.TRUE, this.getPermissions().get(0), true);
+    this.addPermission(own);
+    Permission others = this.getPermissionManager().createPermission(this, "others", PermissionDefault.OP, this.getPermissions().get(0), true);
+    this.addPermission(others);
   }
   
   public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] arguments) {
