@@ -44,7 +44,7 @@ import name.richardson.james.bukkit.utilities.matchers.OnlinePlayerMatcher;
 
 @ConsoleCommand
 @CommandMatchers(matchers = { OnlinePlayerMatcher.class, BanLimitMatcher.class })
-@CommandPermissions(permissions = { "banhammer.ban" })
+@CommandPermissions(permissions = { "banhammer.ban", "banhammer.ban.permanent" })
 public class BanCommand extends AbstractCommand implements TabExecutor {
 
 	/** Reference to the BanHammer API. */
@@ -136,12 +136,12 @@ public class BanCommand extends AbstractCommand implements TabExecutor {
 	}
 
 	private boolean hasPermission(final CommandSender sender) {
+		if (this.immunePlayers.contains(this.player.getName()) && !sender.hasPermission("banhammer.ban")) { return false; }
+		if (sender.hasPermission("banhammer.ban.permanent")) { return true; }
 		for (final String limitName : this.limits.keySet()) {
 			final String node = this.getPermissionManager().listPermissions().get(0).getName() + "." + limitName;
 			if (sender.hasPermission(node) && (this.limits.get(limitName) <= this.time)) { return true; }
 		}
-		if (this.immunePlayers.contains(this.player.getName())) { return false; }
-		if (sender.hasPermission("banhammer.ban")) { return true; }
 		return false;
 	}
 
