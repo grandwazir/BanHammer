@@ -38,41 +38,47 @@ import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
 @ConsoleCommand
 public class LimitsCommand extends AbstractCommand {
 
-  /* The ban limits */
-  private final Map<String, Long> limits;
+	private final ChoiceFormatter formatter;
 
-  private final ChoiceFormatter formatter;
+	/* The ban limits */
+	private final Map<String, Long> limits;
 
-  public LimitsCommand(final BanHammer plugin, Map<String, Long> limits) {
-    super(plugin);
-    this.limits = limits;
-    this.formatter = new ChoiceFormatter(this.getLocalisation());
-    this.formatter.setLimits(0, 1, 2);
-    this.formatter.setMessage(this, "header");
-    this.formatter.setArguments(limits.size());
-    this.formatter.setFormats(this.getLocalisation().getMessage(this, "no-limit"), this.getLocalisation().getMessage(this, "one-limits"), this.getLocalisation().getMessage(this, "many-limits"));
-  }
+	public LimitsCommand(final BanHammer plugin, final Map<String, Long> limits) {
+		super(plugin);
+		this.limits = limits;
+		this.formatter = new ChoiceFormatter(this.getLocalisation());
+		this.formatter.setLimits(0, 1, 2);
+		this.formatter.setMessage(this, "header");
+		this.formatter.setArguments(limits.size());
+		this.formatter.setFormats(this.getLocalisation().getMessage(this, "no-limit"), this.getLocalisation().getMessage(this, "one-limits"), this
+			.getLocalisation().getMessage(this, "many-limits"));
+	}
 
-  public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    sender.sendMessage(this.formatter.getMessage());
-    for (final Entry<String, Long> limit : limits.entrySet()) {
-      ChatColor colour;
-      if (sender.hasPermission("banhammer.ban." + limit.getKey())) {
-        colour = ChatColor.GREEN;
-      } else {
-        colour = ChatColor.RED;
-      }
-      sender.sendMessage(colour + this.getLocalisation().getMessage(this, "list-item", limit.getKey(), TimeFormatter.millisToLongDHMS(limit.getValue())));
-    }
-  }
+	public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+		sender.sendMessage(this.formatter.getMessage());
+		for (final Entry<String, Long> limit : this.limits.entrySet()) {
+			ChatColor colour;
+			if (sender.hasPermission("banhammer.ban." + limit.getKey())) {
+				colour = ChatColor.GREEN;
+			} else {
+				colour = ChatColor.RED;
+			}
+			sender.sendMessage(colour + this.getLocalisation().getMessage(this, "list-item", limit.getKey(), TimeFormatter.millisToLongDHMS(limit.getValue())));
+		}
+	}
 
-  public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
-    return;
-  }
+	public List<String> onTabComplete(final CommandSender sender, final Command command, final String label, final String[] arguments) {
+		final List<String> list = new ArrayList<String>();
+		return list;
+	}
 
-  public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] arguments) {
-    List<String> list = new ArrayList<String>();
-    return list;
-  }
+	public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
+		return;
+	}
+
+	public void execute(List<String> arguments, CommandSender sender) {
+		// TODO Auto-generated method stub
+
+	}
 
 }

@@ -34,119 +34,137 @@ import name.richardson.james.bukkit.utilities.logging.Logger;
 
 public class BanHandler {
 
-  /* Logger for this class */
-  private final Logger logger;
+	/* The database used by this handler */
+	private final EbeanServer database;
 
-  /* The database used by this handler */
-  private final EbeanServer database;
+	/* Localisation messages for BanHammer */
+	private final Localisation localisation;
 
-  /* Localisation messages for BanHammer */
-  private Localisation localisation;
+	/* Logger for this class */
+	private final Logger logger;
 
-  /**
-   * Instantiates a new ban handler.
-   * 
-   * @param parentClass the parent class
-   * @param plugin the plugin
-   */
-  public BanHandler(final BanHammer plugin) {
-    this.database = plugin.getDatabase();
-    this.logger = plugin.getCustomLogger();
-    this.localisation = plugin.getLocalisation();
-  }
+	/**
+	 * Instantiates a new ban handler.
+	 * 
+	 * @param parentClass
+	 *          the parent class
+	 * @param plugin
+	 *          the plugin
+	 */
+	public BanHandler(final BanHammer plugin) {
+		this.database = plugin.getDatabase();
+		this.logger = plugin.getCustomLogger();
+		this.localisation = plugin.getLocalisation();
+	}
 
-  /*
-   * (non-Javadoc)
-   * @see
-   * name.richardson.james.bukkit.banhammer.api.API#banPlayer(java.lang.String,
-   * java.lang.String, java.lang.String, long, boolean)
-   */
-  public boolean banPlayer(String playerName, String senderName, String reason, long banLength, boolean notify) {
-    final PlayerRecord player = PlayerRecord.find(database, playerName);
-    if (player.isBanned()) return false;
-    final PlayerRecord creator = PlayerRecord.find(database, senderName);
-    final BanRecord ban = new BanRecord();
-    final long now = System.currentTimeMillis();
-    ban.setPlayer(player);
-    ban.setCreator(creator);
-    ban.setReason(reason);
-    ban.setState(BanRecord.State.NORMAL);
-    ban.setCreatedAt(new Timestamp(now));
-    if (banLength != 0) ban.setExpiresAt(new Timestamp(now + banLength));
-    database.save(ban);
-    BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(ban, !notify);
-    Bukkit.getServer().getPluginManager().callEvent(event);
-    logger.info(this.localisation.getMessage(this, "player-banned", playerName, senderName, reason));
-    return true;
-  }
+	/**
+	 * Ban a player using another ban as the template.
+	 * 
+	 * @param playerName
+	 *          the name of the player to ban
+	 * @param sourceBan
+	 *          the ban to use as a template
+	 * @param reason
+	 *          the reason for the ban
+	 * @param notify
+	 *          if true, broadcast a message to notify players
+	 * @return true, if successful
+	 */
+	public boolean banPlayer(final String playerName, final BanRecord sourceBan, final String reason, final boolean notify) {
+		final PlayerRecord player = PlayerRecord.find(this.database, playerName);
+		if (player.isBanned()) {
+			return false;
+		}
+		final PlayerRecord creator = sourceBan.getCreator();
+		final BanRecord ban = new BanRecord();
+		ban.setPlayer(player);
+		ban.setCreator(creator);
+		ban.setReason(reason);
+		ban.setState(BanRecord.State.NORMAL);
+		ban.setCreatedAt(sourceBan.getCreatedAt());
+		if (sourceBan.getExpiresAt().getTime() != 0) {
+			ban.setExpiresAt(sourceBan.getExpiresAt());
+		}
+		this.database.save(ban);
+		this.logger.info(this.localisation.getMessage(this, "player-banned", playerName, sourceBan.getCreator().getName(), reason));
+		return true;
+	}
 
-  /*
-   * (non-Javadoc)
-   * @see
-   * name.richardson.james.bukkit.banhammer.api.API#getPlayerBans(java.lang.
-   * String)
-   */
-  public List<BanRecord> getPlayerBans(String playerName) {
-    final PlayerRecord playerRecord = PlayerRecord.find(database, playerName);
-    return (playerRecord == null) ? new LinkedList<BanRecord>() : playerRecord.getBans();
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * name.richardson.james.bukkit.banhammer.api.API#banPlayer(java.lang.String,
+	 * java.lang.String, java.lang.String, long, boolean)
+	 */
+	public boolean banPlayer(final String playerName, final String senderName, final String reason, final long banLength, final boolean notify) {
+		final PlayerRecord player = PlayerRecord.find(this.database, playerName);
+		if (player.isBanned()) {
+			return false;
+		}
+		final PlayerRecord creator = PlayerRecord.find(this.database, senderName);
+		final BanRecord ban = new BanRecord();
+		final long now = System.currentTimeMillis();
+		ban.setPlayer(player);
+		ban.setCreator(creator);
+		ban.setReason(reason);
+		ban.setState(BanRecord.State.NORMAL);
+		ban.setCreatedAt(new Timestamp(now));
+		if (banLength != 0) {
+			ban.setExpiresAt(new Timestamp(now + banLength));
+		}
+		this.database.save(ban);
+		final BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(ban, !notify);
+		Bukkit.getServer().getPluginManager().callEvent(event);
+		this.logger.info(this.localisation.getMessage(this, "player-banned", playerName, senderName, reason));
+		return true;
+	}
 
-  /*
-   * (non-Javadoc)
-   * @see
-   * name.richardson.james.bukkit.banhammer.api.API#isPlayerBanned(java.lang
-   * .String)
-   */
-  public boolean isPlayerBanned(String playerName) {
-    final PlayerRecord playerRecord = PlayerRecord.find(database, playerName);
-    return (playerRecord == null) ? false : playerRecord.isBanned();
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * name.richardson.james.bukkit.banhammer.api.API#getPlayerBans(java.lang.
+	 * String)
+	 */
+	public List<BanRecord> getPlayerBans(final String playerName) {
+		final PlayerRecord playerRecord = PlayerRecord.find(this.database, playerName);
+		return (playerRecord == null) ? new LinkedList<BanRecord>() : playerRecord.getBans();
+	}
 
-  /*
-   * (non-Javadoc)
-   * @see
-   * name.richardson.james.bukkit.banhammer.api.API#pardonPlayer(java.lang.String
-   * , java.lang.String, boolean)
-   */
-  public boolean pardonPlayer(String playerName, String senderName, boolean notify) {
-    final PlayerRecord playerRecord = PlayerRecord.find(database, playerName);
-    if (playerRecord != null && playerRecord.isBanned()) {
-      final BanRecord banRecord = playerRecord.getActiveBan();
-      BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(banRecord, !notify);
-      banRecord.setState(State.PARDONED);
-      database.save(banRecord);
-      Bukkit.getServer().getPluginManager().callEvent(event);
-      logger.info(this.localisation.getMessage(this, "player-pardoned", playerName, senderName));
-      return true;
-    } else {
-      return false;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * name.richardson.james.bukkit.banhammer.api.API#isPlayerBanned(java.lang
+	 * .String)
+	 */
+	public boolean isPlayerBanned(final String playerName) {
+		final PlayerRecord playerRecord = PlayerRecord.find(this.database, playerName);
+		return (playerRecord == null) ? false : playerRecord.isBanned();
+	}
 
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * name.richardson.james.bukkit.banhammer.api.API#pardonPlayer(java.lang.String
+	 * , java.lang.String, boolean)
+	 */
+	public boolean pardonPlayer(final String playerName, final String senderName, final boolean notify) {
+		final PlayerRecord playerRecord = PlayerRecord.find(this.database, playerName);
+		if ((playerRecord != null) && playerRecord.isBanned()) {
+			final BanRecord banRecord = playerRecord.getActiveBan();
+			final BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(banRecord, !notify);
+			banRecord.setState(State.PARDONED);
+			this.database.save(banRecord);
+			Bukkit.getServer().getPluginManager().callEvent(event);
+			this.logger.info(this.localisation.getMessage(this, "player-pardoned", playerName, senderName));
+			return true;
+		} else {
+			return false;
+		}
 
-  /**
-   * Ban a player using another ban as the template.
-   * 
-   * @param playerName the name of the player to ban
-   * @param sourceBan the ban to use as a template
-   * @param reason the reason for the ban
-   * @param notify if true, broadcast a message to notify players
-   * @return true, if successful
-   */
-  public boolean banPlayer(String playerName, BanRecord sourceBan, String reason, boolean notify) {
-    final PlayerRecord player = PlayerRecord.find(database, playerName);
-    if (player.isBanned()) return false;
-    final PlayerRecord creator = sourceBan.getCreator();
-    final BanRecord ban = new BanRecord();
-    ban.setPlayer(player);
-    ban.setCreator(creator);
-    ban.setReason(reason);
-    ban.setState(BanRecord.State.NORMAL);
-    ban.setCreatedAt(sourceBan.getCreatedAt());
-    if (sourceBan.getExpiresAt().getTime() != 0) ban.setExpiresAt(sourceBan.getExpiresAt());
-    database.save(ban);
-    logger.info(this.localisation.getMessage(this, "player-banned", playerName, sourceBan.getCreator().getName(), reason));
-    return true;
-  }
+	}
 
 }

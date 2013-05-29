@@ -23,34 +23,38 @@ import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 
 public class BanHammerPlayerPardonedEvent extends BanHammerPlayerEvent {
 
-  /** The event handlers. */
-  private static final HandlerList handlers = new HandlerList();
+	/** The event handlers. */
+	private static final HandlerList handlers = new HandlerList();
 
-  /*
-   * (non-Javadoc)
-   * @see org.bukkit.event.Event#getHandlerList()
-   */
-  public static HandlerList getHandlerList() {
-    return BanHammerPlayerPardonedEvent.handlers;
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.bukkit.event.Event#getHandlerList()
+	 */
+	public static HandlerList getHandlerList() {
+		return BanHammerPlayerPardonedEvent.handlers;
+	}
 
-  /**
-   * Instantiates a new BanHammer player pardoned event.
-   * 
-   * @param record the record
-   * @param silent the silent
-   */
-  public BanHammerPlayerPardonedEvent(final BanRecord record, final boolean silent) {
-    super(record, silent);
-  }
+	/**
+	 * Instantiates a new BanHammer player pardoned event.
+	 * 
+	 * @param record
+	 *          the record
+	 * @param silent
+	 *          the silent
+	 */
+	public BanHammerPlayerPardonedEvent(final BanRecord record, final boolean silent) {
+		super(record, silent);
+	}
 
-  /*
-   * (non-Javadoc)
-   * @see org.bukkit.event.Event#getHandlers()
-   */
-  @Override
-  public HandlerList getHandlers() {
-    return handlers;
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.bukkit.event.Event#getHandlers()
+	 */
+	@Override
+	public HandlerList getHandlers() {
+		return BanHammerPlayerPardonedEvent.handlers;
+	}
 
 }

@@ -44,83 +44,90 @@ import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 @ConsoleCommand
 public class PardonCommand extends AbstractCommand {
 
-  /** A reference to the BanHammer API. */
-  private final BanHandler handler;
+	private final EbeanServer database;
 
-  /** A instance of the Bukkit server. */
-  private final Server server;
+	/** A reference to the BanHammer API. */
+	private final BanHandler handler;
 
-  /** The player who is going to be pardoned */
-  private OfflinePlayer player;
+	/** The player who is going to be pardoned */
+	private OfflinePlayer player;
 
-  private EbeanServer database;
+	/** A instance of the Bukkit server. */
+	private final Server server;
 
-  public PardonCommand(final BanHammer plugin) {
-    super(plugin);
-    this.database = plugin.getDatabase();
-    this.handler = plugin.getHandler();
-    this.server = plugin.getServer();
-    this.registerPermissions();
-  }
+	public PardonCommand(final BanHammer plugin) {
+		super(plugin);
+		this.database = plugin.getDatabase();
+		this.handler = plugin.getHandler();
+		this.server = plugin.getServer();
+		this.registerPermissions();
+	}
 
-  public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+	public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
 
-    if (handler.isPlayerBanned(player.getName())) {
-      final BanRecord banRecord = PlayerRecord.find(database, player.getName()).getActiveBan();
+		if (this.handler.isPlayerBanned(this.player.getName())) {
+			final BanRecord banRecord = PlayerRecord.find(this.database, this.player.getName()).getActiveBan();
 
-      if (sender.hasPermission(this.getPermissions().get(2)) && !banRecord.getCreator().getName().equalsIgnoreCase(sender.getName())) {
-        this.handler.pardonPlayer(this.player.getName(), sender.getName(), true);
-        this.player.setBanned(false);
-        sender.sendMessage(this.getLocalisation().getMessage(this, "pardoned", this.player.getName()));
-        return;
-      } else if (!banRecord.getCreator().getName().equalsIgnoreCase(sender.getName())) {
-        throw new CommandPermissionException(this.getLocalisation().getMessage(this, "cannot-pardon-others-bans"), this.getPermissions().get(2));
-      }
+			if (sender.hasPermission(this.getPermissions().get(2)) && !banRecord.getCreator().getName().equalsIgnoreCase(sender.getName())) {
+				this.handler.pardonPlayer(this.player.getName(), sender.getName(), true);
+				this.player.setBanned(false);
+				sender.sendMessage(this.getLocalisation().getMessage(this, "pardoned", this.player.getName()));
+				return;
+			} else
+				if (!banRecord.getCreator().getName().equalsIgnoreCase(sender.getName())) {
+					throw new CommandPermissionException(this.getLocalisation().getMessage(this, "cannot-pardon-others-bans"), this.getPermissions().get(2));
+				}
 
-      if (sender.hasPermission(this.getPermissions().get(1)) && banRecord.getCreator().getName().equalsIgnoreCase(sender.getName())) {
-        this.handler.pardonPlayer(this.player.getName(), sender.getName(), true);
-        this.player.setBanned(false);
-        sender.sendMessage(this.getLocalisation().getMessage(this, "pardoned", this.player.getName()));
-        return;
-      } else if (banRecord.getCreator().getName().equalsIgnoreCase(sender.getName())) {
-        throw new CommandPermissionException(this.getLocalisation().getMessage(this, "cannot-pardon-own-bans"), this.getPermissions().get(1));
-      }
+			if (sender.hasPermission(this.getPermissions().get(1)) && banRecord.getCreator().getName().equalsIgnoreCase(sender.getName())) {
+				this.handler.pardonPlayer(this.player.getName(), sender.getName(), true);
+				this.player.setBanned(false);
+				sender.sendMessage(this.getLocalisation().getMessage(this, "pardoned", this.player.getName()));
+				return;
+			} else
+				if (banRecord.getCreator().getName().equalsIgnoreCase(sender.getName())) {
+					throw new CommandPermissionException(this.getLocalisation().getMessage(this, "cannot-pardon-own-bans"), this.getPermissions().get(1));
+				}
 
-    } else {
-      sender.sendMessage(this.getLocalisation().getMessage(this, "player-is-not-banned", this.player.getName()));
-    }
+		} else {
+			sender.sendMessage(this.getLocalisation().getMessage(this, "player-is-not-banned", this.player.getName()));
+		}
 
-  }
+	}
 
-  public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
-    if (arguments.length == 0) {
-      throw new CommandArgumentException(this.getLocalisation().getMessage(BanHammer.class, "must-specify-a-player"), null);
-    } else {
-      this.player = this.matchPlayer(arguments[0]);
-    }
-  }
+	public List<String> onTabComplete(final CommandSender sender, final Command command, final String label, final String[] arguments) {
+		final List<String> list = new ArrayList<String>();
+		final Set<String> temp = new TreeSet<String>();
+		if (arguments.length <= 1) {
+			if (arguments[0].length() >= 3) {
+				temp.addAll(PlayerRecord.getPlayersWithActiveBansThatStartWith(this.database, arguments[0]));
+			}
+		}
+		list.addAll(list);
+		return list;
+	}
 
-  private OfflinePlayer matchPlayer(final String name) {
-    return this.server.getOfflinePlayer(name);
-  }
+	public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
+		if (arguments.length == 0) {
+			throw new CommandArgumentException(this.getLocalisation().getMessage(BanHammer.class, "must-specify-a-player"), null);
+		} else {
+			this.player = this.matchPlayer(arguments[0]);
+		}
+	}
 
-  private void registerPermissions() {
-    Permission own = this.getPermissionManager().createPermission(this, "own", PermissionDefault.OP, this.getPermissions().get(0), true);
-    this.addPermission(own);
-    Permission others = this.getPermissionManager().createPermission(this, "others", PermissionDefault.OP, this.getPermissions().get(0), true);
-    this.addPermission(others);
-  }
-  
-  public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] arguments) {
-    List<String> list = new ArrayList<String>();
-    Set<String> temp = new TreeSet<String>();
-    if (arguments.length <= 1) {
-      if (arguments[0].length() >= 3) {
-        temp.addAll(PlayerRecord.getPlayersWithActiveBansThatStartWith(database, arguments[0]));
-      }
-    }
-    list.addAll(list);
-    return list;
-  }
+	private OfflinePlayer matchPlayer(final String name) {
+		return this.server.getOfflinePlayer(name);
+	}
+
+	private void registerPermissions() {
+		final Permission own = this.getPermissionManager().createPermission(this, "own", PermissionDefault.OP, this.getPermissions().get(0), true);
+		this.addPermission(own);
+		final Permission others = this.getPermissionManager().createPermission(this, "others", PermissionDefault.OP, this.getPermissions().get(0), true);
+		this.addPermission(others);
+	}
+
+	public void execute(List<String> arguments, CommandSender sender) {
+		// TODO Auto-generated method stub
+
+	}
 
 }

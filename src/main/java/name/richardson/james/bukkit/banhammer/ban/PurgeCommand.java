@@ -46,92 +46,99 @@ import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 @ConsoleCommand
 public class PurgeCommand extends AbstractCommand {
 
-  /** A instance of the Bukkit server. */
-  private final Server server;
+	private final EbeanServer database;
 
-  /** The player from whom we are going to purge bans */
-  private OfflinePlayer player;
+	private final ChoiceFormatter formatter;
 
-  private EbeanServer database;
+	/** The player from whom we are going to purge bans */
+	private OfflinePlayer player;
 
-  private ChoiceFormatter formatter;
+	/** A instance of the Bukkit server. */
+	private final Server server;
 
-  public PurgeCommand(final BanHammer plugin) {
-    super(plugin);
-    this.database = plugin.getDatabase();
-    this.server = plugin.getServer();
-    this.formatter = new ChoiceFormatter(this.getLocalisation());
-    this.formatter.setLimits(0, 1, 2);
-    this.formatter.setMessage(this, "purged");
-    this.formatter.setFormats(this.getLocalisation().getMessage(BanHammer.class, "no-bans"), this.getLocalisation().getMessage(BanHammer.class, "one-ban"), this.getLocalisation().getMessage(BanHammer.class, "many-bans"));
-    this.registerPermissions();
-  }
+	public PurgeCommand(final BanHammer plugin) {
+		super(plugin);
+		this.database = plugin.getDatabase();
+		this.server = plugin.getServer();
+		this.formatter = new ChoiceFormatter(this.getLocalisation());
+		this.formatter.setLimits(0, 1, 2);
+		this.formatter.setMessage(this, "purged");
+		this.formatter.setFormats(this.getLocalisation().getMessage(BanHammer.class, "no-bans"), this.getLocalisation().getMessage(BanHammer.class, "one-ban"),
+			this.getLocalisation().getMessage(BanHammer.class, "many-bans"));
+		this.registerPermissions();
+	}
 
-  public void execute(final CommandSender sender) throws CommandPermissionException, CommandUsageException {
-    final PlayerRecord playerRecord = PlayerRecord.find(database, player.getName());
-    final List<BanRecord> playerBans = playerRecord.getBans();
-    final Iterator<BanRecord> playerBansIter = playerBans.iterator();
-    final boolean own = this.getPermissionManager().hasPlayerPermission(sender, this.getPermissions().get(1));
-    final boolean others = this.getPermissionManager().hasPlayerPermission(sender, this.getPermissions().get(2));
-    int i = 0;
-    
-    while (playerBansIter.hasNext()) {
-      final BanRecord ban = playerBansIter.next();
-      if (!own && (ban.getCreator().getName().equalsIgnoreCase(sender.getName()))) {
-        playerBansIter.remove();
-        continue;
-      } 
-      if (!others && (!ban.getCreator().getName().equalsIgnoreCase(sender.getName()))) {
-        playerBansIter.remove();
-        continue;
-      }
-    }
-    
-    if (playerRecord != null) {
-      i = BanRecord.deleteBans(this.database, playerBans);
-    }
-    
-    this.formatter.setArguments(i, player.getName());
-    sender.sendMessage(this.formatter.getMessage());
-  }
+	public void execute(final CommandSender sender) throws CommandPermissionException, CommandUsageException {
+		final PlayerRecord playerRecord = PlayerRecord.find(this.database, this.player.getName());
+		final List<BanRecord> playerBans = playerRecord.getBans();
+		final Iterator<BanRecord> playerBansIter = playerBans.iterator();
+		final boolean own = this.getPermissionManager().hasPlayerPermission(sender, this.getPermissions().get(1));
+		final boolean others = this.getPermissionManager().hasPlayerPermission(sender, this.getPermissions().get(2));
+		int i = 0;
 
-  public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
-    if (arguments.length == 0) {
-      throw new CommandArgumentException(this.getLocalisation().getMessage(BanHammer.class, "must-specify-player"), null);
-    } else {
-      this.player = this.matchPlayer(arguments[0]);
-    }
+		while (playerBansIter.hasNext()) {
+			final BanRecord ban = playerBansIter.next();
+			if (!own && (ban.getCreator().getName().equalsIgnoreCase(sender.getName()))) {
+				playerBansIter.remove();
+				continue;
+			}
+			if (!others && (!ban.getCreator().getName().equalsIgnoreCase(sender.getName()))) {
+				playerBansIter.remove();
+				continue;
+			}
+		}
 
-  }
+		if (playerRecord != null) {
+			i = BanRecord.deleteBans(this.database, playerBans);
+		}
 
-  private OfflinePlayer matchPlayer(final String name) {
-    return this.server.getOfflinePlayer(name);
-  }
-  
-  private void registerPermissions() {
-    Permission own = this.getPermissionManager().createPermission(this, "own", PermissionDefault.TRUE, this.getPermissions().get(0), true);
-    this.addPermission(own);
-    Permission others = this.getPermissionManager().createPermission(this, "others", PermissionDefault.OP, this.getPermissions().get(0), true);
-    this.addPermission(others);
-  }
-  
-  public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] arguments) {
-    List<String> list = new ArrayList<String>();
-    Set<String> temp = new TreeSet<String>();
-    if (arguments.length <= 1) {
-      for (Player player : this.server.getOnlinePlayers()) {
-        if (arguments.length < 1) {
-          temp.add(player.getName());
-        } else if (player.getName().startsWith(arguments[0])) {
-          temp.add(player.getName());
-        }         
-        if (arguments[0].length() >= 3) {
-          temp.addAll(PlayerRecord.getPlayersWithBansThatStartWith(database, arguments[0]));
-        }
-      }
-    }
-    list.addAll(temp);
-    return list;
-  }
+		this.formatter.setArguments(i, this.player.getName());
+		sender.sendMessage(this.formatter.getMessage());
+	}
+
+	public List<String> onTabComplete(final CommandSender sender, final Command command, final String label, final String[] arguments) {
+		final List<String> list = new ArrayList<String>();
+		final Set<String> temp = new TreeSet<String>();
+		if (arguments.length <= 1) {
+			for (final Player player : this.server.getOnlinePlayers()) {
+				if (arguments.length < 1) {
+					temp.add(player.getName());
+				} else
+					if (player.getName().startsWith(arguments[0])) {
+						temp.add(player.getName());
+					}
+				if (arguments[0].length() >= 3) {
+					temp.addAll(PlayerRecord.getPlayersWithBansThatStartWith(this.database, arguments[0]));
+				}
+			}
+		}
+		list.addAll(temp);
+		return list;
+	}
+
+	public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
+		if (arguments.length == 0) {
+			throw new CommandArgumentException(this.getLocalisation().getMessage(BanHammer.class, "must-specify-player"), null);
+		} else {
+			this.player = this.matchPlayer(arguments[0]);
+		}
+
+	}
+
+	private OfflinePlayer matchPlayer(final String name) {
+		return this.server.getOfflinePlayer(name);
+	}
+
+	private void registerPermissions() {
+		final Permission own = this.getPermissionManager().createPermission(this, "own", PermissionDefault.TRUE, this.getPermissions().get(0), true);
+		this.addPermission(own);
+		final Permission others = this.getPermissionManager().createPermission(this, "others", PermissionDefault.OP, this.getPermissions().get(0), true);
+		this.addPermission(others);
+	}
+
+	public void execute(List<String> arguments, CommandSender sender) {
+		// TODO Auto-generated method stub
+
+	}
 
 }

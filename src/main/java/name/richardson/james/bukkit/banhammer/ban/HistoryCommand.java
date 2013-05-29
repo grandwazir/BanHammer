@@ -46,111 +46,120 @@ import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 @ConsoleCommand
 public class HistoryCommand extends AbstractCommand {
 
-  /** Reference to the BanHammer API */
-  private final BanHandler handler;
+	private final EbeanServer database;
 
-  /** A instance of the Bukkit server. */
-  private final Server server;
+	private final ChoiceFormatter formatter;
 
-  /** The player whos history we are going to check */
-  private String playerName;
+	/** Reference to the BanHammer API */
+	private final BanHandler handler;
 
-  private final ChoiceFormatter formatter;
-  
-  private final EbeanServer database;
+	/** The player whos history we are going to check */
+	private String playerName;
 
-  public HistoryCommand(final BanHammer plugin) {
-    super(plugin);
-    this.database = plugin.getDatabase();
-    this.handler = plugin.getHandler();
-    this.server = plugin.getServer();
-    this.formatter = new ChoiceFormatter(this.getLocalisation());
-    this.formatter.setLimits(0, 1, 2);
-    this.formatter.setMessage(this, "header");
-    this.formatter.setFormats(this.getLocalisation().getMessage(BanHammer.class, "no-bans"), this.getLocalisation().getMessage(BanHammer.class, "one-ban"), this.getLocalisation().getMessage(BanHammer.class, "many-bans"));
-    this.registerPermissions();
-  }
+	/** A instance of the Bukkit server. */
+	private final Server server;
 
-  public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final List<BanRecord> bans = this.handler.getPlayerBans(this.playerName);
+	public HistoryCommand(final BanHammer plugin) {
+		super(plugin);
+		this.database = plugin.getDatabase();
+		this.handler = plugin.getHandler();
+		this.server = plugin.getServer();
+		this.formatter = new ChoiceFormatter(this.getLocalisation());
+		this.formatter.setLimits(0, 1, 2);
+		this.formatter.setMessage(this, "header");
+		this.formatter.setFormats(this.getLocalisation().getMessage(BanHammer.class, "no-bans"), this.getLocalisation().getMessage(BanHammer.class, "one-ban"),
+			this.getLocalisation().getMessage(BanHammer.class, "many-bans"));
+		this.registerPermissions();
+	}
 
-    if (sender.hasPermission(this.getPermissions().get(2)) && !this.playerName.equalsIgnoreCase(sender.getName())) {
-      this.displayHistory(bans, sender);
-      return;
-    } else if (!this.playerName.equalsIgnoreCase(sender.getName())) {
-      throw new CommandPermissionException(null, this.getPermissions().get(2));
-    }
+	public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+		final List<BanRecord> bans = this.handler.getPlayerBans(this.playerName);
 
-    if (sender.hasPermission(this.getPermissions().get(1)) && this.playerName.equalsIgnoreCase(sender.getName())) {
-      this.displayHistory(bans, sender);
-      return;
-    } else if (this.playerName.equalsIgnoreCase(sender.getName())) {
-      throw new CommandPermissionException(null, this.getPermissions().get(1));
-    }
+		if (sender.hasPermission(this.getPermissions().get(2)) && !this.playerName.equalsIgnoreCase(sender.getName())) {
+			this.displayHistory(bans, sender);
+			return;
+		} else
+			if (!this.playerName.equalsIgnoreCase(sender.getName())) {
+				throw new CommandPermissionException(null, this.getPermissions().get(2));
+			}
 
-  }
+		if (sender.hasPermission(this.getPermissions().get(1)) && this.playerName.equalsIgnoreCase(sender.getName())) {
+			this.displayHistory(bans, sender);
+			return;
+		} else
+			if (this.playerName.equalsIgnoreCase(sender.getName())) {
+				throw new CommandPermissionException(null, this.getPermissions().get(1));
+			}
 
-  public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
-    if (arguments.length == 0) {
-      if (!(sender instanceof Player)) {
-        throw new CommandArgumentException(this.getLocalisation().getMessage(BanHammer.class, "must-specify-player"), null);
-      }
-      this.playerName = sender.getName();
-    } else {
-      this.playerName = this.matchPlayer(arguments[0]);
-    }
+	}
 
-  }
+	public List<String> onTabComplete(final CommandSender sender, final Command command, final String label, final String[] arguments) {
+		final List<String> list = new ArrayList<String>();
+		final Set<String> temp = new TreeSet<String>();
+		if (arguments.length <= 1) {
+			for (final Player player : Bukkit.getServer().getOnlinePlayers()) {
+				if (arguments.length < 1) {
+					temp.add(player.getName());
+				} else
+					if (player.getName().startsWith(arguments[0])) {
+						temp.add(player.getName());
+					}
+			}
+			if (arguments[0].length() >= 3) {
+				temp.addAll(PlayerRecord.getPlayersThatStartWith(this.database, arguments[0]));
+			}
+		}
+		list.addAll(temp);
+		return list;
+	}
 
-  private void displayHistory(final List<BanRecord> bans, final CommandSender sender) {
-    this.formatter.setArguments(bans.size(), this.playerName);
-    sender.sendMessage(this.formatter.getMessage());
-    for (final BanRecord ban : bans) {
-      final BanSummary summary = new BanSummary(this.getLocalisation(), ban);
-      sender.sendMessage(summary.getSelfHeader());
-      sender.sendMessage(summary.getReason());
-      sender.sendMessage(summary.getLength());
-      if (ban.getType() == BanRecord.Type.TEMPORARY) {
-        sender.sendMessage(summary.getExpiresAt());
-      }
-    }
-  }
+	public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
+		if (arguments.length == 0) {
+			if (!(sender instanceof Player)) {
+				throw new CommandArgumentException(this.getLocalisation().getMessage(BanHammer.class, "must-specify-player"), null);
+			}
+			this.playerName = sender.getName();
+		} else {
+			this.playerName = this.matchPlayer(arguments[0]);
+		}
 
-  private String matchPlayer(final String name) {
-    final List<Player> players = this.server.matchPlayer(name);
-    if (players.isEmpty()) {
-      return name;
-    } else {
-      return players.get(0).getName();
-    }
-  }
+	}
 
-  private void registerPermissions() {
-    // add ability to view your own ban history
-    Permission own = this.getPermissionManager().createPermission(this, "own", PermissionDefault.TRUE, this.getPermissions().get(0), true);
-    this.addPermission(own);
-    // add ability to view the ban history of others
-    Permission others = this.getPermissionManager().createPermission(this, "others", PermissionDefault.OP, this.getPermissions().get(0), true);
-    this.addPermission(others);
-  }
+	private void displayHistory(final List<BanRecord> bans, final CommandSender sender) {
+		this.formatter.setArguments(bans.size(), this.playerName);
+		sender.sendMessage(this.formatter.getMessage());
+		for (final BanRecord ban : bans) {
+			final BanSummary summary = new BanSummary(this.getLocalisation(), ban);
+			sender.sendMessage(summary.getSelfHeader());
+			sender.sendMessage(summary.getReason());
+			sender.sendMessage(summary.getLength());
+			if (ban.getType() == BanRecord.Type.TEMPORARY) {
+				sender.sendMessage(summary.getExpiresAt());
+			}
+		}
+	}
 
-  public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] arguments) {
-    List<String> list = new ArrayList<String>();
-    Set<String> temp = new TreeSet<String>();
-    if (arguments.length <= 1) {
-      for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-        if (arguments.length < 1) {
-          temp.add(player.getName());
-        } else if (player.getName().startsWith(arguments[0])) {
-          temp.add(player.getName());
-        }
-      }
-      if (arguments[0].length() >= 3) {
-        temp.addAll(PlayerRecord.getPlayersThatStartWith(database, arguments[0]));
-      }
-    }
-    list.addAll(temp);
-    return list;
-  }
+	private String matchPlayer(final String name) {
+		final List<Player> players = this.server.matchPlayer(name);
+		if (players.isEmpty()) {
+			return name;
+		} else {
+			return players.get(0).getName();
+		}
+	}
+
+	private void registerPermissions() {
+		// add ability to view your own ban history
+		final Permission own = this.getPermissionManager().createPermission(this, "own", PermissionDefault.TRUE, this.getPermissions().get(0), true);
+		this.addPermission(own);
+		// add ability to view the ban history of others
+		final Permission others = this.getPermissionManager().createPermission(this, "others", PermissionDefault.OP, this.getPermissions().get(0), true);
+		this.addPermission(others);
+	}
+
+	public void execute(List<String> arguments, CommandSender sender) {
+		// TODO Auto-generated method stub
+
+	}
 
 }

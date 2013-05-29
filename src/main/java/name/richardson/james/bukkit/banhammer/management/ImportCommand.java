@@ -38,59 +38,65 @@ import name.richardson.james.bukkit.utilities.formatters.StringFormatter;
 @ConsoleCommand
 public class ImportCommand extends AbstractCommand {
 
-  private final ChoiceFormatter formatter;
+	private final ChoiceFormatter formatter;
 
-  /** A instance of the Bukkit server. */
-  private final Server server;
+	/** A reference to the BanHammer API. */
+	private final BanHandler handler;
 
-  /** A reference to the BanHammer API. */
-  private final BanHandler handler;
+	/** The reason which will be set for all imported bans */
+	private String reason;
 
-  /** The reason which will be set for all imported bans */
-  private String reason;
+	/** A instance of the Bukkit server. */
+	private final Server server;
 
-  public ImportCommand(final BanHammer plugin) {
-    super(plugin);
-    this.handler = plugin.getHandler();
-    this.server = plugin.getServer();
-    this.formatter = new ChoiceFormatter(this.getLocalisation());
-    this.formatter.setLimits(0, 1, 2);
-    this.formatter.setFormats(this.getLocalisation().getMessage(BanHammer.class, "no-bans"), this.getLocalisation().getMessage(BanHammer.class, "one-ban"), this.getLocalisation().getMessage(BanHammer.class, "many-bans"));
-  }
+	public ImportCommand(final BanHammer plugin) {
+		super(plugin);
+		this.handler = plugin.getHandler();
+		this.server = plugin.getServer();
+		this.formatter = new ChoiceFormatter(this.getLocalisation());
+		this.formatter.setLimits(0, 1, 2);
+		this.formatter.setFormats(this.getLocalisation().getMessage(BanHammer.class, "no-bans"), this.getLocalisation().getMessage(BanHammer.class, "one-ban"),
+			this.getLocalisation().getMessage(BanHammer.class, "many-bans"));
+	}
 
-  public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final int total = this.server.getBannedPlayers().size();
-    final long time = 0;
-    final String importer = sender.getName();
-    int imported = 0;
+	public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+		final int total = this.server.getBannedPlayers().size();
+		final long time = 0;
+		final String importer = sender.getName();
+		int imported = 0;
 
-    for (final OfflinePlayer player : this.server.getBannedPlayers()) {
-      if (this.handler.banPlayer(player.getName(), importer, this.reason, time, false)) {
-        player.setBanned(false);
-        imported = imported + 1;
-      } else {
-        this.getLogger().warning(this.getLocalisation().getMessage(this, "unable-to-import", player.getName()));
-      }
-    }
+		for (final OfflinePlayer player : this.server.getBannedPlayers()) {
+			if (this.handler.banPlayer(player.getName(), importer, this.reason, time, false)) {
+				player.setBanned(false);
+				imported = imported + 1;
+			} else {
+				this.getLogger().warning(this.getLocalisation().getMessage(this, "unable-to-import", player.getName()));
+			}
+		}
 
-    this.formatter.setMessage(this, "bans-imported");
-    this.formatter.setArguments(imported);
-    sender.sendMessage(this.formatter.getMessage());
-    if (imported != total) {
-      this.formatter.setMessage(this, "bans-failed");
-      this.formatter.setArguments(total - imported);
-      sender.sendMessage(this.formatter.getMessage());
-    }
+		this.formatter.setMessage(this, "bans-imported");
+		this.formatter.setArguments(imported);
+		sender.sendMessage(this.formatter.getMessage());
+		if (imported != total) {
+			this.formatter.setMessage(this, "bans-failed");
+			this.formatter.setArguments(total - imported);
+			sender.sendMessage(this.formatter.getMessage());
+		}
 
-  }
+	}
 
-  public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
-    this.reason = (arguments.length == 0) ? this.getLocalisation().getMessage(this, "default-reason") : StringFormatter.combineString(arguments, " ");
-  }
-  
-  public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] arguments) {
-    List<String> list = new ArrayList<String>();
-    return list;
-  }
+	public List<String> onTabComplete(final CommandSender sender, final Command command, final String label, final String[] arguments) {
+		final List<String> list = new ArrayList<String>();
+		return list;
+	}
+
+	public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
+		this.reason = (arguments.length == 0) ? this.getLocalisation().getMessage(this, "default-reason") : StringFormatter.combineString(arguments, " ");
+	}
+
+	public void execute(List<String> arguments, CommandSender sender) {
+		// TODO Auto-generated method stub
+
+	}
 
 }

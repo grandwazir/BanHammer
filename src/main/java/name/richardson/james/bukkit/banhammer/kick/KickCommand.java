@@ -37,68 +37,74 @@ import name.richardson.james.bukkit.utilities.formatters.StringFormatter;
 @ConsoleCommand
 public class KickCommand extends AbstractCommand {
 
-  /** A instance of the Bukkit server. */
-  private final Server server;
+	/** The player who is going to be kicked */
+	private Player player;
 
-  /** The player who is going to be kicked */
-  private Player player;
+	/** The reason to give to the kicked player */
+	private String reason;
 
-  /** The reason to give to the kicked player */
-  private String reason;
+	/** A instance of the Bukkit server. */
+	private final Server server;
 
-  public KickCommand(final BanHammer plugin) {
-    super(plugin);
-    this.server = plugin.getServer();
-  }
+	public KickCommand(final BanHammer plugin) {
+		super(plugin);
+		this.server = plugin.getServer();
+	}
 
-  public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    if (this.player.isOnline()) {
-      this.player.kickPlayer(this.getLocalisation().getMessage(PlayerListener.class, "kicked", this.reason, sender.getName()));
-      server.broadcast(this.getLocalisation().getMessage(this, "kick-broadcast", player.getName(), sender.getName()), "banhammer.notify");
-      server.broadcast(this.getLocalisation().getMessage(this, "reason", reason), "banhammer.notify");
-    }
-    this.player = null;
-  }
+	public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+		if (this.player.isOnline()) {
+			this.player.kickPlayer(this.getLocalisation().getMessage(PlayerListener.class, "kicked", this.reason, sender.getName()));
+			this.server.broadcast(this.getLocalisation().getMessage(this, "kick-broadcast", this.player.getName(), sender.getName()), "banhammer.notify");
+			this.server.broadcast(this.getLocalisation().getMessage(this, "reason", this.reason), "banhammer.notify");
+		}
+		this.player = null;
+	}
 
-  public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
-    if (arguments.length == 0) {
-      throw new CommandArgumentException(this.getLocalisation().getMessage(BanHammer.class, "must-specify-player"), null);
-    }
+	public List<String> onTabComplete(final CommandSender sender, final Command command, final String label, final String[] arguments) {
+		final List<String> list = new ArrayList<String>();
+		if (arguments.length <= 1) {
+			for (final Player player : this.server.getOnlinePlayers()) {
+				if (arguments.length < 1) {
+					list.add(player.getName());
+				} else
+					if (player.getName().startsWith(arguments[0])) {
+						list.add(player.getName());
+					}
+			}
+		}
+		return list;
+	}
 
-    this.player = this.matchPlayer(arguments[0]);
-    if (this.player == null) {
-      throw new CommandArgumentException(this.getLocalisation().getMessage(BanHammer.class, "must-specify-player"), null);
-    }
+	public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
+		if (arguments.length == 0) {
+			throw new CommandArgumentException(this.getLocalisation().getMessage(BanHammer.class, "must-specify-player"), null);
+		}
 
-    if (arguments.length > 1) {
-      final String[] elements = new String[arguments.length - 1];
-      System.arraycopy(arguments, 1, elements, 0, arguments.length - 1);
-      this.reason = StringFormatter.combineString(elements, " ");
-    } else {
-      this.reason = this.getLocalisation().getMessage(this, "default-reason");
-    }
-  }
+		this.player = this.matchPlayer(arguments[0]);
+		if (this.player == null) {
+			throw new CommandArgumentException(this.getLocalisation().getMessage(BanHammer.class, "must-specify-player"), null);
+		}
 
-  private Player matchPlayer(final String name) {
-    final List<Player> players = this.server.matchPlayer(name);
-    if (players.isEmpty()) {
-      return null;
-    }
-    return players.get(0);
-  }
-  
-  public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] arguments) {
-    List<String> list = new ArrayList<String>();
-    if (arguments.length <= 1) {
-      for (Player player : this.server.getOnlinePlayers()) {
-        if (arguments.length < 1) {
-          list.add(player.getName());
-        } else if (player.getName().startsWith(arguments[0])) {
-          list.add(player.getName());
-        }
-      }
-    }
-    return list;
-  }
+		if (arguments.length > 1) {
+			final String[] elements = new String[arguments.length - 1];
+			System.arraycopy(arguments, 1, elements, 0, arguments.length - 1);
+			this.reason = StringFormatter.combineString(elements, " ");
+		} else {
+			this.reason = this.getLocalisation().getMessage(this, "default-reason");
+		}
+	}
+
+	private Player matchPlayer(final String name) {
+		final List<Player> players = this.server.matchPlayer(name);
+		if (players.isEmpty()) {
+			return null;
+		}
+		return players.get(0);
+	}
+
+	public void execute(List<String> arguments, CommandSender sender) {
+		// TODO Auto-generated method stub
+
+	}
 
 }

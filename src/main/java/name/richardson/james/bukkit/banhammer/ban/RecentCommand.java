@@ -37,59 +37,64 @@ import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 @ConsoleCommand
 public class RecentCommand extends AbstractCommand {
 
-  public static final int DEFAULT_LIMIT = 5;
+	public static final int DEFAULT_LIMIT = 5;
 
-  /** The number of bans to return */
-  private int count;
+	/** The number of bans to return */
+	private int count;
 
-  private EbeanServer database;
+	private final EbeanServer database;
 
-  private ChoiceFormatter formatter;
+	private final ChoiceFormatter formatter;
 
-  public RecentCommand(final BanHammer plugin) {
-    super(plugin);
-    this.database = plugin.getDatabase();
-    this.formatter = new ChoiceFormatter(this.getLocalisation());
-    this.formatter.setLimits(1, 2);
-    this.formatter.setMessage(this, "header");
-    this.formatter.setFormats(this.getLocalisation().getMessage(BanHammer.class, "one-ban"), this.getLocalisation().getMessage(BanHammer.class, "many-bans"));
-  }
+	public RecentCommand(final BanHammer plugin) {
+		super(plugin);
+		this.database = plugin.getDatabase();
+		this.formatter = new ChoiceFormatter(this.getLocalisation());
+		this.formatter.setLimits(1, 2);
+		this.formatter.setMessage(this, "header");
+		this.formatter.setFormats(this.getLocalisation().getMessage(BanHammer.class, "one-ban"), this.getLocalisation().getMessage(BanHammer.class, "many-bans"));
+	}
 
-  public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final List<BanRecord> bans = BanRecord.getRecentBans(database, count);
+	public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+		final List<BanRecord> bans = BanRecord.getRecentBans(this.database, this.count);
 
-    if (!bans.isEmpty()) {
-      this.formatter.setArguments(bans.size());
-      sender.sendMessage(this.formatter.getMessage());
-      for (final BanRecord ban : bans) {
-        final BanSummary summary = new BanSummary(this.getLocalisation(), ban);
-        sender.sendMessage(summary.getHeader());
-        sender.sendMessage(summary.getReason());
-        sender.sendMessage(summary.getLength());
-        if (ban.getType() == BanRecord.Type.TEMPORARY) {
-          sender.sendMessage(summary.getExpiresAt());
-        }
-      }
-    } else {
-      sender.sendMessage(this.getLocalisation().getMessage(this, "no-bans"));
-    }
-  }
+		if (!bans.isEmpty()) {
+			this.formatter.setArguments(bans.size());
+			sender.sendMessage(this.formatter.getMessage());
+			for (final BanRecord ban : bans) {
+				final BanSummary summary = new BanSummary(this.getLocalisation(), ban);
+				sender.sendMessage(summary.getHeader());
+				sender.sendMessage(summary.getReason());
+				sender.sendMessage(summary.getLength());
+				if (ban.getType() == BanRecord.Type.TEMPORARY) {
+					sender.sendMessage(summary.getExpiresAt());
+				}
+			}
+		} else {
+			sender.sendMessage(this.getLocalisation().getMessage(this, "no-bans"));
+		}
+	}
 
-  public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
-    if (arguments.length == 0) {
-      this.count = DEFAULT_LIMIT;
-    } else {
-      try {
-        this.count = Integer.parseInt(arguments[0]);
-      } catch (final NumberFormatException exception) {
-        this.count = DEFAULT_LIMIT;
-      }
-    }
-  }
-  
-  public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] arguments) {
-    List<String> list = new ArrayList<String>();
-    return list;
-  }
+	public List<String> onTabComplete(final CommandSender sender, final Command command, final String label, final String[] arguments) {
+		final List<String> list = new ArrayList<String>();
+		return list;
+	}
+
+	public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
+		if (arguments.length == 0) {
+			this.count = RecentCommand.DEFAULT_LIMIT;
+		} else {
+			try {
+				this.count = Integer.parseInt(arguments[0]);
+			} catch (final NumberFormatException exception) {
+				this.count = RecentCommand.DEFAULT_LIMIT;
+			}
+		}
+	}
+
+	public void execute(List<String> arguments, CommandSender sender) {
+		// TODO Auto-generated method stub
+
+	}
 
 }

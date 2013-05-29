@@ -27,33 +27,36 @@ import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
  */
 public class BanHammerPlayerBannedEvent extends BanHammerPlayerEvent {
 
-  /** The Constant handlers. */
-  private static final HandlerList handlers = new HandlerList();
+	/** The Constant handlers. */
+	private static final HandlerList handlers = new HandlerList();
 
-  /*
-   * (non-Javadoc)
-   * @see org.bukkit.event.Event#getHandlerList()
-   */
-  public static HandlerList getHandlerList() {
-    return BanHammerPlayerBannedEvent.handlers;
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.bukkit.event.Event#getHandlerList()
+	 */
+	public static HandlerList getHandlerList() {
+		return BanHammerPlayerBannedEvent.handlers;
+	}
 
-  /*
-   * (non-Javadoc)
-   * @see name.richardson.james.bukkit.banhammer.api.BanHammerPlayerEvent#
-   * BanHammerPlayerEvent()
-   */
-  public BanHammerPlayerBannedEvent(final BanRecord record, final boolean silent) {
-    super(record, silent);
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see name.richardson.james.bukkit.banhammer.api.BanHammerPlayerEvent#
+	 * BanHammerPlayerEvent()
+	 */
+	public BanHammerPlayerBannedEvent(final BanRecord record, final boolean silent) {
+		super(record, silent);
+	}
 
-  /*
-   * (non-Javadoc)
-   * @see org.bukkit.event.Event#getHandlers()
-   */
-  @Override
-  public HandlerList getHandlers() {
-    return handlers;
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.bukkit.event.Event#getHandlers()
+	 */
+	@Override
+	public HandlerList getHandlers() {
+		return BanHammerPlayerBannedEvent.handlers;
+	}
 
 }

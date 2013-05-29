@@ -34,139 +34,144 @@ import name.richardson.james.bukkit.utilities.metrics.Metrics.Plotter;
 
 public class MetricsListener implements Listener {
 
-  /** The number of permenant bans made since the server started. */
-  private int permenantBans = 0;
+	/** The database. */
+	private final EbeanServer database;
 
-  /** The number of temporary bans made since the server started. */
-  private int temporaryBans = 0;
+	private final Metrics metrics;
 
-  /** The number of bans pardoned since the server started. */
-  private int pardonedBans = 0;
+	/** The number of bans pardoned since the server started. */
+	private int pardonedBans = 0;
 
-  /** The total number of permenant bans made by this server. */
-  private int totalPermanentBans;
+	/** The number of permenant bans made since the server started. */
+	private int permenantBans = 0;
 
-  /** The total number of temporary bans made by this server. */
-  private int totalTemporaryBans;
+	/** The number of temporary bans made since the server started. */
+	private int temporaryBans = 0;
 
-  /** The total number of pardoned bans made by this server. */
-  private int totalPardonedBans;
+	/** The total number of pardoned bans made by this server. */
+	private int totalPardonedBans;
 
-  /** The database. */
-  private final EbeanServer database;
+	/** The total number of permenant bans made by this server. */
+	private int totalPermanentBans;
 
-  private final Metrics metrics;
+	/** The total number of temporary bans made by this server. */
+	private int totalTemporaryBans;
 
-  /**
-   * Instantiates a new metrics listener.
-   * 
-   * @param plugin the plugin that this listener belongs to.
-   * @throws IOException Signals that an I/O exception has occurred.
-   */
-  public MetricsListener(final BanHammer plugin) throws IOException {
-    this.database = plugin.getDatabase();
-    plugin.getServer().getPluginManager().registerEvents(this, plugin);
-    this.metrics = new Metrics(plugin);
-    this.setInitialValues();
-    this.setupCustomMetrics();
-    this.metrics.start();
-  }
+	/**
+	 * Instantiates a new metrics listener.
+	 * 
+	 * @param plugin
+	 *          the plugin that this listener belongs to.
+	 * @throws IOException
+	 *           Signals that an I/O exception has occurred.
+	 */
+	public MetricsListener(final BanHammer plugin) throws IOException {
+		this.database = plugin.getDatabase();
+		plugin.getServer().getPluginManager().registerEvents(this, plugin);
+		this.metrics = new Metrics(plugin);
+		this.setInitialValues();
+		this.setupCustomMetrics();
+		this.metrics.start();
+	}
 
-  /**
-   * When a player is banned, increment the statistics.
-   * 
-   * @param event the event
-   */
-  @EventHandler(priority = EventPriority.MONITOR)
-  public void onPlayerBanned(final BanHammerPlayerBannedEvent event) {
-    switch (event.getRecord().getType()) {
-    case PERMANENT:
-      this.permenantBans++;
-      this.totalPermanentBans++;
-      break;
-    case TEMPORARY:
-      this.temporaryBans++;
-      this.totalTemporaryBans++;
-      break;
-    }
-  }
+	/**
+	 * When a player is banned, increment the statistics.
+	 * 
+	 * @param event
+	 *          the event
+	 */
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPlayerBanned(final BanHammerPlayerBannedEvent event) {
+		switch (event.getRecord().getType()) {
+			case PERMANENT:
+				this.permenantBans++;
+				this.totalPermanentBans++;
+				break;
+			case TEMPORARY:
+				this.temporaryBans++;
+				this.totalTemporaryBans++;
+				break;
+		}
+	}
 
-  /**
-   * When a player is pardoned, increment the statistics.
-   * 
-   * @param event the event
-   */
-  @EventHandler(priority = EventPriority.MONITOR)
-  public void onPlayerPardoned(final BanHammerPlayerPardonedEvent event) {
-    this.pardonedBans++;
-    this.totalPardonedBans++;
-    switch (event.getRecord().getType()) {
-    case PERMANENT:
-      this.totalPermanentBans--;
-      break;
-    case TEMPORARY:
-      this.totalTemporaryBans--;
-      break;
-    }
-  }
+	/**
+	 * When a player is pardoned, increment the statistics.
+	 * 
+	 * @param event
+	 *          the event
+	 */
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPlayerPardoned(final BanHammerPlayerPardonedEvent event) {
+		this.pardonedBans++;
+		this.totalPardonedBans++;
+		switch (event.getRecord().getType()) {
+			case PERMANENT:
+				this.totalPermanentBans--;
+				break;
+			case TEMPORARY:
+				this.totalTemporaryBans--;
+				break;
+		}
+	}
 
-  /*
-   * (non-Javadoc)
-   * @see
-   * name.richardson.james.bukkit.utilities.metrics.AbstractMetricsListener#
-   * setupCustomMetrics()
-   */
-  private void setupCustomMetrics() {
+	/**
+	 * Sets the initial values to report with Metrics.
+	 */
+	private void setInitialValues() {
+		this.totalPermanentBans = BanRecord.getPermanentBanCount(this.database);
+		this.totalTemporaryBans = BanRecord.getTemporaryBanCount(this.database);
+		this.totalPardonedBans = BanRecord.getPardonedBanCount(this.database);
+	}
 
-    // Create a graph to show the total amount of kits issued.
-    final Graph graph = this.metrics.createGraph("Realtime Ban Statistics");
-    graph.addPlotter(new Plotter("Permanent bans") {
-      @Override
-      public int getValue() {
-        return MetricsListener.this.permenantBans;
-      }
-    });
-    graph.addPlotter(new Plotter("Temporary bans") {
-      @Override
-      public int getValue() {
-        return MetricsListener.this.temporaryBans;
-      }
-    });
-    graph.addPlotter(new Plotter("Pardoned bans") {
-      @Override
-      public int getValue() {
-        return MetricsListener.this.pardonedBans;
-      }
-    });
-    // Create a graph to show total ban statistics
-    final Graph graph2 = this.metrics.createGraph("Overall Ban Statistics");
-    graph2.addPlotter(new Plotter("Permanent bans") {
-      @Override
-      public int getValue() {
-        return MetricsListener.this.totalPermanentBans;
-      }
-    });
-    graph2.addPlotter(new Plotter("Temporary bans") {
-      @Override
-      public int getValue() {
-        return MetricsListener.this.totalTemporaryBans;
-      }
-    });
-    graph2.addPlotter(new Plotter("Pardoned bans") {
-      @Override
-      public int getValue() {
-        return MetricsListener.this.totalPardonedBans;
-      }
-    });
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * name.richardson.james.bukkit.utilities.metrics.AbstractMetricsListener#
+	 * setupCustomMetrics()
+	 */
+	private void setupCustomMetrics() {
 
-  /**
-   * Sets the initial values to report with Metrics.
-   */
-  private void setInitialValues() {
-    this.totalPermanentBans = BanRecord.getPermanentBanCount(database);
-    this.totalTemporaryBans = BanRecord.getTemporaryBanCount(database);
-    this.totalPardonedBans = BanRecord.getPardonedBanCount(database);
-  }
+		// Create a graph to show the total amount of kits issued.
+		final Graph graph = this.metrics.createGraph("Realtime Ban Statistics");
+		graph.addPlotter(new Plotter("Permanent bans") {
+			@Override
+			public int getValue() {
+				return MetricsListener.this.permenantBans;
+			}
+		});
+		graph.addPlotter(new Plotter("Temporary bans") {
+			@Override
+			public int getValue() {
+				return MetricsListener.this.temporaryBans;
+			}
+		});
+		graph.addPlotter(new Plotter("Pardoned bans") {
+			@Override
+			public int getValue() {
+				return MetricsListener.this.pardonedBans;
+			}
+		});
+		// Create a graph to show total ban statistics
+		final Graph graph2 = this.metrics.createGraph("Overall Ban Statistics");
+		graph2.addPlotter(new Plotter("Permanent bans") {
+			@Override
+			public int getValue() {
+				return MetricsListener.this.totalPermanentBans;
+			}
+		});
+		graph2.addPlotter(new Plotter("Temporary bans") {
+			@Override
+			public int getValue() {
+				return MetricsListener.this.totalTemporaryBans;
+			}
+		});
+		graph2.addPlotter(new Plotter("Pardoned bans") {
+			@Override
+			public int getValue() {
+				return MetricsListener.this.totalPardonedBans;
+			}
+		});
+	}
 
 }

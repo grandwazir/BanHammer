@@ -24,74 +24,76 @@ import name.richardson.james.bukkit.utilities.localisation.Localisation;
 
 public class BanSummary {
 
-  /** The record we are linked with. */
-  private final BanRecord record;
+	private final Localisation localisation;
 
-  private final Localisation localisation;
+	/** The record we are linked with. */
+	private final BanRecord record;
 
-  /**
-   * Instantiates a new ban summary.
-   * 
-   * @param plugin the plugin containing the resource bundles
-   * @param ban the ban record to summarize
-   */
-  public BanSummary(Localisation localisation, final BanRecord ban) {
-    this.localisation = localisation;
-    this.record = ban;
-  }
+	/**
+	 * Instantiates a new ban summary.
+	 * 
+	 * @param plugin
+	 *          the plugin containing the resource bundles
+	 * @param ban
+	 *          the ban record to summarize
+	 */
+	public BanSummary(final Localisation localisation, final BanRecord ban) {
+		this.localisation = localisation;
+		this.record = ban;
+	}
 
-  /**
-   * Gets a human readable expiry date for this ban.
-   * 
-   * @return the expires at
-   */
-  public String getExpiresAt() {
-    final String expiryDateString = BanHammer.SHORT_DATE_FORMAT.format(this.record.getExpiresAt());
-    return this.localisation.getMessage(this, "expires", expiryDateString);
-  }
+	/**
+	 * Gets a human readable expiry date for this ban.
+	 * 
+	 * @return the expires at
+	 */
+	public String getExpiresAt() {
+		final String expiryDateString = BanHammer.SHORT_DATE_FORMAT.format(this.record.getExpiresAt());
+		return this.localisation.getMessage(this, "expires", expiryDateString);
+	}
 
-  /**
-   * Gets a header summary for this ban. This includes the name of the player,
-   * who banned them and when.
-   * 
-   * @return the header
-   */
-  public String getHeader() {
-    final String date = BanHammer.SHORT_DATE_FORMAT.format(this.record.getCreatedAt());
-    return this.localisation.getMessage(this, "header", this.record.getPlayer().getName(), this.record.getCreator().getName(), date);
-  }
+	/**
+	 * Gets a header summary for this ban. This includes the name of the player,
+	 * who banned them and when.
+	 * 
+	 * @return the header
+	 */
+	public String getHeader() {
+		final String date = BanHammer.SHORT_DATE_FORMAT.format(this.record.getCreatedAt());
+		return this.localisation.getMessage(this, "header", this.record.getPlayer().getName(), this.record.getCreator().getName(), date);
+	}
 
-  /**
-   * Gets a human readable version of the ban length.
-   * 
-   * @return the length
-   */
-  public String getLength() {
-    if (this.record.getType() == BanRecord.Type.PERMANENT) {
-      return this.localisation.getMessage(this, "length", this.localisation.getMessage(this, "permanent"));
-    } else {
-      final long length = this.record.getExpiresAt().getTime() - this.record.getCreatedAt().getTime();
-      return this.localisation.getMessage(this, "length", TimeFormatter.millisToLongDHMS(length));
-    }
-  }
+	/**
+	 * Gets a human readable version of the ban length.
+	 * 
+	 * @return the length
+	 */
+	public String getLength() {
+		if (this.record.getType() == BanRecord.Type.PERMANENT) {
+			return this.localisation.getMessage(this, "length", this.localisation.getMessage(this, "permanent"));
+		} else {
+			final long length = this.record.getExpiresAt().getTime() - this.record.getCreatedAt().getTime();
+			return this.localisation.getMessage(this, "length", TimeFormatter.millisToLongDHMS(length));
+		}
+	}
 
-  /**
-   * Gets the reason for this ban.
-   * 
-   * @return the reason
-   */
-  public String getReason() {
-    return this.localisation.getMessage(this, "reason", this.record.getReason());
-  }
+	/**
+	 * Gets the reason for this ban.
+	 * 
+	 * @return the reason
+	 */
+	public String getReason() {
+		return this.localisation.getMessage(this, "reason", this.record.getReason());
+	}
 
-  /**
-   * Gets the self header.
-   * 
-   * @return the self header
-   */
-  public String getSelfHeader() {
-    final String date = BanHammer.SHORT_DATE_FORMAT.format(this.record.getCreatedAt());
-    return this.localisation.getMessage(this, "self-header", this.record.getCreator().getName(), date);
-  }
+	/**
+	 * Gets the self header.
+	 * 
+	 * @return the self header
+	 */
+	public String getSelfHeader() {
+		final String date = BanHammer.SHORT_DATE_FORMAT.format(this.record.getCreatedAt());
+		return this.localisation.getMessage(this, "self-header", this.record.getCreator().getName(), date);
+	}
 
 }

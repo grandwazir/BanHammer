@@ -39,51 +39,58 @@ import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 @ConsoleCommand
 public class ExportCommand extends AbstractCommand {
 
-  /** A instance of the Bukkit server. */
-  private final Server server;
+	/** The database handler for this plugin. */
+	private final EbeanServer database;
 
-  /** The database handler for this plugin. */
-  private final EbeanServer database;
+	private final ChoiceFormatter formatter;
 
-  private final ChoiceFormatter formatter;
+	/** A instance of the Bukkit server. */
+	private final Server server;
 
-  public ExportCommand(final BanHammer plugin) {
-    super(plugin);
-    this.server = plugin.getServer();
-    this.database = plugin.getDatabase();
-    this.formatter = new ChoiceFormatter(this.getLocalisation());
-    this.formatter.setLimits(0, 1, 2);
-    this.formatter.setMessage(this, "bans-exported");
-    this.formatter.setFormats(this.getLocalisation().getMessage(BanHammer.class, "no-bans"), this.getLocalisation().getMessage(BanHammer.class, "one-ban"), this.getLocalisation().getMessage(BanHammer.class, "many-bans"));
-  }
+	public ExportCommand(final BanHammer plugin) {
+		super(plugin);
+		this.server = plugin.getServer();
+		this.database = plugin.getDatabase();
+		this.formatter = new ChoiceFormatter(this.getLocalisation());
+		this.formatter.setLimits(0, 1, 2);
+		this.formatter.setMessage(this, "bans-exported");
+		this.formatter.setFormats(this.getLocalisation().getMessage(BanHammer.class, "no-bans"), this.getLocalisation().getMessage(BanHammer.class, "one-ban"),
+			this.getLocalisation().getMessage(BanHammer.class, "many-bans"));
+	}
 
-  public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    int exported = 0;
-    for (final Object record : PlayerRecord.list(database)) {
-      final PlayerRecord playerRecord = (PlayerRecord) record;
-      if (playerRecord.isBanned()) {
-        final OfflinePlayer player = this.server.getOfflinePlayer(playerRecord.getName());
-        player.setBanned(true);
-        exported++;
-      }
-    }
-    this.formatter.setArguments(exported);
-    sender.sendMessage(this.formatter.getMessage());
-  }
+	public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+		int exported = 0;
+		for (final Object record : PlayerRecord.list(this.database)) {
+			final PlayerRecord playerRecord = (PlayerRecord) record;
+			if (playerRecord.isBanned()) {
+				final OfflinePlayer player = this.server.getOfflinePlayer(playerRecord.getName());
+				player.setBanned(true);
+				exported++;
+			}
+		}
+		this.formatter.setArguments(exported);
+		sender.sendMessage(this.formatter.getMessage());
+	}
 
-  /*
-   * (non-Javadoc)
-   * @see
-   * name.richardson.james.bukkit.utilities.command.Command#parseArguments(java
-   * .lang.String[], org.bukkit.command.CommandSender)
-   */
-  public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
-    return;
-  }
-  
-  public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] arguments) {
-    List<String> list = new ArrayList<String>();
-    return list;
-  }
+	public List<String> onTabComplete(final CommandSender sender, final Command command, final String label, final String[] arguments) {
+		final List<String> list = new ArrayList<String>();
+		return list;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * name.richardson.james.bukkit.utilities.command.Command#parseArguments(java
+	 * .lang.String[], org.bukkit.command.CommandSender)
+	 */
+	public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
+		return;
+	}
+
+	public void execute(List<String> arguments, CommandSender sender) {
+		// TODO Auto-generated method stub
+
+	}
 
 }

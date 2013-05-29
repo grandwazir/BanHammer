@@ -36,305 +36,323 @@ import com.avaje.ebean.validation.NotNull;
 @Entity()
 @Table(name = "banhammer_bans")
 public class BanRecord {
-  
-  /**
-   * The valid states of a BanRecord
-   */
-  public enum State {
 
-    /** If a ban is currently active. */
-    NORMAL,
+	/**
+	 * The valid states of a BanRecord
+	 */
+	public enum State {
 
-    /** If a ban has expired. */
-    EXPIRED,
+		/** If a ban has expired. */
+		EXPIRED,
 
-    /** If a ban has been pardoned. */
-    PARDONED
-  }
+		/** If a ban is currently active. */
+		NORMAL,
 
-  /**
-   * The valid types of a BanRecord
-   */
-  public enum Type {
+		/** If a ban has been pardoned. */
+		PARDONED
+	}
 
-    /** A ban which will never expire. */
-    PERMANENT,
+	/**
+	 * The valid types of a BanRecord
+	 */
+	public enum Type {
 
-    /** A ban which will expire after a period of time. */
-    TEMPORARY
-  }
+		/** A ban which will never expire. */
+		PERMANENT,
 
-  /**
-   * Removes a ban without an optimistic lock error
-   * One of these days I will learn why it always throws these.
-   * 
-   * @param database the database
-   * @param ban the ban to delete
-   * @return the number of bans deleted.
-   */
-  public static int deleteBan(EbeanServer database, BanRecord ban) {
-    int i = database.createSqlUpdate("DELETE from banhammer_bans WHERE id='" + ban.getId()+ "'").execute();
-    return i;
-  }
-  
-  /**
-   * Removes bans without an optimistic lock error
-   * One of these days I will learn why it always throws these.
-   * 
-   * @param database the database
-   * @param bans the bans to delete
-   * @return the number of bans deleted.
-   */
-  public static int deleteBans(EbeanServer database, List<BanRecord> bans) {
-    int i = 0;
-    for (BanRecord ban : bans) {
-      i++;
-      database.createSqlUpdate("DELETE from banhammer_bans WHERE id='" + ban.getId()+ "'").execute();
-    }
-    return i;
-  }
-  
-  /**
-   * Gets the total number of pardoned bans.
-   * 
-   * @param database the database
-   * @return the pardoned ban count
-   */
-  public static int getPardonedBanCount(final EbeanServer database) {
-    return database.find(BanRecord.class).where().eq("state", 2).findRowCount();
-  }
+		/** A ban which will expire after a period of time. */
+		TEMPORARY
+	}
 
-  /**
-   * Gets the total number of permanent bans.
-   * 
-   * @param database the database
-   * @return the permanent ban count
-   */
-  public static int getPermanentBanCount(final EbeanServer database) {
-    return database.find(BanRecord.class).where().isNull("expiresAt").findRowCount();
-  }
+	/**
+	 * Removes a ban without an optimistic lock error One of these days I will
+	 * learn why it always throws these.
+	 * 
+	 * @param database
+	 *          the database
+	 * @param ban
+	 *          the ban to delete
+	 * @return the number of bans deleted.
+	 */
+	public static int deleteBan(final EbeanServer database, final BanRecord ban) {
+		final int i = database.createSqlUpdate("DELETE from banhammer_bans WHERE id='" + ban.getId() + "'").execute();
+		return i;
+	}
 
-  /**
-   * Gets a list of the recent bans.
-   * 
-   * @param database the database
-   * @param count the number of bans to retrieve
-   * @return the recent bans, with the most recent first
-   */
-  public static List<BanRecord> getRecentBans(final EbeanServer database, final int count) {
-    return database.find(BanRecord.class).setMaxRows(count).orderBy().desc("createdAt").findList();
-  }
+	/**
+	 * Removes bans without an optimistic lock error One of these days I will
+	 * learn why it always throws these.
+	 * 
+	 * @param database
+	 *          the database
+	 * @param bans
+	 *          the bans to delete
+	 * @return the number of bans deleted.
+	 */
+	public static int deleteBans(final EbeanServer database, final List<BanRecord> bans) {
+		int i = 0;
+		for (final BanRecord ban : bans) {
+			i++;
+			database.createSqlUpdate("DELETE from banhammer_bans WHERE id='" + ban.getId() + "'").execute();
+		}
+		return i;
+	}
 
-  /**
-   * Gets the total number of temporary bans.
-   * 
-   * @param database the database
-   * @return the temporary ban count
-   */
-  public static int getTemporaryBanCount(final EbeanServer database) {
-    return database.find(BanRecord.class).where().isNotNull("expiresAt").findRowCount();
-  }
+	/**
+	 * Gets the total number of pardoned bans.
+	 * 
+	 * @param database
+	 *          the database
+	 * @return the pardoned ban count
+	 */
+	public static int getPardonedBanCount(final EbeanServer database) {
+		return database.find(BanRecord.class).where().eq("state", 2).findRowCount();
+	}
 
-  /**
-   * Get a list of only bans which are currently active.
-   * 
-   * @param database the database
-   * @return all the bans which are currently active.
-   */
-  public static List<BanRecord> listActive(final EbeanServer database) {
-    return database.find(BanRecord.class).where().eq("state", State.NORMAL).findList();
-  }
+	/**
+	 * Gets the total number of permanent bans.
+	 * 
+	 * @param database
+	 *          the database
+	 * @return the permanent ban count
+	 */
+	public static int getPermanentBanCount(final EbeanServer database) {
+		return database.find(BanRecord.class).where().isNull("expiresAt").findRowCount();
+	}
 
-  /**
-   * Get a list containing all bans.
-   * 
-   * @param database the database
-   * @return all the bans in the database
-   */
-  public static List<BanRecord> list(final EbeanServer database) {
-    return database.find(BanRecord.class).findList();
-  }
-  
-  
-  /** The id. */
-  @Id
-  private int id;
+	/**
+	 * Gets a list of the recent bans.
+	 * 
+	 * @param database
+	 *          the database
+	 * @param count
+	 *          the number of bans to retrieve
+	 * @return the recent bans, with the most recent first
+	 */
+	public static List<BanRecord> getRecentBans(final EbeanServer database, final int count) {
+		return database.find(BanRecord.class).setMaxRows(count).orderBy().desc("createdAt").findList();
+	}
 
-  /** The created at. */
-  @NotNull
-  @Temporal(TemporalType.TIMESTAMP)
-  private Timestamp createdAt;
+	/**
+	 * Gets the total number of temporary bans.
+	 * 
+	 * @param database
+	 *          the database
+	 * @return the temporary ban count
+	 */
+	public static int getTemporaryBanCount(final EbeanServer database) {
+		return database.find(BanRecord.class).where().isNotNull("expiresAt").findRowCount();
+	}
 
-  /** The reason. */
-  @NotNull
-  private String reason;
+	/**
+	 * Get a list containing all bans.
+	 * 
+	 * @param database
+	 *          the database
+	 * @return all the bans in the database
+	 */
+	public static List<BanRecord> list(final EbeanServer database) {
+		return database.find(BanRecord.class).findList();
+	}
 
-  /** The expires at. */
-  @Temporal(TemporalType.TIMESTAMP)
-  private Timestamp expiresAt;
+	/**
+	 * Get a list of only bans which are currently active.
+	 * 
+	 * @param database
+	 *          the database
+	 * @return all the bans which are currently active.
+	 */
+	public static List<BanRecord> listActive(final EbeanServer database) {
+		return database.find(BanRecord.class).where().eq("state", State.NORMAL).findList();
+	}
 
-  /** The state. */
-  @NotNull
-  private State state;
+	/** The created at. */
+	@NotNull
+	@Temporal(TemporalType.TIMESTAMP)
+	private Timestamp createdAt;
 
-  /** The player. */
-  @ManyToOne(targetEntity = PlayerRecord.class, fetch = FetchType.EAGER, cascade={CascadeType.PERSIST})
-  @PrimaryKeyJoinColumn(name = "playerId", referencedColumnName = "id")
-  private PlayerRecord player;
+	/** The creator. */
+	@ManyToOne(targetEntity = PlayerRecord.class, fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST })
+	@PrimaryKeyJoinColumn(name = "creatorId", referencedColumnName = "id")
+	private PlayerRecord creator;
 
-  /** The creator. */
-  @ManyToOne(targetEntity = PlayerRecord.class, fetch = FetchType.EAGER, cascade={CascadeType.PERSIST})
-  @PrimaryKeyJoinColumn(name = "creatorId", referencedColumnName = "id")
-  private PlayerRecord creator;
+	/** The expires at. */
+	@Temporal(TemporalType.TIMESTAMP)
+	private Timestamp expiresAt;
 
-  /**
-   * Gets the created at.
-   * 
-   * @return the created at
-   */
-  public Timestamp getCreatedAt() {
-    return this.createdAt;
-  }
+	/** The id. */
+	@Id
+	private int id;
 
-  /**
-   * Gets the created at.
-   * 
-   * @param time the time
-   * @return the created at
-   */
-  public Timestamp getCreatedAt(final long time) {
-    return this.createdAt;
-  }
+	/** The player. */
+	@ManyToOne(targetEntity = PlayerRecord.class, fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST })
+	@PrimaryKeyJoinColumn(name = "playerId", referencedColumnName = "id")
+	private PlayerRecord player;
 
-  /**
-   * Gets the creator.
-   * 
-   * @return the creator
-   */
-  @ManyToOne(targetEntity = PlayerRecord.class)
-  public PlayerRecord getCreator() {
-    return this.creator;
-  }
+	/** The reason. */
+	@NotNull
+	private String reason;
 
-  /**
-   * Gets the expires at.
-   * 
-   * @return the expires at
-   */
-  public Timestamp getExpiresAt() {
-    return this.expiresAt;
-  }
+	/** The state. */
+	@NotNull
+	private State state;
 
-  /**
-   * Gets the id.
-   * 
-   * @return the id
-   */
-  public int getId() {
-    return this.id;
-  }
+	/**
+	 * Gets the created at.
+	 * 
+	 * @return the created at
+	 */
+	public Timestamp getCreatedAt() {
+		return this.createdAt;
+	}
 
-  /**
-   * Gets the player.
-   * 
-   * @return the player
-   */
-  public PlayerRecord getPlayer() {
-    return this.player;
-  }
+	/**
+	 * Gets the created at.
+	 * 
+	 * @param time
+	 *          the time
+	 * @return the created at
+	 */
+	public Timestamp getCreatedAt(final long time) {
+		return this.createdAt;
+	}
 
-  /**
-   * Gets the reason.
-   * 
-   * @return the reason
-   */
-  public String getReason() {
-    return this.reason;
-  }
+	/**
+	 * Gets the creator.
+	 * 
+	 * @return the creator
+	 */
+	@ManyToOne(targetEntity = PlayerRecord.class)
+	public PlayerRecord getCreator() {
+		return this.creator;
+	}
 
-  /**
-   * Gets the state.
-   * 
-   * @return the state
-   */
-  public State getState() {
-    if (this.expiresAt == null) {
-      return this.state;
-    }
-    final Timestamp now = new Timestamp(System.currentTimeMillis());
-    return (now.after(this.expiresAt)) ? State.EXPIRED : this.state;
-  }
+	/**
+	 * Gets the expires at.
+	 * 
+	 * @return the expires at
+	 */
+	public Timestamp getExpiresAt() {
+		return this.expiresAt;
+	}
 
-  /**
-   * Gets the type.
-   * 
-   * @return the type
-   */
-  public BanRecord.Type getType() {
-    return (this.expiresAt == null) ? BanRecord.Type.PERMANENT : BanRecord.Type.TEMPORARY;
-  }
+	/**
+	 * Gets the id.
+	 * 
+	 * @return the id
+	 */
+	public int getId() {
+		return this.id;
+	}
 
-  /**
-   * Sets the created at.
-   * 
-   * @param time the new created at
-   */
-  public void setCreatedAt(final Timestamp time) {
-    this.createdAt = time;
-  }
+	/**
+	 * Gets the player.
+	 * 
+	 * @return the player
+	 */
+	public PlayerRecord getPlayer() {
+		return this.player;
+	}
 
-  /**
-   * Sets the creator.
-   * 
-   * @param creator the new creator
-   */
-  public void setCreator(final PlayerRecord creator) {
-    this.creator = creator;
-  }
+	/**
+	 * Gets the reason.
+	 * 
+	 * @return the reason
+	 */
+	public String getReason() {
+		return this.reason;
+	}
 
-  /**
-   * Sets the expires at.
-   * 
-   * @param expiresAt the new expires at
-   */
-  public void setExpiresAt(final Timestamp expiresAt) {
-    this.expiresAt = expiresAt;
-  }
+	/**
+	 * Gets the state.
+	 * 
+	 * @return the state
+	 */
+	public State getState() {
+		if (this.expiresAt == null) {
+			return this.state;
+		}
+		final Timestamp now = new Timestamp(System.currentTimeMillis());
+		return (now.after(this.expiresAt)) ? State.EXPIRED : this.state;
+	}
 
-  /**
-   * Sets the id.
-   * 
-   * @param id the new id
-   */
-  public void setId(final int id) {
-    this.id = id;
-  }
+	/**
+	 * Gets the type.
+	 * 
+	 * @return the type
+	 */
+	public BanRecord.Type getType() {
+		return (this.expiresAt == null) ? BanRecord.Type.PERMANENT : BanRecord.Type.TEMPORARY;
+	}
 
-  /**
-   * Sets the player.
-   * 
-   * @param player the new player
-   */
-  public void setPlayer(final PlayerRecord player) {
-    this.player = player;
-  }
+	/**
+	 * Sets the created at.
+	 * 
+	 * @param time
+	 *          the new created at
+	 */
+	public void setCreatedAt(final Timestamp time) {
+		this.createdAt = time;
+	}
 
-  /**
-   * Sets the reason.
-   * 
-   * @param reason the new reason
-   */
-  public void setReason(final String reason) {
-    this.reason = reason;
-  }
+	/**
+	 * Sets the creator.
+	 * 
+	 * @param creator
+	 *          the new creator
+	 */
+	public void setCreator(final PlayerRecord creator) {
+		this.creator = creator;
+	}
 
-  /**
-   * Sets the state.
-   * 
-   * @param state the new state
-   */
-  public void setState(final State state) {
-    this.state = state;
-  }
+	/**
+	 * Sets the expires at.
+	 * 
+	 * @param expiresAt
+	 *          the new expires at
+	 */
+	public void setExpiresAt(final Timestamp expiresAt) {
+		this.expiresAt = expiresAt;
+	}
+
+	/**
+	 * Sets the id.
+	 * 
+	 * @param id
+	 *          the new id
+	 */
+	public void setId(final int id) {
+		this.id = id;
+	}
+
+	/**
+	 * Sets the player.
+	 * 
+	 * @param player
+	 *          the new player
+	 */
+	public void setPlayer(final PlayerRecord player) {
+		this.player = player;
+	}
+
+	/**
+	 * Sets the reason.
+	 * 
+	 * @param reason
+	 *          the new reason
+	 */
+	public void setReason(final String reason) {
+		this.reason = reason;
+	}
+
+	/**
+	 * Sets the state.
+	 * 
+	 * @param state
+	 *          the new state
+	 */
+	public void setState(final State state) {
+		this.state = state;
+	}
 
 }
