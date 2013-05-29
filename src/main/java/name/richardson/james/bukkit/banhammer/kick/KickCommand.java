@@ -17,24 +17,22 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.kick;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Server;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.banhammer.PlayerListener;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
-import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
-import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
-import name.richardson.james.bukkit.utilities.command.CommandUsageException;
-import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
+import name.richardson.james.bukkit.utilities.command.CommandMatchers;
+import name.richardson.james.bukkit.utilities.command.CommandPermissions;
 import name.richardson.james.bukkit.utilities.formatters.StringFormatter;
+import name.richardson.james.bukkit.utilities.localisation.ResourceBundles;
+import name.richardson.james.bukkit.utilities.matchers.OnlinePlayerMatcher;
 
-@ConsoleCommand
+@CommandPermissions(permissions = { "banhammer.kick" })
+@CommandMatchers(matchers = { OnlinePlayerMatcher.class })
 public class KickCommand extends AbstractCommand {
 
 	/** The player who is going to be kicked */
@@ -43,68 +41,44 @@ public class KickCommand extends AbstractCommand {
 	/** The reason to give to the kicked player */
 	private String reason;
 
+	private CommandSender sender;
+
 	/** A instance of the Bukkit server. */
 	private final Server server;
 
 	public KickCommand(final BanHammer plugin) {
-		super(plugin);
+		super(ResourceBundles.MESSAGES);
 		this.server = plugin.getServer();
 	}
 
-	public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-		if (this.player.isOnline()) {
-			this.player.kickPlayer(this.getLocalisation().getMessage(PlayerListener.class, "kicked", this.reason, sender.getName()));
-			this.server.broadcast(this.getLocalisation().getMessage(this, "kick-broadcast", this.player.getName(), sender.getName()), "banhammer.notify");
-			this.server.broadcast(this.getLocalisation().getMessage(this, "reason", this.reason), "banhammer.notify");
-		}
-		this.player = null;
-	}
-
-	public List<String> onTabComplete(final CommandSender sender, final Command command, final String label, final String[] arguments) {
-		final List<String> list = new ArrayList<String>();
-		if (arguments.length <= 1) {
-			for (final Player player : this.server.getOnlinePlayers()) {
-				if (arguments.length < 1) {
-					list.add(player.getName());
-				} else
-					if (player.getName().startsWith(arguments[0])) {
-						list.add(player.getName());
-					}
+	public void execute(final List<String> arguments, final CommandSender sender) {
+		this.sender = sender;
+		// Parse the arguments
+		if (arguments.isEmpty()) {
+			sender.sendMessage(this.getMessage("kickcommand.must-specify-player"));
+		} else {
+			this.player = this.server.getPlayer(arguments.remove(0));
+			if (!arguments.isEmpty()) {
+				this.reason = StringFormatter.combineString(arguments, " ");
+			} else {
+				this.reason = this.getMessage("kickcommand.default-reason");
 			}
 		}
-		return list;
-	}
-
-	public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
-		if (arguments.length == 0) {
-			throw new CommandArgumentException(this.getLocalisation().getMessage(BanHammer.class, "must-specify-player"), null);
-		}
-
-		this.player = this.matchPlayer(arguments[0]);
 		if (this.player == null) {
-			throw new CommandArgumentException(this.getLocalisation().getMessage(BanHammer.class, "must-specify-player"), null);
-		}
-
-		if (arguments.length > 1) {
-			final String[] elements = new String[arguments.length - 1];
-			System.arraycopy(arguments, 1, elements, 0, arguments.length - 1);
-			this.reason = StringFormatter.combineString(elements, " ");
+			sender.sendMessage(this.getMessage("kickcommand.must-specify-player"));
 		} else {
-			this.reason = this.getLocalisation().getMessage(this, "default-reason");
+			this.kickPlayer();
 		}
+		this.player = null;
+		this.sender = null;
 	}
 
-	private Player matchPlayer(final String name) {
-		final List<Player> players = this.server.matchPlayer(name);
-		if (players.isEmpty()) {
-			return null;
+	private void kickPlayer() {
+		if (this.player.isOnline()) {
+			this.player.kickPlayer(this.getMessage("playerlistener.kicked", this.reason, this.sender.getName()));
+			this.server.broadcast(this.getMessage("kickcommand.kick-broadcast", this.player.getName(), this.sender.getName()), "banhammer.notify");
+			this.server.broadcast(this.getMessage("kickcommand.reason", this.reason), "banhammer.notify");
 		}
-		return players.get(0);
-	}
-
-	public void execute(List<String> arguments, CommandSender sender) {
-		// TODO Auto-generated method stub
-
 	}
 
 }
