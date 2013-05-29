@@ -17,25 +17,21 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.ban;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
-import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
-import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
-import name.richardson.james.bukkit.utilities.command.CommandUsageException;
+import name.richardson.james.bukkit.utilities.command.CommandPermissions;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
 
 @ConsoleCommand
+@CommandPermissions(permissions = { "banhammer.limits" })
 public class LimitsCommand extends AbstractCommand {
 
 	private final ChoiceFormatter formatter;
@@ -43,42 +39,34 @@ public class LimitsCommand extends AbstractCommand {
 	/* The ban limits */
 	private final Map<String, Long> limits;
 
-	public LimitsCommand(final BanHammer plugin, final Map<String, Long> limits) {
-		super(plugin);
+	public LimitsCommand(final Map<String, Long> limits) {
+		super();
 		this.limits = limits;
-		this.formatter = new ChoiceFormatter(this.getLocalisation());
+		this.formatter = new ChoiceFormatter();
 		this.formatter.setLimits(0, 1, 2);
-		this.formatter.setMessage(this, "header");
+		this.formatter.setMessage("limitscommand.header");
 		this.formatter.setArguments(limits.size());
-		this.formatter.setFormats(this.getLocalisation().getMessage(this, "no-limit"), this.getLocalisation().getMessage(this, "one-limits"), this
-			.getLocalisation().getMessage(this, "many-limits"));
+		this.formatter.setFormats(this.getMessage("limitscommand.no-limits"), this.getMessage("limitscommand.one-limit"),
+			this.getMessage("limitscommand.many-limits"));
+
 	}
 
-	public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-		sender.sendMessage(this.formatter.getMessage());
-		for (final Entry<String, Long> limit : this.limits.entrySet()) {
-			ChatColor colour;
-			if (sender.hasPermission("banhammer.ban." + limit.getKey())) {
-				colour = ChatColor.GREEN;
-			} else {
-				colour = ChatColor.RED;
+	public void execute(final List<String> arguments, final CommandSender sender) {
+		if (this.limits.isEmpty()) {
+			// No no, no no no no, no no no no, no no there no limits!
+			sender.sendMessage(this.getMessage("limitscommand.no-limits"));
+		} else {
+			sender.sendMessage(this.formatter.getMessage());
+			for (final Entry<String, Long> limit : this.limits.entrySet()) {
+				ChatColor colour;
+				if (sender.hasPermission("banhammer.ban." + limit.getKey())) {
+					colour = ChatColor.GREEN;
+				} else {
+					colour = ChatColor.RED;
+				}
+				sender.sendMessage(colour + this.getMessage("limitscommand.list-item", limit.getKey(), TimeFormatter.millisToLongDHMS(limit.getValue())));
 			}
-			sender.sendMessage(colour + this.getLocalisation().getMessage(this, "list-item", limit.getKey(), TimeFormatter.millisToLongDHMS(limit.getValue())));
 		}
-	}
-
-	public List<String> onTabComplete(final CommandSender sender, final Command command, final String label, final String[] arguments) {
-		final List<String> list = new ArrayList<String>();
-		return list;
-	}
-
-	public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
-		return;
-	}
-
-	public void execute(List<String> arguments, CommandSender sender) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

@@ -1,4 +1,4 @@
-logging: INFO
+debugging: false
 automatic-updates:
   enabled: true
   method: notify

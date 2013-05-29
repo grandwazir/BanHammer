@@ -1,5 +1,18 @@
-Changelog for BanHammer (v2.1.1-SNAPSHOT)
+Changelog for BanHammer (v2.2.1-SNAPSHOT)
 
+2013-05-29 17:55:36 +0100    implemented caching for tab completion of creator names (James Richardson)
+2013-05-29 17:37:29 +0100    refactored UndoCommand (James Richardson)
+2013-05-29 17:10:44 +0100    updated management commands (James Richardson)
+2013-05-29 16:22:20 +0100    update KickCommand (James Richardson)
+2013-05-29 16:00:35 +0100    add simple implementation of BanHandler (James Richardson)
+2013-05-29 16:00:11 +0100    updated to use new features in BukkitUtilities (James Richardson)
+2013-05-29 15:14:27 +0100    update handler to use new features (James Richardson)
+2013-05-29 14:59:22 +0100    automated code clean up (James Richardson)
+2013-05-19 17:38:02 +0100    update website pointer (James Richardson)
+
+v2.2.0
+2013-05-19 17:07:37 +0100    use latest alias version (James Richardson)
+2013-05-19 17:02:27 +0100    Minor tidy up (James Richardson)
 2013-05-19 16:58:15 +0100    optimise tab completion (James Richardson)
 2013-05-19 16:52:47 +0100    add audit and undo command (James Richardson)
 2013-05-19 15:39:24 +0100    fix players with limits being able to ban permeantly fixes #54, fixes #51 (James Richardson)

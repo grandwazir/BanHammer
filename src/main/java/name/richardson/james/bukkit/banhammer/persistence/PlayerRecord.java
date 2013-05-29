@@ -50,9 +50,7 @@ public class PlayerRecord {
 			final PlayerRecord record = database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
 			return (record != null);
 		} catch (final PersistenceException exception) {
-			if (!exception.getLocalizedMessage().contains("Unique expecting 0 or 1 rows")) {
-				throw exception;
-			}
+			if (!exception.getLocalizedMessage().contains("Unique expecting 0 or 1 rows")) { throw exception; }
 			PlayerRecord.removeDuplicates(database, playerName);
 			return PlayerRecord.exists(database, playerName);
 		}
@@ -76,9 +74,7 @@ public class PlayerRecord {
 			}
 			return record;
 		} catch (final PersistenceException exception) {
-			if (!exception.getLocalizedMessage().contains("Unique expecting 0 or 1 rows")) {
-				throw exception;
-			}
+			if (!exception.getLocalizedMessage().contains("Unique expecting 0 or 1 rows")) { throw exception; }
 			PlayerRecord.removeDuplicates(database, playerName);
 			return PlayerRecord.find(database, playerName);
 		}
@@ -160,9 +156,8 @@ public class PlayerRecord {
 				database.delete(record);
 			}
 		}
-		if (database.find(PlayerRecord.class).where().ieq("name", playerName).findList().size() > 1) {
-			throw new IllegalStateException("Duplicates present in Banhammer database!");
-		}
+		if (database.find(PlayerRecord.class).where().ieq("name", playerName).findList().size() > 1) { throw new IllegalStateException(
+			"Duplicates present in Banhammer database!"); }
 	}
 
 	/** The bans. */
@@ -187,10 +182,8 @@ public class PlayerRecord {
 	 * @return the active ban
 	 */
 	public BanRecord getActiveBan() {
-		for (final BanRecord ban : this.bans) {
-			if (ban.getState() == BanRecord.State.NORMAL) {
-				return ban;
-			}
+		for (final BanRecord ban : this.getBans()) {
+			if (ban.getState() == BanRecord.State.NORMAL) { return ban; }
 		}
 		return null;
 	}
@@ -212,7 +205,7 @@ public class PlayerRecord {
 	 */
 	@OneToMany(targetEntity = BanRecord.class, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
 	public List<BanRecord> getCreatedBans() {
-		return this.createdBans;
+		return (this.createdBans == null) ? new LinkedList<BanRecord>() : this.createdBans;
 	}
 
 	/**
@@ -240,9 +233,7 @@ public class PlayerRecord {
 	 */
 	public boolean isBanned() {
 		for (final BanRecord ban : this.getBans()) {
-			if (ban.getState() == BanRecord.State.NORMAL) {
-				return true;
-			}
+			if (ban.getState() == BanRecord.State.NORMAL) { return true; }
 		}
 		return false;
 	}

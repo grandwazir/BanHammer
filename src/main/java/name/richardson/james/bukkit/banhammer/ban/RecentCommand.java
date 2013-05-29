@@ -17,10 +17,8 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.ban;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import com.avaje.ebean.EbeanServer;
@@ -29,8 +27,6 @@ import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
-import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
-import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 
@@ -47,22 +43,30 @@ public class RecentCommand extends AbstractCommand {
 	private final ChoiceFormatter formatter;
 
 	public RecentCommand(final BanHammer plugin) {
-		super(plugin);
+		super();
 		this.database = plugin.getDatabase();
-		this.formatter = new ChoiceFormatter(this.getLocalisation());
-		this.formatter.setLimits(1, 2);
-		this.formatter.setMessage(this, "header");
-		this.formatter.setFormats(this.getLocalisation().getMessage(BanHammer.class, "one-ban"), this.getLocalisation().getMessage(BanHammer.class, "many-bans"));
+		this.formatter = new ChoiceFormatter();
+		this.formatter.setLimits(0, 1, 2);
+		this.formatter.setMessage("recentcommand.header");
+		this.formatter.setFormats(this.getMessage("banhammer.no-bans"), this.getMessage("banhammer.one-ban"), this.getMessage("banhammer.many-bans"));
 	}
 
-	public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+	public void execute(final List<String> arguments, final CommandSender sender) {
+		if (arguments.isEmpty()) {
+			this.count = RecentCommand.DEFAULT_LIMIT;
+		} else {
+			try {
+				this.count = Integer.parseInt(arguments.remove(0));
+			} catch (final NumberFormatException exception) {
+				this.count = RecentCommand.DEFAULT_LIMIT;
+			}
+		}
 		final List<BanRecord> bans = BanRecord.getRecentBans(this.database, this.count);
-
 		if (!bans.isEmpty()) {
 			this.formatter.setArguments(bans.size());
 			sender.sendMessage(this.formatter.getMessage());
 			for (final BanRecord ban : bans) {
-				final BanSummary summary = new BanSummary(this.getLocalisation(), ban);
+				final BanSummary summary = new BanSummary(ban);
 				sender.sendMessage(summary.getHeader());
 				sender.sendMessage(summary.getReason());
 				sender.sendMessage(summary.getLength());
@@ -71,13 +75,8 @@ public class RecentCommand extends AbstractCommand {
 				}
 			}
 		} else {
-			sender.sendMessage(this.getLocalisation().getMessage(this, "no-bans"));
+			sender.sendMessage(this.getMessage("recentcommand.no-bans"));
 		}
-	}
-
-	public List<String> onTabComplete(final CommandSender sender, final Command command, final String label, final String[] arguments) {
-		final List<String> list = new ArrayList<String>();
-		return list;
 	}
 
 	public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
@@ -90,11 +89,6 @@ public class RecentCommand extends AbstractCommand {
 				this.count = RecentCommand.DEFAULT_LIMIT;
 			}
 		}
-	}
-
-	public void execute(List<String> arguments, CommandSender sender) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

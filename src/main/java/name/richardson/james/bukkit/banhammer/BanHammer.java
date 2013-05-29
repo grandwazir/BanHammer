@@ -17,13 +17,13 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
-import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.logging.Level;
 
 import name.richardson.james.bukkit.alias.Alias;
@@ -42,11 +42,11 @@ import name.richardson.james.bukkit.banhammer.kick.KickCommand;
 import name.richardson.james.bukkit.banhammer.management.AuditCommand;
 import name.richardson.james.bukkit.banhammer.management.ExportCommand;
 import name.richardson.james.bukkit.banhammer.management.ImportCommand;
+import name.richardson.james.bukkit.banhammer.matchers.BanLimitMatcher;
+import name.richardson.james.bukkit.banhammer.matchers.PlayerRecordMatcher;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
-import name.richardson.james.bukkit.utilities.command.Command;
 import name.richardson.james.bukkit.utilities.command.CommandManager;
-import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
 import name.richardson.james.bukkit.utilities.plugin.AbstractPlugin;
 import name.richardson.james.bukkit.utilities.plugin.PluginPermissions;
 
@@ -111,20 +111,6 @@ public final class BanHammer extends AbstractPlugin {
 		return this.handler;
 	}
 
-	public String getMessage(final String key) {
-		String message = this.localisation.getString(key);
-		message = ColourFormatter.replace(message);
-		return message;
-	}
-
-	public String getMessage(final String key, final Object... elements) {
-		final MessageFormat formatter = new MessageFormat(this.localisation.getString(key));
-		formatter.setLocale(Locale.getDefault());
-		String message = formatter.format(elements);
-		message = ColourFormatter.replace(message);
-		return message;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -141,10 +127,9 @@ public final class BanHammer extends AbstractPlugin {
 		try {
 			this.loadConfiguration();
 			this.loadDatabase();
-			this.hookAlias();
 			this.setPermissions();
 			this.registerCommands();
-			this.registerCommands();
+			this.registerListeners();
 			this.updatePlugin();
 		} catch (final IOException e) {
 			e.printStackTrace();
@@ -161,42 +146,12 @@ public final class BanHammer extends AbstractPlugin {
 	@Override
 	protected void loadConfiguration() throws IOException {
 		super.loadConfiguration();
-		this.configuration = new BanHammerConfiguration(this);
+		final File file = new File(this.getDataFolder().getAbsolutePath() + File.separatorChar + "config.yml");
+		final InputStream defaults = this.getResource("config.yml");
+		this.configuration = new BanHammerConfiguration(file, defaults);
 		if (this.configuration.isAliasEnabled()) {
 			this.hookAlias();
 		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin#registerCommands
-	 * ()
-	 */
-	@Override
-	protected void registerCommands() {
-		final CommandManager commandManager = new CommandManager("bh");
-		final Command banCommand = new BanCommand(this, this.configuration.getBanLimits(), this.configuration.getImmunePlayers());
-		final Command kickCommand = new KickCommand(this);
-		final Command pardonCommand = new PardonCommand(this);
-		// register commands
-		commandManager.addCommand(banCommand);
-		commandManager.addCommand(new AuditCommand(this));
-		commandManager.addCommand(new CheckCommand(this));
-		commandManager.addCommand(new ExportCommand(this));
-		commandManager.addCommand(new HistoryCommand(this));
-		commandManager.addCommand(new ImportCommand(this));
-		commandManager.addCommand(kickCommand);
-		commandManager.addCommand(new LimitsCommand(this, this.configuration.getBanLimits()));
-		commandManager.addCommand(pardonCommand);
-		commandManager.addCommand(new PurgeCommand(this));
-		commandManager.addCommand(new RecentCommand(this));
-		commandManager.addCommand(new UndoCommand(this));
-		// register commands again as root commands
-		this.getCommand("ban").setExecutor(banCommand);
-		this.getCommand("kick").setExecutor(kickCommand);
-		this.getCommand("pardon").setExecutor(pardonCommand);
 	}
 
 	@Override
@@ -215,6 +170,39 @@ public final class BanHammer extends AbstractPlugin {
 			this.getCustomLogger().log(Level.FINE, "banhammer.alias-hooked", plugin.getDescription().getFullName() + ".");
 			this.aliasHandler = plugin.getHandler();
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin#registerCommands
+	 * ()
+	 */
+	private void registerCommands() {
+		PlayerRecordMatcher.setDatabase(this.getDatabase());
+		BanLimitMatcher.setBanLimits(this.configuration.getBanLimits().keySet());
+		final CommandManager commandManager = new CommandManager("bh");
+		final BanCommand banCommand = new BanCommand(this, this.configuration.getBanLimits(), this.configuration.getImmunePlayers());
+		final KickCommand kickCommand = new KickCommand(this);
+		final PardonCommand pardonCommand = new PardonCommand(this);
+		// register commands
+		commandManager.addCommand(banCommand);
+		commandManager.addCommand(new AuditCommand(this));
+		commandManager.addCommand(new CheckCommand(this));
+		commandManager.addCommand(new ExportCommand(this));
+		commandManager.addCommand(new HistoryCommand(this));
+		commandManager.addCommand(new ImportCommand(this));
+		commandManager.addCommand(kickCommand);
+		commandManager.addCommand(new LimitsCommand(this.configuration.getBanLimits()));
+		commandManager.addCommand(pardonCommand);
+		commandManager.addCommand(new PurgeCommand(this));
+		commandManager.addCommand(new RecentCommand(this));
+		commandManager.addCommand(new UndoCommand(this.getDatabase(), this.configuration.getUndoTime()));
+		// register commands again as root commands
+		this.getCommand("ban").setExecutor(banCommand);
+		this.getCommand("kick").setExecutor(kickCommand);
+		this.getCommand("pardon").setExecutor(pardonCommand);
 	}
 
 	private void registerListeners() {

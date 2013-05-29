@@ -72,10 +72,9 @@ public class SimpleBanHandler implements Localised, BanHandler {
 	 * java.lang.String, boolean)
 	 */
 	public boolean banPlayer(final String playerName, final BanRecord sourceBan, final String reason, final boolean notify) {
+		System.out.append(this.database.toString());
 		final PlayerRecord player = PlayerRecord.find(this.database, playerName);
-		if (player.isBanned()) {
-			return false;
-		}
+		if (player.isBanned()) { return false; }
 		final PlayerRecord creator = sourceBan.getCreator();
 		final BanRecord ban = new BanRecord();
 		ban.setPlayer(player);
@@ -100,9 +99,7 @@ public class SimpleBanHandler implements Localised, BanHandler {
 	 */
 	public boolean banPlayer(final String playerName, final String senderName, final String reason, final long banLength, final boolean notify) {
 		final PlayerRecord player = PlayerRecord.find(this.database, playerName);
-		if (player.isBanned()) {
-			return false;
-		}
+		if (player.isBanned()) { return false; }
 		final PlayerRecord creator = PlayerRecord.find(this.database, senderName);
 		final BanRecord ban = new BanRecord();
 		final long now = System.currentTimeMillis();

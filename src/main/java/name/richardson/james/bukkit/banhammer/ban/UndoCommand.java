@@ -20,10 +20,12 @@ package name.richardson.james.bukkit.banhammer.ban;
 import java.sql.Timestamp;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import com.avaje.ebean.EbeanServer;
 
+import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
 import name.richardson.james.bukkit.banhammer.matchers.CreatorPlayerRecordMatcher;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
@@ -62,6 +64,8 @@ public class UndoCommand extends AbstractCommand {
 			// get the last ban in the list which always the most recent ban
 			final BanRecord ban = playerBans.get(playerBans.size() - 1);
 			if (this.hasPermission(sender, ban.getCreatedAt())) {
+				this.database.delete(ban);
+				Bukkit.getPluginManager().callEvent(new BanHammerPlayerPardonedEvent(ban, false));
 				sender.sendMessage(this.getMessage("undocommand.success-own", ban.getPlayer().getName()));
 			} else {
 				sender.sendMessage(this.getMessage("permission-denied"));
@@ -95,7 +99,7 @@ public class UndoCommand extends AbstractCommand {
 
 	private boolean withinTimeLimit(final CommandSender sender, final Timestamp then) {
 		if (sender.hasPermission("banhammer.undo")) { return true; }
-		if ((System.currentTimeMillis() - then.getNanos()) <= this.undoTime) { return true; }
+		if ((System.currentTimeMillis() - then.getTime()) <= this.undoTime) { return true; }
 		return false;
 	}
 }

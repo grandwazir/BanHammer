@@ -17,10 +17,14 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.kick;
 
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.bukkit.Server;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
@@ -33,7 +37,7 @@ import name.richardson.james.bukkit.utilities.matchers.OnlinePlayerMatcher;
 
 @CommandPermissions(permissions = { "banhammer.kick" })
 @CommandMatchers(matchers = { OnlinePlayerMatcher.class })
-public class KickCommand extends AbstractCommand {
+public class KickCommand extends AbstractCommand implements TabExecutor {
 
 	/** The player who is going to be kicked */
 	private Player player;
@@ -71,6 +75,19 @@ public class KickCommand extends AbstractCommand {
 		}
 		this.player = null;
 		this.sender = null;
+	}
+
+	public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] arguments) {
+		if (this.isAuthorized(sender)) {
+			this.execute(new LinkedList<String>(Arrays.asList(arguments)), sender);
+		} else {
+			sender.sendMessage(this.getMessage("permission-denied"));
+		}
+		return true;
+	}
+
+	public List<String> onTabComplete(final CommandSender sender, final Command command, final String label, final String[] arguments) {
+		return this.onTabComplete(Arrays.asList(arguments), sender);
 	}
 
 	private void kickPlayer() {

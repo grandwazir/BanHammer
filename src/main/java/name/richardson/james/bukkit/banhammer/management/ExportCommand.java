@@ -48,7 +48,7 @@ public class ExportCommand extends AbstractCommand {
 		this.database = plugin.getDatabase();
 		this.formatter = new ChoiceFormatter();
 		this.formatter.setLimits(0, 1, 2);
-		this.formatter.setMessage("exportcommand.bans-exported");
+		this.formatter.setMessage("exportcommand.response-message");
 		this.formatter.setFormats(this.getMessage("banhammer.no-bans"), this.getMessage("banhammer.one-ban"), this.getMessage("banhammer.many-bans"));
 	}
 

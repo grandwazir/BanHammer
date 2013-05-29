@@ -24,6 +24,7 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.plugin.Plugin;
 
 import com.avaje.ebean.EbeanServer;
 
@@ -35,9 +36,8 @@ import name.richardson.james.bukkit.utilities.command.CommandMatchers;
 import name.richardson.james.bukkit.utilities.command.CommandPermissions;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 import name.richardson.james.bukkit.utilities.localisation.ResourceBundles;
-import name.richardson.james.bukkit.utilities.plugin.Plugin;
 
-@CommandPermissions(permissions = { "banhammer.audit", "banhammer.audit.own", "banhammer.audit.others" })
+@CommandPermissions(permissions = { "banhammer.audit", "banhammer.audit.self", "banhammer.audit.others" })
 @CommandMatchers(matchers = { CreatorPlayerRecordMatcher.class })
 public class AuditCommand extends AbstractCommand {
 
@@ -57,36 +57,37 @@ public class AuditCommand extends AbstractCommand {
 		this.formatter.setMessage("auditcommand.header");
 		this.formatter.setFormats(this.getMessage("banhammer.no-bans"), this.getMessage("banhammer.one-ban"), this.getMessage("banhammer.many-bans"));
 		// set banhammer.audit.own to true
-		Bukkit.getPluginManager().getPermission("banhammer.audit.own").setDefault(PermissionDefault.TRUE);
+		Bukkit.getPluginManager().getPermission("banhammer.audit.self").setDefault(PermissionDefault.TRUE);
 	}
 
 	public void execute(final List<String> arguments, final CommandSender sender) {
 		if (arguments.isEmpty()) {
-			sender.sendMessage(this.getMessage("must-specify-player"));
+			this.playerName = sender.getName();
 		} else {
-			if (this.hasPermission(sender)) {
-				this.records.clear();
-				this.records.addAll(PlayerRecord.find(this.database, this.playerName).getCreatedBans());
-				this.displayAudit(this.records, sender);
-				this.records.clear();
-			} else {
-				sender.sendMessage(this.getMessage("permission-denied"));
-			}
+			this.playerName = arguments.remove(0);
+		}
+		if (this.hasPermission(sender)) {
+			this.records.clear();
+			this.records.addAll(PlayerRecord.find(this.database, this.playerName).getCreatedBans());
+			this.displayAudit(this.records, sender);
+			this.records.clear();
+		} else {
+			sender.sendMessage(this.getMessage("permission-denied"));
 		}
 	}
 
 	private void displayAudit(final List<BanRecord> bans, final CommandSender sender) {
-		if (bans != null) {
+		final int totalBans = bans.size();
+		int permanentBans = 0;
+		int temporaryBans = 0;
+		int pardonedBans = 0;
+		int activeBans = 0;
+		int expiredBans = 0;
+		if (totalBans != 0) {
 			this.formatter.setMessage("auditcommand.header");
 			this.formatter.setArguments(bans.size(), this.playerName, this.getPercentage(bans.size(), BanRecord.list(this.database).size()));
 			sender.sendMessage(this.formatter.getMessage());
 			final Iterator<BanRecord> banIter = bans.iterator();
-			final int totalBans = bans.size();
-			int permanentBans = 0;
-			int temporaryBans = 0;
-			int pardonedBans = 0;
-			int activeBans = 0;
-			int expiredBans = 0;
 			while (banIter.hasNext()) {
 				final BanRecord ban = banIter.next();
 				if (ban.getType() == BanRecord.Type.PERMANENT) {
@@ -136,7 +137,7 @@ public class AuditCommand extends AbstractCommand {
 
 	private boolean hasPermission(final CommandSender sender) {
 		final boolean isSenderCheckingSelf = (this.playerName.equalsIgnoreCase(sender.getName())) ? true : false;
-		if (sender.hasPermission("banhammer.audit.own") && isSenderCheckingSelf) { return true; }
+		if (sender.hasPermission("banhammer.audit.self") && isSenderCheckingSelf) { return true; }
 		if (sender.hasPermission("banhammer.audit.others") && !isSenderCheckingSelf) { return true; }
 		return false;
 	}

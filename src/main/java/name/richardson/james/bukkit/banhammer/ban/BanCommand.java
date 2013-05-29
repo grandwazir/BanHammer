@@ -17,7 +17,6 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.ban;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,23 +27,25 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
+import name.richardson.james.bukkit.banhammer.matchers.BanLimitMatcher;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
-import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
-import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
-import name.richardson.james.bukkit.utilities.command.CommandUsageException;
+import name.richardson.james.bukkit.utilities.command.CommandMatchers;
+import name.richardson.james.bukkit.utilities.command.CommandPermissions;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.formatters.StringFormatter;
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
+import name.richardson.james.bukkit.utilities.matchers.OnlinePlayerMatcher;
 
 @ConsoleCommand
-public class BanCommand extends AbstractCommand {
+@CommandMatchers(matchers = { OnlinePlayerMatcher.class, BanLimitMatcher.class })
+@CommandPermissions(permissions = { "banhammer.ban" })
+public class BanCommand extends AbstractCommand implements TabExecutor {
 
 	/** Reference to the BanHammer API. */
 	private final BanHandler handler;
@@ -76,7 +77,7 @@ public class BanCommand extends AbstractCommand {
 	 *          the registered ban limits to use
 	 */
 	public BanCommand(final BanHammer plugin, final Map<String, Long> limits, final List<String> immunePlayers) {
-		super(plugin);
+		super();
 		this.immunePlayers = immunePlayers;
 		this.limits = limits;
 		this.registerLimitPermissions();
@@ -84,152 +85,86 @@ public class BanCommand extends AbstractCommand {
 		this.handler = plugin.getHandler();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * name.richardson.james.bukkit.utilities.command.Command#execute(org.bukkit
-	 * .command.CommandSender)
-	 */
-	public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-		if (this.immunePlayers.contains(this.player.getName()) || this.player.isOp()) {
-			if (!this.getPermissionManager().hasPlayerPermission(sender, this.getPermissionManager().getRootPermission().getName())) {
-				throw new CommandPermissionException(this.getLocalisation().getMessage(this, "player-immune"), this.getPermissionManager().getRootPermission());
-			}
-		}
-		if (this.isBanLengthAuthorised(sender, this.time)) {
-			if (!this.handler.banPlayer(this.player.getName(), sender.getName(), this.reason, this.time, true)) {
-				sender.sendMessage(this.getLocalisation().getMessage(this, "player-already-banned", this.player.getName()));
-			} else {
-				sender.sendMessage(this.getLocalisation().getMessage(this, "player-banned", this.player.getName()));
-			}
+	public void execute(final List<String> arguments, final CommandSender sender) {
+		if (arguments.isEmpty()) {
+			sender.sendMessage(this.getMessage("must-specify-player"));
 		} else {
-			throw new CommandPermissionException(this.getLocalisation().getMessage(this, "ban-time-too-long"), this.getPermissions().get(0));
+			this.player = this.server.getOfflinePlayer(arguments.remove(0));
+			if (arguments.isEmpty()) {
+				sender.sendMessage(this.getMessage("bancommand.must-specify-a-reason"));
+				sender.sendMessage(this.getMessage("bancommand.reason-hint"));
+				return;
+			} else {
+				if (arguments.get(0).startsWith("t:")) {
+					this.time = this.parseBanLength(arguments.remove(0));
+				} else {
+					this.time = 0;
+				}
+				if (arguments.isEmpty()) {
+					sender.sendMessage(this.getMessage("bancommand.must-specify-a-reason"));
+					sender.sendMessage(this.getMessage("bancommand.reason-hint"));
+					return;
+				} else {
+					this.reason = StringFormatter.combineString(arguments, " ");
+				}
+			}
+			// now set about banning the player
+			if (this.hasPermission(sender)) {
+				if (!this.handler.banPlayer(this.player.getName(), sender.getName(), this.reason, this.time, true)) {
+					sender.sendMessage(this.getMessage("bancommand.player-already-banned", this.player.getName()));
+				} else {
+					sender.sendMessage(this.getMessage("bancommand.player-banned", this.player.getName()));
+				}
+			} else {
+				sender.sendMessage(this.getMessage("permission-denied"));
+			}
 		}
+
+	}
+
+	public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] arguments) {
+		if (this.isAuthorized(sender)) {
+			this.execute(new LinkedList<String>(Arrays.asList(arguments)), sender);
+		} else {
+			sender.sendMessage(this.getMessage("permission-denied"));
+		}
+		return true;
 	}
 
 	public List<String> onTabComplete(final CommandSender sender, final Command command, final String label, final String[] arguments) {
-		final List<String> list = new ArrayList<String>();
-		if (arguments.length <= 1) {
-			for (final Player player : this.server.getOnlinePlayers()) {
-				if (arguments.length < 1) {
-					list.add(player.getName());
-				} else
-					if (player.getName().startsWith(arguments[0])) {
-						list.add(player.getName());
-					}
-			}
-		} else
-			if ((arguments.length == 2) && arguments[1].startsWith("t:")) {
-				for (final String key : this.limits.keySet()) {
-					if (key.startsWith(arguments[1].replace("t:", ""))) {
-						list.add("t:" + key);
-					}
-				}
-			}
-		return list;
+		return this.onTabComplete(Arrays.asList(arguments), sender);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * name.richardson.james.bukkit.utilities.command.Command#parseArguments(java
-	 * .lang.String[], org.bukkit.command.CommandSender)
-	 */
-	public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
-		final LinkedList<String> args = new LinkedList<String>();
-		args.addAll(Arrays.asList(arguments));
-
-		if (args.size() == 0) {
-			throw new CommandArgumentException(this.getLocalisation().getMessage(BanHammer.class, "must-specify-player"), null);
-		} else {
-			this.player = this.matchPlayer(args.remove(0));
+	private boolean hasPermission(final CommandSender sender) {
+		for (final String limitName : this.limits.keySet()) {
+			final String node = this.getPermissionManager().listPermissions().get(0).getName() + "." + limitName;
+			if (sender.hasPermission(node) && (this.limits.get(limitName) <= this.time)) { return true; }
 		}
-
-		if ((args.size() != 0) && args.get(0).startsWith("t:")) {
-			final String time = args.remove(0).replaceAll("t:", "");
-			if (this.limits.containsKey(time)) {
-				this.time = this.limits.get(time);
-			} else {
-				this.time = TimeFormatter.parseTime(time);
-			}
-		} else {
-			this.time = 0;
-		}
-		if (args.isEmpty()) {
-			throw new CommandArgumentException(this.getLocalisation().getMessage(this, "must-specify-a-reason"), this.getLocalisation().getMessage(this,
-				"reason-hint"));
-		} else {
-			this.reason = StringFormatter.combineString(args, " ");
-		}
-	}
-
-	/**
-	 * Checks if is ban length authorised.
-	 * 
-	 * @param sender
-	 *          the sender
-	 * @param banLength
-	 *          the ban length
-	 * @return true, if is ban length authorised
-	 */
-	private boolean isBanLengthAuthorised(final CommandSender sender, final long banLength) {
-		if (sender instanceof ConsoleCommandSender) {
-			return true;
-		}
-		for (final Permission permission : this.getPermissions()) {
-			if (this.getPermissionManager().hasPlayerPermission(sender, permission)) {
-				// If they have banhammer.ban allow the ban regardless.
-				if (permission == this.getPermissions().get(0)) {
-					return true;
-					// otherwise check limits
-				} else {
-					final int index = permission.getName().lastIndexOf(".");
-					final String key = permission.getName().substring(index + 1);
-					final long limit = this.limits.get(key);
-					if ((banLength <= limit) && (banLength != 0)) {
-						return true;
-					}
-				}
-			}
-		}
+		if (this.immunePlayers.contains(this.player.getName())) { return false; }
+		if (sender.hasPermission("banhammer.ban")) { return true; }
 		return false;
 	}
 
-	/**
-	 * Match a String with an OfflinePlayer.
-	 * 
-	 * @param name
-	 *          the name to match
-	 * @return the offline player
-	 */
-	private OfflinePlayer matchPlayer(final String name) {
-		final List<Player> players = this.server.matchPlayer(name);
-		if (players.isEmpty()) {
-			return this.server.getOfflinePlayer(name);
+	private long parseBanLength(final String banLength) {
+		final String key = banLength.replaceAll("t:", "");
+		if (this.limits.containsKey(key)) {
+			return this.limits.get(key);
 		} else {
-			return players.get(0);
+			return TimeFormatter.parseTime(banLength);
 		}
 	}
 
 	private void registerLimitPermissions() {
-		final Permission parent = this.getPermissions().get(0);
 		if (!this.limits.isEmpty()) {
+			final String parentPermissionName = this.getPermissionManager().listPermissions().get(0).getName();
 			for (final Entry<String, Long> limit : this.limits.entrySet()) {
 				final Permission permission =
-					new Permission(parent.getName() + "." + limit.getKey(), this.getLocalisation().getMessage(this, "permission-limit-description",
+					new Permission(parentPermissionName + "." + limit.getKey(), this.getMessage("limit-permission-description",
 						TimeFormatter.millisToLongDHMS(limit.getValue())), PermissionDefault.OP);
-				permission.addParent(parent, true);
+				permission.addParent(parentPermissionName, true);
 				this.getPermissionManager().addPermission(permission);
-				this.addPermission(permission);
 			}
 		}
-	}
-
-	public void execute(final List<String> arguments, final CommandSender sender) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

@@ -63,10 +63,11 @@ public class ImportCommand extends AbstractCommand {
 	public void execute(final List<String> arguments, final CommandSender sender) {
 		final int totalBans = this.server.getBannedPlayers().size();
 		if (arguments.isEmpty()) {
-			this.reason = this.getMessage("importcommand.defaultreason");
+			this.reason = this.getMessage("importcommand.default-reason");
 		} else {
 			StringFormatter.combineString(arguments, " ");
 		}
+		this.sender = sender;
 		final int totalImported = this.importBans();
 		// send outcome to the player
 		this.formatter.setMessage("importcommand.bans-imported");
@@ -89,7 +90,7 @@ public class ImportCommand extends AbstractCommand {
 				player.setBanned(false);
 				total = total + 1;
 			} else {
-				this.logger.log(Level.WARNING, "unable-to-import", player.getName());
+				this.logger.log(Level.WARNING, "importcommand.unable-to-import", player.getName());
 			}
 		}
 		return total;

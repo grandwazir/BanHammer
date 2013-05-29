@@ -56,6 +56,10 @@ public class BanHammerConfiguration extends SimplePluginConfiguration {
 		return this.getConfiguration().getStringList("immune-players");
 	}
 
+	public long getUndoTime() {
+		return TimeFormatter.parseTime(this.getConfiguration().getString("undo-time", "1m"));
+	}
+
 	/**
 	 * Checks if is alias should be enabled.
 	 * 

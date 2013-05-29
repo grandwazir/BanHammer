@@ -17,29 +17,26 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.ban;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import com.avaje.ebean.EbeanServer;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
+import name.richardson.james.bukkit.banhammer.matchers.BannedPlayerRecordMatcher;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
-import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
-import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
-import name.richardson.james.bukkit.utilities.command.CommandUsageException;
+import name.richardson.james.bukkit.utilities.command.CommandMatchers;
+import name.richardson.james.bukkit.utilities.command.CommandPermissions;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 
 @ConsoleCommand
+@CommandPermissions(permissions = { "banhammer.check" })
+@CommandMatchers(matchers = { BannedPlayerRecordMatcher.class })
 public class CheckCommand extends AbstractCommand {
 
 	private final EbeanServer database;
@@ -47,20 +44,24 @@ public class CheckCommand extends AbstractCommand {
 	/** The player who we are going to check and see if they are banned */
 	private OfflinePlayer player;
 
-	/** A instance of the Bukkit server. */
 	private final Server server;
 
 	public CheckCommand(final BanHammer plugin) {
-		super(plugin);
+		super();
 		this.database = plugin.getDatabase();
 		this.server = plugin.getServer();
 	}
 
-	public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+	public void execute(final List<String> arguments, final CommandSender sender) {
+		if (arguments.isEmpty()) {
+			sender.sendMessage(this.getMessage("must-specify-player"));
+		} else {
+			this.player = this.server.getOfflinePlayer(arguments.remove(0));
+		}
 		final PlayerRecord playerRecord = PlayerRecord.find(this.database, this.player.getName());
-		if ((playerRecord != null) && playerRecord.isBanned()) {
+		if (playerRecord.isBanned()) {
 			final BanRecord ban = playerRecord.getActiveBan();
-			final BanSummary summary = new BanSummary(this.getLocalisation(), ban);
+			final BanSummary summary = new BanSummary(ban);
 			sender.sendMessage(summary.getHeader());
 			sender.sendMessage(summary.getReason());
 			sender.sendMessage(summary.getLength());
@@ -68,53 +69,8 @@ public class CheckCommand extends AbstractCommand {
 				sender.sendMessage(summary.getExpiresAt());
 			}
 		} else {
-			sender.sendMessage(this.getLocalisation().getMessage(this, "player-is-not-banned", this.player.getName()));
+			sender.sendMessage(this.getMessage("player-is-not-banned", this.player.getName()));
 		}
-	}
-
-	public List<String> onTabComplete(final CommandSender sender, final Command command, final String label, final String[] arguments) {
-		final List<String> list = new ArrayList<String>();
-		final Set<String> temp = new TreeSet<String>();
-		if (arguments.length <= 1) {
-			for (final Player player : this.server.getOnlinePlayers()) {
-				if (arguments.length < 1) {
-					temp.add(player.getName());
-				} else
-					if (player.getName().startsWith(arguments[0])) {
-						temp.add(player.getName());
-					}
-			}
-			if (arguments[0].length() >= 3) {
-				temp.addAll(PlayerRecord.getPlayersWithActiveBansThatStartWith(this.database, arguments[0]));
-			}
-		}
-		list.addAll(temp);
-		return list;
-	}
-
-	public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
-		if (arguments.length == 0) {
-			if (!(sender instanceof Player)) {
-				throw new CommandArgumentException(this.getLocalisation().getMessage(BanHammer.class, "must-specify-player"), null);
-			}
-			this.player = (OfflinePlayer) sender;
-		} else {
-			this.player = this.matchPlayer(arguments[0]);
-		}
-	}
-
-	private OfflinePlayer matchPlayer(final String name) {
-		final List<Player> players = this.server.matchPlayer(name);
-		if (players.isEmpty()) {
-			return this.server.getOfflinePlayer(name);
-		} else {
-			return players.get(0);
-		}
-	}
-
-	public void execute(List<String> arguments, CommandSender sender) {
-		// TODO Auto-generated method stub
 
 	}
-
 }

@@ -38,6 +38,9 @@ import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerBannedEvent;
 import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
 import name.richardson.james.bukkit.banhammer.ban.BanSummary;
+import name.richardson.james.bukkit.banhammer.matchers.BannedPlayerRecordMatcher;
+import name.richardson.james.bukkit.banhammer.matchers.CreatorPlayerRecordMatcher;
+import name.richardson.james.bukkit.banhammer.matchers.PlayerRecordMatcher;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.utilities.listener.AbstractLocalisedListener;
@@ -92,6 +95,10 @@ public class PlayerListener extends AbstractLocalisedListener {
 	 */
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerBanned(final BanHammerPlayerBannedEvent event) {
+		// send event to matchers
+		BannedPlayerRecordMatcher.onPlayerBanned(event);
+		CreatorPlayerRecordMatcher.onPlayerBanned(event);
+		PlayerRecordMatcher.onPlayerBanned(event);
 		final Player player = Bukkit.getServer().getPlayer(event.getPlayerName());
 		final BanRecord record = event.getRecord();
 		String message;
@@ -138,9 +145,7 @@ public class PlayerListener extends AbstractLocalisedListener {
 
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerLogin(final PlayerLoginEvent event) {
-		if (this.onlineMode) {
-			return;
-		}
+		if (this.onlineMode) { return; }
 		final PlayerRecord record = this.isPlayerBanned(event.getPlayer().getName(), event.getAddress());
 		if (record != null) {
 			String message = null;
@@ -163,6 +168,10 @@ public class PlayerListener extends AbstractLocalisedListener {
 	 */
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerPardoned(final BanHammerPlayerPardonedEvent event) {
+		// send event to the matchers
+		BannedPlayerRecordMatcher.onPlayerPardoned(event);
+		CreatorPlayerRecordMatcher.onPlayerPardoned(event);
+		PlayerRecordMatcher.onPlayerPardoned(event);
 		if (!event.isSilent()) {
 			this.broadcast(event.getRecord(), BroadcastMessageType.PLAYER_PARDONED);
 		}

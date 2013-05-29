@@ -30,8 +30,12 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.bukkit.Bukkit;
+
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.validation.NotNull;
+
+import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
 
 @Entity()
 @Table(name = "banhammer_bans")
@@ -92,6 +96,10 @@ public class BanRecord {
 	public static int deleteBans(final EbeanServer database, final List<BanRecord> bans) {
 		int i = 0;
 		for (final BanRecord ban : bans) {
+			if (ban.getState() != State.EXPIRED) {
+				final BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(ban, false);
+				Bukkit.getPluginManager().callEvent(event);
+			}
 			i++;
 			database.createSqlUpdate("DELETE from banhammer_bans WHERE id='" + ban.getId() + "'").execute();
 		}
@@ -269,9 +277,7 @@ public class BanRecord {
 	 * @return the state
 	 */
 	public State getState() {
-		if (this.expiresAt == null) {
-			return this.state;
-		}
+		if (this.expiresAt == null) { return this.state; }
 		final Timestamp now = new Timestamp(System.currentTimeMillis());
 		return (now.after(this.expiresAt)) ? State.EXPIRED : this.state;
 	}
