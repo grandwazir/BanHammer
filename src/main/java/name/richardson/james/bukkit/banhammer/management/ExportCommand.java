@@ -17,12 +17,10 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.management;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import com.avaje.ebean.EbeanServer;
@@ -30,9 +28,6 @@ import com.avaje.ebean.EbeanServer;
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
-import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
-import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
-import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 
@@ -48,17 +43,16 @@ public class ExportCommand extends AbstractCommand {
 	private final Server server;
 
 	public ExportCommand(final BanHammer plugin) {
-		super(plugin);
+		super();
 		this.server = plugin.getServer();
 		this.database = plugin.getDatabase();
-		this.formatter = new ChoiceFormatter(this.getLocalisation());
+		this.formatter = new ChoiceFormatter();
 		this.formatter.setLimits(0, 1, 2);
-		this.formatter.setMessage(this, "bans-exported");
-		this.formatter.setFormats(this.getLocalisation().getMessage(BanHammer.class, "no-bans"), this.getLocalisation().getMessage(BanHammer.class, "one-ban"),
-			this.getLocalisation().getMessage(BanHammer.class, "many-bans"));
+		this.formatter.setMessage("exportcommand.bans-exported");
+		this.formatter.setFormats(this.getMessage("banhammer.no-bans"), this.getMessage("banhammer.one-ban"), this.getMessage("banhammer.many-bans"));
 	}
 
-	public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+	public void execute(final List<String> arguments, final CommandSender sender) {
 		int exported = 0;
 		for (final Object record : PlayerRecord.list(this.database)) {
 			final PlayerRecord playerRecord = (PlayerRecord) record;
@@ -70,27 +64,6 @@ public class ExportCommand extends AbstractCommand {
 		}
 		this.formatter.setArguments(exported);
 		sender.sendMessage(this.formatter.getMessage());
-	}
-
-	public List<String> onTabComplete(final CommandSender sender, final Command command, final String label, final String[] arguments) {
-		final List<String> list = new ArrayList<String>();
-		return list;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * name.richardson.james.bukkit.utilities.command.Command#parseArguments(java
-	 * .lang.String[], org.bukkit.command.CommandSender)
-	 */
-	public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
-		return;
-	}
-
-	public void execute(List<String> arguments, CommandSender sender) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

@@ -20,101 +20,64 @@ package name.richardson.james.bukkit.banhammer.management;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import com.avaje.ebean.EbeanServer;
 
-import name.richardson.james.bukkit.banhammer.BanHammer;
+import name.richardson.james.bukkit.banhammer.matchers.CreatorPlayerRecordMatcher;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
-import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
-import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
-import name.richardson.james.bukkit.utilities.command.CommandUsageException;
-import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
+import name.richardson.james.bukkit.utilities.command.CommandMatchers;
+import name.richardson.james.bukkit.utilities.command.CommandPermissions;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
+import name.richardson.james.bukkit.utilities.localisation.ResourceBundles;
 import name.richardson.james.bukkit.utilities.plugin.Plugin;
 
-@ConsoleCommand
+@CommandPermissions(permissions = { "banhammer.audit", "banhammer.audit.own", "banhammer.audit.others" })
+@CommandMatchers(matchers = { CreatorPlayerRecordMatcher.class })
 public class AuditCommand extends AbstractCommand {
 
 	private final EbeanServer database;
 
 	private final ChoiceFormatter formatter;
 
+	private final List<BanRecord> records = new ArrayList<BanRecord>();
+
 	private String playerName;
 
 	public AuditCommand(final Plugin plugin) {
-		super(plugin);
+		super(ResourceBundles.MESSAGES);
 		this.database = plugin.getDatabase();
-		this.formatter = new ChoiceFormatter(this.getLocalisation());
+		this.formatter = new ChoiceFormatter(ResourceBundles.MESSAGES);
 		this.formatter.setLimits(0, 1, 2);
-		this.formatter.setMessage(this, "header");
-		this.formatter.setFormats(this.getLocalisation().getMessage(BanHammer.class, "no-bans"), this.getLocalisation().getMessage(BanHammer.class, "one-ban"),
-			this.getLocalisation().getMessage(BanHammer.class, "many-bans"));
-		this.registerPermissions();
+		this.formatter.setMessage("auditcommand.header");
+		this.formatter.setFormats(this.getMessage("banhammer.no-bans"), this.getMessage("banhammer.one-ban"), this.getMessage("banhammer.many-bans"));
+		// set banhammer.audit.own to true
+		Bukkit.getPluginManager().getPermission("banhammer.audit.own").setDefault(PermissionDefault.TRUE);
 	}
 
-	public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-		final List<BanRecord> bans = PlayerRecord.find(this.database, this.playerName).getCreatedBans();
-
-		if (sender.hasPermission(this.getPermissions().get(2)) && !this.playerName.equalsIgnoreCase(sender.getName())) {
-			this.displayAudit(bans, sender);
-			return;
-		} else
-			if (!this.playerName.equalsIgnoreCase(sender.getName())) {
-				throw new CommandPermissionException(null, this.getPermissions().get(2));
-			}
-
-		if (sender.hasPermission(this.getPermissions().get(1)) && this.playerName.equalsIgnoreCase(sender.getName())) {
-			this.displayAudit(bans, sender);
-			return;
-		} else
-			if (this.playerName.equalsIgnoreCase(sender.getName())) {
-				throw new CommandPermissionException(null, this.getPermissions().get(1));
-			}
-
-	}
-
-	public List<String> onTabComplete(final CommandSender sender, final Command command, final String label, final String[] arguments) {
-		final List<String> list = new ArrayList<String>();
-		final Set<String> temp = new TreeSet<String>();
-		if (arguments.length <= 1) {
-			for (final Player player : Bukkit.getServer().getOnlinePlayers()) {
-				if (arguments.length < 1) {
-					temp.add(player.getName());
-				} else
-					if (player.getName().startsWith(arguments[0])) {
-						temp.add(player.getName());
-					}
-			}
-			if (arguments[0].length() >= 3) {
-				temp.addAll(PlayerRecord.getBanCreatorsThatStartWith(this.database, arguments[0]));
-			}
-		}
-		list.addAll(temp);
-		return list;
-	}
-
-	public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
-		if (arguments.length == 0) {
-			this.playerName = sender.getName();
+	public void execute(final List<String> arguments, final CommandSender sender) {
+		if (arguments.isEmpty()) {
+			sender.sendMessage(this.getMessage("must-specify-player"));
 		} else {
-			this.playerName = arguments[0];
+			if (this.hasPermission(sender)) {
+				this.records.clear();
+				this.records.addAll(PlayerRecord.find(this.database, this.playerName).getCreatedBans());
+				this.displayAudit(this.records, sender);
+				this.records.clear();
+			} else {
+				sender.sendMessage(this.getMessage("permission-denied"));
+			}
 		}
 	}
 
 	private void displayAudit(final List<BanRecord> bans, final CommandSender sender) {
 		if (bans != null) {
-			this.formatter.setMessage(this, "header");
+			this.formatter.setMessage("auditcommand.header");
 			this.formatter.setArguments(bans.size(), this.playerName, this.getPercentage(bans.size(), BanRecord.list(this.database).size()));
 			sender.sendMessage(this.formatter.getMessage());
 			final Iterator<BanRecord> banIter = bans.iterator();
@@ -133,58 +96,49 @@ public class AuditCommand extends AbstractCommand {
 				}
 				if (ban.getState() == BanRecord.State.PARDONED) {
 					pardonedBans++;
-				} else
+				} else {
 					if (ban.getState() == BanRecord.State.NORMAL) {
 						activeBans++;
-					} else
+					} else {
 						if (ban.getState() == BanRecord.State.EXPIRED) {
 							expiredBans++;
-							;
 						}
+					}
+				}
 			}
-			sender.sendMessage(this.getLocalisation().getMessage(this, "type_summary"));
-			this.formatter.setMessage(this, "permanent_bans");
+			sender.sendMessage(this.getMessage("auditcommand.type_summary"));
+			this.formatter.setMessage("auditcommand.permanent_bans");
 			this.formatter.setArguments(permanentBans, this.getPercentage(permanentBans, totalBans));
 			sender.sendMessage(this.formatter.getMessage());
-			this.formatter.setMessage(this, "temporary_bans");
+			this.formatter.setMessage("auditcommand.temporary_bans");
 			this.formatter.setArguments(temporaryBans, this.getPercentage(temporaryBans, totalBans));
 			sender.sendMessage(this.formatter.getMessage());
-			sender.sendMessage(this.getLocalisation().getMessage(this, "status_summary"));
-			this.formatter.setMessage(this, "active_bans");
+			sender.sendMessage(this.getMessage("auditcommand.status_summary"));
+			this.formatter.setMessage("auditcommand.active_bans");
 			this.formatter.setArguments(activeBans, this.getPercentage(activeBans, totalBans));
 			sender.sendMessage(this.formatter.getMessage());
-			this.formatter.setMessage(this, "expired_bans");
+			this.formatter.setMessage("auditcommand.expired_bans");
 			this.formatter.setArguments(expiredBans, this.getPercentage(expiredBans, totalBans));
 			sender.sendMessage(this.formatter.getMessage());
-			this.formatter.setMessage(this, "pardoned_bans");
+			this.formatter.setMessage("auditcommand.pardoned_bans");
 			this.formatter.setArguments(pardonedBans, this.getPercentage(pardonedBans, totalBans));
 			sender.sendMessage(this.formatter.getMessage());
 		} else {
-			this.formatter.setMessage(this, "header-no-percentage");
+			this.formatter.setMessage("auditcommand.header-no-percentage");
 			this.formatter.setArguments(0, this.playerName);
 			sender.sendMessage(this.formatter.getMessage());
 		}
 	}
 
 	private float getPercentage(final int value, final int total) {
-		// this.getLogger().debug(String.valueOf(total));
-		// this.getLogger().debug(String.valueOf(value));
-		// this.getLogger().debug(String.valueOf((float) value / total));
 		return (float) value / total;
 	}
 
-	private void registerPermissions() {
-		// add ability to view your own ban history
-		final Permission own = this.getPermissionManager().createPermission(this, "own", PermissionDefault.TRUE, this.getPermissions().get(0), true);
-		this.addPermission(own);
-		// add ability to view the ban history of others
-		final Permission others = this.getPermissionManager().createPermission(this, "others", PermissionDefault.OP, this.getPermissions().get(0), true);
-		this.addPermission(others);
-	}
-
-	public void execute(List<String> arguments, CommandSender sender) {
-		// TODO Auto-generated method stub
-
+	private boolean hasPermission(final CommandSender sender) {
+		final boolean isSenderCheckingSelf = (this.playerName.equalsIgnoreCase(sender.getName())) ? true : false;
+		if (sender.hasPermission("banhammer.audit.own") && isSenderCheckingSelf) { return true; }
+		if (sender.hasPermission("banhammer.audit.others") && !isSenderCheckingSelf) { return true; }
+		return false;
 	}
 
 }
