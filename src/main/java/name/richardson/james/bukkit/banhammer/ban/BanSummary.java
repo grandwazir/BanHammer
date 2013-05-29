@@ -17,14 +17,20 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.ban;
 
+import java.text.MessageFormat;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
+import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
-import name.richardson.james.bukkit.utilities.localisation.Localisation;
+import name.richardson.james.bukkit.utilities.localisation.Localised;
+import name.richardson.james.bukkit.utilities.localisation.ResourceBundles;
 
-public class BanSummary {
+public class BanSummary implements Localised {
 
-	private final Localisation localisation;
+	private final static ResourceBundle localisation = ResourceBundle.getBundle(ResourceBundles.MESSAGES.getBundleName());
 
 	/** The record we are linked with. */
 	private final BanRecord record;
@@ -37,8 +43,7 @@ public class BanSummary {
 	 * @param ban
 	 *          the ban record to summarize
 	 */
-	public BanSummary(final Localisation localisation, final BanRecord ban) {
-		this.localisation = localisation;
+	public BanSummary(final BanRecord ban) {
 		this.record = ban;
 	}
 
@@ -49,7 +54,7 @@ public class BanSummary {
 	 */
 	public String getExpiresAt() {
 		final String expiryDateString = BanHammer.SHORT_DATE_FORMAT.format(this.record.getExpiresAt());
-		return this.localisation.getMessage(this, "expires", expiryDateString);
+		return this.getMessage("bansummary.expires", expiryDateString);
 	}
 
 	/**
@@ -60,7 +65,7 @@ public class BanSummary {
 	 */
 	public String getHeader() {
 		final String date = BanHammer.SHORT_DATE_FORMAT.format(this.record.getCreatedAt());
-		return this.localisation.getMessage(this, "header", this.record.getPlayer().getName(), this.record.getCreator().getName(), date);
+		return this.getMessage("bansummary.header", this.record.getPlayer().getName(), this.record.getCreator().getName(), date);
 	}
 
 	/**
@@ -70,11 +75,25 @@ public class BanSummary {
 	 */
 	public String getLength() {
 		if (this.record.getType() == BanRecord.Type.PERMANENT) {
-			return this.localisation.getMessage(this, "length", this.localisation.getMessage(this, "permanent"));
+			return this.getMessage("bansummary.length", this.getMessage("bansummary.permanent"));
 		} else {
 			final long length = this.record.getExpiresAt().getTime() - this.record.getCreatedAt().getTime();
-			return this.localisation.getMessage(this, "length", TimeFormatter.millisToLongDHMS(length));
+			return this.getMessage("bansummary.length", TimeFormatter.millisToLongDHMS(length));
 		}
+	}
+
+	public String getMessage(final String key) {
+		String message = BanSummary.localisation.getString(key);
+		message = ColourFormatter.replace(message);
+		return message;
+	}
+
+	public String getMessage(final String key, final Object... elements) {
+		final MessageFormat formatter = new MessageFormat(BanSummary.localisation.getString(key));
+		formatter.setLocale(Locale.getDefault());
+		String message = formatter.format(elements);
+		message = ColourFormatter.replace(message);
+		return message;
 	}
 
 	/**
@@ -83,7 +102,7 @@ public class BanSummary {
 	 * @return the reason
 	 */
 	public String getReason() {
-		return this.localisation.getMessage(this, "reason", this.record.getReason());
+		return this.getMessage("bansummary.reason", this.record.getReason());
 	}
 
 	/**
@@ -93,7 +112,7 @@ public class BanSummary {
 	 */
 	public String getSelfHeader() {
 		final String date = BanHammer.SHORT_DATE_FORMAT.format(this.record.getCreatedAt());
-		return this.localisation.getMessage(this, "self-header", this.record.getCreator().getName(), date);
+		return this.getMessage("bansummary.self-header", this.record.getCreator().getName(), date);
 	}
 
 }

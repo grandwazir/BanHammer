@@ -18,20 +18,18 @@
 package name.richardson.james.bukkit.banhammer;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.text.DateFormat;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
-
-import com.avaje.ebean.EbeanServer;
+import java.util.Locale;
+import java.util.logging.Level;
 
 import name.richardson.james.bukkit.alias.Alias;
 import name.richardson.james.bukkit.alias.AliasHandler;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
+import name.richardson.james.bukkit.banhammer.api.SimpleBanHandler;
 import name.richardson.james.bukkit.banhammer.ban.BanCommand;
 import name.richardson.james.bukkit.banhammer.ban.CheckCommand;
 import name.richardson.james.bukkit.banhammer.ban.HistoryCommand;
@@ -48,10 +46,11 @@ import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.utilities.command.Command;
 import name.richardson.james.bukkit.utilities.command.CommandManager;
-import name.richardson.james.bukkit.utilities.configuration.DatabaseConfiguration;
-import name.richardson.james.bukkit.utilities.persistence.SQLStorage;
+import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
 import name.richardson.james.bukkit.utilities.plugin.AbstractPlugin;
+import name.richardson.james.bukkit.utilities.plugin.PluginPermissions;
 
+@PluginPermissions(permissions = { "banhammer", "banhammer.notify" })
 public final class BanHammer extends AbstractPlugin {
 
 	public static final DateFormat LONG_DATE_FORMAT = new SimpleDateFormat("d MMMMM yyyy HH:mm (z)");
@@ -64,12 +63,7 @@ public final class BanHammer extends AbstractPlugin {
 	/** BanHammer configuration. */
 	private BanHammerConfiguration configuration;
 
-	/** The storage for this plugin. */
-	private SQLStorage database;
-
 	private BanHandler handler;
-
-	private Permission notify;
 
 	/**
 	 * Gets the alias handler.
@@ -88,16 +82,6 @@ public final class BanHammer extends AbstractPlugin {
 	 */
 	public String getArtifactID() {
 		return "ban-hammer";
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.bukkit.plugin.java.JavaPlugin#getDatabase()
-	 */
-	@Override
-	public EbeanServer getDatabase() {
-		return this.database.getEbeanServer();
 	}
 
 	/*
@@ -122,9 +106,23 @@ public final class BanHammer extends AbstractPlugin {
 	 */
 	public BanHandler getHandler() {
 		if (this.handler == null) {
-			this.handler = new BanHandler(this);
+			this.handler = new SimpleBanHandler(this);
 		}
 		return this.handler;
+	}
+
+	public String getMessage(final String key) {
+		String message = this.localisation.getString(key);
+		message = ColourFormatter.replace(message);
+		return message;
+	}
+
+	public String getMessage(final String key, final Object... elements) {
+		final MessageFormat formatter = new MessageFormat(this.localisation.getString(key));
+		formatter.setLocale(Locale.getDefault());
+		String message = formatter.format(elements);
+		message = ColourFormatter.replace(message);
+		return message;
 	}
 
 	/*
@@ -134,13 +132,21 @@ public final class BanHammer extends AbstractPlugin {
 	 * name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin#setupPersistence
 	 * ()
 	 */
+	public String getVersion() {
+		return this.getDescription().getVersion();
+	}
+
 	@Override
-	protected void establishPersistence() throws SQLException {
+	public void onEnable() {
 		try {
-			this.database = new SQLStorage(this, new DatabaseConfiguration(this), this.getDatabaseClasses());
-			this.database.initalise();
+			this.loadConfiguration();
+			this.loadDatabase();
+			this.hookAlias();
+			this.setPermissions();
+			this.registerCommands();
+			this.registerCommands();
+			this.updatePlugin();
 		} catch (final IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -170,8 +176,7 @@ public final class BanHammer extends AbstractPlugin {
 	 */
 	@Override
 	protected void registerCommands() {
-		final CommandManager commandManager = new CommandManager(this);
-		this.getCommand("bh").setExecutor(commandManager);
+		final CommandManager commandManager = new CommandManager("bh");
 		final Command banCommand = new BanCommand(this, this.configuration.getBanLimits(), this.configuration.getImmunePlayers());
 		final Command kickCommand = new KickCommand(this);
 		final Command pardonCommand = new PardonCommand(this);
@@ -194,37 +199,6 @@ public final class BanHammer extends AbstractPlugin {
 		this.getCommand("pardon").setExecutor(pardonCommand);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin#registerEvents
-	 * ()
-	 */
-	@Override
-	protected void registerListeners() {
-		new PlayerListener(this, this.notify);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin#
-	 * registerPermissions()
-	 */
-	@Override
-	protected void setPermissions() {
-		super.setPermissions();
-		// register notify permission
-		this.notify = this.getPermissionManager().createPermission(this, "notify", PermissionDefault.TRUE, this.getPermissionManager().getRootPermission(), true);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin#setupMetrics()
-	 */
 	@Override
 	protected void setupMetrics() throws IOException {
 		new MetricsListener(this);
@@ -236,16 +210,15 @@ public final class BanHammer extends AbstractPlugin {
 	private void hookAlias() {
 		final Alias plugin = (Alias) this.getServer().getPluginManager().getPlugin("Alias");
 		if (plugin == null) {
-			this.getLogger().warning(this.getLocalisation().getMessage(this, "unable-to-hook-alias"));
+			this.getCustomLogger().log(Level.WARNING, "banhammer.unable-to-hook-alias");
 		} else {
-			this.getLogger().info(this.getLocalisation().getMessage(this, "alias-hooked", plugin.getDescription().getFullName() + "."));
+			this.getCustomLogger().log(Level.FINE, "banhammer.alias-hooked", plugin.getDescription().getFullName() + ".");
 			this.aliasHandler = plugin.getHandler();
 		}
 	}
 
-	public String getVersion() {
-		// TODO Auto-generated method stub
-		return null;
+	private void registerListeners() {
+		new PlayerListener(this);
 	}
 
 }

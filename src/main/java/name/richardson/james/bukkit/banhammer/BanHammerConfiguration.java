@@ -17,32 +17,29 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.bukkit.configuration.ConfigurationSection;
 
-import name.richardson.james.bukkit.utilities.configuration.PluginConfiguration;
+import name.richardson.james.bukkit.utilities.configuration.SimplePluginConfiguration;
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
+import name.richardson.james.bukkit.utilities.logging.Logger;
 
-public class BanHammerConfiguration extends PluginConfiguration {
+public class BanHammerConfiguration extends SimplePluginConfiguration {
 
 	/** The configured ban limits. */
 	private final Map<String, Long> limits = new LinkedHashMap<String, Long>();
+	private final Logger logger = new Logger(this);
 
-	/**
-	 * Instantiates a new BanHammer configuration.
-	 * 
-	 * @param plugin
-	 *          the plugin that this configuration belongs to.
-	 * @throws IOException
-	 *           Signals that an I/O exception has occurred.
-	 */
-	public BanHammerConfiguration(final BanHammer plugin) throws IOException {
-		super(plugin);
+	public BanHammerConfiguration(final File file, final InputStream defaults) throws IOException {
+		super(file, defaults);
 		this.setBanLimits();
 	}
 
@@ -71,7 +68,7 @@ public class BanHammerConfiguration extends PluginConfiguration {
 	/**
 	 * Read and sets the ban limits.
 	 */
-	public void setBanLimits() {
+	private void setBanLimits() {
 		this.limits.clear();
 		final ConfigurationSection section = this.getConfiguration().getConfigurationSection("ban-limits");
 		for (final String key : section.getKeys(false)) {
@@ -80,7 +77,7 @@ public class BanHammerConfiguration extends PluginConfiguration {
 				final Long length = TimeFormatter.parseTime(section.getString(key));
 				this.limits.put(name, length);
 			} catch (final NumberFormatException e) {
-				this.getLogger().warning(this.getLocalisation().getMessage(this, "limit-invalid", key));
+				this.logger.log(Level.WARNING, "banhammer.limit-invalid", key);
 			}
 		}
 	}

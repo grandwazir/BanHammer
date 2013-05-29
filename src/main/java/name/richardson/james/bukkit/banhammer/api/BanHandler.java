@@ -1,68 +1,24 @@
-/*******************************************************************************
- * Copyright (c) 2012 James Richardson.
- * 
- * BanHandler.java is part of BanHammer.
- * 
- * BanHammer is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
- * 
- * BanHammer is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License along with
- * BanHammer. If not, see <http://www.gnu.org/licenses/>.
- ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.api;
 
-import java.sql.Timestamp;
-import java.text.MessageFormat;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
 
-import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
-import com.avaje.ebean.EbeanServer;
-
-import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
-import name.richardson.james.bukkit.banhammer.persistence.BanRecord.State;
-import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
-import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
-import name.richardson.james.bukkit.utilities.localisation.Localised;
-import name.richardson.james.bukkit.utilities.localisation.ResourceBundles;
-import name.richardson.james.bukkit.utilities.logging.Logger;
 
-public class BanHandler implements Localised {
-
-	/* The database used by this handler */
-	private final EbeanServer database;
-
-	/* Localisation messages for BanHammer */
-	private final ResourceBundle localisation = ResourceBundle.getBundle(ResourceBundles.MESSAGES.getBundleName());
-
-	/* Logger for this class */
-	private final Logger logger = new Logger(this, ResourceBundles.MESSAGES);
-
-	/**
-	 * Instantiates a new ban handler.
-	 * 
-	 * @param parentClass
-	 *          the parent class
-	 * @param plugin
-	 *          the plugin
-	 */
-	public BanHandler(final BanHammer plugin) {
-		this.database = plugin.getDatabase();
-	}
+/**
+ * The Interface BanHandler which is responsible for defining how other plugins
+ * can interact with BanHammer. Currently this is limited to banning and
+ * pardoning players. It is also possible to get detail about any bans which
+ * have been made.
+ */
+public interface BanHandler {
 
 	/**
 	 * Ban a player using another ban as the template.
+	 * 
+	 * This is useful if you want to extend the same ban to another player; for
+	 * example if they are logging in with another account.
 	 * 
 	 * @param playerName
 	 *          the name of the player to ban
@@ -74,115 +30,82 @@ public class BanHandler implements Localised {
 	 *          if true, broadcast a message to notify players
 	 * @return true, if successful
 	 */
-	public boolean banPlayer(final String playerName, final BanRecord sourceBan, final String reason, final boolean notify) {
-		final PlayerRecord player = PlayerRecord.find(this.database, playerName);
-		if (player.isBanned()) {
-			return false;
-		}
-		final PlayerRecord creator = sourceBan.getCreator();
-		final BanRecord ban = new BanRecord();
-		ban.setPlayer(player);
-		ban.setCreator(creator);
-		ban.setReason(reason);
-		ban.setState(BanRecord.State.NORMAL);
-		ban.setCreatedAt(sourceBan.getCreatedAt());
-		if (sourceBan.getExpiresAt().getTime() != 0) {
-			ban.setExpiresAt(sourceBan.getExpiresAt());
-		}
-		this.database.save(ban);
-		this.logger.log(Level.INFO, this.getMessage("banhandler.player-banned", playerName, sourceBan.getCreator().getName(), reason));
-		return true;
-	}
+	public abstract boolean banPlayer(String playerName, BanRecord sourceBan, String reason, boolean notify);
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Ban a player from the server.
 	 * 
-	 * @see
-	 * name.richardson.james.bukkit.banhammer.api.API#banPlayer(java.lang.String,
-	 * java.lang.String, java.lang.String, long, boolean)
-	 */
-	public boolean banPlayer(final String playerName, final String senderName, final String reason, final long banLength, final boolean notify) {
-		final PlayerRecord player = PlayerRecord.find(this.database, playerName);
-		if (player.isBanned()) {
-			return false;
-		}
-		final PlayerRecord creator = PlayerRecord.find(this.database, senderName);
-		final BanRecord ban = new BanRecord();
-		final long now = System.currentTimeMillis();
-		ban.setPlayer(player);
-		ban.setCreator(creator);
-		ban.setReason(reason);
-		ban.setState(BanRecord.State.NORMAL);
-		ban.setCreatedAt(new Timestamp(now));
-		if (banLength != 0) {
-			ban.setExpiresAt(new Timestamp(now + banLength));
-		}
-		this.database.save(ban);
-		final BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(ban, !notify);
-		Bukkit.getServer().getPluginManager().callEvent(event);
-		this.logger.log(Level.INFO, this.getMessage("banhandler.player-banned", playerName, senderName, reason));
-		return true;
-	}
-
-	public String getMessage(final String key) {
-		String message = this.localisation.getString(key);
-		message = ColourFormatter.replace(message);
-		return message;
-	}
-
-	public String getMessage(final String key, final Object... elements) {
-		final MessageFormat formatter = new MessageFormat(this.localisation.getString(key));
-		formatter.setLocale(Locale.getDefault());
-		String message = formatter.format(elements);
-		message = ColourFormatter.replace(message);
-		return message;
-	}
-
-	/*
-	 * (non-Javadoc)
+	 * This will ban a player immediately from the server until the ban expires.
+	 * If the player is online at the time they will be kicked and notified of the
+	 * ban. All players who have the banhammer.notify node, will receive a
+	 * notification of the action unless silent is set to true.
 	 * 
-	 * @see
-	 * name.richardson.james.bukkit.banhammer.api.API#getPlayerBans(java.lang.
-	 * String)
+	 * @param playerName
+	 *          the name of the player to ban.
+	 * @param senderName
+	 *          the name of player who banned them. In the case of a plugin this
+	 *          should be the plugin's name.
+	 * @param reason
+	 *          the reason for the ban.
+	 * @param banLength
+	 *          the ban length of the ban in milliseconds.
+	 * @param notify
+	 *          whether or not to notify players of this ban
+	 * @return true, if successful
 	 */
-	public List<BanRecord> getPlayerBans(final String playerName) {
-		final PlayerRecord playerRecord = PlayerRecord.find(this.database, playerName);
-		return (playerRecord == null) ? new LinkedList<BanRecord>() : playerRecord.getBans();
-	}
+	public abstract boolean banPlayer(String playerName, String senderName, String reason, long banLength, boolean notify);
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Gets a list of all bans issued to a particular player.
 	 * 
-	 * @see
-	 * name.richardson.james.bukkit.banhammer.api.API#isPlayerBanned(java.lang
-	 * .String)
-	 */
-	public boolean isPlayerBanned(final String playerName) {
-		final PlayerRecord playerRecord = PlayerRecord.find(this.database, playerName);
-		return (playerRecord == null) ? false : playerRecord.isBanned();
-	}
-
-	/*
-	 * (non-Javadoc)
+	 * This will return an empty list if the player is not known to BanHammer.
 	 * 
-	 * @see
-	 * name.richardson.james.bukkit.banhammer.api.API#pardonPlayer(java.lang.String
-	 * , java.lang.String, boolean)
+	 * @param playerName
+	 *          the name of the player to look up
+	 * @return any bans which they have on record.
 	 */
-	public boolean pardonPlayer(final String playerName, final String senderName, final boolean notify) {
-		final PlayerRecord playerRecord = PlayerRecord.find(this.database, playerName);
-		if ((playerRecord != null) && playerRecord.isBanned()) {
-			final BanRecord banRecord = playerRecord.getActiveBan();
-			final BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(banRecord, !notify);
-			banRecord.setState(State.PARDONED);
-			this.database.save(banRecord);
-			Bukkit.getServer().getPluginManager().callEvent(event);
-			final Object params[] = { playerName, senderName };
-			this.logger.log(Level.INFO, "banhandler.player-pardoned", params);
-			return true;
-		} else {
-			return false;
-		}
+	public abstract List<BanRecord> getPlayerBans(String playerName);
 
-	}
+	/**
+	 * Checks to see if a player is banned.
+	 * 
+	 * Will return true if the player has any bans on record which are currently
+	 * preventing them from logging in.
+	 * 
+	 * @param player
+	 *          the player to look up (case insensitive)
+	 * @return true, if is player currently banned
+	 */
+	public abstract boolean isPlayerBanned(OfflinePlayer player);
+
+	/**
+	 * Checks to see if a player is banned.
+	 * 
+	 * Will return true if the player has any bans on record which are currently
+	 * preventing them from logging in.
+	 * 
+	 * @param playerName
+	 *          the name of the player to look up (case insensitive)
+	 * @return true, if is player currently banned
+	 */
+	public abstract boolean isPlayerBanned(String playerName);
+
+	/**
+	 * Pardon a player.
+	 * 
+	 * This will pardon any ban that is preventing them from logging into the
+	 * server. This does not delete the ban from the database, instead it marks it
+	 * as PARDONED.
+	 * 
+	 * @param playerName
+	 *          the name of the player to pardon
+	 * @param senderName
+	 *          the name of player who is unbanning them. In the case of a plugin
+	 *          this should be the plugin's name.
+	 * @param notify
+	 *          if true, broadcast a message to notify players
+	 * @return true, if successful
+	 */
+	public abstract boolean pardonPlayer(String playerName, String senderName, boolean notify);
+
 }

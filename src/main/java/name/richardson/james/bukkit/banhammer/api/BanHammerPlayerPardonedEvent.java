@@ -21,7 +21,6 @@ import org.bukkit.event.HandlerList;
 
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 
-// TODO: Auto-generated Javadoc
 /**
  * This event is fired every time a player is pardoned through BanHammer.
  */
