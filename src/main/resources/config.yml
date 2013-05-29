@@ -10,5 +10,5 @@ ban-limits:
   long: 7d
 immune-players: {}
 alias-plugin:
-  enabled: true
+  enabled: false
 undo-time: 1m
