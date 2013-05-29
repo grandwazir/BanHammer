@@ -156,7 +156,9 @@ public final class BanHammer extends AbstractPlugin {
 
 	@Override
 	protected void setupMetrics() throws IOException {
-		new MetricsListener(this);
+		if (this.configuration.isCollectingStats()) {
+			new MetricsListener(this);
+		}
 	}
 
 	/**
