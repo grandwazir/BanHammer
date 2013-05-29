@@ -8,12 +8,12 @@ public abstract class PlayerRecordMatcher implements Matcher {
 
 	private static EbeanServer database;
 
-	public PlayerRecordMatcher(final EbeanServer database) {
-		PlayerRecordMatcher.database = database;
+	protected static EbeanServer getDatabase() {
+		return database;
 	}
 
-	protected EbeanServer getDatabase() {
-		return database;
+	public PlayerRecordMatcher(final EbeanServer database) {
+		PlayerRecordMatcher.database = database;
 	}
 
 }
