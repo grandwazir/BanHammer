@@ -18,8 +18,12 @@
 package name.richardson.james.bukkit.banhammer.api;
 
 import java.sql.Timestamp;
+import java.text.MessageFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 
@@ -29,19 +33,21 @@ import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord.State;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
-import name.richardson.james.bukkit.utilities.localisation.Localisation;
+import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
+import name.richardson.james.bukkit.utilities.localisation.Localised;
+import name.richardson.james.bukkit.utilities.localisation.ResourceBundles;
 import name.richardson.james.bukkit.utilities.logging.Logger;
 
-public class BanHandler {
+public class BanHandler implements Localised {
 
 	/* The database used by this handler */
 	private final EbeanServer database;
 
 	/* Localisation messages for BanHammer */
-	private final Localisation localisation;
+	private final ResourceBundle localisation = ResourceBundle.getBundle(ResourceBundles.MESSAGES.getBundleName());
 
 	/* Logger for this class */
-	private final Logger logger;
+	private final Logger logger = new Logger(this, ResourceBundles.MESSAGES);
 
 	/**
 	 * Instantiates a new ban handler.
@@ -53,8 +59,6 @@ public class BanHandler {
 	 */
 	public BanHandler(final BanHammer plugin) {
 		this.database = plugin.getDatabase();
-		this.logger = plugin.getCustomLogger();
-		this.localisation = plugin.getLocalisation();
 	}
 
 	/**
@@ -86,7 +90,7 @@ public class BanHandler {
 			ban.setExpiresAt(sourceBan.getExpiresAt());
 		}
 		this.database.save(ban);
-		this.logger.info(this.localisation.getMessage(this, "player-banned", playerName, sourceBan.getCreator().getName(), reason));
+		this.logger.log(Level.INFO, this.getMessage("banhandler.player-banned", playerName, sourceBan.getCreator().getName(), reason));
 		return true;
 	}
 
@@ -116,8 +120,22 @@ public class BanHandler {
 		this.database.save(ban);
 		final BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(ban, !notify);
 		Bukkit.getServer().getPluginManager().callEvent(event);
-		this.logger.info(this.localisation.getMessage(this, "player-banned", playerName, senderName, reason));
+		this.logger.log(Level.INFO, this.getMessage("banhandler.player-banned", playerName, senderName, reason));
 		return true;
+	}
+
+	public String getMessage(final String key) {
+		String message = this.localisation.getString(key);
+		message = ColourFormatter.replace(message);
+		return message;
+	}
+
+	public String getMessage(final String key, final Object... elements) {
+		final MessageFormat formatter = new MessageFormat(this.localisation.getString(key));
+		formatter.setLocale(Locale.getDefault());
+		String message = formatter.format(elements);
+		message = ColourFormatter.replace(message);
+		return message;
 	}
 
 	/*
@@ -159,12 +177,12 @@ public class BanHandler {
 			banRecord.setState(State.PARDONED);
 			this.database.save(banRecord);
 			Bukkit.getServer().getPluginManager().callEvent(event);
-			this.logger.info(this.localisation.getMessage(this, "player-pardoned", playerName, senderName));
+			final Object params[] = { playerName, senderName };
+			this.logger.log(Level.INFO, "banhandler.player-pardoned", params);
 			return true;
 		} else {
 			return false;
 		}
 
 	}
-
 }

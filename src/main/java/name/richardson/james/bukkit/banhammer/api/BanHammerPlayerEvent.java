@@ -22,6 +22,9 @@ import org.bukkit.event.HandlerList;
 
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 
+/**
+ * A abstract event from which all other BanHammer events inherit.
+ */
 public abstract class BanHammerPlayerEvent extends Event {
 
 	/** The constant listener handlers. */
