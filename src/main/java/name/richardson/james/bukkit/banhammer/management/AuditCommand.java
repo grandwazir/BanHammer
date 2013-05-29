@@ -72,7 +72,7 @@ public class AuditCommand extends AbstractCommand {
 			this.displayAudit(this.records, sender);
 			this.records.clear();
 		} else {
-			sender.sendMessage(this.getMessage("permission-denied"));
+			sender.sendMessage(this.getMessage("misc.warning.permission-denied"));
 		}
 	}
 

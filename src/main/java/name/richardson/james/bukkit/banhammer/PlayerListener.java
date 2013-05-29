@@ -83,7 +83,7 @@ public class PlayerListener extends AbstractLocalisedListener {
 		this.permission = Bukkit.getPluginManager().getPermission("banhammer.notify");
 		this.database = plugin.getDatabase();
 		if (!this.onlineMode) {
-			this.logger.log(Level.WARNING, "insecure-mode");
+			this.logger.log(Level.WARNING, "playerlistener.insecure-mode");
 		}
 	}
 
@@ -110,7 +110,7 @@ public class PlayerListener extends AbstractLocalisedListener {
 							BanHammer.LONG_DATE_FORMAT.format(record.getExpiresAt()));
 					break;
 				default:
-					message = this.getMessage("playerlistener.permenantly-banned", record.getReason(), record.getCreator().getName());
+					message = this.getMessage("playerlistener.permanently-banned", record.getReason(), record.getCreator().getName());
 			}
 			player.kickPlayer(message);
 		}
@@ -137,7 +137,7 @@ public class PlayerListener extends AbstractLocalisedListener {
 							BanHammer.LONG_DATE_FORMAT.format(record.getActiveBan().getExpiresAt()));
 					break;
 				default:
-					message = this.getMessage("playerlistener.permenantly-banned", record.getActiveBan().getReason(), record.getActiveBan().getCreator().getName());
+					message = this.getMessage("playerlistener.permanently-banned", record.getActiveBan().getReason(), record.getActiveBan().getCreator().getName());
 			}
 			event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, message);
 		}
@@ -154,7 +154,7 @@ public class PlayerListener extends AbstractLocalisedListener {
 					message = this.getMessage("playerlistener.temporarily-banned", BanHammer.LONG_DATE_FORMAT.format(record.getActiveBan().getExpiresAt()));
 					break;
 				default:
-					message = this.getMessage("playerlistener.permenantly-banned", record.getActiveBan().getReason());
+					message = this.getMessage("playerlistener.permanently-banned", record.getActiveBan().getReason());
 			}
 			event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message);
 		}

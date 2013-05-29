@@ -66,9 +66,9 @@ public class UndoCommand extends AbstractCommand {
 			if (this.hasPermission(sender, ban.getCreatedAt())) {
 				this.database.delete(ban);
 				Bukkit.getPluginManager().callEvent(new BanHammerPlayerPardonedEvent(ban, false));
-				sender.sendMessage(this.getMessage("undocommand.success-own", ban.getPlayer().getName()));
+				sender.sendMessage(this.getMessage("undocommand.success", ban.getPlayer().getName()));
 			} else {
-				sender.sendMessage(this.getMessage("permission-denied"));
+				sender.sendMessage(this.getMessage("misc.warning.permission-denied"));
 				if (!this.withinTimeLimit(sender, ban.getCreatedAt())) {
 					sender.sendMessage(this.getMessage("undocommand.time-expired"));
 				}

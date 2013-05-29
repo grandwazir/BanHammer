@@ -54,7 +54,7 @@ public class CheckCommand extends AbstractCommand {
 
 	public void execute(final List<String> arguments, final CommandSender sender) {
 		if (arguments.isEmpty()) {
-			sender.sendMessage(this.getMessage("must-specify-player"));
+			sender.sendMessage(this.getMessage("misc.warning.must-specify-player"));
 		} else {
 			this.player = this.server.getOfflinePlayer(arguments.remove(0));
 		}
@@ -69,7 +69,7 @@ public class CheckCommand extends AbstractCommand {
 				sender.sendMessage(summary.getExpiresAt());
 			}
 		} else {
-			sender.sendMessage(this.getMessage("player-is-not-banned", this.player.getName()));
+			sender.sendMessage(this.getMessage("misc.notice.player-is-not-banned", this.player.getName()));
 		}
 
 	}

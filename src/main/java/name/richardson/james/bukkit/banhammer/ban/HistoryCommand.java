@@ -50,7 +50,8 @@ public class HistoryCommand extends AbstractCommand {
 		this.formatter = new ChoiceFormatter();
 		this.formatter.setLimits(0, 1, 2);
 		this.formatter.setMessage("historycommand.header");
-		this.formatter.setFormats(this.getMessage("banhammer.no-bans"), this.getMessage("banhammer.one-ban"), this.getMessage("banhammer.many-bans"));
+		this.formatter.setFormats(this.getMessage("misc.choiceformatter.no-bans"), this.getMessage("misc.choiceformatter.one-ban"),
+			this.getMessage("misc.choiceformatter.many-bans"));
 	}
 
 	public void execute(final List<String> arguments, final CommandSender sender) {
@@ -64,7 +65,7 @@ public class HistoryCommand extends AbstractCommand {
 			final List<BanRecord> bans = this.handler.getPlayerBans(this.playerName);
 			this.displayHistory(bans, sender);
 		} else {
-			sender.sendMessage(this.getMessage("permission-denied"));
+			sender.sendMessage(this.getMessage("misc.warning.permission-denied"));
 		}
 
 	}

@@ -59,7 +59,7 @@ public class KickCommand extends AbstractCommand implements TabExecutor {
 		this.sender = sender;
 		// Parse the arguments
 		if (arguments.isEmpty()) {
-			sender.sendMessage(this.getMessage("kickcommand.must-specify-player"));
+			sender.sendMessage(this.getMessage("misc.warning.must-specify-player:"));
 		} else {
 			this.player = this.server.getPlayer(arguments.remove(0));
 			if (!arguments.isEmpty()) {
@@ -69,7 +69,7 @@ public class KickCommand extends AbstractCommand implements TabExecutor {
 			}
 		}
 		if (this.player == null) {
-			sender.sendMessage(this.getMessage("kickcommand.must-specify-player"));
+			sender.sendMessage(this.getMessage("misc.warning.must-specify-player:"));
 		} else {
 			this.kickPlayer();
 		}
@@ -81,7 +81,7 @@ public class KickCommand extends AbstractCommand implements TabExecutor {
 		if (this.isAuthorized(sender)) {
 			this.execute(new LinkedList<String>(Arrays.asList(arguments)), sender);
 		} else {
-			sender.sendMessage(this.getMessage("permission-denied"));
+			sender.sendMessage(this.getMessage("misc.warning.permission-denied"));
 		}
 		return true;
 	}
@@ -93,7 +93,7 @@ public class KickCommand extends AbstractCommand implements TabExecutor {
 	private void kickPlayer() {
 		if (this.player.isOnline()) {
 			this.player.kickPlayer(this.getMessage("playerlistener.kicked", this.reason, this.sender.getName()));
-			this.server.broadcast(this.getMessage("kickcommand.kick-broadcast", this.player.getName(), this.sender.getName()), "banhammer.notify");
+			this.server.broadcast(this.getMessage("kickcommand.kicked", this.player.getName(), this.sender.getName()), "banhammer.notify");
 			this.server.broadcast(this.getMessage("kickcommand.reason", this.reason), "banhammer.notify");
 		}
 	}

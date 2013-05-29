@@ -47,12 +47,13 @@ public class PurgeCommand extends AbstractCommand {
 		this.formatter = new ChoiceFormatter();
 		this.formatter.setLimits(0, 1, 2);
 		this.formatter.setMessage("purgecommand.purged");
-		this.formatter.setFormats(this.getMessage("banhammer.no-bans"), this.getMessage("banhammer.one-ban"), this.getMessage("banhammer.many-bans"));
+		this.formatter.setFormats(this.getMessage("misc.choiceformatter.no-bans"), this.getMessage("misc.choiceformatter.one-ban"),
+			this.getMessage("misc.choiceformatter.many-bans"));
 	}
 
 	public void execute(final List<String> arguments, final CommandSender sender) {
 		if (arguments.isEmpty()) {
-			sender.sendMessage(this.getMessage("must-specify-player"));
+			sender.sendMessage(this.getMessage("misc.warning.must-specify-player"));
 		} else {
 			final String playerName = arguments.remove(0);
 			final PlayerRecord playerRecord = PlayerRecord.find(this.database, playerName);
