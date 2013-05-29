@@ -18,103 +18,58 @@
 package name.richardson.james.bukkit.banhammer.ban;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
-import java.util.TreeSet;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Server;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import com.avaje.ebean.EbeanServer;
 
-import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
+import name.richardson.james.bukkit.banhammer.matchers.CreatorPlayerRecordMatcher;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
-import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
-import name.richardson.james.bukkit.utilities.command.CommandUsageException;
-import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
+import name.richardson.james.bukkit.utilities.command.CommandMatchers;
+import name.richardson.james.bukkit.utilities.command.CommandPermissions;
 
-@ConsoleCommand
+@CommandPermissions(permissions = { "banhammer.undo", "banhammer.undo.own", "banhammer.undo.others" })
+@CommandMatchers(matchers = { CreatorPlayerRecordMatcher.class })
 public class UndoCommand extends AbstractCommand {
 
 	private final EbeanServer database;
 
 	private String playerName;
 
-	private final Server server;
+	private final long undoTime;
 
-	private final long undoTime = 60000;
-
-	public UndoCommand(final BanHammer plugin) {
-		super(plugin);
-		this.database = plugin.getDatabase();
-		this.server = plugin.getServer();
-		this.registerPermissions();
+	public UndoCommand(final EbeanServer database, final long undoTime) {
+		super();
+		this.undoTime = undoTime;
+		this.database = database;
 	}
 
-	public void execute(final CommandSender sender) throws CommandPermissionException, CommandUsageException {
+	public void execute(final List<String> arguments, final CommandSender sender) {
+		if (arguments.isEmpty()) {
+			this.playerName = sender.getName();
+		} else {
+			this.playerName = arguments.get(0);
+		}
 		final PlayerRecord playerRecord = PlayerRecord.find(this.database, this.playerName);
 		final List<BanRecord> playerBans = playerRecord.getCreatedBans();
-		final ListIterator<BanRecord> playerBansIter = playerBans.listIterator(playerBans.size());
-		final Timestamp undoTime = new Timestamp(System.currentTimeMillis() - this.undoTime);
-		final boolean own = this.getPermissionManager().hasPlayerPermission(sender, this.getPermissions().get(1));
-		final boolean others = this.getPermissionManager().hasPlayerPermission(sender, this.getPermissions().get(2));
-		final boolean unrestricted = this.getPermissionManager().hasPlayerPermission(sender, this.getPermissions().get(3));
-
-		while (playerBansIter.hasPrevious()) {
-			final BanRecord ban = playerBansIter.previous();
-			if (own && (ban.getCreator().getName().equalsIgnoreCase(sender.getName()))) {
-				if (undoTime.before(ban.getCreatedAt()) || unrestricted) {
-					this.removeBan(ban);
-					sender.sendMessage(this.getLocalisation().getMessage(this, "success-own", ban.getPlayer().getName()));
-					return;
-				} else {
-					throw new CommandUsageException(this.getLocalisation().getMessage(this, "time-expired"));
-				}
-			}
-			if (others && (!ban.getCreator().getName().equalsIgnoreCase(sender.getName()))) {
-				if (undoTime.before(ban.getCreatedAt()) || unrestricted) {
-					this.removeBan(ban);
-					sender.sendMessage(this.getLocalisation().getMessage(this, "success-others", ban.getPlayer().getName(), ban.getCreator().getName()));
-					return;
-				} else {
-					throw new CommandUsageException(this.getLocalisation().getMessage(this, "time-expired"));
+		if (playerBans.isEmpty()) {
+			sender.sendMessage(this.getMessage("undocommand.no-ban-to-undo"));
+		} else {
+			// get the last ban in the list which always the most recent ban
+			final BanRecord ban = playerBans.get(playerBans.size() - 1);
+			if (this.hasPermission(sender, ban.getCreatedAt())) {
+				sender.sendMessage(this.getMessage("undocommand.success-own", ban.getPlayer().getName()));
+			} else {
+				sender.sendMessage(this.getMessage("permission-denied"));
+				if (!this.withinTimeLimit(sender, ban.getCreatedAt())) {
+					sender.sendMessage(this.getMessage("undocommand.time-expired"));
 				}
 			}
 		}
-
-		sender.sendMessage(this.getLocalisation().getMessage(this, "no-ban-to-undo"));
-
-	}
-
-	public List<String> onTabComplete(final CommandSender sender, final Command command, final String label, final String[] arguments) {
-		final List<String> list = new ArrayList<String>();
-		final Set<String> temp = new TreeSet<String>();
-		if (arguments.length <= 1) {
-			for (final Player player : this.server.getOnlinePlayers()) {
-				if (arguments.length < 1) {
-					temp.add(player.getName());
-				} else
-					if (player.getName().startsWith(arguments[0])) {
-						temp.add(player.getName());
-					}
-				if (arguments[0].length() >= 3) {
-					temp.addAll(PlayerRecord.getPlayersWithBansThatStartWith(this.database, arguments[0]));
-				}
-			}
-		}
-		list.addAll(temp);
-		return list;
 	}
 
 	public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
@@ -123,30 +78,24 @@ public class UndoCommand extends AbstractCommand {
 		} else {
 			this.playerName = arguments[0];
 		}
-	}
-
-	private void registerPermissions() {
-		final Permission own = this.getPermissionManager().createPermission(this, "own", PermissionDefault.TRUE, this.getPermissions().get(0), true);
-		this.addPermission(own);
-		final Permission others = this.getPermissionManager().createPermission(this, "others", PermissionDefault.OP, this.getPermissions().get(0), true);
-		this.addPermission(others);
-		final Permission unrestricted =
-			this.getPermissionManager().createPermission(this, "unrestricted", PermissionDefault.OP, this.getPermissions().get(0), true);
-		this.addPermission(unrestricted);
-	}
-
-	private void removeBan(final BanRecord ban) {
-		final Timestamp now = new Timestamp(System.currentTimeMillis());
-		if ((ban.getExpiresAt() == null) || ban.getExpiresAt().after(now)) {
-			final BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(ban, false);
-			Bukkit.getServer().getPluginManager().callEvent(event);
+		final PlayerRecord playerRecord = PlayerRecord.find(this.database, this.playerName);
+		final List<BanRecord> playerBans = playerRecord.getCreatedBans();
+		if (playerBans.isEmpty()) {
+			sender.sendMessage(this.getMessage("undocommand.no-ban-to-undo"));
 		}
-		BanRecord.deleteBan(this.database, ban);
 	}
 
-	public void execute(List<String> arguments, CommandSender sender) {
-		// TODO Auto-generated method stub
-
+	private boolean hasPermission(final CommandSender sender, final Timestamp time) {
+		final boolean isSenderTargetingSelf = (this.playerName.equalsIgnoreCase(sender.getName())) ? true : false;
+		final boolean withinTimeLimit = this.withinTimeLimit(sender, time);
+		if (sender.hasPermission("banhammer.undo.own") && withinTimeLimit && isSenderTargetingSelf) { return true; }
+		if (sender.hasPermission("banhammer.audit.others") && withinTimeLimit && !isSenderTargetingSelf) { return true; }
+		return false;
 	}
 
+	private boolean withinTimeLimit(final CommandSender sender, final Timestamp then) {
+		if (sender.hasPermission("banhammer.undo")) { return true; }
+		if ((System.currentTimeMillis() - then.getNanos()) <= this.undoTime) { return true; }
+		return false;
+	}
 }

@@ -16,11 +16,13 @@ public class CreatorPlayerRecordMatcher extends PlayerRecordMatcher {
 	public List<String> getMatches(final String argument) {
 		final List<String> names = new ArrayList<String>();
 		final List<PlayerRecord> records = this.getDatabase().find(PlayerRecord.class).where().istartsWith("name", argument).findList();
-		for (final PlayerRecord record : records) {
-			if (record.getCreatedBans().size() == 0) {
-				continue;
+		if (argument.length() >= 3) {
+			for (final PlayerRecord record : records) {
+				if (record.getCreatedBans().size() == 0) {
+					continue;
+				}
+				names.add(record.getName());
 			}
-			names.add(record.getName());
 		}
 		return names;
 	}
