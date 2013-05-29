@@ -1,5 +1,7 @@
 Changelog for BanHammer (v2.2.1-SNAPSHOT)
 
+2013-05-29 22:49:25 +0100    add missing colon (James Richardson)
+2013-05-29 21:55:07 +0100    finally finished updating (James Richardson)
 2013-05-29 17:55:36 +0100    implemented caching for tab completion of creator names (James Richardson)
 2013-05-29 17:37:29 +0100    refactored UndoCommand (James Richardson)
 2013-05-29 17:10:44 +0100    updated management commands (James Richardson)
