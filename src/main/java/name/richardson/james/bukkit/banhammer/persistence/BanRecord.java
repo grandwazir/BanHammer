@@ -277,9 +277,7 @@ public class BanRecord {
 	 * @return the state
 	 */
 	public State getState() {
-		if (this.expiresAt == null) { return this.state; }
-		final Timestamp now = new Timestamp(System.currentTimeMillis());
-		return (now.after(this.expiresAt)) ? State.EXPIRED : this.state;
+		return this.state;
 	}
 
 	/**

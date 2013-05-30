@@ -1,5 +1,6 @@
 Changelog for BanHammer (v2.2.1-SNAPSHOT)
 
+2013-05-30 00:49:34 +0100    disable alias by default (James Richardson)
 2013-05-29 23:57:51 +0100    readded check to disable stats collection (James Richardson)
 2013-05-29 23:52:53 +0100    seperated ability to permanently ban and ban immune players fixed a bug where it would be possible to ban immune players this also fixes #61 (James Richardson)
 2013-05-29 23:43:51 +0100    checked and removed missing, duplicate and unused localisation keys (James Richardson)

@@ -35,6 +35,7 @@ import name.richardson.james.bukkit.banhammer.ban.CheckCommand;
 import name.richardson.james.bukkit.banhammer.ban.HistoryCommand;
 import name.richardson.james.bukkit.banhammer.ban.LimitsCommand;
 import name.richardson.james.bukkit.banhammer.ban.PardonCommand;
+import name.richardson.james.bukkit.banhammer.ban.PlayerListener;
 import name.richardson.james.bukkit.banhammer.ban.PurgeCommand;
 import name.richardson.james.bukkit.banhammer.ban.RecentCommand;
 import name.richardson.james.bukkit.banhammer.ban.UndoCommand;

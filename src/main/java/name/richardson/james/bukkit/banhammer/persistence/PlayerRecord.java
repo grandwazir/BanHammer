@@ -17,7 +17,6 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.persistence;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -78,51 +77,6 @@ public class PlayerRecord {
 			PlayerRecord.removeDuplicates(database, playerName);
 			return PlayerRecord.find(database, playerName);
 		}
-	}
-
-	public static List<String> getBanCreatorsThatStartWith(final EbeanServer database, final String name) {
-		final List<String> names = new ArrayList<String>();
-		final List<PlayerRecord> records = database.find(PlayerRecord.class).where().istartsWith("name", name).findList();
-		for (final PlayerRecord record : records) {
-			if (record.getCreatedBans().size() == 0) {
-				continue;
-			}
-			names.add(record.getName());
-		}
-		return names;
-	}
-
-	public static List<String> getPlayersThatStartWith(final EbeanServer database, final String name) {
-		final List<String> names = new ArrayList<String>();
-		final List<PlayerRecord> records = database.find(PlayerRecord.class).where().istartsWith("name", name).findList();
-		for (final PlayerRecord record : records) {
-			names.add(record.getName());
-		}
-		return names;
-	}
-
-	public static List<String> getPlayersWithActiveBansThatStartWith(final EbeanServer database, final String name) {
-		final List<String> names = new ArrayList<String>();
-		final List<PlayerRecord> records = database.find(PlayerRecord.class).where().istartsWith("name", name).findList();
-		for (final PlayerRecord record : records) {
-			if (!record.isBanned()) {
-				continue;
-			}
-			names.add(record.getName());
-		}
-		return names;
-	}
-
-	public static List<String> getPlayersWithBansThatStartWith(final EbeanServer database, final String name) {
-		final List<String> names = new ArrayList<String>();
-		final List<PlayerRecord> records = database.find(PlayerRecord.class).where().istartsWith("name", name).findList();
-		for (final PlayerRecord record : records) {
-			if (record.getBans().size() == 0) {
-				continue;
-			}
-			names.add(record.getName());
-		}
-		return names;
 	}
 
 	/**
