@@ -52,9 +52,13 @@ public class PlayerRecordMatcher implements Matcher {
 	public List<String> getMatches(String argument) {
 		argument = argument.toLowerCase();
 		final List<String> names = new ArrayList<String>();
-		for (final String playerName : PlayerRecordMatcher.names) {
-			if (playerName.startsWith(argument)) {
-				names.add(playerName);
+		// this is here to prevent large database sets disconnecting clients
+		// up to around 1000 names appears to be ok at once.
+		if (argument.length() != 0) {
+			for (final String playerName : PlayerRecordMatcher.names) {
+				if (playerName.startsWith(argument)) {
+					names.add(playerName);
+				}
 			}
 		}
 		return names;
