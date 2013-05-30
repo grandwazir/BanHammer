@@ -46,9 +46,11 @@ public class CreatorPlayerRecordMatcher extends PlayerRecordMatcher {
 	public List<String> getMatches(String argument) {
 		argument = argument.toLowerCase();
 		final List<String> names = new ArrayList<String>();
-		for (final String playerName : CreatorPlayerRecordMatcher.names) {
-			if (playerName.startsWith(argument)) {
-				names.add(playerName);
+		if (argument.length() != 0) {
+			for (final String playerName : CreatorPlayerRecordMatcher.names) {
+				if (playerName.startsWith(argument)) {
+					names.add(playerName);
+				}
 			}
 		}
 		return names;
