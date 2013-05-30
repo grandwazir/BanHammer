@@ -1,5 +1,7 @@
 Changelog for BanHammer (v2.2.1-SNAPSHOT)
 
+2013-05-30 03:50:36 +0100    actually changed my mind. it is unlikely to ever happen here. (James Richardson)
+2013-05-30 03:49:23 +0100    added same protection to CreatorPlayerRecordMatcher just in case (James Richardson)
 2013-05-30 03:46:41 +0100    add disconnect protection to PlayerRecordMatcher as well (James Richardson)
 2013-05-30 03:45:24 +0100    fix CreatorPlayerRecordMatcher not updating when bans are made (James Richardson)
 2013-05-30 03:37:40 +0100    fix possible client disconnect this happens when you send a client a massive list for tab completion. The test database I am using as ~12000 entries. This should fix any possible problems by requiring at least 1 letter before we start matching. (James Richardson)
