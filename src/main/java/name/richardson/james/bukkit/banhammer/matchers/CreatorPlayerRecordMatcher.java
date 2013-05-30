@@ -14,7 +14,7 @@ public class CreatorPlayerRecordMatcher extends PlayerRecordMatcher {
 	private final static Set<String> names = new TreeSet<String>();
 
 	public static void onPlayerBanned(final BanHammerPlayerBannedEvent event) {
-		names.remove(event.getPlayerName().toLowerCase());
+		names.add(event.getPlayerName().toLowerCase());
 	}
 
 	public static void onPlayerPardoned(final BanHammerPlayerPardonedEvent event) {
