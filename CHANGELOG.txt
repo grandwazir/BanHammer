@@ -1,5 +1,9 @@
-Changelog for BanHammer (v2.2.2-SNAPSHOT)
+Changelog for BanHammer (v2.2.3-SNAPSHOT)
 
+2013-05-31 23:13:47 +0100    fix a breaking change a while back a automated cleanup changed the order of the enums for BanRecord effectively breaking things in interesting ways. This is now fixed any any broken installations should fix themselves over time. (James Richardson)
+
+v2.2.2
+2013-05-31 20:20:16 +0100    minimise the jar (James Richardson)
 2013-05-31 20:15:36 +0100    AliasPlayerListener now respects immune players This means that administrators can not be banned now by having someone get themselves banned, spoof the IP address of an administrator and then join the server. In this scenario the next time the administrator joins he will be banned. By placing admins in the immune player list we fix this problem. (James Richardson)
 2013-05-31 20:07:02 +0100    update to 5.0.2 fixes key not found error when using updater (James Richardson)
 
