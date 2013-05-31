@@ -210,7 +210,7 @@ public final class BanHammer extends AbstractPlugin {
 	private void registerListeners() {
 		new BannedPlayerListener(this);
 		if (this.configuration.isAliasEnabled() && (this.aliasHandler != null)) {
-			new AliasPlayerListener(this);
+			new AliasPlayerListener(this, this.configuration.getImmunePlayers());
 		}
 	}
 

@@ -35,13 +35,16 @@ public class AliasPlayerListener extends AbstractLocalisedListener {
 
 	private final BanHandler banhammer;
 
+	private final List<String> immunePlayers;
+
 	private final static Logger LOGGER = PluginLogger.getLogger(AliasPlayerListener.class);
 
-	public AliasPlayerListener(final BanHammer plugin) {
+	public AliasPlayerListener(final BanHammer plugin, final List<String> immunePlayers) {
 		super(plugin, ResourceBundles.MESSAGES);
 		this.database = plugin.getDatabase();
 		this.alias = plugin.getAliasHandler();
 		this.banhammer = plugin.getHandler();
+		this.immunePlayers = immunePlayers;
 		this.setPlayerRecords();
 	}
 
@@ -74,7 +77,7 @@ public class AliasPlayerListener extends AbstractLocalisedListener {
 		LOGGER.log(Level.FINER, "Possible matches: {0}", possibleMatches.size());
 		for (final PlayerNameRecord record : possibleMatches) {
 			final PlayerRecord alias = this.getPlayerRecord(record.getPlayerName());
-			if (alias.isBanned()) {
+			if (alias.isBanned() && !(this.immunePlayers.contains(playerName))) {
 				LOGGER.log(Level.FINE, "Match found: {0}. Bannning player.", alias.getName());
 				this.banhammer.banPlayer(playerName, alias.getActiveBan(), this.getMessage("misc.alias-ban-reason", alias.getName()), false);
 			}
