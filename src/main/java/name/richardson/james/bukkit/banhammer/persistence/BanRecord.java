@@ -46,11 +46,11 @@ public class BanRecord {
 	 */
 	public enum State {
 
-		/** If a ban has expired. */
-		EXPIRED,
-
 		/** If a ban is currently active. */
 		NORMAL,
+
+		/** If a ban has expired. */
+		EXPIRED,
 
 		/** If a ban has been pardoned. */
 		PARDONED
