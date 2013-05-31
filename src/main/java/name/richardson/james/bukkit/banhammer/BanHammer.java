@@ -35,7 +35,6 @@ import name.richardson.james.bukkit.banhammer.ban.CheckCommand;
 import name.richardson.james.bukkit.banhammer.ban.HistoryCommand;
 import name.richardson.james.bukkit.banhammer.ban.LimitsCommand;
 import name.richardson.james.bukkit.banhammer.ban.PardonCommand;
-import name.richardson.james.bukkit.banhammer.ban.PlayerListener;
 import name.richardson.james.bukkit.banhammer.ban.PurgeCommand;
 import name.richardson.james.bukkit.banhammer.ban.RecentCommand;
 import name.richardson.james.bukkit.banhammer.ban.UndoCommand;
@@ -168,9 +167,9 @@ public final class BanHammer extends AbstractPlugin {
 	private void hookAlias() {
 		final Alias plugin = (Alias) this.getServer().getPluginManager().getPlugin("Alias");
 		if (plugin == null) {
-			this.getCustomLogger().log(Level.WARNING, "banhammer.unable-to-hook-alias");
+			this.getCustomLogger().log(Level.WARNING, "warning.unable-to-hook-alias");
 		} else {
-			this.getCustomLogger().log(Level.FINE, "banhammer.alias-hooked", plugin.getDescription().getFullName() + ".");
+			this.getCustomLogger().log(Level.FINE, "Using {0}.", plugin.getDescription().getFullName());
 			this.aliasHandler = plugin.getHandler();
 		}
 	}
@@ -209,7 +208,10 @@ public final class BanHammer extends AbstractPlugin {
 	}
 
 	private void registerListeners() {
-		new PlayerListener(this);
+		new BannedPlayerListener(this);
+		if (this.configuration.isAliasEnabled() && (this.aliasHandler != null)) {
+			new AliasPlayerListener(this);
+		}
 	}
 
 }

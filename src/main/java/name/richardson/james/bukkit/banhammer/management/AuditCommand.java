@@ -54,8 +54,8 @@ public class AuditCommand extends AbstractCommand {
 		this.database = plugin.getDatabase();
 		this.formatter = new ChoiceFormatter(ResourceBundles.MESSAGES);
 		this.formatter.setLimits(0, 1, 2);
-		this.formatter.setMessage("auditcommand.header");
-		this.formatter.setFormats(this.getMessage("banhammer.no-bans"), this.getMessage("banhammer.one-ban"), this.getMessage("banhammer.many-bans"));
+		this.formatter.setMessage("notice.audit-header");
+		this.formatter.setFormats(this.getMessage("shared.choice.no-bans"), this.getMessage("shared.choice.one-ban"), this.getMessage("shared.choice.many-bans"));
 		// set banhammer.audit.own to true
 		Bukkit.getPluginManager().getPermission("banhammer.audit.self").setDefault(PermissionDefault.TRUE);
 	}
@@ -84,7 +84,7 @@ public class AuditCommand extends AbstractCommand {
 		int activeBans = 0;
 		int expiredBans = 0;
 		if (totalBans != 0) {
-			this.formatter.setMessage("auditcommand.header");
+			this.formatter.setMessage("notice.audit-header");
 			this.formatter.setArguments(bans.size(), this.playerName, this.getPercentage(bans.size(), BanRecord.list(this.database).size()));
 			sender.sendMessage(this.formatter.getMessage());
 			final Iterator<BanRecord> banIter = bans.iterator();
@@ -107,25 +107,25 @@ public class AuditCommand extends AbstractCommand {
 					}
 				}
 			}
-			sender.sendMessage(this.getMessage("auditcommand.type_summary"));
-			this.formatter.setMessage("auditcommand.permanent_bans");
+			sender.sendMessage(this.getMessage("notice.type-summary"));
+			this.formatter.setMessage("notice.permanent-bans-percentage");
 			this.formatter.setArguments(permanentBans, this.getPercentage(permanentBans, totalBans));
 			sender.sendMessage(this.formatter.getMessage());
-			this.formatter.setMessage("auditcommand.temporary_bans");
+			this.formatter.setMessage("notice.temporary-bans-percentage");
 			this.formatter.setArguments(temporaryBans, this.getPercentage(temporaryBans, totalBans));
 			sender.sendMessage(this.formatter.getMessage());
-			sender.sendMessage(this.getMessage("auditcommand.status_summary"));
-			this.formatter.setMessage("auditcommand.active_bans");
+			sender.sendMessage(this.getMessage("notice.status-summary"));
+			this.formatter.setMessage("notice.active-bans-percentage");
 			this.formatter.setArguments(activeBans, this.getPercentage(activeBans, totalBans));
 			sender.sendMessage(this.formatter.getMessage());
-			this.formatter.setMessage("auditcommand.expired_bans");
+			this.formatter.setMessage("notice.expired-bans-percentage");
 			this.formatter.setArguments(expiredBans, this.getPercentage(expiredBans, totalBans));
 			sender.sendMessage(this.formatter.getMessage());
-			this.formatter.setMessage("auditcommand.pardoned_bans");
+			this.formatter.setMessage("notice.pardoned-bans-percentage");
 			this.formatter.setArguments(pardonedBans, this.getPercentage(pardonedBans, totalBans));
 			sender.sendMessage(this.formatter.getMessage());
 		} else {
-			this.formatter.setMessage("auditcommand.header-no-percentage");
+			this.formatter.setMessage("notice.no-percentage");
 			this.formatter.setArguments(0, this.playerName);
 			sender.sendMessage(this.formatter.getMessage());
 		}

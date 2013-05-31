@@ -44,17 +44,17 @@ public class LimitsCommand extends AbstractCommand {
 		this.limits = limits;
 		this.formatter = new ChoiceFormatter();
 		this.formatter.setLimits(0, 1, 2);
-		this.formatter.setMessage("limitscommand.header");
+		this.formatter.setMessage("notice.limits-header");
 		this.formatter.setArguments(limits.size());
-		this.formatter.setFormats(this.getMessage("limitscommand.no-limits"), this.getMessage("limitscommand.one-limit"),
-			this.getMessage("limitscommand.many-limits"));
+		this.formatter.setFormats(this.getMessage("shared.choice.no-limits"), this.getMessage("shared.choice.one-limit"),
+			this.getMessage("shared.choice.many-limits"));
 
 	}
 
 	public void execute(final List<String> arguments, final CommandSender sender) {
 		if (this.limits.isEmpty()) {
 			// No no, no no no no, no no no no, no no there no limits!
-			sender.sendMessage(this.getMessage("limitscommand.no-limits"));
+			sender.sendMessage(this.formatter.getMessage());
 		} else {
 			sender.sendMessage(this.formatter.getMessage());
 			for (final Entry<String, Long> limit : this.limits.entrySet()) {
@@ -64,7 +64,7 @@ public class LimitsCommand extends AbstractCommand {
 				} else {
 					colour = ChatColor.RED;
 				}
-				sender.sendMessage(colour + this.getMessage("limitscommand.list-item", limit.getKey(), TimeFormatter.millisToLongDHMS(limit.getValue())));
+				sender.sendMessage(colour + this.getMessage("notice.limits-list-item", limit.getKey(), TimeFormatter.millisToLongDHMS(limit.getValue())));
 			}
 		}
 	}

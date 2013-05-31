@@ -1,5 +1,6 @@
 Changelog for BanHammer (v2.2.1-SNAPSHOT)
 
+2013-05-30 03:52:44 +0100    remove weird casing in localisation file (James Richardson)
 2013-05-30 03:50:36 +0100    actually changed my mind. it is unlikely to ever happen here. (James Richardson)
 2013-05-30 03:49:23 +0100    added same protection to CreatorPlayerRecordMatcher just in case (James Richardson)
 2013-05-30 03:46:41 +0100    add disconnect protection to PlayerRecordMatcher as well (James Richardson)

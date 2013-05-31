@@ -87,12 +87,12 @@ public class BanCommand extends AbstractCommand implements TabExecutor {
 
 	public void execute(final List<String> arguments, final CommandSender sender) {
 		if (arguments.isEmpty()) {
-			sender.sendMessage(this.getMessage("misc.warning.must-specify-player"));
+			sender.sendMessage(this.getMessage("error.must-specify-player"));
 		} else {
 			this.player = this.server.getOfflinePlayer(arguments.remove(0));
 			if (arguments.isEmpty()) {
-				sender.sendMessage(this.getMessage("bancommand.must-specify-a-reason"));
-				sender.sendMessage(this.getMessage("bancommand.reason-hint"));
+				sender.sendMessage(this.getMessage("error.must-specify-a-reason"));
+				sender.sendMessage(this.getMessage("notice.reason-hint"));
 				return;
 			} else {
 				if (arguments.get(0).startsWith("t:")) {
@@ -101,8 +101,8 @@ public class BanCommand extends AbstractCommand implements TabExecutor {
 					this.time = 0;
 				}
 				if (arguments.isEmpty()) {
-					sender.sendMessage(this.getMessage("bancommand.must-specify-a-reason"));
-					sender.sendMessage(this.getMessage("bancommand.reason-hint"));
+					sender.sendMessage(this.getMessage("error.must-specify-a-reason"));
+					sender.sendMessage(this.getMessage("notice.reason-hint"));
 					return;
 				} else {
 					this.reason = StringFormatter.combineString(arguments, " ");
@@ -111,12 +111,12 @@ public class BanCommand extends AbstractCommand implements TabExecutor {
 			// now set about banning the player
 			if (this.hasPermission(sender)) {
 				if (!this.handler.banPlayer(this.player.getName(), sender.getName(), this.reason, this.time, true)) {
-					sender.sendMessage(this.getMessage("bancommand.player-already-banned", this.player.getName()));
+					sender.sendMessage(this.getMessage("error.player-already-banned", this.player.getName()));
 				} else {
-					sender.sendMessage(this.getMessage("bancommand.player-banned", this.player.getName()));
+					sender.sendMessage(this.getMessage("notice.player-banned", this.player.getName()));
 				}
 			} else {
-				sender.sendMessage(this.getMessage("misc.warning.permission-denied"));
+				sender.sendMessage(this.getMessage("error.permission-denied"));
 			}
 		}
 
@@ -126,7 +126,7 @@ public class BanCommand extends AbstractCommand implements TabExecutor {
 		if (this.isAuthorized(sender)) {
 			this.execute(new LinkedList<String>(Arrays.asList(arguments)), sender);
 		} else {
-			sender.sendMessage(this.getMessage("misc.warning.permission-denied"));
+			sender.sendMessage(this.getMessage("error.permission-denied"));
 		}
 		return true;
 	}
@@ -159,7 +159,7 @@ public class BanCommand extends AbstractCommand implements TabExecutor {
 			final String parentPermissionName = this.getPermissionManager().listPermissions().get(0).getName();
 			for (final Entry<String, Long> limit : this.limits.entrySet()) {
 				final Permission permission =
-					new Permission(parentPermissionName + "." + limit.getKey(), this.getMessage("bancommand.limit-permission-description",
+					new Permission(parentPermissionName + "." + limit.getKey(), this.getMessage("misc.limit-permission-description",
 						TimeFormatter.millisToLongDHMS(limit.getValue())), PermissionDefault.OP);
 				permission.addParent(parentPermissionName, true);
 				this.getPermissionManager().addPermission(permission);

@@ -23,7 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -33,11 +33,12 @@ import com.avaje.ebean.EbeanServer;
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord.State;
+import name.richardson.james.bukkit.banhammer.persistence.BanRecord.Type;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
 import name.richardson.james.bukkit.utilities.localisation.Localised;
 import name.richardson.james.bukkit.utilities.localisation.ResourceBundles;
-import name.richardson.james.bukkit.utilities.logging.Logger;
+import name.richardson.james.bukkit.utilities.logging.PluginLogger;
 
 /*
  * A simple implementation of the BanHandler interace.
@@ -51,7 +52,7 @@ public class SimpleBanHandler implements Localised, BanHandler {
 	private final ResourceBundle localisation = ResourceBundle.getBundle(ResourceBundles.MESSAGES.getBundleName());
 
 	/* Logger for this class */
-	private final Logger logger = new Logger(this, ResourceBundles.MESSAGES);
+	private final Logger logger = PluginLogger.getLogger(this.getClass());
 
 	/**
 	 * Instantiates a new ban handler.
@@ -72,7 +73,6 @@ public class SimpleBanHandler implements Localised, BanHandler {
 	 * java.lang.String, boolean)
 	 */
 	public boolean banPlayer(final String playerName, final BanRecord sourceBan, final String reason, final boolean notify) {
-		System.out.append(this.database.toString());
 		final PlayerRecord player = PlayerRecord.find(this.database, playerName);
 		if (player.isBanned()) { return false; }
 		final PlayerRecord creator = sourceBan.getCreator();
@@ -82,11 +82,11 @@ public class SimpleBanHandler implements Localised, BanHandler {
 		ban.setReason(reason);
 		ban.setState(BanRecord.State.NORMAL);
 		ban.setCreatedAt(sourceBan.getCreatedAt());
-		if (sourceBan.getExpiresAt().getTime() != 0) {
+		if (sourceBan.getType() == Type.TEMPORARY) {
 			ban.setExpiresAt(sourceBan.getExpiresAt());
 		}
+		new BanHammerPlayerBannedEvent(ban, !notify, true);
 		this.database.save(ban);
-		this.logger.log(Level.INFO, this.getMessage("banhandler.player-banned", playerName, sourceBan.getCreator().getName(), reason));
 		return true;
 	}
 
@@ -112,9 +112,8 @@ public class SimpleBanHandler implements Localised, BanHandler {
 			ban.setExpiresAt(new Timestamp(now + banLength));
 		}
 		this.database.save(ban);
-		final BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(ban, !notify);
+		final BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(ban, !notify, false);
 		Bukkit.getServer().getPluginManager().callEvent(event);
-		this.logger.log(Level.INFO, this.getMessage("banhandler.player-banned", playerName, senderName, reason));
 		return true;
 	}
 
@@ -194,10 +193,8 @@ public class SimpleBanHandler implements Localised, BanHandler {
 			final BanRecord banRecord = playerRecord.getActiveBan();
 			final BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(banRecord, !notify);
 			banRecord.setState(State.PARDONED);
-			this.database.save(banRecord);
+			this.database.update(banRecord);
 			Bukkit.getServer().getPluginManager().callEvent(event);
-			final Object params[] = { playerName, senderName };
-			this.logger.log(Level.INFO, "banhandler.player-pardoned", params);
 			return true;
 		} else {
 			return false;

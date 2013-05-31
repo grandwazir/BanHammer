@@ -54,7 +54,7 @@ public class BanSummary implements Localised {
 	 */
 	public String getExpiresAt() {
 		final String expiryDateString = BanHammer.SHORT_DATE_FORMAT.format(this.record.getExpiresAt());
-		return this.getMessage("bansummary.expires", expiryDateString);
+		return this.getMessage("shared.expires", expiryDateString);
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class BanSummary implements Localised {
 	 */
 	public String getHeader() {
 		final String date = BanHammer.SHORT_DATE_FORMAT.format(this.record.getCreatedAt());
-		return this.getMessage("bansummary.header", this.record.getPlayer().getName(), this.record.getCreator().getName(), date);
+		return this.getMessage("shared.header", this.record.getPlayer().getName(), this.record.getCreator().getName(), date);
 	}
 
 	/**
@@ -75,10 +75,10 @@ public class BanSummary implements Localised {
 	 */
 	public String getLength() {
 		if (this.record.getType() == BanRecord.Type.PERMANENT) {
-			return this.getMessage("bansummary.length", this.getMessage("bansummary.permanent"));
+			return this.getMessage("shared.length", this.getMessage("shared.permanent"));
 		} else {
 			final long length = this.record.getExpiresAt().getTime() - this.record.getCreatedAt().getTime();
-			return this.getMessage("bansummary.length", TimeFormatter.millisToLongDHMS(length));
+			return this.getMessage("shared.length", TimeFormatter.millisToLongDHMS(length));
 		}
 	}
 
@@ -102,7 +102,7 @@ public class BanSummary implements Localised {
 	 * @return the reason
 	 */
 	public String getReason() {
-		return this.getMessage("bansummary.reason", this.record.getReason());
+		return this.getMessage("shared.reason", this.record.getReason());
 	}
 
 	/**
@@ -112,7 +112,7 @@ public class BanSummary implements Localised {
 	 */
 	public String getSelfHeader() {
 		final String date = BanHammer.SHORT_DATE_FORMAT.format(this.record.getCreatedAt());
-		return this.getMessage("bansummary.self-header", this.record.getCreator().getName(), date);
+		return this.getMessage("shared.header-self", this.record.getCreator().getName(), date);
 	}
 
 }

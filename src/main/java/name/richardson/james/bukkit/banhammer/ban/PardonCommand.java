@@ -59,19 +59,19 @@ public class PardonCommand extends AbstractCommand implements TabExecutor {
 
 	public void execute(final List<String> arguments, final CommandSender sender) {
 		if (arguments.isEmpty()) {
-			sender.sendMessage(this.getMessage("misc.warning.must-specify-player"));
+			sender.sendMessage(this.getMessage("error.must-specify-player"));
 		} else {
 			final OfflinePlayer player = this.server.getOfflinePlayer(arguments.remove(0));
 			final BanRecord ban = PlayerRecord.find(this.database, player.getName()).getActiveBan();
 			if (ban == null) {
-				sender.sendMessage(this.getMessage("misc.notice.player-is-not-banned", player.getName()));
+				sender.sendMessage(this.getMessage("error.player-is-not-banned", player.getName()));
 			} else
 				if (this.hasPermission(sender, player.getName())) {
 					this.handler.pardonPlayer(player.getName(), sender.getName(), true);
 					player.setBanned(false);
-					sender.sendMessage(this.getMessage("pardoncommand.pardoned", player.getName()));
+					sender.sendMessage(this.getMessage("notice.player-pardoned-action", player.getName()));
 				} else {
-					sender.sendMessage(this.getMessage("misc.warning.permission-denied"));
+					sender.sendMessage(this.getMessage("error.permission-denied"));
 				}
 		}
 	}
@@ -80,7 +80,7 @@ public class PardonCommand extends AbstractCommand implements TabExecutor {
 		if (this.isAuthorized(sender)) {
 			this.execute(new LinkedList<String>(Arrays.asList(arguments)), sender);
 		} else {
-			sender.sendMessage(this.getMessage("misc.warning.permission-denied"));
+			sender.sendMessage(this.getMessage("error.permission-denied"));
 		}
 		return true;
 	}

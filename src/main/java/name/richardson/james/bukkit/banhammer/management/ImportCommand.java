@@ -19,6 +19,7 @@ package name.richardson.james.bukkit.banhammer.management;
 
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
@@ -27,13 +28,13 @@ import org.bukkit.command.CommandSender;
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
-import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
+import name.richardson.james.bukkit.utilities.command.CommandPermissions;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 import name.richardson.james.bukkit.utilities.formatters.StringFormatter;
 import name.richardson.james.bukkit.utilities.localisation.ResourceBundles;
-import name.richardson.james.bukkit.utilities.logging.Logger;
+import name.richardson.james.bukkit.utilities.logging.PluginLogger;
 
-@ConsoleCommand
+@CommandPermissions(permissions = { "banhammer.import" })
 public class ImportCommand extends AbstractCommand {
 
 	private final ChoiceFormatter formatter;
@@ -47,7 +48,7 @@ public class ImportCommand extends AbstractCommand {
 	/** A instance of the Bukkit server. */
 	private final Server server;
 
-	private final Logger logger = new Logger(this);
+	private final Logger logger = PluginLogger.getLogger(this.getClass());
 
 	private CommandSender sender;
 
@@ -57,24 +58,24 @@ public class ImportCommand extends AbstractCommand {
 		this.server = plugin.getServer();
 		this.formatter = new ChoiceFormatter(ResourceBundles.MESSAGES);
 		this.formatter.setLimits(0, 1, 2);
-		this.formatter.setFormats(this.getMessage("banhammer.no-bans"), this.getMessage("banhammer.one-ban"), this.getMessage("banhammer.many-bans"));
+		this.formatter.setFormats(this.getMessage("shared.choice.no-bans"), this.getMessage("shared.choice.one-ban"), this.getMessage("shared.choice.many-bans"));
 	}
 
 	public void execute(final List<String> arguments, final CommandSender sender) {
 		final int totalBans = this.server.getBannedPlayers().size();
 		if (arguments.isEmpty()) {
-			this.reason = this.getMessage("importcommand.default-reason");
+			this.reason = this.getMessage("misc.default-import-reason");
 		} else {
 			StringFormatter.combineString(arguments, " ");
 		}
 		this.sender = sender;
 		final int totalImported = this.importBans();
 		// send outcome to the player
-		this.formatter.setMessage("importcommand.bans-imported");
+		this.formatter.setMessage("notice.bans-imported");
 		this.formatter.setArguments(totalImported);
 		sender.sendMessage(this.formatter.getMessage());
 		if (totalImported != totalBans) {
-			this.formatter.setMessage("importcommand.bans-failed");
+			this.formatter.setMessage("warning.bans-failed");
 			this.formatter.setArguments(totalBans - totalImported);
 			sender.sendMessage(this.formatter.getMessage());
 		}
@@ -90,7 +91,7 @@ public class ImportCommand extends AbstractCommand {
 				player.setBanned(false);
 				total = total + 1;
 			} else {
-				this.logger.log(Level.WARNING, "importcommand.unable-to-import", player.getName());
+				this.logger.log(Level.WARNING, "misc.unable-to-import", player.getName());
 			}
 		}
 		return total;

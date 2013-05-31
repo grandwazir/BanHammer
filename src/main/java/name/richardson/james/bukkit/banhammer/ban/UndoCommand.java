@@ -59,18 +59,18 @@ public class UndoCommand extends AbstractCommand {
 		final PlayerRecord playerRecord = PlayerRecord.find(this.database, this.playerName);
 		final List<BanRecord> playerBans = playerRecord.getCreatedBans();
 		if (playerBans.isEmpty()) {
-			sender.sendMessage(this.getMessage("undocommand.no-ban-to-undo"));
+			sender.sendMessage(this.getMessage("notice.no-ban-to-undo"));
 		} else {
 			// get the last ban in the list which always the most recent ban
 			final BanRecord ban = playerBans.get(playerBans.size() - 1);
 			if (this.hasPermission(sender, ban.getCreatedAt())) {
 				this.database.delete(ban);
 				Bukkit.getPluginManager().callEvent(new BanHammerPlayerPardonedEvent(ban, false));
-				sender.sendMessage(this.getMessage("undocommand.success", ban.getPlayer().getName()));
+				sender.sendMessage(this.getMessage("notice.ban-undone", ban.getPlayer().getName()));
 			} else {
-				sender.sendMessage(this.getMessage("misc.warning.permission-denied"));
+				sender.sendMessage(this.getMessage("error.permission-denied"));
 				if (!this.withinTimeLimit(sender, ban.getCreatedAt())) {
-					sender.sendMessage(this.getMessage("undocommand.time-expired"));
+					sender.sendMessage(this.getMessage("error.undo-time-expired"));
 				}
 			}
 		}
@@ -85,7 +85,7 @@ public class UndoCommand extends AbstractCommand {
 		final PlayerRecord playerRecord = PlayerRecord.find(this.database, this.playerName);
 		final List<BanRecord> playerBans = playerRecord.getCreatedBans();
 		if (playerBans.isEmpty()) {
-			sender.sendMessage(this.getMessage("undocommand.no-ban-to-undo"));
+			sender.sendMessage(this.getMessage("notice.no-ban-to-undo"));
 		}
 	}
 

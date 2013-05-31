@@ -1,0 +1,14 @@
+logging: INFO
+automatic-updates:
+  enabled: true
+  method: notify
+  branch: stable
+ban-limits:
+  warning: 1h
+  short: 1d
+  medium: 3d
+  long: 7d
+immune-players: {}
+alias-plugin:
+  enabled: true
+undo-time: 1m

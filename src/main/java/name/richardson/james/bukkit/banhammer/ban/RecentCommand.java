@@ -27,10 +27,10 @@ import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
-import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
+import name.richardson.james.bukkit.utilities.command.CommandPermissions;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 
-@ConsoleCommand
+@CommandPermissions(permissions = { "banhammer.recent" })
 public class RecentCommand extends AbstractCommand {
 
 	public static final int DEFAULT_LIMIT = 5;
@@ -47,9 +47,8 @@ public class RecentCommand extends AbstractCommand {
 		this.database = plugin.getDatabase();
 		this.formatter = new ChoiceFormatter();
 		this.formatter.setLimits(0, 1, 2);
-		this.formatter.setMessage("recentcommand.header");
-		this.formatter.setFormats(this.getMessage("misc.choiceformatter.no-bans"), this.getMessage("misc.choiceformatter.one-ban"),
-			this.getMessage("misc.choiceformatter.many-bans"));
+		this.formatter.setMessage("notice.recent-header");
+		this.formatter.setFormats(this.getMessage("shared.choice.no-bans"), this.getMessage("shared.choice.one-ban"), this.getMessage("shared.choice.many-bans"));
 	}
 
 	public void execute(final List<String> arguments, final CommandSender sender) {
@@ -76,7 +75,7 @@ public class RecentCommand extends AbstractCommand {
 				}
 			}
 		} else {
-			sender.sendMessage(this.getMessage("recentcommand.no-bans"));
+			sender.sendMessage(this.getMessage("notice.no-recent-bans"));
 		}
 	}
 

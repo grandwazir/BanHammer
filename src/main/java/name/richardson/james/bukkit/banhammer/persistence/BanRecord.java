@@ -289,6 +289,13 @@ public class BanRecord {
 		return (this.expiresAt == null) ? BanRecord.Type.PERMANENT : BanRecord.Type.TEMPORARY;
 	}
 
+	public boolean hasExpired() {
+		if ((this.getType() == Type.TEMPORARY) && (this.getState() == State.NORMAL)) {
+			if ((this.expiresAt.getTime() - System.currentTimeMillis()) < 0) { return true; }
+		}
+		return false;
+	}
+
 	/**
 	 * Sets the created at.
 	 * 
@@ -357,6 +364,18 @@ public class BanRecord {
 	 */
 	public void setState(final State state) {
 		this.state = state;
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder builder = new StringBuilder();
+		builder.append("id: ").append(this.id).append(", ");
+		builder.append("reason: ").append(this.reason).append(", ");
+		builder.append("expiresAt: ").append(this.expiresAt).append(", ");
+		builder.append("createdAt: ").append(this.createdAt).append(", ");
+		builder.append("playerRecord: ").append(this.player.getId()).append(", ");
+		builder.append("state: ").append(this.getState()).append(", ");
+		return builder.toString();
 	}
 
 }

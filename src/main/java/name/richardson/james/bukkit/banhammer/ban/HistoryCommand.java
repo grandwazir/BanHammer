@@ -19,7 +19,9 @@ package name.richardson.james.bukkit.banhammer.ban;
 
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
@@ -49,9 +51,9 @@ public class HistoryCommand extends AbstractCommand {
 		this.handler = plugin.getHandler();
 		this.formatter = new ChoiceFormatter();
 		this.formatter.setLimits(0, 1, 2);
-		this.formatter.setMessage("historycommand.header");
-		this.formatter.setFormats(this.getMessage("misc.choiceformatter.no-bans"), this.getMessage("misc.choiceformatter.one-ban"),
-			this.getMessage("misc.choiceformatter.many-bans"));
+		this.formatter.setMessage("notice.history-header");
+		this.formatter.setFormats(this.getMessage("shared.choice.no-bans"), this.getMessage("shared.choice.one-ban"), this.getMessage("shared.choice.many-bans"));
+		Bukkit.getPluginManager().getPermission("banhammer.history.own").setDefault(PermissionDefault.TRUE);
 	}
 
 	public void execute(final List<String> arguments, final CommandSender sender) {
@@ -65,7 +67,7 @@ public class HistoryCommand extends AbstractCommand {
 			final List<BanRecord> bans = this.handler.getPlayerBans(this.playerName);
 			this.displayHistory(bans, sender);
 		} else {
-			sender.sendMessage(this.getMessage("misc.warning.permission-denied"));
+			sender.sendMessage(this.getMessage("error.permission-denied"));
 		}
 
 	}

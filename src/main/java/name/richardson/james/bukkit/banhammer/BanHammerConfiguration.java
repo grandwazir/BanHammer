@@ -25,18 +25,19 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.bukkit.configuration.ConfigurationSection;
 
 import name.richardson.james.bukkit.utilities.configuration.SimplePluginConfiguration;
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
-import name.richardson.james.bukkit.utilities.logging.Logger;
+import name.richardson.james.bukkit.utilities.logging.PluginLogger;
 
 public class BanHammerConfiguration extends SimplePluginConfiguration {
 
 	/** The configured ban limits. */
 	private final Map<String, Long> limits = new LinkedHashMap<String, Long>();
-	private final Logger logger = new Logger(this);
+	private final Logger logger = PluginLogger.getLogger(this.getClass());
 
 	public BanHammerConfiguration(final File file, final InputStream defaults) throws IOException {
 		super(file, defaults);

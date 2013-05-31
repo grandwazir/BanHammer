@@ -59,17 +59,18 @@ public class KickCommand extends AbstractCommand implements TabExecutor {
 		this.sender = sender;
 		// Parse the arguments
 		if (arguments.isEmpty()) {
-			sender.sendMessage(this.getMessage("misc.warning.must-specify-player:"));
+			sender.sendMessage(this.getMessage("error.must-specify-player"));
+			return;
 		} else {
 			this.player = this.server.getPlayer(arguments.remove(0));
 			if (!arguments.isEmpty()) {
 				this.reason = StringFormatter.combineString(arguments, " ");
 			} else {
-				this.reason = this.getMessage("kickcommand.default-reason");
+				this.reason = this.getMessage("misc.kick-default-reason");
 			}
 		}
 		if (this.player == null) {
-			sender.sendMessage(this.getMessage("misc.warning.must-specify-player:"));
+			sender.sendMessage(this.getMessage("error.must-specify-player"));
 		} else {
 			this.kickPlayer();
 		}
@@ -81,7 +82,7 @@ public class KickCommand extends AbstractCommand implements TabExecutor {
 		if (this.isAuthorized(sender)) {
 			this.execute(new LinkedList<String>(Arrays.asList(arguments)), sender);
 		} else {
-			sender.sendMessage(this.getMessage("misc.warning.permission-denied"));
+			sender.sendMessage(this.getMessage("error.permission-denied"));
 		}
 		return true;
 	}
@@ -92,9 +93,9 @@ public class KickCommand extends AbstractCommand implements TabExecutor {
 
 	private void kickPlayer() {
 		if (this.player.isOnline()) {
-			this.player.kickPlayer(this.getMessage("playerlistener.kicked", this.reason, this.sender.getName()));
-			this.server.broadcast(this.getMessage("kickcommand.kicked", this.player.getName(), this.sender.getName()), "banhammer.notify");
-			this.server.broadcast(this.getMessage("kickcommand.reason", this.reason), "banhammer.notify");
+			this.player.kickPlayer(this.getMessage("ui.kicked-message", this.reason, this.sender.getName()));
+			this.server.broadcast(this.getMessage("notice.player-kicked", this.player.getName(), this.sender.getName()), "banhammer.notify");
+			this.server.broadcast(this.getMessage("shared.reason", this.reason), "banhammer.notify");
 		}
 	}
 
