@@ -2,6 +2,7 @@
 http://grandwazir.github.com/BanHammer/sitemap.txt
 http://grandwazir.github.com/BanHammer/index.html
 http://grandwazir.github.com/BanHammer/versions/2.0.0.html
+http://grandwazir.github.com/BanHammer/versions/2.2.1.html
 http://grandwazir.github.com/BanHammer/versions/2.0.5.html
 http://grandwazir.github.com/BanHammer/versions/2.1.0.html
 http://grandwazir.github.com/BanHammer/versions/2.0.2.html
