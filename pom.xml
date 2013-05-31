@@ -61,6 +61,7 @@
                       <shadedPattern>name.richardson.james.bukkit.banhammer.utilities</shadedPattern>
                     </relocation>
                   </relocations>
+                  <minimizeJar>true</minimizeJar>
                 </configuration>
               </execution>
             </executions>
