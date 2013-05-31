@@ -130,6 +130,7 @@ public final class BanHammer extends AbstractPlugin {
 			this.setPermissions();
 			this.registerCommands();
 			this.registerListeners();
+			this.setupMetrics();
 			this.updatePlugin();
 		} catch (final IOException e) {
 			e.printStackTrace();
