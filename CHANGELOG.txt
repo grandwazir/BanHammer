@@ -1,5 +1,12 @@
-Changelog for BanHammer (v2.2.3-SNAPSHOT)
+Changelog for BanHammer (v2.2.5-SNAPSHOT)
 
+2013-06-01 01:30:45 +0100    fix NPE when checking for immune players and alias is enabled (James Richardson)
+
+v2.2.4
+2013-06-01 00:13:51 +0100    actually start metrics (James Richardson)
+
+v2.2.3
+2013-05-31 23:20:05 +0100    prepare to release (James Richardson)
 2013-05-31 23:13:47 +0100    fix a breaking change a while back a automated cleanup changed the order of the enums for BanRecord effectively breaking things in interesting ways. This is now fixed any any broken installations should fix themselves over time. (James Richardson)
 
 v2.2.2

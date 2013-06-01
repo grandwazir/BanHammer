@@ -21,13 +21,13 @@ import java.io.IOException;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 
 import com.avaje.ebean.EbeanServer;
 
 import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerBannedEvent;
 import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
-import name.richardson.james.bukkit.utilities.listener.Listener;
 import name.richardson.james.bukkit.utilities.metrics.Metrics;
 import name.richardson.james.bukkit.utilities.metrics.Metrics.Graph;
 import name.richardson.james.bukkit.utilities.metrics.Metrics.Plotter;

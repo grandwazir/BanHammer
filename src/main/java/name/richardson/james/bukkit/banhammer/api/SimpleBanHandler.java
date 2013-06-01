@@ -23,7 +23,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -38,7 +37,6 @@ import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
 import name.richardson.james.bukkit.utilities.localisation.Localised;
 import name.richardson.james.bukkit.utilities.localisation.ResourceBundles;
-import name.richardson.james.bukkit.utilities.logging.PluginLogger;
 
 /*
  * A simple implementation of the BanHandler interace.
@@ -50,9 +48,6 @@ public class SimpleBanHandler implements Localised, BanHandler {
 
 	/* Localisation messages for BanHammer */
 	private final ResourceBundle localisation = ResourceBundle.getBundle(ResourceBundles.MESSAGES.getBundleName());
-
-	/* Logger for this class */
-	private final Logger logger = PluginLogger.getLogger(this.getClass());
 
 	/**
 	 * Instantiates a new ban handler.
