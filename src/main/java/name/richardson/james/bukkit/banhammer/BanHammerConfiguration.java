@@ -20,6 +20,7 @@ package name.richardson.james.bukkit.banhammer;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -54,7 +55,8 @@ public class BanHammerConfiguration extends SimplePluginConfiguration {
 	}
 
 	public List<String> getImmunePlayers() {
-		return this.getConfiguration().getStringList("immune-players");
+		final List<String> list = this.getConfiguration().getStringList("immune-players");
+		return (list != null) ? list : new ArrayList<String>();
 	}
 
 	public long getUndoTime() {
