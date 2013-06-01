@@ -1,5 +1,6 @@
 Changelog for BanHammer (v2.2.5-SNAPSHOT)
 
+2013-06-01 01:38:00 +0100    fix interesting bug regarding using the wrong listener (James Richardson)
 2013-06-01 01:30:45 +0100    fix NPE when checking for immune players and alias is enabled (James Richardson)
 
 v2.2.4
