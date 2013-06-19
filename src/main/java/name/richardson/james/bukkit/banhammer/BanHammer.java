@@ -38,6 +38,7 @@ import name.richardson.james.bukkit.banhammer.management.ExportCommand;
 import name.richardson.james.bukkit.banhammer.management.ImportCommand;
 import name.richardson.james.bukkit.banhammer.matchers.BanLimitMatcher;
 import name.richardson.james.bukkit.banhammer.matchers.PlayerRecordMatcher;
+import name.richardson.james.bukkit.banhammer.metrics.MetricsListener;
 import name.richardson.james.bukkit.banhammer.persistence.BanHammerConfiguration;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
