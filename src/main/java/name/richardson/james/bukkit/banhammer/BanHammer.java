@@ -28,6 +28,7 @@ import java.util.logging.Level;
 
 import name.richardson.james.bukkit.alias.Alias;
 import name.richardson.james.bukkit.alias.AliasHandler;
+import name.richardson.james.bukkit.banhammer.alias.AliasPlayerListener;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
 import name.richardson.james.bukkit.banhammer.api.SimpleBanHandler;
 import name.richardson.james.bukkit.banhammer.ban.BanCommand;

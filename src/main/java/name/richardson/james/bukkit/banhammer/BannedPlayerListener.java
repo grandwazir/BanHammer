@@ -18,6 +18,7 @@ import org.bukkit.plugin.Plugin;
 
 import com.avaje.ebean.EbeanServer;
 
+import name.richardson.james.bukkit.banhammer.alias.AliasPlayerListener;
 import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerBannedEvent;
 import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
 import name.richardson.james.bukkit.banhammer.ban.BanSummary;

@@ -1,4 +1,4 @@
-package name.richardson.james.bukkit.banhammer;
+package name.richardson.james.bukkit.banhammer.alias;
 
 import java.lang.ref.SoftReference;
 import java.util.Collection;
@@ -18,6 +18,7 @@ import com.avaje.ebean.EbeanServer;
 
 import name.richardson.james.bukkit.alias.AliasHandler;
 import name.richardson.james.bukkit.alias.persistence.PlayerNameRecord;
+import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
