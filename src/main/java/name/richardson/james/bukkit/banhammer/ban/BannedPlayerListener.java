@@ -1,4 +1,4 @@
-package name.richardson.james.bukkit.banhammer;
+package name.richardson.james.bukkit.banhammer.ban;
 
 import java.lang.ref.SoftReference;
 import java.util.HashMap;
@@ -18,6 +18,7 @@ import org.bukkit.plugin.Plugin;
 
 import com.avaje.ebean.EbeanServer;
 
+import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.alias.AliasPlayerListener;
 import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerBannedEvent;
 import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
