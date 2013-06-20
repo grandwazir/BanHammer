@@ -35,85 +35,6 @@ import com.avaje.ebean.validation.NotNull;
 @Table(name = "banhammer_players")
 public class PlayerRecord {
 
-	/**
-	 * Check if a PlayerRecord exists for this player.
-	 * 
-	 * @param database
-	 *          the database to use
-	 * @param playerName
-	 *          the player name
-	 * @return true, if successful
-	 */
-	public static boolean exists(final EbeanServer database, final String playerName) {
-		try {
-			final PlayerRecord record = database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
-			return (record != null);
-		} catch (final PersistenceException exception) {
-			if (!exception.getLocalizedMessage().contains("Unique expecting 0 or 1 rows")) { throw exception; }
-			PlayerRecord.removeDuplicates(database, playerName);
-			return PlayerRecord.exists(database, playerName);
-		}
-	}
-
-	/**
-	 * Find a PlayerRecord matching a specific player.
-	 * 
-	 * @param database
-	 *          the database
-	 * @param playerName
-	 *          the player name
-	 * @return the player record
-	 */
-	public static PlayerRecord find(final EbeanServer database, final String playerName) {
-		try {
-			PlayerRecord record = database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
-			if (record == null) {
-				record = new PlayerRecord();
-				record.setName(playerName);
-			}
-			return record;
-		} catch (final PersistenceException exception) {
-			if (!exception.getLocalizedMessage().contains("Unique expecting 0 or 1 rows")) { throw exception; }
-			PlayerRecord.removeDuplicates(database, playerName);
-			return PlayerRecord.find(database, playerName);
-		}
-	}
-
-	/**
-	 * Get a list containing all players.
-	 * 
-	 * @param database
-	 *          the database
-	 * @return all the players in the database
-	 */
-	public static List<PlayerRecord> list(final EbeanServer database) {
-		return database.find(PlayerRecord.class).findList();
-	}
-
-	/**
-	 * Delete duplicate player records.
-	 * 
-	 * This happened due to a bug introduced around version 2.0. I thought it was
-	 * not a major problem but it appears to be causing issues for many players.
-	 * This will automatically fix any issues as they are found.
-	 * 
-	 * @param database
-	 *          the database
-	 * @param playerName
-	 *          the player name
-	 * @return the player record
-	 */
-	private static void removeDuplicates(final EbeanServer database, final String playerName) {
-		final List<PlayerRecord> records = database.find(PlayerRecord.class).where().ieq("name", playerName).findList();
-		for (final PlayerRecord record : records) {
-			if ((record.getCreatedBans().size() == 0) && (record.getBans().size() == 0)) {
-				database.delete(record);
-			}
-		}
-		if (database.find(PlayerRecord.class).where().ieq("name", playerName).findList().size() > 1) { throw new IllegalStateException(
-			"Duplicates present in Banhammer database!"); }
-	}
-
 	/** The bans. */
 	@OneToMany(mappedBy = "player", targetEntity = BanRecord.class, cascade = { CascadeType.REMOVE })
 	private List<BanRecord> bans;
@@ -137,7 +58,9 @@ public class PlayerRecord {
 	 */
 	public BanRecord getActiveBan() {
 		for (final BanRecord ban : this.getBans()) {
-			if (ban.getState() == BanRecord.State.NORMAL) { return ban; }
+			if (ban.getState() == BanRecord.State.NORMAL) {
+				return ban;
+			}
 		}
 		return null;
 	}
@@ -187,7 +110,9 @@ public class PlayerRecord {
 	 */
 	public boolean isBanned() {
 		for (final BanRecord ban : this.getBans()) {
-			if (ban.getState() == BanRecord.State.NORMAL) { return true; }
+			if (ban.getState() == BanRecord.State.NORMAL) {
+				return true;
+			}
 		}
 		return false;
 	}

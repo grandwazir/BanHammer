@@ -38,17 +38,14 @@ public class BanHammerPlayerBannedEvent extends BanHammerPlayerEvent {
 		return BanHammerPlayerBannedEvent.handlers;
 	}
 
-	private final boolean kick;
-
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see name.richardson.james.bukkit.banhammer.api.BanHammerPlayerEvent#
 	 * BanHammerPlayerEvent()
 	 */
-	public BanHammerPlayerBannedEvent(final BanRecord record, final boolean silent, final boolean kick) {
+	public BanHammerPlayerBannedEvent(final BanRecord record, final boolean silent) {
 		super(record, silent);
-		this.kick = kick;
 	}
 
 	/*
@@ -61,8 +58,5 @@ public class BanHammerPlayerBannedEvent extends BanHammerPlayerEvent {
 		return BanHammerPlayerBannedEvent.handlers;
 	}
 
-	public boolean isKicked() {
-		return this.kick;
-	}
 
 }

@@ -19,11 +19,10 @@ package name.richardson.james.bukkit.banhammer.api;
 
 import java.sql.Timestamp;
 import java.text.MessageFormat;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 
+import name.richardson.james.bukkit.banhammer.persistence.BanRecordManager;
+import name.richardson.james.bukkit.banhammer.persistence.PlayerRecordManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
@@ -41,103 +40,58 @@ import name.richardson.james.bukkit.utilities.localisation.ResourceBundles;
 /*
  * A simple implementation of the BanHandler interace.
  */
-public class SimpleBanHandler implements Localised, BanHandler {
-
-	/* The database used by this handler */
-	private final EbeanServer database;
+public class SimpleBanHandler implements BanHandler {
 
 	/* Localisation messages for BanHammer */
 	private final ResourceBundle localisation = ResourceBundle.getBundle(ResourceBundles.MESSAGES.getBundleName());
 
-	/**
-	 * Instantiates a new ban handler.
-	 * 
-	 * @param plugin
-	 *          the plugin
-	 */
-	public SimpleBanHandler(final BanHammer plugin) {
-		this.database = plugin.getDatabase();
+	private final PlayerRecordManager playerRecordManager;
+	private final BanRecordManager banRecordManager;
+
+	public SimpleBanHandler(final PlayerRecordManager playerRecordManager, final BanRecordManager banRecordManager) {
+		this.playerRecordManager = playerRecordManager;
+		this.banRecordManager = banRecordManager;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * name.richardson.james.bukkit.banhammer.api.BanHandler#banPlayer(java.lang
 	 * .String, name.richardson.james.bukkit.banhammer.persistence.BanRecord,
 	 * java.lang.String, boolean)
 	 */
 	public boolean banPlayer(final String playerName, final BanRecord sourceBan, final String reason, final boolean notify) {
-		final PlayerRecord player = PlayerRecord.find(this.database, playerName);
-		if (player.isBanned()) { return false; }
-		final PlayerRecord creator = sourceBan.getCreator();
-		final BanRecord ban = new BanRecord();
-		ban.setPlayer(player);
-		ban.setCreator(creator);
-		ban.setReason(reason);
-		ban.setState(BanRecord.State.NORMAL);
-		ban.setCreatedAt(sourceBan.getCreatedAt());
-		if (sourceBan.getType() == Type.TEMPORARY) {
-			ban.setExpiresAt(sourceBan.getExpiresAt());
-		}
-		new BanHammerPlayerBannedEvent(ban, !notify, true);
-		this.database.save(ban);
-		return true;
+		return this.banPlayer(playerName, sourceBan.getCreator().getName(), reason, sourceBan.getExpiresAt(), notify);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * name.richardson.james.bukkit.banhammer.api.BanHandler#banPlayer(java.lang
-	 * .String, java.lang.String, java.lang.String, long, boolean)
-	 */
-	public boolean banPlayer(final String playerName, final String senderName, final String reason, final long banLength, final boolean notify) {
-		final PlayerRecord player = PlayerRecord.find(this.database, playerName);
-		if (player.isBanned()) { return false; }
-		final PlayerRecord creator = PlayerRecord.find(this.database, senderName);
+	public boolean banPlayer(String playerName, String senderName, String reason, Timestamp expires, boolean notify) {
+		final PlayerRecord player = this.playerRecordManager.create(playerName);
+		if (player.isBanned()) return false;
+		final PlayerRecord creator = this.playerRecordManager.create(senderName);
 		final BanRecord ban = new BanRecord();
-		final long now = System.currentTimeMillis();
 		ban.setPlayer(player);
 		ban.setCreator(creator);
 		ban.setReason(reason);
 		ban.setState(BanRecord.State.NORMAL);
-		ban.setCreatedAt(new Timestamp(now));
-		if (banLength != 0) {
-			ban.setExpiresAt(new Timestamp(now + banLength));
-		}
-		this.database.save(ban);
-		final BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(ban, !notify, false);
+		ban.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+		if (expires != null) ban.setExpiresAt(expires);
+		player.getBans().add(ban);
+		this.banRecordManager.save(ban);
+		BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(ban, !notify);
 		Bukkit.getServer().getPluginManager().callEvent(event);
 		return true;
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * name.richardson.james.bukkit.utilities.localisation.Localised#getMessage
-	 * (java.lang.String)
-	 */
-	public String getMessage(final String key) {
-		String message = this.localisation.getString(key);
-		message = ColourFormatter.replace(message);
-		return message;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * name.richardson.james.bukkit.utilities.localisation.Localised#getMessage
-	 * (java.lang.String, java.lang.Object[])
-	 */
-	public String getMessage(final String key, final Object... elements) {
-		final MessageFormat formatter = new MessageFormat(this.localisation.getString(key));
-		formatter.setLocale(Locale.getDefault());
-		String message = formatter.format(elements);
-		message = ColourFormatter.replace(message);
-		return message;
+		 * (non-Javadoc)
+		 *
+		 * @see
+		 * name.richardson.james.bukkit.banhammer.api.BanHandler#banPlayer(java.lang
+		 * .String, java.lang.String, java.lang.String, long, boolean)
+		 */
+	public boolean banPlayer(final String playerName, final String senderName, final String reason, final long banLength, final boolean notify) {
+		return this.banPlayer(playerName, senderName, reason, new Timestamp(System.currentTimeMillis() + banLength), notify);
 	}
 
 	/*
@@ -148,8 +102,11 @@ public class SimpleBanHandler implements Localised, BanHandler {
 	 * .lang.String)
 	 */
 	public List<BanRecord> getPlayerBans(final String playerName) {
-		final PlayerRecord playerRecord = PlayerRecord.find(this.database, playerName);
-		return (playerRecord == null) ? new LinkedList<BanRecord>() : playerRecord.getBans();
+		if (this.playerRecordManager.exists(playerName)) {
+			return this.playerRecordManager.find(playerName).getBans();
+		} else {
+			return new ArrayList<BanRecord>();
+		}
 	}
 
 	/*
@@ -171,8 +128,11 @@ public class SimpleBanHandler implements Localised, BanHandler {
 	 * .lang.String)
 	 */
 	public boolean isPlayerBanned(final String playerName) {
-		final PlayerRecord playerRecord = PlayerRecord.find(this.database, playerName);
-		return (playerRecord == null) ? false : playerRecord.isBanned();
+		if (this.playerRecordManager.exists(playerName)) {
+			return this.playerRecordManager.find(playerName).isBanned();
+		} else {
+			return false;
+		}
 	}
 
 	/*
@@ -182,18 +142,16 @@ public class SimpleBanHandler implements Localised, BanHandler {
 	 * name.richardson.james.bukkit.banhammer.api.BanHandler#pardonPlayer(java
 	 * .lang.String, java.lang.String, boolean)
 	 */
-	public boolean pardonPlayer(final String playerName, final String senderName, final boolean notify) {
-		final PlayerRecord playerRecord = PlayerRecord.find(this.database, playerName);
-		if ((playerRecord != null) && playerRecord.isBanned()) {
-			final BanRecord banRecord = playerRecord.getActiveBan();
-			final BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(banRecord, !notify);
-			banRecord.setState(State.PARDONED);
-			this.database.update(banRecord);
+	public void pardonPlayer(final String playerName, final String senderName, final boolean notify) {
+		if (this.playerRecordManager.exists(playerName)) {
+			final PlayerRecord player = this.playerRecordManager.find(playerName);
+			if (!player.isBanned()) return;
+			player.getActiveBan().setState(State.PARDONED);
+			this.banRecordManager.update(player.getActiveBan());
+			final BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(player.getActiveBan(), !notify);
 			Bukkit.getServer().getPluginManager().callEvent(event);
-			return true;
-		} else {
-			return false;
 		}
-
+		return;
 	}
+
 }

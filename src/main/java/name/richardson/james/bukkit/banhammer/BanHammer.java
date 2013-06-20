@@ -28,10 +28,11 @@ import java.util.logging.Level;
 
 import name.richardson.james.bukkit.alias.Alias;
 import name.richardson.james.bukkit.alias.AliasHandler;
-import name.richardson.james.bukkit.banhammer.alias.AliasPlayerListener;
+import name.richardson.james.bukkit.banhammer.guardian.AliasBannedPlayerListener;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
 import name.richardson.james.bukkit.banhammer.api.SimpleBanHandler;
 import name.richardson.james.bukkit.banhammer.ban.*;
+import name.richardson.james.bukkit.banhammer.guardian.BannedPlayerListener;
 import name.richardson.james.bukkit.banhammer.kick.KickCommand;
 import name.richardson.james.bukkit.banhammer.management.AuditCommand;
 import name.richardson.james.bukkit.banhammer.management.ExportCommand;
@@ -62,9 +63,9 @@ public final class BanHammer extends AbstractPlugin {
 	private BanHandler handler;
 
 	/**
-	 * Gets the alias handler.
+	 * Gets the guardian handler.
 	 * 
-	 * @return the alias handler
+	 * @return the guardian handler
 	 */
 	public AliasHandler getAliasHandler() {
 		return this.aliasHandler;
@@ -159,7 +160,7 @@ public final class BanHammer extends AbstractPlugin {
 	}
 
 	/**
-	 * Hook the alias plugin and load a handler if it exists.
+	 * Hook the guardian plugin and load a handler if it exists.
 	 */
 	private void hookAlias() {
 		final Alias plugin = (Alias) this.getServer().getPluginManager().getPlugin("Alias");
@@ -207,7 +208,7 @@ public final class BanHammer extends AbstractPlugin {
 	private void registerListeners() {
 		new BannedPlayerListener(this);
 		if (this.configuration.isAliasEnabled() && (this.aliasHandler != null)) {
-			new AliasPlayerListener(this, this.configuration.getImmunePlayers());
+			new AliasBannedPlayerListener(this, this.configuration.getImmunePlayers());
 		}
 	}
 

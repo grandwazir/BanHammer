@@ -30,6 +30,7 @@ public interface BanHandler {
 	 *          if true, broadcast a message to notify players
 	 * @return true, if successful
 	 */
+	@Deprecated
 	public abstract boolean banPlayer(String playerName, BanRecord sourceBan, String reason, boolean notify);
 
 	/**
@@ -53,7 +54,10 @@ public interface BanHandler {
 	 *          whether or not to notify players of this ban
 	 * @return true, if successful
 	 */
+	@Deprecated
 	public abstract boolean banPlayer(String playerName, String senderName, String reason, long banLength, boolean notify);
+
+	public abstract boolean banPlayer(String playerName, String senderName, String reason, Timestamp expires, boolean notify);
 
 	/**
 	 * Gets a list of all bans issued to a particular player.
@@ -106,6 +110,6 @@ public interface BanHandler {
 	 *          if true, broadcast a message to notify players
 	 * @return true, if successful
 	 */
-	public abstract boolean pardonPlayer(String playerName, String senderName, boolean notify);
+	public abstract void pardonPlayer(String playerName, String senderName, boolean notify);
 
 }
