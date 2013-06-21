@@ -17,4 +17,8 @@ public class BanRecordManager {
 	public void update(BanRecord record) {
 		this.database.update(record);
 	}
+
+	public int count() {
+		return this.database.find(BanRecord.class).findRowCount();
+	}
 }
