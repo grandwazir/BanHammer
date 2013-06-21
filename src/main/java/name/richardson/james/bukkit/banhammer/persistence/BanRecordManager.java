@@ -1,5 +1,7 @@
 package name.richardson.james.bukkit.banhammer.persistence;
 
+import java.util.List;
+
 import com.avaje.ebean.EbeanServer;
 
 public class BanRecordManager {
@@ -20,6 +22,14 @@ public class BanRecordManager {
 
 	public void update(BanRecord record) {
 		this.database.update(record);
+	}
+
+	public List<BanRecord> list() {
+		return this.database.find(BanRecord.class).findList();
+	}
+
+	public List<BanRecord> list(int limit) {
+		return this.database.find(BanRecord.class).setMaxRows(limit).findList();
 	}
 
 	public int count() {
