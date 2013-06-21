@@ -23,23 +23,9 @@ public class    CreatorPlayerRecordMatcher extends PlayerRecordMatcher {
 		}
 	}
 
-	private static void getCreatorNameList() {
-		final List<String> names = new ArrayList<String>();
-		final List<PlayerRecord> records = PlayerRecordMatcher.getDatabase().find(PlayerRecord.class).findList();
-		for (final PlayerRecord record : records) {
-			if (record.getCreatedBans().size() == 0) {
-				continue;
-			}
-			names.add(record.getName().toLowerCase());
-		}
+	public static void setNameList(final Set<String> names) {
 		CreatorPlayerRecordMatcher.names.clear();
 		CreatorPlayerRecordMatcher.names.addAll(names);
-	}
-
-	public CreatorPlayerRecordMatcher() {
-		if (CreatorPlayerRecordMatcher.names.isEmpty()) {
-			CreatorPlayerRecordMatcher.getCreatorNameList();
-		}
 	}
 
 	@Override

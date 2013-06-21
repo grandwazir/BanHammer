@@ -19,7 +19,7 @@ public class PlayerRecordManager {
 		record = new PlayerRecord();
 		record.setName(playerName);
 		this.save(record);
-		return record;
+		return this.find(playerName);
 	}
 
 	public PlayerRecord find(String playerName) {

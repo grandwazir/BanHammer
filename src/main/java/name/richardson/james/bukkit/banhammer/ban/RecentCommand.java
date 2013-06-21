@@ -73,7 +73,7 @@ public class RecentCommand extends AbstractCommand {
 				}
 			}
 		} else {
-			localisedCommandSender.send("no-bans-made-yet");
+			localisedCommandSender.info("no-bans-made-yet");
 		}
 	}
 

@@ -20,11 +20,7 @@ package name.richardson.james.bukkit.banhammer.persistence;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,13 +28,13 @@ import org.bukkit.configuration.ConfigurationSection;
 
 import name.richardson.james.bukkit.utilities.configuration.SimplePluginConfiguration;
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
-import name.richardson.james.bukkit.utilities.logging.PluginLogger;
+import name.richardson.james.bukkit.utilities.logging.LocalisedLogger;
 
 public class BanHammerConfiguration extends SimplePluginConfiguration {
 
 	/** The configured ban limits. */
 	private final Map<String, Long> limits = new LinkedHashMap<String, Long>();
-	private final Logger logger = PluginLogger.getLogger(this.getClass());
+	private final Logger logger = LocalisedLogger.getLogger(this.getClass(), null);
 
 	public BanHammerConfiguration(final File file, final InputStream defaults) throws IOException {
 		super(file, defaults);

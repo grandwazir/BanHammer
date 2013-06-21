@@ -1,5 +1,30 @@
-Changelog for BanHammer (v2.2.5-SNAPSHOT)
+Changelog for BanHammer (v2.2.6-SNAPSHOT)
 
+2013-06-21 22:53:38 +0100    add basic metadata (James Richardson)
+2013-06-21 22:47:10 +0100    implement undo.unrestricted (James Richardson)
+2013-06-21 22:46:22 +0100    remove old localisation (James Richardson)
+2013-06-21 22:45:40 +0100    finished update (James Richardson)
+2013-06-21 22:24:19 +0100    update BanCommand (James Richardson)
+2013-06-21 22:12:49 +0100    update CheckCommand (James Richardson)
+2013-06-21 22:11:41 +0100    update HistoryCommand (James Richardson)
+2013-06-21 22:07:45 +0100    Update LimitsCommand (James Richardson)
+2013-06-21 22:00:22 +0100    update PardonCommand (James Richardson)
+2013-06-21 21:52:47 +0100    update PurgeCommand (James Richardson)
+2013-06-21 21:41:25 +0100    update RecentCommand (James Richardson)
+2013-06-21 20:06:23 +0100    update UndoCommand (James Richardson)
+2013-06-21 19:35:23 +0100    update KickCommand (James Richardson)
+2013-06-21 19:15:55 +0100    update AuditCommand (James Richardson)
+2013-06-21 18:34:52 +0100    update ExportCommand (James Richardson)
+2013-06-21 18:28:25 +0100    update ImportCommand (James Richardson)
+2013-06-21 18:17:59 +0100    update listeners to use new localisation (James Richardson)
+2013-06-21 17:39:34 +0100    updating to use latest utilities (James Richardson)
+2013-06-20 20:30:39 +0100    refactoring login process The main aim of this update is to make changes to the login process for banned players easier and less brittle. (James Richardson)
+2013-06-19 23:41:41 +0100    finished refactoring packages (James Richardson)
+2013-06-19 23:40:26 +0100    rearrange classes (James Richardson)
+2013-06-19 23:39:25 +0100    move alias listener into own package (James Richardson)
+
+v2.2.5
+2013-06-01 01:46:15 +0100    prepare to release... again (James Richardson)
 2013-06-01 01:38:00 +0100    fix interesting bug regarding using the wrong listener (James Richardson)
 2013-06-01 01:30:45 +0100    fix NPE when checking for immune players and alias is enabled (James Richardson)
 
@@ -38,7 +63,7 @@ v2.2.1
 2013-05-29 16:22:20 +0100    update KickCommand (James Richardson)
 2013-05-29 16:00:35 +0100    add simple implementation of BanHandler (James Richardson)
 2013-05-29 16:00:11 +0100    updated to use new features in BukkitUtilities (James Richardson)
-2013-05-29 15:14:27 +0100    update banHandler to use new features (James Richardson)
+2013-05-29 15:14:27 +0100    update handler to use new features (James Richardson)
 2013-05-29 14:59:22 +0100    automated code clean up (James Richardson)
 2013-05-19 17:38:02 +0100    update website pointer (James Richardson)
 
@@ -181,7 +206,7 @@ v2.0.0
 2012-07-27 00:28:33 +0100    major work towards 2.0.0 - refactored database model - can now pardon bans without deleting them; fixes #6, #26 - metrics implemented - better caching method for faster logins - custom BanHammer events (James Richardson)
 2012-07-26 22:27:25 +0100    starting to create new database model (James Richardson)
 2012-07-26 21:12:25 +0100    starting process to remodel database (James Richardson)
-2012-07-26 21:09:01 +0100    delete database banHandler (James Richardson)
+2012-07-26 21:09:01 +0100    delete database handler (James Richardson)
 
 v1.10.2
 2012-06-30 21:02:39 +0100    update changelog (James Richardson)
@@ -292,7 +317,7 @@ v1.7.1
 2012-01-28 11:51:31 +0000    started to implement new ban record cache (James Richardson)
 2012-01-28 11:26:45 +0000    reorganising the API (James Richardson)
 2012-01-28 11:19:48 +0000    moved BanHandler (James Richardson)
-2012-01-28 11:18:12 +0000    changing to new database banHandler (James Richardson)
+2012-01-28 11:18:12 +0000    changing to new database handler (James Richardson)
 2012-01-26 22:05:36 +0000    more package reorganising (James Richardson)
 2012-01-26 22:03:16 +0000    package rename to .bukkit prefix (James Richardson)
 2012-01-26 22:02:35 +0000    moving classes (James Richardson)

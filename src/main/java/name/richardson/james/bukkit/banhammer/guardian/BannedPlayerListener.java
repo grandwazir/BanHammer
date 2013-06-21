@@ -40,7 +40,7 @@ public class BannedPlayerListener extends AbstractListener {
 	public void onPlayerBanned(final BanHammerPlayerBannedEvent event) {
 		LOGGER.log(Level.FINEST, "Received " + event.getEventName());
 		final Player player = this.server.getPlayerExact(event.getPlayerName());
-		if (player.isOnline()) {
+		if (player != null && player.isOnline()) {
 			player.kickPlayer(this.getKickMessage(event.getRecord()));
 		}
   }

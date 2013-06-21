@@ -84,7 +84,7 @@ public class BanSummary {
 	 * @return the reason
 	 */
 	public String getReason() {
-		return MessageFormat.format(ColourFormatter.info(this.localisation.getString("length")), this.record.getReason());
+		return MessageFormat.format(ColourFormatter.info(this.localisation.getString("reason")), this.record.getReason());
 	}
 
 	/**

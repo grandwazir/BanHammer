@@ -21,22 +21,10 @@ public class BannedPlayerRecordMatcher extends PlayerRecordMatcher {
 		names.remove(event.getPlayerName().toLowerCase());
 	}
 
-	private static void getBannedPlayerNameList() {
-		final List<String> names = new ArrayList<String>();
-		final List<PlayerRecord> records = PlayerRecordMatcher.getDatabase().find(PlayerRecord.class).findList();
-		for (final PlayerRecord record : records) {
-			if (record.isBanned()) {
-				names.add(record.getName().toLowerCase());
-			}
-		}
+
+	public static void setNameList(final Set<String> names) {
 		BannedPlayerRecordMatcher.names.clear();
 		BannedPlayerRecordMatcher.names.addAll(names);
-	}
-
-	public BannedPlayerRecordMatcher() {
-		if (BannedPlayerRecordMatcher.names.isEmpty()) {
-			BannedPlayerRecordMatcher.getBannedPlayerNameList();
-		}
 	}
 
 	@Override

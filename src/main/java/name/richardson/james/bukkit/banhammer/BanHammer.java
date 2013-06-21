@@ -44,6 +44,8 @@ import name.richardson.james.bukkit.banhammer.management.AuditCommand;
 import name.richardson.james.bukkit.banhammer.management.ExportCommand;
 import name.richardson.james.bukkit.banhammer.management.ImportCommand;
 import name.richardson.james.bukkit.banhammer.matchers.BanLimitMatcher;
+import name.richardson.james.bukkit.banhammer.matchers.BannedPlayerRecordMatcher;
+import name.richardson.james.bukkit.banhammer.matchers.CreatorPlayerRecordMatcher;
 import name.richardson.james.bukkit.banhammer.matchers.PlayerRecordMatcher;
 import name.richardson.james.bukkit.banhammer.metrics.MetricsListener;
 import name.richardson.james.bukkit.banhammer.persistence.*;
@@ -184,10 +186,20 @@ public final class BanHammer extends AbstractPlugin {
 	 */
 	private void registerCommands() {
 		final Set<String> names = new HashSet<String>();
+		final Set<String> bannedPlayers = new HashSet<String>();
+		final Set<String> banCreaters = new HashSet<String>();
 		for (PlayerRecord playerRecord : this.playerRecordManager.list()) {
 			names.add(playerRecord.getName().toLowerCase());
+			if (playerRecord.isBanned()) {
+				bannedPlayers.add(playerRecord.getName().toLowerCase());
+			}
+			if (playerRecord.getCreatedBans().size() != 0) {
+				banCreaters.add(playerRecord.getName().toLowerCase());
+			}
 		}
 		PlayerRecordMatcher.setNameList(names);
+		BannedPlayerRecordMatcher.setNameList(bannedPlayers);
+		CreatorPlayerRecordMatcher.setNameList(banCreaters);
 		BanLimitMatcher.setBanLimits(this.configuration.getBanLimits().keySet());
 		final CommandManager commandManager = new CommandManager("bh", this.getDescription());
 		final BanCommand banCommand = new BanCommand(this.getHandler(), this.configuration.getBanLimits(), this.configuration.getImmunePlayers(), this.getServer());
