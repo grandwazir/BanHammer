@@ -35,7 +35,7 @@ import name.richardson.james.bukkit.banhammer.persistence.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecordManager;
 
-@CommandPermissions(permissions = {"banhammer.undo", "banhammer.undo.own", "banhammer.undo.others"})
+@CommandPermissions(permissions = {"banhammer.undo", "banhammer.undo.own", "banhammer.undo.others", "banhammer.undo.unrestricted"})
 @CommandMatchers(matchers = {CreatorPlayerRecordMatcher.class})
 public class UndoCommand extends AbstractCommand {
 
@@ -94,7 +94,7 @@ public class UndoCommand extends AbstractCommand {
 	}
 
 	private boolean withinTimeLimit(final CommandSender sender, final Timestamp then) {
-		if (sender.hasPermission("banhammer.undo")) {
+		if (sender.hasPermission("banhammer.undo.unrestricted")) {
 			return true;
 		}
 		if ((System.currentTimeMillis() - then.getTime()) <= this.undoTime) {
