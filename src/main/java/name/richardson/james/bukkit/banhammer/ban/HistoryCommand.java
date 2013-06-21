@@ -32,6 +32,7 @@ import name.richardson.james.bukkit.utilities.command.CommandMatchers;
 import name.richardson.james.bukkit.utilities.command.CommandPermissions;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
+import name.richardson.james.bukkit.utilities.localisation.LocalisedCommandSender;
 
 @ConsoleCommand
 @CommandPermissions(permissions = { "banhammer.history", "banhammer.history.own", "banhammer.history.others" })
@@ -46,17 +47,18 @@ public class HistoryCommand extends AbstractCommand {
 
 	private final ChoiceFormatter formatter;
 
-	public HistoryCommand(final BanHammer plugin) {
+	public HistoryCommand(final BanHandler banHandler) {
 		super();
-		this.handler = plugin.getHandler();
-		this.formatter = new ChoiceFormatter();
+		this.handler = banHandler;
+		this.formatter = new ChoiceFormatter(this.getClass());
 		this.formatter.setLimits(0, 1, 2);
-		this.formatter.setMessage("notice.history-header");
-		this.formatter.setFormats(this.getMessage("shared.choice.no-bans"), this.getMessage("shared.choice.one-ban"), this.getMessage("shared.choice.many-bans"));
+		this.formatter.setMessage("header");
+		this.formatter.setFormats("no-bans", "one-ban", "many-bans");;
 		Bukkit.getPluginManager().getPermission("banhammer.history.own").setDefault(PermissionDefault.TRUE);
 	}
 
 	public void execute(final List<String> arguments, final CommandSender sender) {
+		LocalisedCommandSender localisedCommandSender = new LocalisedCommandSender(sender, this.getLocalisation());
 		if (arguments.isEmpty()) {
 			this.playerName = sender.getName();
 		} else {
@@ -67,7 +69,7 @@ public class HistoryCommand extends AbstractCommand {
 			final List<BanRecord> bans = this.handler.getPlayerBans(this.playerName);
 			this.displayHistory(bans, sender);
 		} else {
-			sender.sendMessage(this.getMessage("error.permission-denied"));
+			localisedCommandSender.error("permission-denied");
 		}
 
 	}
