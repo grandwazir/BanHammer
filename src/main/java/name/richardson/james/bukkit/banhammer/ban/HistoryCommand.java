@@ -32,6 +32,7 @@ import name.richardson.james.bukkit.utilities.command.CommandMatchers;
 import name.richardson.james.bukkit.utilities.command.CommandPermissions;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
+import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
 import name.richardson.james.bukkit.utilities.localisation.LocalisedCommandSender;
 
 @ConsoleCommand
@@ -52,7 +53,7 @@ public class HistoryCommand extends AbstractCommand {
 		this.handler = banHandler;
 		this.formatter = new ChoiceFormatter(this.getClass());
 		this.formatter.setLimits(0, 1, 2);
-		this.formatter.setMessage("header");
+		this.formatter.setLocalisedMessage(ColourFormatter.header(this.getLocalisation().getString("header")));
 		this.formatter.setFormats("no-bans", "one-ban", "many-bans");;
 		Bukkit.getPluginManager().getPermission("banhammer.history.own").setDefault(PermissionDefault.TRUE);
 	}
