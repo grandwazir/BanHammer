@@ -64,7 +64,7 @@ public class KickCommand extends AbstractCommand implements TabExecutor {
 			}
 		}
 
-		if (this.player == null) {
+		if (this.player.get() == null) {
 			localisedCommandSender.error("must-specify-player");
 		} else {
 			this.kickPlayer(sender);
