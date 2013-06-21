@@ -26,7 +26,7 @@ public class BannedPlayerListener extends AbstractListener {
 
 	private static final Logger LOGGER = LocalisedLogger.getLogger(BannedPlayerListener.class);
 
-	private final ResourceBundle localisation = PluginResourceBundle.getBundle(this.getClass());
+	private final ResourceBundle localisation = PluginResourceBundle.getBundle(BannedPlayerListener.class);
 	private final PlayerRecordManager playerRecordManager;
 	private final Server server;
 

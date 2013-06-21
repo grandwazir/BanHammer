@@ -4,10 +4,13 @@ import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.ResourceBundle;
 
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.plugin.Plugin;
 
 import name.richardson.james.bukkit.alias.AliasHandler;
 import name.richardson.james.bukkit.alias.persistence.PlayerNameRecord;
+import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecordManager;
@@ -41,6 +44,12 @@ public class AliasBannedPlayerListener extends BannedPlayerListener {
 			}
 		}
 		return false;
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onPlayerPardoned(BanHammerPlayerPardonedEvent event) {
+		String alias = event.getRecord().getReason().replace(this.localisation.getString("alias-ban-reason"), "");
+		this.aliasHandler.deassociatePlayer(event.getPlayerName(), alias);
 	}
 
 }
