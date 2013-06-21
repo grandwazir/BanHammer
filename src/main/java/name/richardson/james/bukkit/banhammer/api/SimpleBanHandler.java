@@ -29,15 +29,11 @@ import org.bukkit.OfflinePlayer;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord.State;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
-import name.richardson.james.bukkit.utilities.localisation.ResourceBundles;
 
 /*
  * A simple implementation of the BanHandler interace.
  */
 public class SimpleBanHandler implements BanHandler {
-
-	/* Localisation messages for BanHammer */
-	private final ResourceBundle localisation = ResourceBundle.getBundle(ResourceBundles.MESSAGES.getBundleName());
 
 	private final PlayerRecordManager playerRecordManager;
 	private final BanRecordManager banRecordManager;

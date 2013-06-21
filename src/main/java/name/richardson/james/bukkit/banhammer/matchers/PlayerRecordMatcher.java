@@ -14,8 +14,6 @@ import name.richardson.james.bukkit.utilities.matchers.Matcher;
 
 public class PlayerRecordMatcher implements Matcher {
 
-	private static EbeanServer database;
-
 	private final static Set<String> names = new TreeSet<String>();
 
 	public static void onPlayerBanned(final BanHammerPlayerBannedEvent event) {
@@ -26,27 +24,9 @@ public class PlayerRecordMatcher implements Matcher {
 		names.remove(event.getPlayerName().toLowerCase());
 	}
 
-	public static void setDatabase(final EbeanServer database) {
-		PlayerRecordMatcher.database = database;
-	}
-
-	protected static EbeanServer getDatabase() {
-		return database;
-	}
-
-	private static void getNameList() {
-		final List<PlayerRecord> records = PlayerRecord.list(database);
+	public static void setNameList(final Set<String> names) {
 		PlayerRecordMatcher.names.clear();
-		for (final PlayerRecord record : records) {
-			PlayerRecordMatcher.names.add(record.getName().toLowerCase());
-		}
-	}
-
-	public PlayerRecordMatcher() {
-		if (PlayerRecordMatcher.names.isEmpty()) {
-			PlayerRecordMatcher.getNameList();
-		}
-
+		PlayerRecordMatcher.names.addAll(names);
 	}
 
 	public List<String> getMatches(String argument) {

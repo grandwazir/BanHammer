@@ -66,13 +66,13 @@ public class BanCommand extends AbstractCommand implements TabExecutor {
 	 * @param plugin the plugin that this command belongs to
 	 * @param limits the registered ban limits to use
 	 */
-	public BanCommand(final BanHammer plugin, final Map<String, Long> limits, final List<String> immunePlayers) {
+	public BanCommand(final BanHandler banHandler, final Map<String, Long> limits, final List<String> immunePlayers, final Server server) {
 		super();
 		this.immunePlayers = immunePlayers;
 		this.limits = limits;
 		this.registerLimitPermissions();
-		this.server = plugin.getServer();
-		this.handler = plugin.getHandler();
+		this.server = server;
+		this.handler = banHandler;
 	}
 
 	public void execute(final List<String> arguments, final CommandSender sender) {
