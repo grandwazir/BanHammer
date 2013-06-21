@@ -68,7 +68,7 @@ public class UndoCommand extends AbstractCommand {
 				final BanRecord ban = playerBans.get(playerBans.size() - 1);
 				if (this.hasPermission(sender, ban.getCreatedAt())) {
 					this.banRecordManager.delete(ban);
-					Bukkit.getPluginManager().callEvent(new BanHammerPlayerPardonedEvent(ban, false));
+					if (ban.getState() == BanRecord.State.NORMAL) Bukkit.getPluginManager().callEvent(new BanHammerPlayerPardonedEvent(ban, false));
 					localisedCommandSender.info("ban-undone", ban.getPlayer().getName());
 				} else {
 					if (!this.withinTimeLimit(sender, ban.getCreatedAt())) {

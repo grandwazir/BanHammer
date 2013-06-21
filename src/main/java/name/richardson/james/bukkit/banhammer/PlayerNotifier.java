@@ -33,6 +33,7 @@ public class PlayerNotifier extends AbstractListener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerBanned(final BanHammerPlayerBannedEvent event) {
 		LOGGER.log(Level.FINEST, "Received " + event.getEventName());
+		if (event.isSilent()) return;
 		BanSummary banSummary = new BanSummary(event.getRecord());
 		for (Player player : server.getOnlinePlayers()) {
 			if (!player.hasPermission("banhammer.notify")) continue;
@@ -45,6 +46,7 @@ public class PlayerNotifier extends AbstractListener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerPardoned(final BanHammerPlayerPardonedEvent event) {
 		LOGGER.log(Level.FINEST, "Received " + event.getEventName());
+		if (event.isSilent()) return;
 		for (Player player : server.getOnlinePlayers()) {
 			if (!player.hasPermission("banhammer.notify")) continue;
 			LocalisedCommandSender localisedCommandSender = new LocalisedCommandSender(player, localisation);

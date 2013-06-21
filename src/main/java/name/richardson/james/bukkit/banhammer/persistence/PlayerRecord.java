@@ -29,10 +29,12 @@ import javax.persistence.PersistenceException;
 import javax.persistence.Table;
 
 import com.avaje.ebean.EbeanServer;
+import com.avaje.ebean.annotation.CacheStrategy;
 import com.avaje.ebean.validation.NotNull;
 
 @Entity()
 @Table(name = "banhammer_players")
+@CacheStrategy(readOnly = false, useBeanCache = true, warmingQuery ="order by id")
 public class PlayerRecord {
 
 	/** The bans. */

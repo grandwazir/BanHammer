@@ -136,9 +136,10 @@ public class SimpleBanHandler implements BanHandler {
 		if (this.playerRecordManager.exists(playerName)) {
 			final PlayerRecord player = this.playerRecordManager.find(playerName);
 			if (!player.isBanned()) return;
-			player.getActiveBan().setState(State.PARDONED);
-			this.banRecordManager.update(player.getActiveBan());
-			final BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(player.getActiveBan(), !notify);
+			BanRecord ban = player.getActiveBan();
+			ban.setState(State.PARDONED);
+			this.banRecordManager.update(ban);
+			final BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(ban, !notify);
 			Bukkit.getServer().getPluginManager().callEvent(event);
 		}
 		return;

@@ -71,12 +71,12 @@ public class BannedPlayerListener extends AbstractListener {
 		switch (record.getType()) {
 			case TEMPORARY: {
 				Object[] params = {record.getReason(), record.getCreator().getName(), record.getExpiresAt()};
-				String message = ColourFormatter.error(localisation.getString("banned-permanently"));
+				String message = ColourFormatter.error(localisation.getString("banned-temporarily"));
 				return MessageFormat.format(message, params);
 			}
 			default: {
 				Object[] params = {record.getReason(), record.getCreator().getName()};
-				String message = ColourFormatter.error(localisation.getString("banned-temporarily"));
+				String message = ColourFormatter.error(localisation.getString("banned-permanently"));
 				return MessageFormat.format(message, params);
 			}
 		}

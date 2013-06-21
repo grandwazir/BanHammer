@@ -18,6 +18,7 @@
 package name.richardson.james.bukkit.banhammer.persistence;
 
 import com.avaje.ebean.EbeanServer;
+import com.avaje.ebean.annotation.CacheStrategy;
 import com.avaje.ebean.validation.NotNull;
 import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
 import org.bukkit.Bukkit;
@@ -27,6 +28,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 @Entity()
+@CacheStrategy(readOnly = false, useBeanCache = true, warmingQuery ="order by id")
 @Table(name = "banhammer_bans")
 public class BanRecord {
 
