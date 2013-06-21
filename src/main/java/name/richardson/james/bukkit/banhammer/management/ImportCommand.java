@@ -30,6 +30,7 @@ import name.richardson.james.bukkit.banhammer.api.BanHandler;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandPermissions;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
+import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
 import name.richardson.james.bukkit.utilities.formatters.StringFormatter;
 import name.richardson.james.bukkit.utilities.logging.LocalisedLogger;
 
@@ -65,12 +66,12 @@ public class ImportCommand extends AbstractCommand {
 
 		final int totalImported = this.importBans();
 		// send outcome to the player
-		this.formatter.setMessage("bans-imported");
+		this.formatter.setLocalisedMessage(ColourFormatter.header(this.getLocalisation().getString("bans-imported")));
 		this.formatter.setArguments(totalImported);
 		sender.sendMessage(this.formatter.getMessage());
 
 		if (totalImported != totalBans) {
-			this.formatter.setMessage("bans-failed");
+			this.formatter.setLocalisedMessage(ColourFormatter.header(this.getLocalisation().getString("bans-failed")));
 			this.formatter.setArguments(totalBans - totalImported);
 			sender.sendMessage(this.formatter.getMessage());
 		}

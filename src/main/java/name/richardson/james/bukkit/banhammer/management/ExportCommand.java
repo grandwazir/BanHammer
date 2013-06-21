@@ -28,6 +28,7 @@ import name.richardson.james.bukkit.banhammer.persistence.PlayerRecordManager;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandPermissions;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
+import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
 
 @CommandPermissions(permissions = {"banhammer.export"})
 public class ExportCommand extends AbstractCommand {
@@ -41,7 +42,7 @@ public class ExportCommand extends AbstractCommand {
 		this.playerRecordManager = playerRecordManager;
 		this.formatter = new ChoiceFormatter(this.getClass());
 		this.formatter.setLimits(0, 1, 2);
-		this.formatter.setMessage("bans-exported");
+		this.formatter.setLocalisedMessage(ColourFormatter.header(this.getLocalisation().getString("bans-exported")));
 		this.formatter.setFormats("no-bans", "one-ban", "many-bans");
 	}
 
