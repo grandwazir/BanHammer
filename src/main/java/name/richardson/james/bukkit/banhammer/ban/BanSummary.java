@@ -21,6 +21,7 @@ import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
+import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
 import name.richardson.james.bukkit.utilities.localisation.PluginResourceBundle;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
@@ -74,7 +75,7 @@ public class BanSummary {
 			return MessageFormat.format(ColourFormatter.info(this.localisation.getString("length")), this.localisation.getString("permanent"));
 		} else {
 			final long length = this.record.getExpiresAt().getTime() - this.record.getCreatedAt().getTime();
-			return MessageFormat.format(ColourFormatter.info(this.localisation.getString("length")), length);
+			return MessageFormat.format(ColourFormatter.info(this.localisation.getString("length")), TimeFormatter.millisToLongDHMS(length));
 		}
 	}
 

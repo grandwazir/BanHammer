@@ -64,7 +64,7 @@ public class SimpleBanHandler implements BanHandler {
 		ban.setCreator(creator);
 		ban.setReason(reason);
 		ban.setState(BanRecord.State.NORMAL);
-		ban.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+		ban.setCreatedAt(new Timestamp(System.currentTimeMillis() + 1000));
 		if (expires != null) ban.setExpiresAt(expires);
 		player.getBans().add(ban);
 		this.banRecordManager.save(ban);
