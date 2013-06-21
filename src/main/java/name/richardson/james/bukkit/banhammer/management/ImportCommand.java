@@ -45,9 +45,9 @@ public class ImportCommand extends AbstractCommand {
 	private String reason;
 	private CommandSender sender;
 
-	public ImportCommand(final BanHammer plugin) {
-		this.banHandler = plugin.getHandler();
-		this.server = plugin.getServer();
+	public ImportCommand(final BanHandler banHandler, final Server server) {
+		this.banHandler = banHandler;
+		this.server = server;
 		this.formatter = new ChoiceFormatter(this.getClass());
 		this.formatter.setLimits(0, 1, 2);
 		this.formatter.setFormats("no-bans", "one-ban", "many-bans");

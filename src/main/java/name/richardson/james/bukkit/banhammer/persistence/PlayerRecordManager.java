@@ -40,6 +40,9 @@ public class PlayerRecordManager {
 		}
 	}
 
+	public List<PlayerRecord> list() {
+		return database.find(PlayerRecord.class).findList();
+	}
 
 	/**
 	 * Delete duplicate player records.
