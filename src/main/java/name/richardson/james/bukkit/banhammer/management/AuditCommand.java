@@ -66,6 +66,7 @@ public class AuditCommand extends AbstractCommand {
 				if (summary.getTotalBanCount() != 0) {
 					this.formatter.setLocalisedMessage(ColourFormatter.header(this.getLocalisation().getString("audit-header")));
 					this.formatter.setArguments(summary.getTotalBanCount(), this.playerName, summary.getTotalBanCountPercentage());
+					sender.sendMessage(this.formatter.getMessage());
 					localisedCommandSender.header("type-summary");
 					this.formatter.setLocalisedMessage(ColourFormatter.info(this.getLocalisation().getString("permanent-bans-percentage")));
 					this.formatter.setArguments(summary.getPermenantBanCount(), summary.getPermenantBanCountPercentage());
