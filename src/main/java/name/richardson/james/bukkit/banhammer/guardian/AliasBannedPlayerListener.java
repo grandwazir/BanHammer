@@ -35,7 +35,6 @@ public class AliasBannedPlayerListener extends BannedPlayerListener {
 		if (super.isPlayerBanned(playerName)) return true;
 		Collection<PlayerNameRecord> alias = this.aliasHandler.getPlayersNames(playerName);
 		for (PlayerNameRecord record : alias) {
-			System.out.append(record.getPlayerName());
 			if (super.isPlayerBanned(record.getPlayerName())) {
 				PlayerRecord playerRecord = this.playerRecordManager.find(record.getPlayerName());
 				String reason = MessageFormat.format(this.localisation.getString("alias-ban-reason"), record.getPlayerName());
