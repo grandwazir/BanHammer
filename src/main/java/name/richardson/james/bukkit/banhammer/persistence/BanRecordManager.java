@@ -10,6 +10,10 @@ public class BanRecordManager {
 		this.database = database;
 	}
 
+	public void delete(BanRecord ban) {
+		this.database.delete(ban);
+	}
+
 	public void save(BanRecord record) {
 		this.database.save(record);
 	}
