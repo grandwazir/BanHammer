@@ -26,6 +26,7 @@ import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandMatchers;
 import name.richardson.james.bukkit.utilities.command.CommandPermissions;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
+import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
 import name.richardson.james.bukkit.utilities.localisation.LocalisedCommandSender;
 
 import name.richardson.james.bukkit.banhammer.matchers.PlayerRecordMatcher;
@@ -47,7 +48,7 @@ public class PurgeCommand extends AbstractCommand {
 		this.banRecordManager = banRecordManager;
 		this.formatter = new ChoiceFormatter(this.getClass());
 		this.formatter.setLimits(0, 1, 2);
-		this.formatter.setMessage("bans-purged");
+		this.formatter.setLocalisedMessage(ColourFormatter.header(this.getLocalisation().getString("bans-purged")));
 		this.formatter.setFormats("no-bans", "one-ban", "many-bans");
 	}
 

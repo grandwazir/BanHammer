@@ -206,8 +206,8 @@ public final class BanHammer extends AbstractPlugin {
 		final KickCommand kickCommand = new KickCommand(this);
 		final PardonCommand pardonCommand = new PardonCommand(this.playerRecordManager, this.getHandler(), this.getServer());
 		// register commands
-		commandManager.addCommand(banCommand);
 		commandManager.addCommand(new AuditCommand(this.playerRecordManager, this.banRecordManager));
+		commandManager.addCommand(banCommand);
 		commandManager.addCommand(new CheckCommand(this.playerRecordManager, this.getServer()));
 		commandManager.addCommand(new ExportCommand(this.playerRecordManager, this.getServer()));
 		commandManager.addCommand(new HistoryCommand(this.getHandler()));

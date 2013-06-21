@@ -1,5 +1,6 @@
 Changelog for BanHammer (v2.2.6-SNAPSHOT)
 
+2013-06-22 00:02:31 +0100    implemented bean caching rather than doing it myself (James Richardson)
 2013-06-21 23:44:39 +0100    add PlayerNotifier (James Richardson)
 2013-06-21 23:27:38 +0100    fix NPE (James Richardson)
 2013-06-21 23:26:05 +0100    fix uncoloured messages (James Richardson)
