@@ -65,7 +65,7 @@ public class BanHammerConfiguration extends SimplePluginConfiguration {
 	 * @return true, if is guardian is enabled
 	 */
 	public boolean isAliasEnabled() {
-		return this.getConfiguration().getBoolean("guardian-plugin.enabled");
+		return this.getConfiguration().getBoolean("alias-plugin.enabled");
 	}
 
 	/**
