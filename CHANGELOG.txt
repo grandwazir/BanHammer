@@ -1,5 +1,7 @@
 Changelog for BanHammer (v2.2.6-SNAPSHOT)
 
+2013-06-22 00:24:55 +0100    forgot to send Audit header (James Richardson)
+2013-06-22 00:23:49 +0100    fix header not being coloured (James Richardson)
 2013-06-22 00:20:09 +0100    added missing key (James Richardson)
 2013-06-22 00:12:02 +0100    commands listed alphabetically (James Richardson)
 2013-06-22 00:02:31 +0100    implemented bean caching rather than doing it myself (James Richardson)

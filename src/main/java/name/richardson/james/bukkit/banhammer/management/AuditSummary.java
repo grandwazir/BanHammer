@@ -66,7 +66,7 @@ public class AuditSummary {
 	}
 
 	public float getTotalBanCountPercentage() {
-		return (float) total / this.bans.size();
+		return (float) this.bans.size() / total;
 	}
 
 	private void update() {
