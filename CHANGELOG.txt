@@ -1,5 +1,6 @@
 Changelog for BanHammer (v2.2.6-SNAPSHOT)
 
+2013-06-21 23:21:31 +0100    go back in time not forward (James Richardson)
 2013-06-21 23:19:58 +0100    fix createdAt being 1 second behind expires (James Richardson)
 2013-06-21 23:16:32 +0100    fix misc bugs (James Richardson)
 2013-06-21 22:53:38 +0100    add basic metadata (James Richardson)

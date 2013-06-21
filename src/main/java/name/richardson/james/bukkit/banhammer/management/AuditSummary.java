@@ -74,16 +74,21 @@ public class AuditSummary {
 			switch (record.getType()) {
 				case PERMANENT:
 					permenantBans++;
+					break;
 				case TEMPORARY:
 					temporaryBans++;
+					break;
 			}
 			switch (record.getState()) {
 				case NORMAL:
 					normalBans++;
+					break;
 				case PARDONED:
 					pardonedBans++;
+					break;
 				case EXPIRED:
 					expiredBans++;
+					break;
 			}
 		}
 	}
