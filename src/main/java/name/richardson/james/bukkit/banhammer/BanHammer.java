@@ -230,6 +230,7 @@ public final class BanHammer extends AbstractPlugin {
 		} else {
 			new BannedPlayerListener(this, this.playerRecordManager);
 		}
+		new PlayerNotifier(this, this.getServer());
 	}
 
 }

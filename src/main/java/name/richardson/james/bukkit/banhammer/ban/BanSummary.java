@@ -62,7 +62,7 @@ public class BanSummary {
 	 */
 	public String getHeader() {
 		final String date = BanHammer.SHORT_DATE_FORMAT.format(this.record.getCreatedAt());
-		return MessageFormat.format(ColourFormatter.header(this.localisation.getString("header")), this.record.getPlayer().getName(), this.record.getCreator().getName(), date);
+		return MessageFormat.format(ColourFormatter.warning(this.localisation.getString("header")), this.record.getPlayer().getName(), this.record.getCreator().getName(), date);
 	}
 
 	/**
@@ -95,7 +95,11 @@ public class BanSummary {
 	 */
 	public String getSelfHeader() {
 		final String date = BanHammer.SHORT_DATE_FORMAT.format(this.record.getCreatedAt());
-		return MessageFormat.format(ColourFormatter.info(this.localisation.getString("header-self")), this.record.getCreator().getName(), date);
+		return MessageFormat.format(ColourFormatter.warning(this.localisation.getString("header-self")), this.record.getCreator().getName(), date);
+	}
+
+	public String getAnnouncementHeader() {
+		return MessageFormat.format(ColourFormatter.warning(this.localisation.getString("header-announce")), this.record.getPlayer().getName(), this.record.getCreator().getName());
 	}
 
 }
