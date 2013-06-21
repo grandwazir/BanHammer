@@ -24,6 +24,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 
 import name.richardson.james.bukkit.alias.Alias;
@@ -40,9 +41,7 @@ import name.richardson.james.bukkit.banhammer.management.ImportCommand;
 import name.richardson.james.bukkit.banhammer.matchers.BanLimitMatcher;
 import name.richardson.james.bukkit.banhammer.matchers.PlayerRecordMatcher;
 import name.richardson.james.bukkit.banhammer.metrics.MetricsListener;
-import name.richardson.james.bukkit.banhammer.persistence.BanHammerConfiguration;
-import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
-import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.persistence.*;
 import name.richardson.james.bukkit.utilities.command.CommandManager;
 import name.richardson.james.bukkit.utilities.plugin.AbstractPlugin;
 import name.richardson.james.bukkit.utilities.plugin.PluginPermissions;
@@ -61,6 +60,10 @@ public final class BanHammer extends AbstractPlugin {
 	private BanHammerConfiguration configuration;
 
 	private BanHandler handler;
+
+	private PlayerRecordManager playerRecordManager;
+
+	private BanRecordManager banRecordManager;
 
 	/**
 	 * Gets the guardian handler.
@@ -96,14 +99,10 @@ public final class BanHammer extends AbstractPlugin {
 
 	/**
 	 * This returns a new handler to allow access to the BanHammer API.
-	 * 
-	 * @param parentClass
-	 *          the class that the handler belongs to
-	 * @return A new BanHandler instance.
 	 */
 	public BanHandler getHandler() {
 		if (this.handler == null) {
-			this.handler = new SimpleBanHandler(this);
+			this.handler = new SimpleBanHandler(playerRecordManager, banRecordManager);
 		}
 		return this.handler;
 	}
@@ -165,9 +164,9 @@ public final class BanHammer extends AbstractPlugin {
 	private void hookAlias() {
 		final Alias plugin = (Alias) this.getServer().getPluginManager().getPlugin("Alias");
 		if (plugin == null) {
-			this.getCustomLogger().log(Level.WARNING, "warning.unable-to-hook-alias");
+			this.getLocalisedLogger().log(Level.WARNING, "unable-to-hook-alias");
 		} else {
-			this.getCustomLogger().log(Level.FINE, "Using {0}.", plugin.getDescription().getFullName());
+			this.getLocalisedLogger().log(Level.FINE, "Using {0}.", plugin.getDescription().getFullName());
 			this.aliasHandler = plugin.getHandler();
 		}
 	}
@@ -206,10 +205,11 @@ public final class BanHammer extends AbstractPlugin {
 	}
 
 	private void registerListeners() {
-		new BannedPlayerListener(this);
 		if (this.configuration.isAliasEnabled() && (this.aliasHandler != null)) {
-			new AliasBannedPlayerListener(this, this.configuration.getImmunePlayers());
-		}
+			new AliasBannedPlayerListener(this, this.playerRecordManager, this.aliasHandler, this.getHandler());
+		} else {
+			new BannedPlayerListener(this, this.playerRecordManager);
+    }
 	}
 
 }

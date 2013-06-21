@@ -1,32 +1,16 @@
 package name.richardson.james.bukkit.banhammer.guardian;
 
-import java.lang.ref.SoftReference;
-import java.sql.Timestamp;
-import java.text.MessageFormat;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
-import name.richardson.james.bukkit.banhammer.persistence.PlayerRecordManager;
-import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-
-import com.avaje.ebean.EbeanServer;
-
 import name.richardson.james.bukkit.alias.AliasHandler;
 import name.richardson.james.bukkit.alias.persistence.PlayerNameRecord;
-import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
-import name.richardson.james.bukkit.utilities.listener.AbstractLocalisedListener;
-import name.richardson.james.bukkit.utilities.localisation.ResourceBundles;
-import name.richardson.james.bukkit.utilities.logging.PluginLogger;
+import name.richardson.james.bukkit.banhammer.persistence.PlayerRecordManager;
 import org.bukkit.plugin.Plugin;
+
+import java.sql.Timestamp;
+import java.text.MessageFormat;
+import java.util.Collection;
+import java.util.ResourceBundle;
 
 public class AliasBannedPlayerListener extends BannedPlayerListener {
 
@@ -50,7 +34,7 @@ public class AliasBannedPlayerListener extends BannedPlayerListener {
 			if (super.isPlayerBanned(record.getPlayerName())) {
 				PlayerRecord playerRecord = this.playerRecordManager.find(record.getPlayerName());
 				String reason = MessageFormat.format(this.localisation.getString("alias-ban-reason"), record.getPlayerName());
-				handler.banPlayer(playerName, playerRecord.getActiveBan(), reason, true);
+				handler.banPlayer(playerName, "AliasPlugin", reason, playerRecord.getActiveBan().getExpiresAt(), true);
 				return true;
 			}
 		}

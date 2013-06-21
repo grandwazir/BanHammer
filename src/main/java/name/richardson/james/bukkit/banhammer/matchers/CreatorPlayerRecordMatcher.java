@@ -9,7 +9,7 @@ import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerBannedEvent;
 import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 
-public class CreatorPlayerRecordMatcher extends PlayerRecordMatcher {
+public class    CreatorPlayerRecordMatcher extends PlayerRecordMatcher {
 
 	private final static Set<String> names = new TreeSet<String>();
 

@@ -1,5 +1,6 @@
 package name.richardson.james.bukkit.banhammer.api;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.bukkit.OfflinePlayer;

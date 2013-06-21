@@ -18,7 +18,6 @@
 package name.richardson.james.bukkit.banhammer.api;
 
 import java.sql.Timestamp;
-import java.text.MessageFormat;
 import java.util.*;
 
 import name.richardson.james.bukkit.banhammer.persistence.BanRecordManager;
@@ -26,15 +25,10 @@ import name.richardson.james.bukkit.banhammer.persistence.PlayerRecordManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
-import com.avaje.ebean.EbeanServer;
 
-import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord.State;
-import name.richardson.james.bukkit.banhammer.persistence.BanRecord.Type;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
-import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
-import name.richardson.james.bukkit.utilities.localisation.Localised;
 import name.richardson.james.bukkit.utilities.localisation.ResourceBundles;
 
 /*
