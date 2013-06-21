@@ -1,17 +1,17 @@
 /*******************************************************************************
  * Copyright (c) 2012 James Richardson.
- * 
+ *
  * CheckCommand.java is part of BanHammer.
- * 
+ *
  * BanHammer is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- * 
+ *
  * BanHammer is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
@@ -23,44 +23,40 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 
-import com.avaje.ebean.EbeanServer;
-
-import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.matchers.BannedPlayerRecordMatcher;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.persistence.PlayerRecordManager;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandMatchers;
 import name.richardson.james.bukkit.utilities.command.CommandPermissions;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
+import name.richardson.james.bukkit.utilities.localisation.LocalisedCommandSender;
 
 @ConsoleCommand
-@CommandPermissions(permissions = { "banhammer.check" })
-@CommandMatchers(matchers = { BannedPlayerRecordMatcher.class })
+@CommandPermissions(permissions = {"banhammer.check"})
+@CommandMatchers(matchers = {BannedPlayerRecordMatcher.class})
 public class CheckCommand extends AbstractCommand {
 
-	private final EbeanServer database;
-
-	/** The player who we are going to check and see if they are banned */
-	private OfflinePlayer player;
-
+	private final PlayerRecordManager playerRecordManager;
 	private final Server server;
 
-	public CheckCommand(final BanHammer plugin) {
-		super();
-		this.database = plugin.getDatabase();
-		this.server = plugin.getServer();
+	public CheckCommand(final PlayerRecordManager playerRecordManager, final Server server) {
+		this.playerRecordManager = playerRecordManager;
+		this.server = server;
 	}
 
 	public void execute(final List<String> arguments, final CommandSender sender) {
+		OfflinePlayer offlinePlayer;
+		LocalisedCommandSender localisedCommandSender = new LocalisedCommandSender(sender, this.getLocalisation());
 		if (arguments.isEmpty()) {
-			sender.sendMessage(this.getMessage("error.must-specify-player"));
+			localisedCommandSender.error("must-specify-player");
 			return;
 		} else {
-			this.player = this.server.getOfflinePlayer(arguments.remove(0));
+			offlinePlayer = this.server.getOfflinePlayer(arguments.remove(0));
 		}
-		final PlayerRecord playerRecord = PlayerRecord.find(this.database, this.player.getName());
-		if (playerRecord.isBanned()) {
+		final PlayerRecord playerRecord = playerRecordManager.find(offlinePlayer.getName());
+		if (playerRecord != null && playerRecord.isBanned()) {
 			final BanRecord ban = playerRecord.getActiveBan();
 			final BanSummary summary = new BanSummary(ban);
 			sender.sendMessage(summary.getHeader());
@@ -70,8 +66,8 @@ public class CheckCommand extends AbstractCommand {
 				sender.sendMessage(summary.getExpiresAt());
 			}
 		} else {
-			sender.sendMessage(this.getMessage("notice.player-is-not-banned", this.player.getName()));
+			localisedCommandSender.info("player-is-not-banned", offlinePlayer.getName());
 		}
-
 	}
+
 }

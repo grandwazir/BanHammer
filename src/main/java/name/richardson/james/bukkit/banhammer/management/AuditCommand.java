@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import name.richardson.james.bukkit.banhammer.persistence.PlayerRecordManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.PermissionDefault;
@@ -41,7 +42,8 @@ import name.richardson.james.bukkit.utilities.localisation.ResourceBundles;
 @CommandMatchers(matchers = { CreatorPlayerRecordMatcher.class })
 public class AuditCommand extends AbstractCommand {
 
-	private final EbeanServer database;
+	private final PlayerRecordManager playerRecordManager;
+
 
 	private final ChoiceFormatter formatter;
 
@@ -49,14 +51,12 @@ public class AuditCommand extends AbstractCommand {
 
 	private String playerName;
 
-	public AuditCommand(final Plugin plugin) {
-		super(ResourceBundles.MESSAGES);
-		this.database = plugin.getDatabase();
-		this.formatter = new ChoiceFormatter(ResourceBundles.MESSAGES);
+	public AuditCommand(final PlayerRecordManager playerRecordManager) {
+		this.playerRecordManager = playerRecordManager;
+		this.formatter = new ChoiceFormatter(this.getClass());
 		this.formatter.setLimits(0, 1, 2);
 		this.formatter.setMessage("notice.audit-header");
-		this.formatter.setFormats(this.getMessage("shared.choice.no-bans"), this.getMessage("shared.choice.one-ban"), this.getMessage("shared.choice.many-bans"));
-		// set banhammer.audit.own to true
+		this.formatter.setFormats("no-bans", "one-ban", "many-bans");
 		Bukkit.getPluginManager().getPermission("banhammer.audit.self").setDefault(PermissionDefault.TRUE);
 	}
 
@@ -68,11 +68,10 @@ public class AuditCommand extends AbstractCommand {
 		}
 		if (this.hasPermission(sender)) {
 			this.records.clear();
-			this.records.addAll(PlayerRecord.find(this.database, this.playerName).getCreatedBans());
+			this.records.addAll(playerRecordManager.find(this.playerName).getCreatedBans());
 			this.displayAudit(this.records, sender);
-			this.records.clear();
 		} else {
-			sender.sendMessage(this.getMessage("misc.warning.permission-denied"));
+			sender.sendMessage("misc.warning.permission-denied");
 		}
 	}
 

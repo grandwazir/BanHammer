@@ -27,7 +27,7 @@
      <dependency>
            <groupId>name.richardson.james.bukkit</groupId>
            <artifactId>bukkit-utilities</artifactId>
-           <version>5.1.0</version>
+           <version>5.1.1-SNAPSHOT</version>
      </dependency>
      <dependency>
            <groupId>name.richardson.james.bukkit</groupId>
