@@ -29,58 +29,64 @@ import org.bukkit.command.TabExecutor;
 
 import com.avaje.ebean.EbeanServer;
 
+import name.richardson.james.bukkit.utilities.command.AbstractCommand;
+import name.richardson.james.bukkit.utilities.command.CommandMatchers;
+import name.richardson.james.bukkit.utilities.command.CommandPermissions;
+import name.richardson.james.bukkit.utilities.localisation.LocalisedCommandSender;
+
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
 import name.richardson.james.bukkit.banhammer.matchers.BannedPlayerRecordMatcher;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
-import name.richardson.james.bukkit.utilities.command.AbstractCommand;
-import name.richardson.james.bukkit.utilities.command.CommandMatchers;
-import name.richardson.james.bukkit.utilities.command.CommandPermissions;
+import name.richardson.james.bukkit.banhammer.persistence.PlayerRecordManager;
 
 @CommandPermissions(permissions = { "banhammer.pardon", "banhammer.pardon.own", "banhammer.pardon.others" })
 @CommandMatchers(matchers = { BannedPlayerRecordMatcher.class })
 public class PardonCommand extends AbstractCommand implements TabExecutor {
 
-	private final EbeanServer database;
-
-	/** A reference to the BanHammer API. */
-	private final BanHandler handler;
+	private final PlayerRecordManager playerRecordManager;
+	private final BanHandler banHandler;
 
 	/** A instance of the Bukkit server. */
 	private final Server server;
 
-	public PardonCommand(final BanHammer plugin) {
-		super();
-		this.database = plugin.getDatabase();
-		this.handler = plugin.getHandler();
-		this.server = plugin.getServer();
+	public PardonCommand(final PlayerRecordManager playerRecordManager, final BanHandler banHandler, final Server server) {
+		this.playerRecordManager = playerRecordManager;
+		this.banHandler = banHandler;
+		this.server = server;
 	}
 
 	public void execute(final List<String> arguments, final CommandSender sender) {
+		LocalisedCommandSender localisedCommandSender = new LocalisedCommandSender(sender, this.getLocalisation());
 		if (arguments.isEmpty()) {
-			sender.sendMessage(this.getMessage("error.must-specify-player"));
+			localisedCommandSender.error("must-specify-player");
 		} else {
 			final OfflinePlayer player = this.server.getOfflinePlayer(arguments.remove(0));
-			final BanRecord ban = PlayerRecord.find(this.database, player.getName()).getActiveBan();
+			if (!playerRecordManager.exists(player.getName())) {
+				localisedCommandSender.error("player-is-not-banned", player.getName());
+				return;
+			}
+			final BanRecord ban = playerRecordManager.find(player.getName()).getActiveBan();
 			if (ban == null) {
-				sender.sendMessage(this.getMessage("error.player-is-not-banned", player.getName()));
+				localisedCommandSender.error("player-is-not-banned", player.getName());
 			} else
 				if (this.hasPermission(sender, player.getName())) {
-					this.handler.pardonPlayer(player.getName(), sender.getName(), true);
+					this.banHandler.pardonPlayer(player.getName(), sender.getName(), true);
 					player.setBanned(false);
-					sender.sendMessage(this.getMessage("notice.player-pardoned-action", player.getName()));
+					localisedCommandSender.info("player-pardoned", player.getName());
 				} else {
-					sender.sendMessage(this.getMessage("error.permission-denied"));
+					localisedCommandSender.error("permission-denied");
 				}
 		}
 	}
 
 	public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] arguments) {
+		LocalisedCommandSender localisedCommandSender = new LocalisedCommandSender(sender, this.getLocalisation());
 		if (this.isAuthorized(sender)) {
 			this.execute(new LinkedList<String>(Arrays.asList(arguments)), sender);
 		} else {
-			sender.sendMessage(this.getMessage("error.permission-denied"));
+			localisedCommandSender.error("permission-denied");
 		}
 		return true;
 	}
