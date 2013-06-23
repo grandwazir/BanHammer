@@ -1,5 +1,6 @@
 Changelog for BanHammer (v2.2.6-SNAPSHOT)
 
+2013-06-22 00:45:41 +0100    remove debugging (James Richardson)
 2013-06-22 00:43:57 +0100    automatically deassociate players in Alias when pardoned (James Richardson)
 2013-06-22 00:34:57 +0100    fix mysterious rename (James Richardson)
 2013-06-22 00:26:06 +0100    fix total ban percentage (James Richardson)
