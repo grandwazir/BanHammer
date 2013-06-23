@@ -35,6 +35,7 @@ import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 /*
  * A simple implementation of the BanHandler interace.
  */
+@Deprecated
 public class SimpleBanHandler implements BanHandler {
 
 	private final PlayerRecordManager playerRecordManager;

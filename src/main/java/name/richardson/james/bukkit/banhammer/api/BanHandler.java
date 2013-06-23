@@ -13,6 +13,7 @@ import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
  * pardoning players. It is also possible to get detail about any bans which
  * have been made.
  */
+@Deprecated
 public interface BanHandler {
 
 	/**
