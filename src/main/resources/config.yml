@@ -1,8 +1,7 @@
 logging: INFO
 automatic-updates:
-  enabled: true
-  method: notify
-  branch: stable
+  method: NOTIFY
+  branch: STABLE
 ban-limits:
   warning: 1h
   short: 1d

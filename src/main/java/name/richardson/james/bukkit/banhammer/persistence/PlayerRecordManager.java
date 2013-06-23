@@ -1,19 +1,26 @@
 package name.richardson.james.bukkit.banhammer.persistence;
 
-import com.avaje.ebean.EbeanServer;
-
 import javax.persistence.PersistenceException;
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.avaje.ebean.EbeanServer;
 
 import name.richardson.james.bukkit.utilities.logging.PrefixedLogger;
 
 public class PlayerRecordManager {
 
+	public enum PlayerStatus {
+		ANY,
+		BANNED,
+		CREATOR
+	}
 	private static final Logger LOGGER = PrefixedLogger.getLogger(PlayerRecordManager.class);
-
 	private final EbeanServer database;
 
 	public PlayerRecordManager(EbeanServer database) {
@@ -64,6 +71,33 @@ public class PlayerRecordManager {
 		}
 	}
 
+	public List<PlayerRecord> list(String playerName, PlayerStatus status) {
+		switch (status) {
+			case ANY: {
+				return database.find(PlayerRecord.class).where().startsWith("name", playerName).findList();
+			} case BANNED: {
+				List<PlayerRecord> records = database.find(PlayerRecord.class).where().startsWith("name", playerName).findList();
+				ListIterator<PlayerRecord> i = records.listIterator();
+				while (i.hasNext()) {
+					PlayerRecord record = i.next();
+					if (record.isBanned()) continue;
+					i.remove();
+				}
+				return records;
+			} case CREATOR: {
+				List<PlayerRecord> records = database.find(PlayerRecord.class).where().startsWith("name", playerName).findList();
+				ListIterator<PlayerRecord> i = records.listIterator();
+				while (i.hasNext()) {
+					PlayerRecord record = i.next();
+					if (record.isBanned()) continue;
+					i.remove();
+				}
+				return records;
+			}
+		}
+		return Collections.emptyList();
+	}
+
 	public List<PlayerRecord> list() {
 		LOGGER.log(Level.FINER, "Returning list containing all PlayerRecords.");
 		return database.find(PlayerRecord.class).findList();
@@ -89,7 +123,7 @@ public class PlayerRecordManager {
 
 	/**
 	 * Delete duplicate player records.
-	 *
+	 * <p/>
 	 * This happened due to a bug introduced around version 2.0. I thought it was
 	 * not a major problem but it appears to be causing issues for many players.
 	 * This will automatically fix any issues as they are found.

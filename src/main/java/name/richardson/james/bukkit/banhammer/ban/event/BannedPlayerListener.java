@@ -1,4 +1,4 @@
-package name.richardson.james.bukkit.banhammer.guardian;
+package name.richardson.james.bukkit.banhammer.ban.event;
 
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
@@ -13,7 +13,6 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.plugin.Plugin;
 
-import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerBannedEvent;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecordManager;

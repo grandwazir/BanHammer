@@ -1,4 +1,4 @@
-package name.richardson.james.bukkit.banhammer;
+package name.richardson.james.bukkit.banhammer.ban.event;
 
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -17,8 +17,6 @@ import name.richardson.james.bukkit.utilities.localisation.LocalisedCoreColourSc
 import name.richardson.james.bukkit.utilities.localisation.PluginResourceBundle;
 import name.richardson.james.bukkit.utilities.logging.PrefixedLogger;
 
-import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerBannedEvent;
-import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
 import name.richardson.james.bukkit.banhammer.ban.BanSummary;
 
 public class PlayerNotifier extends AbstractListener {

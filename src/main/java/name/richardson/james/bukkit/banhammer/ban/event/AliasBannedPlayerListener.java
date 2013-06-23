@@ -1,4 +1,4 @@
-package name.richardson.james.bukkit.banhammer.guardian;
+package name.richardson.james.bukkit.banhammer.ban.event;
 
 import java.text.MessageFormat;
 import java.util.Collection;
@@ -12,6 +12,7 @@ import name.richardson.james.bukkit.alias.AliasHandler;
 import name.richardson.james.bukkit.alias.persistence.PlayerNameRecord;
 import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
+import name.richardson.james.bukkit.banhammer.ban.event.BannedPlayerListener;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecordManager;
 import name.richardson.james.bukkit.utilities.localisation.PluginResourceBundle;

@@ -1,21 +1,21 @@
 /*******************************************************************************
  * Copyright (c) 2012 James Richardson.
- * 
+ *
  * BanHammerConfiguration.java is part of BanHammer.
- * 
+ *
  * BanHammer is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- * 
+ *
  * BanHammer is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.bukkit.banhammer.persistence;
+package name.richardson.james.bukkit.banhammer;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +28,6 @@ import org.bukkit.configuration.ConfigurationSection;
 
 import name.richardson.james.bukkit.utilities.configuration.SimplePluginConfiguration;
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
-import name.richardson.james.bukkit.utilities.logging.LocalisedLogger;
 import name.richardson.james.bukkit.utilities.logging.PrefixedLogger;
 
 public class BanHammerConfiguration extends SimplePluginConfiguration {
@@ -36,7 +35,8 @@ public class BanHammerConfiguration extends SimplePluginConfiguration {
 	private final Map<String, Long> limits = new LinkedHashMap<String, Long>();
 	private final Logger logger = PrefixedLogger.getLogger(this.getClass());
 
-	public BanHammerConfiguration(final File file, final InputStream defaults) throws IOException {
+	public BanHammerConfiguration(final File file, final InputStream defaults)
+	throws IOException {
 		super(file, defaults);
 	}
 

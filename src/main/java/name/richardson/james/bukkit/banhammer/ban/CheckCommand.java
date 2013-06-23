@@ -30,7 +30,6 @@ import name.richardson.james.bukkit.banhammer.persistence.PlayerRecordManager;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandPermissions;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
-import name.richardson.james.bukkit.utilities.localisation.LocalisedCommandSender;
 
 @ConsoleCommand
 @CommandPermissions(permissions = {"banhammer.check"})
