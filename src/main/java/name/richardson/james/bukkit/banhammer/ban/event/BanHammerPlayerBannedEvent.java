@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License along with
  * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.bukkit.banhammer.api;
+package name.richardson.james.bukkit.banhammer.ban.event;
 
 import org.bukkit.event.HandlerList;
 
@@ -41,7 +41,7 @@ public class BanHammerPlayerBannedEvent extends BanHammerPlayerEvent {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see name.richardson.james.bukkit.banhammer.api.BanHammerPlayerEvent#
+	 * @see name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerEvent#
 	 * BanHammerPlayerEvent()
 	 */
 	public BanHammerPlayerBannedEvent(final BanRecord record, final boolean silent) {

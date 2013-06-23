@@ -10,7 +10,7 @@ import org.bukkit.plugin.Plugin;
 
 import name.richardson.james.bukkit.alias.AliasHandler;
 import name.richardson.james.bukkit.alias.persistence.PlayerNameRecord;
-import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
+import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecordManager;

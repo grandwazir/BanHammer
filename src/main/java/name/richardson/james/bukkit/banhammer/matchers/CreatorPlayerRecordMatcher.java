@@ -5,9 +5,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerBannedEvent;
-import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
-import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerBannedEvent;
+import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
 
 public class    CreatorPlayerRecordMatcher extends PlayerRecordMatcher {
 

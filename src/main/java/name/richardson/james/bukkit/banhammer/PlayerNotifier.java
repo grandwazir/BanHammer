@@ -17,8 +17,8 @@ import name.richardson.james.bukkit.utilities.localisation.LocalisedCoreColourSc
 import name.richardson.james.bukkit.utilities.localisation.PluginResourceBundle;
 import name.richardson.james.bukkit.utilities.logging.PrefixedLogger;
 
-import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerBannedEvent;
-import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
+import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerBannedEvent;
+import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
 import name.richardson.james.bukkit.banhammer.ban.BanSummary;
 
 public class PlayerNotifier extends AbstractListener {

@@ -26,8 +26,8 @@ import org.bukkit.event.Listener;
 import com.avaje.ebean.EbeanServer;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerBannedEvent;
-import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
+import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerBannedEvent;
+import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.utilities.metrics.Metrics;
 import name.richardson.james.bukkit.utilities.metrics.Metrics.Graph;

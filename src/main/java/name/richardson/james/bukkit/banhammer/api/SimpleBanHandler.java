@@ -20,6 +20,8 @@ package name.richardson.james.bukkit.banhammer.api;
 import java.sql.Timestamp;
 import java.util.*;
 
+import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerBannedEvent;
+import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecordManager;
 import org.bukkit.Bukkit;

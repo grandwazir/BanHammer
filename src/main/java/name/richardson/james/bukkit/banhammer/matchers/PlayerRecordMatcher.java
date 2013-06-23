@@ -5,11 +5,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.avaje.ebean.EbeanServer;
+import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerBannedEvent;
+import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
 
-import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerBannedEvent;
-import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
-import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.utilities.matchers.Matcher;
 
 public class PlayerRecordMatcher implements Matcher {

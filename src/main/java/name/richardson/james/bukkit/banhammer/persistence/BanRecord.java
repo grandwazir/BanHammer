@@ -20,7 +20,7 @@ package name.richardson.james.bukkit.banhammer.persistence;
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.annotation.CacheStrategy;
 import com.avaje.ebean.validation.NotNull;
-import name.richardson.james.bukkit.banhammer.api.BanHammerPlayerPardonedEvent;
+import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
 import org.bukkit.Bukkit;
 
 import javax.persistence.*;
