@@ -3,6 +3,7 @@ package name.richardson.james.bukkit.banhammer.persistence;
 import com.avaje.ebean.EbeanServer;
 
 import javax.persistence.PersistenceException;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -15,12 +16,15 @@ public class PlayerRecordManager {
 
 	private static final Logger LOGGER = PrefixedLogger.getLogger(PlayerRecordManager.class);
 	private static final ResourceBundle RESOURCE_BUNDLE = PluginResourceBundle.getBundle(PlayerRecordManager.class);
-
 	private final EbeanServer database;
 
 	public PlayerRecordManager(EbeanServer database) {
 		if (database == null) throw new IllegalArgumentException();
 		this.database = database;
+	}
+
+	public int count() {
+		return this.database.find(PlayerRecord.class).findRowCount();
 	}
 
 	public PlayerRecord create(String playerName) {
@@ -33,14 +37,13 @@ public class PlayerRecordManager {
 		return this.find(playerName);
 	}
 
-	public PlayerRecord find(String playerName) {
-		LOGGER.log(Level.FINER, "Finding PlayerRecord for " + playerName);
-		try {
-			return database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
-		} catch (PersistenceException e) {
-			this.removeDuplicates(playerName);
-			return database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
-		}
+	public void delete(PlayerRecord record) {
+		LOGGER.log(Level.FINER, "Deleting PlayerRecord for " + record.getName());
+		this.database.delete(record);
+	}
+
+	public void delete(List<PlayerRecord> records) {
+		this.database.delete(records);
 	}
 
 	public boolean exists(String playerName) {
@@ -53,9 +56,37 @@ public class PlayerRecordManager {
 		}
 	}
 
+	public PlayerRecord find(String playerName) {
+		LOGGER.log(Level.FINER, "Finding PlayerRecord for " + playerName);
+		try {
+			return database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
+		} catch (PersistenceException e) {
+			this.removeDuplicates(playerName);
+			return database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
+		}
+	}
+
 	public List<PlayerRecord> list() {
 		LOGGER.log(Level.FINER, "Returning list containing all PlayerRecords.");
 		return database.find(PlayerRecord.class).findList();
+	}
+
+	public void save(PlayerRecord record) {
+		LOGGER.log(Level.FINER, "Saving PlayerRecord for " + record.getName());
+		this.database.save(record);
+	}
+
+	public void save(List<PlayerRecord> records) {
+		this.database.save(records);
+	}
+
+	public void update(PlayerRecord record) {
+		LOGGER.log(Level.FINER, "Updating PlayerRecord for " + record.getName());
+		this.update(record);
+	}
+
+	public void update(List<PlayerRecord> records) {
+		this.database.update(records);
 	}
 
 	/**
@@ -77,34 +108,41 @@ public class PlayerRecordManager {
 		}
 	}
 
-	public void delete(PlayerRecord record) {
-		LOGGER.log(Level.FINER, "Deleting PlayerRecord for " + record.getName());
-		this.database.delete(record);
-	}
+	public class BannedPlayerBuilder {
 
-	public void delete(List<PlayerRecord> records) {
-		this.database.delete(records);
-	}
+		private final BanRecord record;
 
-	public void save(PlayerRecord record) {
-		LOGGER.log(Level.FINER, "Saving PlayerRecord for " + record.getName());
-		this.database.save(record);
-	}
+		public BannedPlayerBuilder() {
+			this.record = new BanRecord();
+			this.record.setState(BanRecord.State.NORMAL);
+		}
 
-	public void save(List<PlayerRecord> records) {
-		this.database.save(records);
-	}
+		public BannedPlayerBuilder setCreator(String playerName) {
+			this.record.setCreator(create(playerName));
+			return this;
+		}
 
-	public void update(PlayerRecord record) {
-		LOGGER.log(Level.FINER, "Updating PlayerRecord for " + record.getName());
-		this.update(record);
-	}
+		public BannedPlayerBuilder setExpiresAt(Timestamp timestamp) {
+			this.record.setExpiresAt(timestamp);
+			return this;
+		}
 
-	public void update(List<PlayerRecord> records) {
-		this.database.update(records);
-	}
+		public BannedPlayerBuilder setExpiryTime(long time) {
+			long now = System.currentTimeMillis();
+			this.record.setCreatedAt(new Timestamp(now));
+			this.record.setExpiresAt(new Timestamp(now + time));
+			return this;
+		}
 
-	public int count() {
-		return this.database.find(PlayerRecord.class).findRowCount();
+		public BannedPlayerBuilder setPlayer(String playerName) {
+			this.record.setPlayer(create(playerName));
+			return this;
+		}
+
+		public BannedPlayerBuilder setReason(String reason) {
+			this.record.setReason(reason);
+			return this;
+		}
+
 	}
 }
