@@ -47,7 +47,6 @@ import name.richardson.james.bukkit.banhammer.api.BanHandler;
 import name.richardson.james.bukkit.banhammer.matchers.BanLimitMatcher;
 
 @ConsoleCommand
-@CommandMatchers(matchers = {OnlinePlayerMatcher.class, BanLimitMatcher.class})
 @CommandPermissions(permissions = {"banhammer.ban", "banhammer.ban.permanent"})
 public class BanCommand extends AbstractCommand implements TabExecutor {
 

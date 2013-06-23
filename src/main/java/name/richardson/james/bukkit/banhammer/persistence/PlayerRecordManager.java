@@ -5,17 +5,15 @@ import com.avaje.ebean.EbeanServer;
 import javax.persistence.PersistenceException;
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import name.richardson.james.bukkit.utilities.localisation.PluginResourceBundle;
 import name.richardson.james.bukkit.utilities.logging.PrefixedLogger;
 
 public class PlayerRecordManager {
 
 	private static final Logger LOGGER = PrefixedLogger.getLogger(PlayerRecordManager.class);
-	private static final ResourceBundle RESOURCE_BUNDLE = PluginResourceBundle.getBundle(PlayerRecordManager.class);
+
 	private final EbeanServer database;
 
 	public PlayerRecordManager(EbeanServer database) {

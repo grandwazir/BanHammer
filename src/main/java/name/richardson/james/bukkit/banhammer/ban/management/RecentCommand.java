@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License along with
  * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.bukkit.banhammer.ban;
+package name.richardson.james.bukkit.banhammer.ban.management;
 
 import java.util.List;
 
@@ -27,6 +27,7 @@ import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
 import name.richardson.james.bukkit.utilities.localisation.LocalisedCommandSender;
 
+import name.richardson.james.bukkit.banhammer.ban.BanSummary;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecordManager;
 

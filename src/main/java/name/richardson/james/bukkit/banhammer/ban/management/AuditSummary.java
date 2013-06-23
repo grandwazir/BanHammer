@@ -1,4 +1,4 @@
-package name.richardson.james.bukkit.banhammer.management;
+package name.richardson.james.bukkit.banhammer.ban.management;
 
 import java.util.List;
 

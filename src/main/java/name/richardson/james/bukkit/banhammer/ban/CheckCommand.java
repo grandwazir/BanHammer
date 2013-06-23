@@ -28,7 +28,6 @@ import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecordManager;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
-import name.richardson.james.bukkit.utilities.command.CommandMatchers;
 import name.richardson.james.bukkit.utilities.command.CommandPermissions;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.localisation.LocalisedCommandSender;

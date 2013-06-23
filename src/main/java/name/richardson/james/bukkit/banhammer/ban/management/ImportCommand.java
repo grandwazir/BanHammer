@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License along with
  * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.bukkit.banhammer.management;
+package name.richardson.james.bukkit.banhammer.ban.management;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -25,7 +25,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 
-import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandPermissions;
