@@ -17,33 +17,28 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.ban;
 
-import java.sql.Timestamp;
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-
+import name.richardson.james.bukkit.utilities.colours.ColourScheme;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
-import name.richardson.james.bukkit.utilities.command.CommandMatchers;
+import name.richardson.james.bukkit.utilities.command.CommandArguments;
 import name.richardson.james.bukkit.utilities.command.CommandPermissions;
-import name.richardson.james.bukkit.utilities.localisation.LocalisedCommandSender;
+import name.richardson.james.bukkit.utilities.command.argument.InvalidArgumentException;
 
-import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
-import name.richardson.james.bukkit.banhammer.matchers.CreatorPlayerRecordMatcher;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecordManager;
+import name.richardson.james.bukkit.banhammer.utilities.argument.PlayerRecordArgument;
 
 @CommandPermissions(permissions = {"banhammer.undo", "banhammer.undo.own", "banhammer.undo.others", "banhammer.undo.unrestricted"})
-@CommandMatchers(matchers = {CreatorPlayerRecordMatcher.class})
+@CommandArguments(arguments = {PlayerRecordArgument.class})
 public class UndoCommand extends AbstractCommand {
 
 	private final BanRecordManager banRecordManager;
 	private final PlayerRecordManager playerRecordManager;
 	private final long undoTime;
 
-	private String playerName;
+	private BanRecord ban;
+	private PlayerRecord playerRecord;
 
 	public UndoCommand(final PlayerRecordManager playerRecordManager, final BanRecordManager banRecordManager, final long undoTime) {
 		this.playerRecordManager = playerRecordManager;
@@ -51,55 +46,51 @@ public class UndoCommand extends AbstractCommand {
 		this.undoTime = undoTime;
 	}
 
-	public void execute(final List<String> arguments, final CommandSender sender) {
-		LocalisedCommandSender localisedCommandSender = new LocalisedCommandSender(sender, this.getLocalisation());
-		if (arguments.isEmpty()) {
-			this.playerName = sender.getName();
-		} else {
-			this.playerName = arguments.get(0);
-		}
+	public void execute() {
+		this.banRecordManager.delete(ban);
+		getCommandSender().sendMessage(getColourScheme().format(ColourScheme.Style.INFO, "ban-undone", ban.getPlayer().getName()));
+	}
 
-		if (this.playerRecordManager.exists(this.playerName)) {
-			final PlayerRecord playerRecord = playerRecordManager.find(this.playerName);
-			final List<BanRecord> playerBans = playerRecord.getCreatedBans();
-			if (playerBans.isEmpty()) {
-				localisedCommandSender.warning("no-ban-to-undo");
+	@Override
+	protected boolean parseArguments() {
+		try {
+			super.parseArguments();
+			this.playerRecord = (PlayerRecord) getArgumentValidators().get(0).getValue();
+			if (playerRecord == null || playerRecord.getCreatedBans().size() == 0) {
+				getCommandSender().sendMessage(getColourScheme().format(ColourScheme.Style.INFO, "no-ban-to-undo"));
+				return false;
 			} else {
-				final BanRecord ban = playerBans.get(playerBans.size() - 1);
-				if (this.hasPermission(sender, ban.getCreatedAt())) {
-					this.banRecordManager.delete(ban);
-					if (ban.getState() == BanRecord.State.NORMAL) Bukkit.getPluginManager().callEvent(new BanHammerPlayerPardonedEvent(ban, false));
-					localisedCommandSender.info("ban-undone", ban.getPlayer().getName());
-				} else {
-					if (!this.withinTimeLimit(sender, ban.getCreatedAt())) {
-						localisedCommandSender.error("undo-time-expired");
-					} else {
-						localisedCommandSender.error("may-not-undo-that-players-bans", this.playerName);
-					}
-				}
+				ban = playerRecord.getCreatedBans().get(playerRecord.getCreatedBans().size() - 1);
+				return hasPermission();
 			}
+		} catch (InvalidArgumentException e) {
+			getCommandSender().sendMessage(getColourScheme().format(ColourScheme.Style.ERROR, e.getMessage(), e.getArgument()));
+			return false;
 		}
 	}
 
-	private boolean hasPermission(final CommandSender sender, final Timestamp time) {
-		final boolean isSenderTargetingSelf = (this.playerName.equalsIgnoreCase(sender.getName())) ? true : false;
-		final boolean withinTimeLimit = this.withinTimeLimit(sender, time);
-		if (sender.hasPermission("banhammer.undo.own") && withinTimeLimit && isSenderTargetingSelf) {
-			return true;
-		}
-		if (sender.hasPermission("banhammer.audit.others") && withinTimeLimit && !isSenderTargetingSelf) {
-			return true;
-		}
+	@Override
+	protected void setArgumentValidators() {
+		super.setArgumentValidators();
+		PlayerRecordArgument.setPlayerRecordManager(playerRecordManager);
+		PlayerRecordArgument argument = (PlayerRecordArgument) getArgumentValidators().get(0);
+		argument.setPlayerStatus(PlayerRecordManager.PlayerStatus.CREATOR);
+		argument.setRequired(false);
+	}
+
+	private boolean hasPermission() {
+		final boolean isSenderTargetingSelf = (this.ban.getCreator().getName().equalsIgnoreCase(getCommandSender().getName())) ? true : false;
+		final boolean withinTimeLimit = this.withinTimeLimit();
+		if (getCommandSender().hasPermission("banhammer.undo.own") && withinTimeLimit && isSenderTargetingSelf) return true;
+		if (getCommandSender().hasPermission("banhammer.audit.others") && withinTimeLimit && !isSenderTargetingSelf) return true;
+		getCommandSender().sendMessage(getColourScheme().format(ColourScheme.Style.ERROR, "may-not-undo-that-players-ban"));
 		return false;
 	}
 
-	private boolean withinTimeLimit(final CommandSender sender, final Timestamp then) {
-		if (sender.hasPermission("banhammer.undo.unrestricted")) {
-			return true;
-		}
-		if ((System.currentTimeMillis() - then.getTime()) <= this.undoTime) {
-			return true;
-		}
+	private boolean withinTimeLimit() {
+		if (getCommandSender().hasPermission("banhammer.undo.unrestricted")) return true;
+		if ((System.currentTimeMillis() - ban.getExpiresAt().getTime()) <= this.undoTime) return true;
+		getCommandSender().sendMessage(getColourScheme().format(ColourScheme.Style.ERROR, "undo-time-expired"));
 		return false;
 	}
 

@@ -17,55 +17,65 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.ban;
 
-import java.util.List;
+import name.richardson.james.bukkit.utilities.colours.ColourScheme;
+import name.richardson.james.bukkit.utilities.command.AbstractCommand;
+import name.richardson.james.bukkit.utilities.command.CommandArguments;
+import name.richardson.james.bukkit.utilities.command.CommandPermissions;
+import name.richardson.james.bukkit.utilities.command.argument.InvalidArgumentException;
 
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
-import org.bukkit.command.CommandSender;
-
-import name.richardson.james.bukkit.banhammer.matchers.BannedPlayerRecordMatcher;
 import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.persistence.PlayerRecordManager;
-import name.richardson.james.bukkit.utilities.command.AbstractCommand;
-import name.richardson.james.bukkit.utilities.command.CommandPermissions;
-import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
+import name.richardson.james.bukkit.banhammer.utilities.argument.PlayerRecordArgument;
 
-@ConsoleCommand
 @CommandPermissions(permissions = {"banhammer.check"})
-@CommandMatchers(matchers = {BannedPlayerRecordMatcher.class})
+@CommandArguments(arguments = {PlayerRecordArgument.class})
 public class CheckCommand extends AbstractCommand {
 
 	private final PlayerRecordManager playerRecordManager;
-	private final Server server;
 
-	public CheckCommand(final PlayerRecordManager playerRecordManager, final Server server) {
+	private PlayerRecord playerRecord;
+
+	public CheckCommand(final PlayerRecordManager playerRecordManager) {
 		this.playerRecordManager = playerRecordManager;
-		this.server = server;
 	}
 
-	public void execute(final List<String> arguments, final CommandSender sender) {
-		OfflinePlayer offlinePlayer;
-		LocalisedCommandSender localisedCommandSender = new LocalisedCommandSender(sender, this.getLocalisation());
-		if (arguments.isEmpty()) {
-			localisedCommandSender.error("must-specify-player");
-			return;
-		} else {
-			offlinePlayer = this.server.getOfflinePlayer(arguments.remove(0));
+	@Override
+	protected void execute() {
+		final BanRecord ban = playerRecord.getActiveBan();
+		final BanSummary summary = new BanSummary(ban);
+		getCommandSender().sendMessage(summary.getHeader());
+		getCommandSender().sendMessage(summary.getReason());
+		getCommandSender().sendMessage(summary.getLength());
+		if (ban.getType() == BanRecord.Type.TEMPORARY) {
+			getCommandSender().sendMessage(summary.getExpiresAt());
 		}
-		final PlayerRecord playerRecord = playerRecordManager.find(offlinePlayer.getName());
-		if (playerRecord != null && playerRecord.isBanned()) {
-			final BanRecord ban = playerRecord.getActiveBan();
-			final BanSummary summary = new BanSummary(ban);
-			sender.sendMessage(summary.getHeader());
-			sender.sendMessage(summary.getReason());
-			sender.sendMessage(summary.getLength());
-			if (ban.getType() == BanRecord.Type.TEMPORARY) {
-				sender.sendMessage(summary.getExpiresAt());
+	}
+
+	@Override
+	protected boolean parseArguments() {
+		try {
+			super.parseArguments();
+			this.playerRecord = (PlayerRecord) getArgumentValidators().get(0).getValue();
+			return true;
+		} catch (InvalidArgumentException e) {
+			getCommandSender().sendMessage(getColourScheme().format(ColourScheme.Style.ERROR, e.getMessage(), e.getArgument()));
+			return false;
+		} finally {
+			if (playerRecord == null || (playerRecord != null && playerRecord.isBanned())) {
+				getCommandSender().sendMessage(getColourScheme().format(ColourScheme.Style.WARNING, "player-is-not-banned", getArguments().get(0)));
+				return false;
 			}
-		} else {
-			localisedCommandSender.info("player-is-not-banned", offlinePlayer.getName());
 		}
+	}
+
+	@Override
+	protected void setArgumentValidators() {
+		super.setArgumentValidators();
+		PlayerRecordArgument argument = (PlayerRecordArgument) getArgumentValidators().get(0);
+		PlayerRecordArgument.setPlayerRecordManager(playerRecordManager);
+		argument.setRequired(false);
+		argument.setPlayerStatus(PlayerRecordManager.PlayerStatus.BANNED);
 	}
 
 }

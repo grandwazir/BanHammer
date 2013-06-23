@@ -19,7 +19,7 @@ public class PlayerRecordArgument extends RecordArgument {
 	}
 
 	@Override
-	public Object getValue()
+	public PlayerRecord getValue()
 	throws InvalidArgumentException {
 		if (isRequired()) {
 			return getPlayerRecordManager().create((String) super.getValue());

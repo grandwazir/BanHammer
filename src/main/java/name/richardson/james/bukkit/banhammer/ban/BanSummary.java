@@ -20,8 +20,10 @@ package name.richardson.james.bukkit.banhammer.ban;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
+import name.richardson.james.bukkit.utilities.colours.ColourScheme;
 import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
+import name.richardson.james.bukkit.utilities.localisation.LocalisedCoreColourScheme;
 import name.richardson.james.bukkit.utilities.localisation.PluginResourceBundle;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
@@ -29,7 +31,10 @@ import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
 
 public class BanSummary {
 
-	private final ResourceBundle localisation = PluginResourceBundle.getBundle(this.getClass());
+	private static final ResourceBundle localisation = PluginResourceBundle.getBundle(BanSummary.class);
+
+	private static final ColourScheme COLOUR_SCHEME = new LocalisedCoreColourScheme(localisation);
+
 	/**
 	 * The record we are linked with.
 	 */
@@ -51,7 +56,7 @@ public class BanSummary {
 	 */
 	public String getExpiresAt() {
 		final String expiryDateString = BanHammer.SHORT_DATE_FORMAT.format(this.record.getExpiresAt());
-		return MessageFormat.format(ColourFormatter.info(this.localisation.getString("expires")), expiryDateString);
+		return COLOUR_SCHEME.format(ColourScheme.Style.INFO, "expires", expiryDateString);
 	}
 
 	/**
@@ -62,7 +67,7 @@ public class BanSummary {
 	 */
 	public String getHeader() {
 		final String date = BanHammer.SHORT_DATE_FORMAT.format(this.record.getCreatedAt());
-		return MessageFormat.format(ColourFormatter.warning(this.localisation.getString("header")), this.record.getPlayer().getName(), this.record.getCreator().getName(), date);
+		return COLOUR_SCHEME.format(ColourScheme.Style.WARNING, "header", this.record.getPlayer().getName(), this.record.getCreator().getName(), date);
 	}
 
 	/**
@@ -72,10 +77,10 @@ public class BanSummary {
 	 */
 	public String getLength() {
 		if (this.record.getType() == BanRecord.Type.PERMANENT) {
-			return MessageFormat.format(ColourFormatter.info(this.localisation.getString("length")), this.localisation.getString("permanent"));
+			return COLOUR_SCHEME.format(ColourScheme.Style.INFO, "length", localisation.getString("permanent"));
 		} else {
 			final long length = this.record.getExpiresAt().getTime() - this.record.getCreatedAt().getTime();
-			return MessageFormat.format(ColourFormatter.info(this.localisation.getString("length")), TimeFormatter.millisToLongDHMS(length));
+			return COLOUR_SCHEME.format(ColourScheme.Style.INFO, "length", TimeFormatter.millisToLongDHMS(length));
 		}
 	}
 
@@ -85,7 +90,7 @@ public class BanSummary {
 	 * @return the reason
 	 */
 	public String getReason() {
-		return MessageFormat.format(ColourFormatter.info(this.localisation.getString("reason")), this.record.getReason());
+		return COLOUR_SCHEME.format(ColourScheme.Style.INFO, "reason", this.record.getReason());
 	}
 
 	/**
@@ -95,11 +100,11 @@ public class BanSummary {
 	 */
 	public String getSelfHeader() {
 		final String date = BanHammer.SHORT_DATE_FORMAT.format(this.record.getCreatedAt());
-		return MessageFormat.format(ColourFormatter.warning(this.localisation.getString("header-self")), this.record.getCreator().getName(), date);
+		return COLOUR_SCHEME.format(ColourScheme.Style.WARNING, "header-self", this.record.getCreator().getName(), date);
 	}
 
 	public String getAnnouncementHeader() {
-		return MessageFormat.format(ColourFormatter.warning(this.localisation.getString("header-announce")), this.record.getPlayer().getName(), this.record.getCreator().getName());
+		return COLOUR_SCHEME.format(ColourScheme.Style.WARNING, "header-announce", this.record.getPlayer().getName(), this.record.getCreator().getName());
 	}
 
 }
