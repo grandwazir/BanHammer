@@ -29,24 +29,19 @@ import org.bukkit.configuration.ConfigurationSection;
 import name.richardson.james.bukkit.utilities.configuration.SimplePluginConfiguration;
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
 import name.richardson.james.bukkit.utilities.logging.LocalisedLogger;
+import name.richardson.james.bukkit.utilities.logging.PrefixedLogger;
 
 public class BanHammerConfiguration extends SimplePluginConfiguration {
 
-	/** The configured ban limits. */
 	private final Map<String, Long> limits = new LinkedHashMap<String, Long>();
-	private final Logger logger = LocalisedLogger.getLogger(this.getClass(), null);
+	private final Logger logger = PrefixedLogger.getLogger(this.getClass());
 
 	public BanHammerConfiguration(final File file, final InputStream defaults) throws IOException {
 		super(file, defaults);
-		this.setBanLimits();
 	}
 
-	/**
-	 * Gets the ban limits.
-	 * 
-	 * @return the ban limits
-	 */
 	public Map<String, Long> getBanLimits() {
+		if (limits.isEmpty()) this.setBanLimits();
 		return Collections.unmodifiableMap(this.limits);
 	}
 
@@ -59,18 +54,10 @@ public class BanHammerConfiguration extends SimplePluginConfiguration {
 		return TimeFormatter.parseTime(this.getConfiguration().getString("undo-time", "1m"));
 	}
 
-	/**
-	 * Checks if is guardian should be enabled.
-	 * 
-	 * @return true, if is guardian is enabled
-	 */
 	public boolean isAliasEnabled() {
 		return this.getConfiguration().getBoolean("alias-plugin.enabled");
 	}
 
-	/**
-	 * Read and sets the ban limits.
-	 */
 	private void setBanLimits() {
 		this.limits.clear();
 		final ConfigurationSection section = this.getConfiguration().getConfigurationSection("ban-limits");
