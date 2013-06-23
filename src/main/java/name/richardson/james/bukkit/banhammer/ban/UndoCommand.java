@@ -82,7 +82,7 @@ public class UndoCommand extends AbstractCommand {
 		final boolean isSenderTargetingSelf = (this.ban.getCreator().getName().equalsIgnoreCase(getCommandSender().getName())) ? true : false;
 		final boolean withinTimeLimit = this.withinTimeLimit();
 		if (getCommandSender().hasPermission("banhammer.undo.own") && withinTimeLimit && isSenderTargetingSelf) return true;
-		if (getCommandSender().hasPermission("banhammer.audit.others") && withinTimeLimit && !isSenderTargetingSelf) return true;
+		if (getCommandSender().hasPermission("banhammer.undo.others") && withinTimeLimit && !isSenderTargetingSelf) return true;
 		getCommandSender().sendMessage(getColourScheme().format(ColourScheme.Style.ERROR, "may-not-undo-that-players-ban"));
 		return false;
 	}
