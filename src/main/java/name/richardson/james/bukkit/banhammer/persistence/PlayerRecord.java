@@ -40,24 +40,16 @@ public class PlayerRecord {
 	/** The bans. */
 	@OneToMany(mappedBy = "player", targetEntity = BanRecord.class, cascade = { CascadeType.REMOVE })
 	private List<BanRecord> bans;
-
 	/** The created bans. */
 	@OneToMany(mappedBy = "creator", targetEntity = BanRecord.class)
 	private List<BanRecord> createdBans;
-
 	/** The id. */
 	@Id
 	private int id;
-
 	/** The name. */
 	@NotNull
 	private String name;
 
-	/**
-	 * Gets the active ban.
-	 * 
-	 * @return the active ban
-	 */
 	public BanRecord getActiveBan() {
 		for (final BanRecord ban : this.getBans()) {
 			if (ban.getState() == BanRecord.State.NORMAL) {
@@ -67,49 +59,40 @@ public class PlayerRecord {
 		return null;
 	}
 
-	/**
-	 * Gets the bans.
-	 * 
-	 * @return the bans
-	 */
 	@OneToMany(targetEntity = BanRecord.class, fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
 	public List<BanRecord> getBans() {
 		return (this.bans == null) ? new LinkedList<BanRecord>() : this.bans;
 	}
 
-	/**
-	 * Gets the created bans.
-	 * 
-	 * @return the created bans
-	 */
+	public void setBans(final List<BanRecord> records) {
+		this.bans = records;
+	}
+
 	@OneToMany(targetEntity = BanRecord.class, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
 	public List<BanRecord> getCreatedBans() {
 		return (this.createdBans == null) ? new LinkedList<BanRecord>() : this.createdBans;
 	}
 
-	/**
-	 * Gets the id.
-	 * 
-	 * @return the id
-	 */
+	public void setCreatedBans(final List<BanRecord> records) {
+		this.createdBans = records;
+	}
+
 	public int getId() {
 		return this.id;
 	}
 
-	/**
-	 * Gets the name.
-	 * 
-	 * @return the name
-	 */
+	public void setId(final int id) {
+		this.id = id;
+	}
+
 	public String getName() {
 		return this.name;
 	}
 
-	/**
-	 * Checks if is banned.
-	 * 
-	 * @return true, if is banned
-	 */
+	public void setName(final String name) {
+		this.name = name;
+	}
+
 	public boolean isBanned() {
 		for (final BanRecord ban : this.getBans()) {
 			if (ban.getState() == BanRecord.State.NORMAL) {
@@ -117,46 +100,6 @@ public class PlayerRecord {
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * Sets the bans.
-	 * 
-	 * @param records
-	 *          the new bans
-	 */
-	public void setBans(final List<BanRecord> records) {
-		this.bans = records;
-	}
-
-	/**
-	 * Sets the created bans.
-	 * 
-	 * @param records
-	 *          the new created bans
-	 */
-	public void setCreatedBans(final List<BanRecord> records) {
-		this.createdBans = records;
-	}
-
-	/**
-	 * Sets the id.
-	 * 
-	 * @param id
-	 *          the new id
-	 */
-	public void setId(final int id) {
-		this.id = id;
-	}
-
-	/**
-	 * Sets the name.
-	 * 
-	 * @param name
-	 *          the new name
-	 */
-	public void setName(final String name) {
-		this.name = name;
 	}
 
 }
