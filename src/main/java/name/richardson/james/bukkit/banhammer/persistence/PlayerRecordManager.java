@@ -4,18 +4,29 @@ import com.avaje.ebean.EbeanServer;
 
 import javax.persistence.PersistenceException;
 import java.util.List;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import name.richardson.james.bukkit.utilities.localisation.PluginResourceBundle;
+import name.richardson.james.bukkit.utilities.logging.PrefixedLogger;
 
 public class PlayerRecordManager {
+
+	private static final Logger LOGGER = PrefixedLogger.getLogger(PlayerRecordManager.class);
+	private static final ResourceBundle RESOURCE_BUNDLE = PluginResourceBundle.getBundle(PlayerRecordManager.class);
 
 	private final EbeanServer database;
 
 	public PlayerRecordManager(EbeanServer database) {
+		if (database == null) throw new IllegalArgumentException();
 		this.database = database;
 	}
 
 	public PlayerRecord create(String playerName) {
 		PlayerRecord record = this.find(playerName);
 		if (record != null) return record;
+		LOGGER.log(Level.FINER, "Creating PlayerRecord for " + playerName);
 		record = new PlayerRecord();
 		record.setName(playerName);
 		this.save(record);
@@ -23,6 +34,7 @@ public class PlayerRecordManager {
 	}
 
 	public PlayerRecord find(String playerName) {
+		LOGGER.log(Level.FINER, "Finding PlayerRecord for " + playerName);
 		try {
 			return database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
 		} catch (PersistenceException e) {
@@ -32,6 +44,7 @@ public class PlayerRecordManager {
 	}
 
 	public boolean exists(String playerName) {
+		LOGGER.log(Level.FINER, "Checking to see if PlayerRecord exists for " + playerName);
 		try {
 			return (database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique() != null);
 		} catch (PersistenceException e) {
@@ -41,6 +54,7 @@ public class PlayerRecordManager {
 	}
 
 	public List<PlayerRecord> list() {
+		LOGGER.log(Level.FINER, "Returning list containing all PlayerRecords.");
 		return database.find(PlayerRecord.class).findList();
 	}
 
@@ -54,6 +68,7 @@ public class PlayerRecordManager {
 	 * @param playerName the player name
 	 */
 	private void removeDuplicates(String playerName) {
+		LOGGER.log(Level.WARNING, "duplicate-record-found");
 		final List<PlayerRecord> records = database.find(PlayerRecord.class).where().ieq("name", playerName).findList();
 		for (final PlayerRecord record : records) {
 			if ((record.getCreatedBans().size() == 0) && (record.getBans().size() == 0)) {
@@ -63,6 +78,7 @@ public class PlayerRecordManager {
 	}
 
 	public void delete(PlayerRecord record) {
+		LOGGER.log(Level.FINER, "Deleting PlayerRecord for " + record.getName());
 		this.database.delete(record);
 	}
 
@@ -71,6 +87,7 @@ public class PlayerRecordManager {
 	}
 
 	public void save(PlayerRecord record) {
+		LOGGER.log(Level.FINER, "Saving PlayerRecord for " + record.getName());
 		this.database.save(record);
 	}
 
@@ -79,6 +96,7 @@ public class PlayerRecordManager {
 	}
 
 	public void update(PlayerRecord record) {
+		LOGGER.log(Level.FINER, "Updating PlayerRecord for " + record.getName());
 		this.update(record);
 	}
 
