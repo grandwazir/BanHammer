@@ -103,4 +103,8 @@ public class PlayerRecordManager {
 	public void update(List<PlayerRecord> records) {
 		this.database.update(records);
 	}
+
+	public int count() {
+		return this.database.find(PlayerRecord.class).findRowCount();
+	}
 }

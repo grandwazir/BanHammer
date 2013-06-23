@@ -9,6 +9,7 @@ public class BanRecordManager {
 	private EbeanServer database;
 
 	public BanRecordManager(EbeanServer database) {
+		if (this.database == null) throw new IllegalArgumentException();
 		this.database = database;
 	}
 
