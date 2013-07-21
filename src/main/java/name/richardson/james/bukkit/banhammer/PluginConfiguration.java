@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (c) 2012 James Richardson.
  *
- * BanHammerConfiguration.java is part of BanHammer.
+ * PluginConfiguration.java is part of BanHammer.
  *
  * BanHammer is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -25,11 +25,11 @@ import java.util.*;
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
 import name.richardson.james.bukkit.utilities.persistence.configuration.SimplePluginConfiguration;
 
-public class BanHammerConfiguration extends SimplePluginConfiguration {
+public class PluginConfiguration extends SimplePluginConfiguration {
 
 	private final Map<String, Long> limits = new LinkedHashMap<String, Long>();
 
-	public BanHammerConfiguration(final File file, final InputStream defaults)
+	public PluginConfiguration(final File file, final InputStream defaults)
 	throws IOException {
 		super(file, defaults);
 	}

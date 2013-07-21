@@ -12,27 +12,50 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
+
+import name.richardson.james.bukkit.utilities.formatters.colours.ColourScheme;
+import name.richardson.james.bukkit.utilities.formatters.colours.CoreColourScheme;
+import name.richardson.james.bukkit.utilities.formatters.localisation.Localised;
+import name.richardson.james.bukkit.utilities.formatters.localisation.ResourceBundles;
+import name.richardson.james.bukkit.utilities.listener.AbstractListener;
+import name.richardson.james.bukkit.utilities.logging.PrefixedLogger;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
-import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
-import name.richardson.james.bukkit.utilities.listener.AbstractListener;
-import name.richardson.james.bukkit.utilities.localisation.PluginResourceBundle;
-import name.richardson.james.bukkit.utilities.logging.LocalisedLogger;
 
-public class BannedPlayerListener extends AbstractListener {
+public class BannedPlayerListener extends AbstractListener implements Localised {
 
-	private static final Logger LOGGER = LocalisedLogger.getLogger(BannedPlayerListener.class);
-
-	private final ResourceBundle localisation = PluginResourceBundle.getBundle(BannedPlayerListener.class);
+	private final ColourScheme COLOUR_SCHEME = new CoreColourScheme();
+	private final Logger LOGGER = PrefixedLogger.getLogger(BannedPlayerListener.class);
+	private final ResourceBundle MESSAGES_RESOURCE_BUNDLE = ResourceBundles.MESSAGES.getBundle();
 	private final PlayerRecordManager playerRecordManager;
 	private final Server server;
 
-	public BannedPlayerListener(final Plugin plugin, final PlayerRecordManager playerRecordManager) {
-		super(plugin);
-		this.server = plugin.getServer();
+	public BannedPlayerListener(Plugin plugin, PluginManager pluginManager, Server server, PlayerRecordManager playerRecordManager) {
+		super(plugin, pluginManager);
+		this.server = server;
 		this.playerRecordManager = playerRecordManager;
+	}
+
+	public final String getColouredMessage(ColourScheme.Style style, String key, Object... arguments) {
+		String message = getResourceBundle().getString(key);
+		return getColourScheme().format(style, message, arguments);
+	}
+
+	public final ColourScheme getColourScheme() {
+		return COLOUR_SCHEME;
+	}
+
+	@Override
+	public final ResourceBundle getResourceBundle() {
+		return MESSAGES_RESOURCE_BUNDLE;
+	}
+
+	@Override
+	public final String getMessage(String key, Object... arguments) {
+		return MessageFormat.format(MESSAGES_RESOURCE_BUNDLE.getString(key), arguments);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -69,14 +92,10 @@ public class BannedPlayerListener extends AbstractListener {
 	protected String getKickMessage(BanRecord record) {
 		switch (record.getType()) {
 			case TEMPORARY: {
-				Object[] params = {record.getReason(), record.getCreator().getName(), record.getExpiresAt()};
-				String message = ColourFormatter.error(localisation.getString("banned-temporarily"));
-				return MessageFormat.format(message, params);
+				return getColouredMessage(ColourScheme.Style.ERROR, "banned-temporarily", record.getReason(), record.getCreator().getName(), record.getExpiresAt());
 			}
 			default: {
-				Object[] params = {record.getReason(), record.getCreator().getName()};
-				String message = ColourFormatter.error(localisation.getString("banned-permanently"));
-				return MessageFormat.format(message, params);
+				return getColouredMessage(ColourScheme.Style.ERROR, "banned-permanently", record.getReason(), record.getCreator().getName());
 			}
 		}
 	}

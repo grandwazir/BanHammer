@@ -157,6 +157,8 @@ public class PlayerRecordManager {
 		}
 
 		public BannedPlayerBuilder setExpiresAt(Timestamp timestamp) {
+			long now = System.currentTimeMillis();
+			this.record.setCreatedAt(new Timestamp(now));
 			this.record.setExpiresAt(timestamp);
 			return this;
 		}

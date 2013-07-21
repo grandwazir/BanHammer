@@ -20,50 +20,34 @@ package name.richardson.james.bukkit.banhammer;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 
-import name.richardson.james.bukkit.utilities.command.CommandManager;
 import name.richardson.james.bukkit.utilities.permissions.Permissions;
+import name.richardson.james.bukkit.utilities.plugin.AbstractDatabasePlugin;
 import name.richardson.james.bukkit.utilities.plugin.AbstractPlugin;
-import name.richardson.james.bukkit.utilities.plugin.PluginPermissions;
 
 import name.richardson.james.bukkit.alias.Alias;
 import name.richardson.james.bukkit.alias.AliasHandler;
-import name.richardson.james.bukkit.banhammer.api.BanHandler;
-import name.richardson.james.bukkit.banhammer.api.SimpleBanHandler;
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
-import name.richardson.james.bukkit.banhammer.ban.event.PlayerNotifier;
 import name.richardson.james.bukkit.banhammer.ban.event.AliasBannedPlayerListener;
 import name.richardson.james.bukkit.banhammer.ban.event.BannedPlayerListener;
-import name.richardson.james.bukkit.banhammer.utilities.command.matcher.BanLimitMatcher;
-import name.richardson.james.bukkit.banhammer.matchers.BannedPlayerRecordMatcher;
-import name.richardson.james.bukkit.banhammer.matchers.CreatorPlayerRecordMatcher;
-import name.richardson.james.bukkit.banhammer.matchers.PlayerRecordMatcher;
-import name.richardson.james.bukkit.banhammer.metrics.MetricsListener;
+import name.richardson.james.bukkit.banhammer.ban.event.PlayerNotifier;
 
 @Permissions(permissions = {BanHammer.PLUGIN_PERMISSION_NAME, BanHammer.NOTIFY_PERMISSION_NAME})
-public final class BanHammer extends AbstractPlugin {
+public final class BanHammer extends AbstractDatabasePlugin {
 
 	public static final String PLUGIN_PERMISSION_NAME = "banhammer";
 	public static final String NOTIFY_PERMISSION_NAME = "banhammer.notify";
 
-	public static final DateFormat LONG_DATE_FORMAT = new SimpleDateFormat("d MMMMM yyyy HH:mm (z)");
-	public static final DateFormat SHORT_DATE_FORMAT = new SimpleDateFormat("d MMM yyyy HH:mm (z)");
-
 	private AliasHandler aliasHandler;
-	private BanHammerConfiguration configuration;
-	private BanHandler handler;
-	private PlayerRecordManager playerRecordManager;
 	private BanRecordManager banRecordManager;
+	private PluginConfiguration configuration;
+	private PlayerRecordManager playerRecordManager;
 
 	/**
 	 * Gets the guardian handler.
@@ -76,7 +60,7 @@ public final class BanHammer extends AbstractPlugin {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * name.richardson.james.bukkit.utilities.updater.Updatable#getArtifactID()
 	 */
@@ -84,9 +68,13 @@ public final class BanHammer extends AbstractPlugin {
 		return "ban-hammer";
 	}
 
+	public BanRecordManager getBanRecordManager() {
+		return banRecordManager;
+	}
+
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.bukkit.plugin.java.JavaPlugin#getDatabaseClasses()
 	 */
 	@Override
@@ -95,6 +83,10 @@ public final class BanHammer extends AbstractPlugin {
 		classes.add(BanRecord.class);
 		classes.add(PlayerRecord.class);
 		return classes;
+	}
+
+	public PlayerRecordManager getPlayerRecordManager() {
+		return playerRecordManager;
 	}
 
 	/*
@@ -111,35 +103,27 @@ public final class BanHammer extends AbstractPlugin {
 	@Override
 	public void onEnable() {
 		try {
+			super.onEnable();
 			this.loadConfiguration();
-			this.loadDatabase();
-			this.setPermissions();
+			this.loadManagers();
 			this.registerCommands();
 			this.registerListeners();
-			this.setupMetrics();
-			this.updatePlugin();
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin#loadConfiguration
-	 * ()
-	 */
-	@Override
-	protected void loadConfiguration()
+	private void loadManagers() {
+		this.playerRecordManager = new PlayerRecordManager(this.getDatabase());
+		this.banRecordManager = new BanRecordManager(this.getDatabase());
+	}
+
+	private void loadConfiguration()
 	throws IOException {
-		super.loadConfiguration();
-		final File file = new File(this.getDataFolder().getAbsolutePath() + File.separatorChar + "config.yml");
-		final InputStream defaults = this.getResource("config.yml");
-		this.configuration = new BanHammerConfiguration(file, defaults);
-		if (this.configuration.isAliasEnabled()) {
-			this.hookAlias();
-		}
+		final File file = new File(this.getDataFolder().getPath() + File.separatorChar + AbstractPlugin.CONFIG_NAME);
+		final InputStream defaults = this.getResource(CONFIG_NAME);
+		this.configuration = new PluginConfiguration(file, defaults);
+		if (configuration.isAliasEnabled()) hookAlias();
 	}
 
 	protected void loadDatabase()
@@ -149,16 +133,8 @@ public final class BanHammer extends AbstractPlugin {
 		this.banRecordManager = new BanRecordManager(this.getDatabase());
 	}
 
-	@Override
-	protected void setupMetrics()
-	throws IOException {
-		if (this.configuration.isCollectingStats()) {
-			new MetricsListener(this);
-		}
-	}
-
 	/**
-	 * Hook the guardian plugin and load a handler if it exists.
+	 * Hook the alias plugin and load a handler if it exists.
 	 */
 	private void hookAlias() {
 		final Alias plugin = (Alias) this.getServer().getPluginManager().getPlugin("Alias");
@@ -170,60 +146,17 @@ public final class BanHammer extends AbstractPlugin {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin#registerCommands
-	 * ()
-	 */
 	private void registerCommands() {
-		final Set<String> names = new HashSet<String>();
-		final Set<String> bannedPlayers = new HashSet<String>();
-		final Set<String> banCreaters = new HashSet<String>();
-		for (PlayerRecord playerRecord : this.playerRecordManager.list()) {
-			names.add(playerRecord.getName().toLowerCase());
-			if (playerRecord.isBanned()) {
-				bannedPlayers.add(playerRecord.getName().toLowerCase());
-			}
-			if (playerRecord.getCreatedBans().size() != 0) {
-				banCreaters.add(playerRecord.getName().toLowerCase());
-			}
-		}
-		PlayerRecordMatcher.setNameList(names);
-		BannedPlayerRecordMatcher.setNameList(bannedPlayers);
-		CreatorPlayerRecordMatcher.setNameList(banCreaters);
-		BanLimitMatcher.setBanLimits(this.configuration.getBanLimits().keySet());
-		final CommandManager commandManager = new CommandManager("bh", this.getDescription());
-		final BanCommand banCommand = new BanCommand(this.getHandler(), this.configuration.getBanLimits(), this.configuration.getImmunePlayers(), this.getServer());
-		final KickCommand kickCommand = new KickCommand(this);
-		final PardonCommand pardonCommand = new PardonCommand(this.playerRecordManager, this.getHandler(), this.getServer());
-		// register commands
-		commandManager.addCommand(new AuditCommand(this.playerRecordManager, this.banRecordManager));
-		commandManager.addCommand(banCommand);
-		commandManager.addCommand(new CheckCommand(this.playerRecordManager, this.getServer()));
-		commandManager.addCommand(new ExportCommand(this.playerRecordManager, this.getServer()));
-		commandManager.addCommand(new HistoryCommand(this.getHandler()));
-		commandManager.addCommand(new ImportCommand(this.getHandler(), this.getServer()));
-		commandManager.addCommand(kickCommand);
-		commandManager.addCommand(new LimitsCommand(this.configuration.getBanLimits()));
-		commandManager.addCommand(pardonCommand);
-		commandManager.addCommand(new PurgeCommand(this.playerRecordManager, this.banRecordManager));
-		commandManager.addCommand(new RecentCommand(this.banRecordManager));
-		commandManager.addCommand(new UndoCommand(this.playerRecordManager, this.banRecordManager, this.configuration.getUndoTime()));
-		// register commands again as root commands
-		this.getCommand("ban").setExecutor(banCommand);
-		this.getCommand("kick").setExecutor(kickCommand);
-		this.getCommand("pardon").setExecutor(pardonCommand);
+		//TODO: Reimplement this nicely
 	}
 
 	private void registerListeners() {
 		if (this.configuration.isAliasEnabled() && (this.aliasHandler != null)) {
-			new AliasBannedPlayerListener(this, this.playerRecordManager, this.aliasHandler, this.getHandler());
+			new AliasBannedPlayerListener(this, this.getServer().getPluginManager(), getServer(), this.playerRecordManager, this.aliasHandler);
 		} else {
-			new BannedPlayerListener(this, this.playerRecordManager);
+			new BannedPlayerListener(this, this.getServer().getPluginManager(), getServer(), this.playerRecordManager);
 		}
-		new PlayerNotifier(this, this.getServer());
+		new PlayerNotifier(this, this.getServer().getPluginManager(), this.getServer());
 	}
 
 }
