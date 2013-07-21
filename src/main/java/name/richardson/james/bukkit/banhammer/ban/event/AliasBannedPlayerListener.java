@@ -10,11 +10,9 @@ import org.bukkit.plugin.Plugin;
 
 import name.richardson.james.bukkit.alias.AliasHandler;
 import name.richardson.james.bukkit.alias.persistence.PlayerNameRecord;
-import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
-import name.richardson.james.bukkit.banhammer.ban.event.BannedPlayerListener;
-import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
-import name.richardson.james.bukkit.banhammer.persistence.PlayerRecordManager;
+import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.utilities.localisation.PluginResourceBundle;
 
 public class AliasBannedPlayerListener extends BannedPlayerListener {

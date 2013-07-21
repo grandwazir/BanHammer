@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.bukkit.OfflinePlayer;
 
-import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 
 /**
  * The Interface BanHandler which is responsible for defining how other plugins

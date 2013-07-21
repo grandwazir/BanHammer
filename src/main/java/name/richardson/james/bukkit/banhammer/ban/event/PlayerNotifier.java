@@ -17,8 +17,6 @@ import name.richardson.james.bukkit.utilities.localisation.LocalisedCoreColourSc
 import name.richardson.james.bukkit.utilities.localisation.PluginResourceBundle;
 import name.richardson.james.bukkit.utilities.logging.PrefixedLogger;
 
-import name.richardson.james.bukkit.banhammer.ban.BanSummary;
-
 public class PlayerNotifier extends AbstractListener {
 
 	public static final String NOTIFY_PERMISSION_NAME = "banhammer.notify";

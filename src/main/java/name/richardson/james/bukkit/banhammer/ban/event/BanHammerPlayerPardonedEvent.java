@@ -19,7 +19,7 @@ package name.richardson.james.bukkit.banhammer.ban.event;
 
 import org.bukkit.event.HandlerList;
 
-import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 
 /**
  * This event is fired every time a player is pardoned through BanHammer.

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License along with
  * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.bukkit.banhammer.persistence;
+package name.richardson.james.bukkit.banhammer.ban;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -25,10 +25,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.PersistenceException;
 import javax.persistence.Table;
 
-import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.annotation.CacheStrategy;
 import com.avaje.ebean.validation.NotNull;
 

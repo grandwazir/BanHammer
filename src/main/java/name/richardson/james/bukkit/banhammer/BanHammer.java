@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import name.richardson.james.bukkit.utilities.command.CommandManager;
+import name.richardson.james.bukkit.utilities.permissions.Permissions;
 import name.richardson.james.bukkit.utilities.plugin.AbstractPlugin;
 import name.richardson.james.bukkit.utilities.plugin.PluginPermissions;
 
@@ -36,21 +37,25 @@ import name.richardson.james.bukkit.alias.Alias;
 import name.richardson.james.bukkit.alias.AliasHandler;
 import name.richardson.james.bukkit.banhammer.api.BanHandler;
 import name.richardson.james.bukkit.banhammer.api.SimpleBanHandler;
-import name.richardson.james.bukkit.banhammer.ban.*;
+import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
+import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.event.PlayerNotifier;
-import name.richardson.james.bukkit.banhammer.ban.management.*;
 import name.richardson.james.bukkit.banhammer.ban.event.AliasBannedPlayerListener;
 import name.richardson.james.bukkit.banhammer.ban.event.BannedPlayerListener;
-import name.richardson.james.bukkit.banhammer.kick.KickCommand;
 import name.richardson.james.bukkit.banhammer.matchers.BanLimitMatcher;
 import name.richardson.james.bukkit.banhammer.matchers.BannedPlayerRecordMatcher;
 import name.richardson.james.bukkit.banhammer.matchers.CreatorPlayerRecordMatcher;
 import name.richardson.james.bukkit.banhammer.matchers.PlayerRecordMatcher;
 import name.richardson.james.bukkit.banhammer.metrics.MetricsListener;
-import name.richardson.james.bukkit.banhammer.persistence.*;
+import name.richardson.james.bukkit.banhammer.record.*;
 
-@PluginPermissions(permissions = {"banhammer", "banhammer.notify"})
+@Permissions(permissions = {BanHammer.PLUGIN_PERMISSION_NAME, BanHammer.NOTIFY_PERMISSION_NAME})
 public final class BanHammer extends AbstractPlugin {
+
+	public static final String PLUGIN_PERMISSION_NAME = "banhammer";
+	public static final String NOTIFY_PERMISSION_NAME = "banhammer.notify";
 
 	public static final DateFormat LONG_DATE_FORMAT = new SimpleDateFormat("d MMMMM yyyy HH:mm (z)");
 	public static final DateFormat SHORT_DATE_FORMAT = new SimpleDateFormat("d MMM yyyy HH:mm (z)");

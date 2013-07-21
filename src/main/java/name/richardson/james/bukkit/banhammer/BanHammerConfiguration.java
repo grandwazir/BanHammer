@@ -21,19 +21,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.bukkit.configuration.ConfigurationSection;
-
-import name.richardson.james.bukkit.utilities.configuration.SimplePluginConfiguration;
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
-import name.richardson.james.bukkit.utilities.logging.PrefixedLogger;
+import name.richardson.james.bukkit.utilities.persistence.configuration.SimplePluginConfiguration;
 
 public class BanHammerConfiguration extends SimplePluginConfiguration {
 
 	private final Map<String, Long> limits = new LinkedHashMap<String, Long>();
-	private final Logger logger = PrefixedLogger.getLogger(this.getClass());
 
 	public BanHammerConfiguration(final File file, final InputStream defaults)
 	throws IOException {
@@ -41,7 +35,6 @@ public class BanHammerConfiguration extends SimplePluginConfiguration {
 	}
 
 	public Map<String, Long> getBanLimits() {
-		if (limits.isEmpty()) this.setBanLimits();
 		return Collections.unmodifiableMap(this.limits);
 	}
 
@@ -56,20 +49,6 @@ public class BanHammerConfiguration extends SimplePluginConfiguration {
 
 	public boolean isAliasEnabled() {
 		return this.getConfiguration().getBoolean("alias-plugin.enabled");
-	}
-
-	private void setBanLimits() {
-		this.limits.clear();
-		final ConfigurationSection section = this.getConfiguration().getConfigurationSection("ban-limits");
-		for (final String key : section.getKeys(false)) {
-			try {
-				final String name = key;
-				final Long length = TimeFormatter.parseTime(section.getString(key));
-				this.limits.put(name, length);
-			} catch (final NumberFormatException e) {
-				this.logger.log(Level.WARNING, "banhammer.limit-invalid", key);
-			}
-		}
 	}
 
 }

@@ -1,11 +1,10 @@
-package name.richardson.james.bukkit.banhammer.persistence;
+package name.richardson.james.bukkit.banhammer.ban;
 
 import javax.persistence.PersistenceException;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,7 +19,9 @@ public class PlayerRecordManager {
 		BANNED,
 		CREATOR
 	}
-	private static final Logger LOGGER = PrefixedLogger.getLogger(PlayerRecordManager.class);
+
+	private final Logger LOGGER = PrefixedLogger.getLogger(PlayerRecordManager.class);
+
 	private final EbeanServer database;
 
 	public PlayerRecordManager(EbeanServer database) {
@@ -147,6 +148,7 @@ public class PlayerRecordManager {
 		public BannedPlayerBuilder() {
 			this.record = new BanRecord();
 			this.record.setState(BanRecord.State.NORMAL);
+			this.setExpiryTime(0);
 		}
 
 		public BannedPlayerBuilder setCreator(String playerName) {
@@ -162,7 +164,7 @@ public class PlayerRecordManager {
 		public BannedPlayerBuilder setExpiryTime(long time) {
 			long now = System.currentTimeMillis();
 			this.record.setCreatedAt(new Timestamp(now));
-			this.record.setExpiresAt(new Timestamp(now + time));
+			if (time != 0) this.record.setExpiresAt(new Timestamp(now + time));
 			return this;
 		}
 
@@ -174,6 +176,11 @@ public class PlayerRecordManager {
 		public BannedPlayerBuilder setReason(String reason) {
 			this.record.setReason(reason);
 			return this;
+		}
+
+		public boolean save() {
+			BanRecordManager manager = new BanRecordManager(database);
+			return manager.save(record);
 		}
 
 	}

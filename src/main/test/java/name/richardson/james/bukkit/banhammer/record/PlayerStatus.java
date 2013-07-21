@@ -1,4 +1,4 @@
-package name.richardson.james.bukkit.banhammer.persistence;
+package name.richardson.james.bukkit.banhammer.record;
 
 /**
  * Created with IntelliJ IDEA.

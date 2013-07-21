@@ -1,4 +1,4 @@
-package name.richardson.james.bukkit.banhammer.persistence;
+package name.richardson.james.bukkit.banhammer.record;
 
 import com.avaje.ebean.EbeanServer;
 import junit.framework.Assert;
@@ -6,6 +6,8 @@ import junit.framework.TestCase;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
+
+import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
 public class PlayerRecordManagerTest extends TestCase {
 

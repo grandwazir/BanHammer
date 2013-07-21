@@ -1,4 +1,4 @@
-package name.richardson.james.bukkit.banhammer.persistence;
+package name.richardson.james.bukkit.banhammer.ban;
 
 import java.util.List;
 
@@ -21,8 +21,10 @@ public class BanRecordManager {
 		return this.database.delete(bans);
 	}
 
-	public void save(BanRecord record) {
+	public boolean save(BanRecord record) {
+		if (record.getPlayer().isBanned()) return false;
 		this.database.save(record);
+		return true;
 	}
 
 	public void update(BanRecord record) {

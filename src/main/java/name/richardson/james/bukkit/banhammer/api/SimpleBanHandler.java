@@ -22,15 +22,15 @@ import java.util.*;
 
 import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerBannedEvent;
 import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
-import name.richardson.james.bukkit.banhammer.persistence.BanRecordManager;
-import name.richardson.james.bukkit.banhammer.persistence.PlayerRecordManager;
+import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
+import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 
-import name.richardson.james.bukkit.banhammer.persistence.BanRecord;
-import name.richardson.james.bukkit.banhammer.persistence.BanRecord.State;
-import name.richardson.james.bukkit.banhammer.persistence.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.BanRecord.State;
+import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 
 /*
  * A simple implementation of the BanHandler interace.
@@ -51,7 +51,7 @@ public class SimpleBanHandler implements BanHandler {
 	 *
 	 * @see
 	 * name.richardson.james.bukkit.banhammer.api.BanHandler#banPlayer(java.lang
-	 * .String, name.richardson.james.bukkit.banhammer.persistence.BanRecord,
+	 * .String, name.richardson.james.bukkit.banhammer.ban.BanRecord,
 	 * java.lang.String, boolean)
 	 */
 	public boolean banPlayer(final String playerName, final BanRecord sourceBan, final String reason, final boolean notify) {
