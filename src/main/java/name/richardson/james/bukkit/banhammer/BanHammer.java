@@ -44,12 +44,11 @@ import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.event.PlayerNotifier;
 import name.richardson.james.bukkit.banhammer.ban.event.AliasBannedPlayerListener;
 import name.richardson.james.bukkit.banhammer.ban.event.BannedPlayerListener;
-import name.richardson.james.bukkit.banhammer.matchers.BanLimitMatcher;
+import name.richardson.james.bukkit.banhammer.utilities.command.matcher.BanLimitMatcher;
 import name.richardson.james.bukkit.banhammer.matchers.BannedPlayerRecordMatcher;
 import name.richardson.james.bukkit.banhammer.matchers.CreatorPlayerRecordMatcher;
 import name.richardson.james.bukkit.banhammer.matchers.PlayerRecordMatcher;
 import name.richardson.james.bukkit.banhammer.metrics.MetricsListener;
-import name.richardson.james.bukkit.banhammer.record.*;
 
 @Permissions(permissions = {BanHammer.PLUGIN_PERMISSION_NAME, BanHammer.NOTIFY_PERMISSION_NAME})
 public final class BanHammer extends AbstractPlugin {
@@ -96,16 +95,6 @@ public final class BanHammer extends AbstractPlugin {
 		classes.add(BanRecord.class);
 		classes.add(PlayerRecord.class);
 		return classes;
-	}
-
-	/**
-	 * This returns a new handler to allow access to the BanHammer API.
-	 */
-	public BanHandler getHandler() {
-		if (this.handler == null) {
-			this.handler = new SimpleBanHandler(playerRecordManager, banRecordManager);
-		}
-		return this.handler;
 	}
 
 	/*

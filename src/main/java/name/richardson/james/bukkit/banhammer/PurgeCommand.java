@@ -17,19 +17,14 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
-import name.richardson.james.bukkit.utilities.command.CommandMatchers;
-import name.richardson.james.bukkit.utilities.command.CommandPermissions;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
-import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
 import name.richardson.james.bukkit.utilities.formatters.colours.ColourScheme;
-import name.richardson.james.bukkit.utilities.localisation.LocalisedCommandSender;
 import name.richardson.james.bukkit.utilities.permissions.PermissionManager;
 import name.richardson.james.bukkit.utilities.permissions.Permissions;
 
@@ -37,8 +32,6 @@ import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
-import name.richardson.james.bukkit.banhammer.matchers.PlayerRecordMatcher;
-import name.richardson.james.bukkit.banhammer.record.*;
 
 @Permissions(permissions = {"banhammer.purge", "banhammer.purge.own", "banhammer.purge.others"})
 public class PurgeCommand extends AbstractCommand {
