@@ -120,4 +120,5 @@ public class CheckCommandTest extends TestCase {
 		server = mock(Server.class);
 		command = new CheckCommand(permissionManager, playerRecordManager);
 	}
+
 }
