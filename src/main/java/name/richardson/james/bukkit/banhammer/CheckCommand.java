@@ -44,25 +44,31 @@ public class CheckCommand extends AbstractCommand {
 
 	@Override
 	public void execute(CommandContext context) {
-		if (!setPlayer(context)) return;
-		if (!setPlayerRecord(context)) return;
-		BanRecordFormatter banRecordFormatter = new BanRecordFormatter(playerRecord.getActiveBan());
-		context.getCommandSender().sendMessage(banRecordFormatter.getMessages());
+		if (isAuthorised(context.getCommandSender())) {
+			if (!setPlayer(context)) return;
+			if (!setPlayerRecord(context)) return;
+			BanRecordFormatter banRecordFormatter = new BanRecordFormatter(playerRecord.getActiveBan());
+			context.getCommandSender().sendMessage(banRecordFormatter.getMessages());
+		} else {
+			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "no-permission"));
+		}
 	}
 
 	private boolean setPlayer(CommandContext context) {
 		player = null;
-		if (context.has(0)) context.getOfflinePlayer(0);
+		if (context.has(0) && context.getString(0).length() != 0) player = context.getOfflinePlayer(0);
 		if (player == null) context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "must-specify-player"));
 		return (player != null);
 	}
 
 	private boolean setPlayerRecord(CommandContext context) {
 		playerRecord = playerRecordManager.find(player.getName());
-		if (playerRecord == null || playerRecord.getActiveBan() == null) {
+		if (playerRecord == null || !playerRecord.isBanned()) {
 			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.WARNING, "player-is-not-banned", player.getName()));
+			return false;
+		} else {
+			return true;
 		}
-		return (playerRecord != null);
 	}
 
 }
