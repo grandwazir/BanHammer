@@ -17,15 +17,12 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.ban;
 
-import com.avaje.ebean.EbeanServer;
-import com.avaje.ebean.annotation.CacheStrategy;
-import com.avaje.ebean.validation.NotNull;
-import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
-import org.bukkit.Bukkit;
-
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.List;
+import java.text.MessageFormat;
+
+import com.avaje.ebean.annotation.CacheStrategy;
+import com.avaje.ebean.validation.NotNull;
 
 @Entity()
 @CacheStrategy(readOnly = false, useBeanCache = true, warmingQuery ="order by id")
@@ -72,101 +69,6 @@ public class BanRecord {
 	private State state;
 
 	/**
-	 * Removes a ban without an optimistic lock error One of these days I will
-	 * learn why it always throws these.
-	 *
-	 * @param database the database
-	 * @param ban      the ban to delete
-	 * @return the number of bans deleted.
-	 */
-	public static int deleteBan(final EbeanServer database, final BanRecord ban) {
-		final int i = database.createSqlUpdate("DELETE from banhammer_bans WHERE id='" + ban.getId() + "'").execute();
-		return i;
-	}
-
-	/**
-	 * Removes bans without an optimistic lock error One of these days I will
-	 * learn why it always throws these.
-	 *
-	 * @param database the database
-	 * @param bans     the bans to delete
-	 * @return the number of bans deleted.
-	 */
-	public static int deleteBans(final EbeanServer database, final List<BanRecord> bans) {
-		int i = 0;
-		for (final BanRecord ban : bans) {
-			if (ban.getState() != State.EXPIRED) {
-				final BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(ban, false);
-				Bukkit.getPluginManager().callEvent(event);
-			}
-			i++;
-			database.createSqlUpdate("DELETE from banhammer_bans WHERE id='" + ban.getId() + "'").execute();
-		}
-		return i;
-	}
-
-	/**
-	 * Gets the total number of pardoned bans.
-	 *
-	 * @param database the database
-	 * @return the pardoned ban count
-	 */
-	public static int getPardonedBanCount(final EbeanServer database) {
-		return database.find(BanRecord.class).where().eq("state", 2).findRowCount();
-	}
-
-	/**
-	 * Gets the total number of permanent bans.
-	 *
-	 * @param database the database
-	 * @return the permanent ban count
-	 */
-	public static int getPermanentBanCount(final EbeanServer database) {
-		return database.find(BanRecord.class).where().isNull("expiresAt").findRowCount();
-	}
-
-	/**
-	 * Gets a list of the recent bans.
-	 *
-	 * @param database the database
-	 * @param count    the number of bans to retrieve
-	 * @return the recent bans, with the most recent first
-	 */
-	public static List<BanRecord> getRecentBans(final EbeanServer database, final int count) {
-		return database.find(BanRecord.class).setMaxRows(count).orderBy().desc("createdAt").findList();
-	}
-
-	/**
-	 * Gets the total number of temporary bans.
-	 *
-	 * @param database the database
-	 * @return the temporary ban count
-	 */
-	public static int getTemporaryBanCount(final EbeanServer database) {
-		return database.find(BanRecord.class).where().isNotNull("expiresAt").findRowCount();
-	}
-
-	/**
-	 * Get a list containing all bans.
-	 *
-	 * @param database the database
-	 * @return all the bans in the database
-	 */
-	public static List<BanRecord> list(final EbeanServer database) {
-		return database.find(BanRecord.class).findList();
-	}
-
-	/**
-	 * Get a list of only bans which are currently active.
-	 *
-	 * @param database the database
-	 * @return all the bans which are currently active.
-	 */
-	public static List<BanRecord> listActive(final EbeanServer database) {
-		return database.find(BanRecord.class).where().eq("state", State.NORMAL).findList();
-	}
-
-	/**
 	 * Gets the created at.
 	 *
 	 * @return the created at
@@ -182,16 +84,6 @@ public class BanRecord {
 	 */
 	public void setCreatedAt(final Timestamp time) {
 		this.createdAt = time;
-	}
-
-	/**
-	 * Gets the created at.
-	 *
-	 * @param time the time
-	 * @return the created at
-	 */
-	public Timestamp getCreatedAt(final long time) {
-		return this.createdAt;
 	}
 
 	/**
@@ -323,14 +215,15 @@ public class BanRecord {
 
 	@Override
 	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("id: ").append(this.id).append(", ");
-		builder.append("reason: ").append(this.reason).append(", ");
-		builder.append("expiresAt: ").append(this.expiresAt).append(", ");
-		builder.append("createdAt: ").append(this.createdAt).append(", ");
-		builder.append("playerRecord: ").append(this.player.getId()).append(", ");
-		builder.append("state: ").append(this.getState()).append(", ");
-		return builder.toString();
+		return "BanRecord{" +
+		"createdAt=" + createdAt +
+		", creator=" + creator +
+		", expiresAt=" + expiresAt +
+		", id=" + id +
+		", player=" + player +
+		", reason='" + reason + '\'' +
+		", state=" + state +
+		"} ";
 	}
 
 	/**

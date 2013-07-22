@@ -119,9 +119,9 @@ public class MetricsListener implements Listener {
 	 * Sets the initial values to report with Metrics.
 	 */
 	private void setInitialValues() {
-		this.totalPermanentBans = BanRecord.getPermanentBanCount(this.database);
-		this.totalTemporaryBans = BanRecord.getTemporaryBanCount(this.database);
-		this.totalPardonedBans = BanRecord.getPardonedBanCount(this.database);
+		//this.totalPermanentBans = BanRecord.getPermanentBanCount(this.database);
+		//this.totalTemporaryBans = BanRecord.getTemporaryBanCount(this.database);
+		//this.totalPardonedBans = BanRecord.getPardonedBanCount(this.database);
 	}
 
 	/*
