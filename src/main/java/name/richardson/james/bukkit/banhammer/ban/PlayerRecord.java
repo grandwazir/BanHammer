@@ -100,4 +100,14 @@ public class PlayerRecord {
 		return false;
 	}
 
+	@Override
+	public String toString() {
+		return "PlayerRecord{" +
+		"bans=" + bans +
+		", createdBans=" + createdBans +
+		", id=" + id +
+		", name='" + name + '\'' +
+		'}';
+	}
+
 }
