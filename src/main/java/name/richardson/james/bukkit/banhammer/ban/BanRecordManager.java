@@ -1,5 +1,6 @@
 package name.richardson.james.bukkit.banhammer.ban;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.avaje.ebean.EbeanServer;
@@ -9,12 +10,12 @@ public class BanRecordManager {
 	private EbeanServer database;
 
 	public BanRecordManager(EbeanServer database) {
-		if (this.database == null) throw new IllegalArgumentException();
+		if (database == null) throw new IllegalArgumentException();
 		this.database = database;
 	}
 
 	public void delete(BanRecord ban) {
-		this.database.delete(ban);
+		this.delete(Arrays.asList(ban));
 	}
 
 	public int delete(List<BanRecord> bans) {
@@ -25,10 +26,6 @@ public class BanRecordManager {
 		if (record.getPlayer().isBanned()) return false;
 		this.database.save(record);
 		return true;
-	}
-
-	public void update(BanRecord record) {
-		this.database.update(record);
 	}
 
 	public List<BanRecord> list() {
