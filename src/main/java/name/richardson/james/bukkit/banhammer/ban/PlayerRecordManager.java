@@ -127,6 +127,10 @@ public class PlayerRecordManager {
 		}
 	}
 
+	protected EbeanServer getDatabase() {
+		return database;
+	}
+
 	public class BannedPlayerBuilder {
 
 		private final BanRecord record;
@@ -166,8 +170,12 @@ public class PlayerRecordManager {
 			return this;
 		}
 
+		protected BanRecord getRecord() {
+			return record;
+		}
+
 		public boolean save() {
-			BanRecordManager manager = new BanRecordManager(database);
+			BanRecordManager manager = new BanRecordManager(PlayerRecordManager.this.getDatabase());
 			return manager.save(record);
 		}
 
