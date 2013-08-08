@@ -33,7 +33,7 @@ public class BanRecordFormatter implements Localised {
 
 	public String getHeader() {
 		final String date = DATE_FORMAT.format(ban.getCreatedAt());
-		return COLOUR_SCHEME.format(ColourScheme.Style.WARNING, "header-label", ban.getPlayer().getName(), ban.getCreator().getName(), date);
+		return getColouredMessage(ColourScheme.Style.HEADER, "header-label", ban.getPlayer().getName(), ban.getCreator().getName(), date);
 	}
 
 	public final String getColouredMessage(ColourScheme.Style style, String key, Object... arguments) {
