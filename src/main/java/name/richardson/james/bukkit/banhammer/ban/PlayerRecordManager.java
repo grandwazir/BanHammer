@@ -2,6 +2,7 @@ package name.richardson.james.bukkit.banhammer.ban;
 
 import javax.persistence.PersistenceException;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
@@ -44,22 +45,17 @@ public class PlayerRecordManager {
 	}
 
 	public void delete(PlayerRecord record) {
-		LOGGER.log(Level.FINER, "Deleting PlayerRecord for " + record.getName());
-		this.database.delete(record);
+		this.delete(Arrays.asList(record));
 	}
 
 	public void delete(List<PlayerRecord> records) {
+		LOGGER.log(Level.FINER, "Deleting PlayerRecords: " + records);
 		this.database.delete(records);
 	}
 
 	public boolean exists(String playerName) {
 		LOGGER.log(Level.FINER, "Checking to see if PlayerRecord exists for " + playerName);
-		try {
-			return (database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique() != null);
-		} catch (PersistenceException e) {
-			this.removeDuplicates(playerName);
-			return (database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique() != null);
-		}
+		return find(playerName) != null;
 	}
 
 	public PlayerRecord find(String playerName) {
@@ -74,10 +70,8 @@ public class PlayerRecordManager {
 
 	public List<PlayerRecord> list(String playerName, PlayerStatus status) {
 		switch (status) {
-			case ANY: {
-				return database.find(PlayerRecord.class).where().startsWith("name", playerName).findList();
-			} case BANNED: {
-				List<PlayerRecord> records = database.find(PlayerRecord.class).where().startsWith("name", playerName).findList();
+			case BANNED: {
+				List<PlayerRecord> records = database.find(PlayerRecord.class).where().istartsWith("name", playerName).findList();
 				ListIterator<PlayerRecord> i = records.listIterator();
 				while (i.hasNext()) {
 					PlayerRecord record = i.next();
@@ -86,17 +80,18 @@ public class PlayerRecordManager {
 				}
 				return records;
 			} case CREATOR: {
-				List<PlayerRecord> records = database.find(PlayerRecord.class).where().startsWith("name", playerName).findList();
+				List<PlayerRecord> records = database.find(PlayerRecord.class).where().istartsWith("name", playerName).findList();
 				ListIterator<PlayerRecord> i = records.listIterator();
 				while (i.hasNext()) {
 					PlayerRecord record = i.next();
-					if (record.isBanned()) continue;
+					if (record.getCreatedBans().size() > 0) continue;
 					i.remove();
 				}
 				return records;
+			} default: {
+				return database.find(PlayerRecord.class).where().istartsWith("name", playerName).findList();
 			}
 		}
-		return Collections.emptyList();
 	}
 
 	public List<PlayerRecord> list() {
@@ -105,21 +100,12 @@ public class PlayerRecordManager {
 	}
 
 	public void save(PlayerRecord record) {
-		LOGGER.log(Level.FINER, "Saving PlayerRecord for " + record.getName());
-		this.database.save(record);
+		this.save(Arrays.asList(record));
 	}
 
 	public void save(List<PlayerRecord> records) {
+		LOGGER.log(Level.FINER, "Saving PlayerRecords: " + records);
 		this.database.save(records);
-	}
-
-	public void update(PlayerRecord record) {
-		LOGGER.log(Level.FINER, "Updating PlayerRecord for " + record.getName());
-		this.update(record);
-	}
-
-	public void update(List<PlayerRecord> records) {
-		this.database.update(records);
 	}
 
 	/**
