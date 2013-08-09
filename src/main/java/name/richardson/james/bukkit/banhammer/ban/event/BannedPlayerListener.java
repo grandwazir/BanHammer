@@ -27,9 +27,9 @@ import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
 public class BannedPlayerListener extends AbstractListener implements Localised {
 
-	private final ColourScheme COLOUR_SCHEME = new CoreColourScheme();
-	private final Logger LOGGER = PrefixedLogger.getLogger(BannedPlayerListener.class);
-	private final ResourceBundle MESSAGES_RESOURCE_BUNDLE = ResourceBundles.MESSAGES.getBundle();
+	private final ColourScheme colourScheme = new CoreColourScheme();
+	private final Logger logger = PrefixedLogger.getLogger(BannedPlayerListener.class);
+	private final ResourceBundle resourceBundle = ResourceBundles.MESSAGES.getBundle();
 	private final PlayerRecordManager playerRecordManager;
 	private final Server server;
 
@@ -45,22 +45,22 @@ public class BannedPlayerListener extends AbstractListener implements Localised 
 	}
 
 	public final ColourScheme getColourScheme() {
-		return COLOUR_SCHEME;
+		return colourScheme;
 	}
 
 	@Override
 	public final ResourceBundle getResourceBundle() {
-		return MESSAGES_RESOURCE_BUNDLE;
+		return resourceBundle;
 	}
 
 	@Override
 	public final String getMessage(String key, Object... arguments) {
-		return MessageFormat.format(MESSAGES_RESOURCE_BUNDLE.getString(key), arguments);
+		return MessageFormat.format(resourceBundle.getString(key), arguments);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerBanned(final BanHammerPlayerBannedEvent event) {
-		LOGGER.log(Level.FINEST, "Received " + event.getEventName());
+		logger.log(Level.FINEST, "Received " + event.getEventName());
 		final Player player = this.server.getPlayerExact(event.getPlayerName());
 		if (player != null && player.isOnline()) {
 			player.kickPlayer(this.getKickMessage(event.getRecord()));
@@ -69,7 +69,7 @@ public class BannedPlayerListener extends AbstractListener implements Localised 
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onPlayerLogin(final AsyncPlayerPreLoginEvent event) {
-		LOGGER.log(Level.FINEST, "Received " + event.getEventName());
+		logger.log(Level.FINEST, "Received " + event.getEventName());
 		final String playerName = event.getName();
 		if (this.isPlayerBanned(playerName)) {
 			final BanRecord record = this.playerRecordManager.find(playerName).getActiveBan();
@@ -80,7 +80,7 @@ public class BannedPlayerListener extends AbstractListener implements Localised 
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onPlayerLogin(final PlayerLoginEvent event) {
-		LOGGER.log(Level.FINEST, "Received " + event.getEventName());
+		logger.log(Level.FINEST, "Received " + event.getEventName());
 		final String playerName = event.getPlayer().getName();
 		if (this.isPlayerBanned(playerName)) {
 			final BanRecord record = this.playerRecordManager.find(playerName).getActiveBan();
