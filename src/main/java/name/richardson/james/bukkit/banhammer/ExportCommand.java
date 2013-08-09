@@ -21,29 +21,42 @@ import org.bukkit.Server;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
+import name.richardson.james.bukkit.utilities.formatters.colours.ColourScheme;
+import name.richardson.james.bukkit.utilities.formatters.localisation.LocalisedChoiceFormatter;
 import name.richardson.james.bukkit.utilities.permissions.PermissionManager;
 import name.richardson.james.bukkit.utilities.permissions.Permissions;
 
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
-@Permissions(permissions = {"banhammer.export"})
+@Permissions(permissions = {ExportCommand.PERMISSION_ALL})
 public class ExportCommand extends AbstractCommand {
+
+	public static final String PERMISSION_ALL = "banhammer.export";
 
 	private final PlayerRecordManager playerRecordManager;
 	private final Server server;
+	private final LocalisedChoiceFormatter choiceFormatter;
 
 	public ExportCommand(PermissionManager permissionManager, PlayerRecordManager playerRecordManager, Server server) {
 		super(permissionManager);
 		this.playerRecordManager = playerRecordManager;
 		this.server = server;
+		this.choiceFormatter = new BanCountChoiceFormatter();
+		this.choiceFormatter.setMessage("bans-exported");
 	}
 
 	@Override
 	public void execute(CommandContext context) {
-		for (PlayerRecord playerRecord : playerRecordManager.list()) {
-			if (!playerRecord.isBanned()) continue;
-			this.server.getOfflinePlayer(playerRecord.getName()).setBanned(true);
+		if (isAuthorised(context.getCommandSender())) {
+			for (PlayerRecord playerRecord : playerRecordManager.list("", PlayerRecordManager.PlayerStatus.BANNED)) {
+				this.server.getOfflinePlayer(playerRecord.getName()).setBanned(true);
+			}
+			this.choiceFormatter.setArguments(playerRecordManager.count());
+			context.getCommandSender().sendMessage(choiceFormatter.getColouredMessage(ColourScheme.Style.INFO));
+		} else {
+			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "no-permission"));
 		}
 	}
+
 }
