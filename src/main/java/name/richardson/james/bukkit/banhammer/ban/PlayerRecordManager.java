@@ -170,7 +170,7 @@ public class PlayerRecordManager {
 			return this;
 		}
 
-		protected BanRecord getRecord() {
+		public BanRecord getRecord() {
 			return record;
 		}
 
