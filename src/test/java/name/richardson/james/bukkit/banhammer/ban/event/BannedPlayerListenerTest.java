@@ -52,7 +52,21 @@ public class BannedPlayerListenerTest extends TestCase {
 	}
 
 	@Test
-	public` void testGetMessage()
+	public void testGetKickMessagePermanent() {
+		BanRecord banRecord = getExampleBanRecord();
+		when(banRecord.getType()).thenReturn(BanRecord.Type.PERMANENT);
+		Assert.assertEquals("Kick message is inconsistent!", listener.getKickMessage(banRecord), "§cYou have been permanently banned by §efrank§c.\n\nReason: §enull§c.");
+	}
+
+	@Test
+	public void testGetKickMessageTemporary() {
+		BanRecord banRecord = getExampleBanRecord();
+		when(banRecord.getType()).thenReturn(BanRecord.Type.TEMPORARY);
+		Assert.assertEquals("Kick message is inconsistent!", listener.getKickMessage(banRecord), "§cYou have been banned by §efrank§c until §enull§c.\n\nReason: §enull§c.");
+	}
+
+	@Test
+	public void testGetMessage()
 	throws Exception {
 		assertTrue("Message does not appear to have been translated!", listener.getMessage("banned-permanently").contentEquals("You have been permanently banned by {1}.\\n\\nReason: {0}."));
 	}
@@ -67,25 +81,11 @@ public class BannedPlayerListenerTest extends TestCase {
 	public void testOnPlayerBanned()
 	throws Exception {
 		Player player = mock(Player.class);
-	 	when(player.isOnline()).thenReturn(true);
+		when(player.isOnline()).thenReturn(true);
 		BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(getExampleBanRecord(), true);
 		when(server.getPlayerExact(anyString())).thenReturn(player);
 		listener.onPlayerBanned(event);
 		verify(player).kickPlayer(anyString());
-	}
-
-	@Test
-	public void testGetKickMessagePermanent() {
-		BanRecord banRecord = getExampleBanRecord();
-		when(banRecord.getType()).thenReturn(BanRecord.Type.PERMANENT);
-		Assert.assertEquals("Kick message is inconsistent!", listener.getKickMessage(banRecord), "§cYou have been permanently banned by §efrank§c.\n\nReason: §enull§c.");
-	}
-
-	@Test
-	public void testGetKickMessageTemporary() {
-		BanRecord banRecord = getExampleBanRecord();
-		when(banRecord.getType()).thenReturn(BanRecord.Type.TEMPORARY);
-		Assert.assertEquals("Kick message is inconsistent!", listener.getKickMessage(banRecord), "§cYou have been banned by §efrank§c until §enull§c.\n\nReason: §enull§c.");
 	}
 
 	@Test
