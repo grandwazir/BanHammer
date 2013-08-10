@@ -24,14 +24,19 @@ import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
 
+import org.apache.commons.lang.StringUtils;
+
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
+import name.richardson.james.bukkit.utilities.formatters.colours.ColourScheme;
 import name.richardson.james.bukkit.utilities.permissions.PermissionManager;
 import name.richardson.james.bukkit.utilities.permissions.Permissions;
 
-@Permissions(permissions = {"banhammer.limits"})
+@Permissions(permissions = {LimitsCommand.PERMISSION_ALL})
 public class LimitsCommand extends AbstractCommand {
+
+	public static final String PERMISSION_ALL = "banhammer.limits";
 
 	private final Map<String, Long> limits;
 
@@ -42,13 +47,17 @@ public class LimitsCommand extends AbstractCommand {
 
 	@Override
 	public void execute(CommandContext context) {
-		List<String> messages = new ArrayList<String>(limits.size());
-		for (final Entry<String, Long> limit : this.limits.entrySet()) {
-			ChatColor colour = ChatColor.RED;
-			if (context.getCommandSender().hasPermission("banhammer.ban." + limit.getKey())) colour = ChatColor.GREEN;
-			messages.add(colour + getMessage("limits-list-item", limit.getKey(), TimeFormatter.millisToLongDHMS(limit.getValue())));
+		if (isAuthorised(context.getCommandSender())) {
+			List<String> messages = new ArrayList<String>(limits.size());
+			for (final Entry<String, Long> limit : this.limits.entrySet()) {
+				ChatColor colour = ChatColor.RED;
+				if (context.getCommandSender().hasPermission(BanCommand.PERMISSION_ALL + "." + limit.getKey())) colour = ChatColor.GREEN;
+				messages.add(colour + getMessage("limits-list-item", limit.getKey(), TimeFormatter.millisToLongDHMS(limit.getValue())));
+			}
+			context.getCommandSender().sendMessage(StringUtils.join(messages, ", "));
+		} else {
+			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "no-permission"));
 		}
-		context.getCommandSender().sendMessage(messages.toArray(new String[messages.size()]));
 	}
 
 }
