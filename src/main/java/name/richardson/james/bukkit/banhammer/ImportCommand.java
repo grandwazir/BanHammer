@@ -22,14 +22,18 @@ import org.bukkit.Server;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
+import name.richardson.james.bukkit.utilities.formatters.colours.ColourScheme;
 import name.richardson.james.bukkit.utilities.permissions.PermissionManager;
 import name.richardson.james.bukkit.utilities.permissions.Permissions;
 
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
-@Permissions(permissions = {"banhammer.import"})
+@Permissions(permissions = {ImportCommand.PERMISSION_ALL})
 public class ImportCommand extends AbstractCommand {
+
+	public static final String PERMISSION_ALL = "banhammer.import";
+	private final BanCountChoiceFormatter choiceFormatter;
 
 	private final PlayerRecordManager playerRecordManager;
 	private final Server server;
@@ -40,14 +44,22 @@ public class ImportCommand extends AbstractCommand {
 		super(permissionManager);
 		this.playerRecordManager = playerRecordManager;
 		this.server = server;
+		this.choiceFormatter = new BanCountChoiceFormatter();
+		this.choiceFormatter.setMessage("bans-imported");
 	}
 
 	@Override
 	public void execute(CommandContext context) {
-		setReason(context);
-		for (OfflinePlayer player : this.server.getBannedPlayers()) {
-			playerRecordManager.new BannedPlayerBuilder().setPlayer(player.getName()).setCreator(context.getCommandSender().getName()).setReason(this.reason).save();
-			player.setBanned(false);
+		if (isAuthorised(context.getCommandSender())) {
+			setReason(context);
+			for (OfflinePlayer player : this.server.getBannedPlayers()) {
+				playerRecordManager.new BannedPlayerBuilder().setPlayer(player.getName()).setCreator(context.getCommandSender().getName()).setReason(this.reason).save();
+				player.setBanned(false);
+			}
+			choiceFormatter.setArguments(this.server.getBannedPlayers().size());
+			context.getCommandSender().sendMessage(choiceFormatter.getColouredMessage(ColourScheme.Style.INFO));
+		} else {
+			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "no-permission"));
 		}
 	}
 
@@ -55,7 +67,7 @@ public class ImportCommand extends AbstractCommand {
 		if (context.has(0)) {
 			reason = context.getJoinedArguments(0);
 		} else {
-			reason = getMessage("default-ban-message");
+			reason = getMessage("default-ban-import-reason");
 		}
 	}
 

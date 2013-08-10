@@ -28,8 +28,10 @@ import name.richardson.james.bukkit.utilities.formatters.colours.ColourScheme;
 import name.richardson.james.bukkit.utilities.permissions.PermissionManager;
 import name.richardson.james.bukkit.utilities.permissions.Permissions;
 
-@Permissions(permissions = {"banhammer.kick"})
+@Permissions(permissions = {KickCommand.PERMISSION_ALL})
 public class KickCommand extends AbstractCommand {
+
+	public static final String PERMISSION_ALL = "banhammer.kick";
 
 	private final Server server;
 
@@ -43,21 +45,27 @@ public class KickCommand extends AbstractCommand {
 
 	@Override
 	public void execute(CommandContext context) {
-		if (!setPlayer(context)) return;
-		if (!setReason(context)) return;
-		String message = getColouredMessage(ColourScheme.Style.ERROR, "kick-notification", this.reason, context.getCommandSender().getName());
-		this.player.get().kickPlayer(message);
-		this.server.broadcast(getColouredMessage(ColourScheme.Style.ERROR, "player-kicked", player.get().getName()), BanHammer.NOTIFY_PERMISSION_NAME);
-		this.server.broadcast(getColouredMessage(ColourScheme.Style.WARNING, "kick-reason", this.reason), BanHammer.NOTIFY_PERMISSION_NAME);
+		if (isAuthorised(context.getCommandSender())) {
+			if (!setPlayer(context)) return;
+			if (!setReason(context)) return;
+			String message = getColouredMessage(ColourScheme.Style.ERROR, "kick-notification", this.reason, context.getCommandSender().getName());
+			this.player.get().kickPlayer(message);
+			this.server.broadcast(getColouredMessage(ColourScheme.Style.ERROR, "player-kicked", player.get().getName(), context.getCommandSender().getName()), BanHammer.NOTIFY_PERMISSION_NAME);
+			this.server.broadcast(getColouredMessage(ColourScheme.Style.WARNING, "reason-label", this.reason), BanHammer.NOTIFY_PERMISSION_NAME);
+		} else {
+			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "no-permission"));
+		}
 	}
 
 	private boolean setPlayer(CommandContext context) {
 		if (context.has(0)) player = new WeakReference<Player>(context.getPlayer(0));
-		if (player.get() == null) {
-			String message = getColouredMessage(ColourScheme.Style.ERROR, "must-specify-online-player");
+		if (player == null || player.get() == null) {
+			String message = getColouredMessage(ColourScheme.Style.ERROR, "must-specify-player");
 			context.getCommandSender().sendMessage(message);
+			return false;
+		} else {
+			return true;
 		}
-		return (player != null);
 	}
 
 	private boolean setReason(CommandContext context) {
