@@ -17,9 +17,9 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer;
 
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.PluginManager;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
@@ -30,22 +30,27 @@ import name.richardson.james.bukkit.utilities.permissions.Permissions;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
+import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
 
-@Permissions(permissions = {"banhammer.pardon", "banhammer.pardon.own", "banhammer.pardon.others"})
+@Permissions(permissions = {PardonCommand.PERMISSION_ALL, PardonCommand.PERMISSION_OWN, PardonCommand.PERMISSION_OTHERS})
 public class PardonCommand extends AbstractCommand {
 
+	public static final String PERMISSION_ALL = "banhammer.pardon";
+	public static final String PERMISSION_OWN = "banhammer.pardon.own";
+	public static final String PERMISSION_OTHERS = "banhammer.pardon.others";
+
+	private final PluginManager pluginManager;
 	private final BanRecordManager banRecordManager;
 	private final PlayerRecordManager playerRecordManager;
-	private final Server server;
 
-	private OfflinePlayer player;
+	private String playerName;
 	private PlayerRecord playerRecord;
 
-	public PardonCommand(PermissionManager permissionManager, BanRecordManager banRecordManager, PlayerRecordManager playerRecordManager, Server server) {
+	public PardonCommand(PermissionManager permissionManager, PluginManager pluginManager, BanRecordManager banRecordManager, PlayerRecordManager playerRecordManager) {
 		super(permissionManager);
+		this.pluginManager = pluginManager;
 		this.banRecordManager = banRecordManager;
 		this.playerRecordManager = playerRecordManager;
-		this.server = server;
 	}
 
 	@Override
@@ -53,31 +58,40 @@ public class PardonCommand extends AbstractCommand {
 		if (!setPlayer(context)) return;
 		if (!setPlayerRecord(context)) return;
 		if (!hasPermission(context.getCommandSender())) return;
+		BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(playerRecord.getActiveBan(), false);
 		banRecordManager.delete(playerRecord.getActiveBan());
-		server.broadcast(getColouredMessage(ColourScheme.Style.INFO, "player-pardoned", player.getName()), BanHammer.NOTIFY_PERMISSION_NAME);
+		context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.INFO, "player-pardoned", playerName));
+		pluginManager.callEvent(event);
 	}
 
 	private boolean hasPermission(CommandSender sender) {
-		final boolean isSenderTargetingSelf = (playerRecord.getActiveBan().getCreator().getName().equalsIgnoreCase(sender.getName()));
-		if (sender.hasPermission("banhammer.pardon.own") && isSenderTargetingSelf) return true;
-		if (sender.hasPermission("banhammer.pardon.others") && !isSenderTargetingSelf) return true;
-		sender.sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "unable-to-target-player", this.player.getName()));
+		String creatorName = playerRecord.getActiveBan().getCreator().getName();
+		final boolean isSenderTargetingSelf = (creatorName.equalsIgnoreCase(sender.getName()));
+		if (sender.hasPermission(PERMISSION_OWN) && isSenderTargetingSelf) return true;
+		if (sender.hasPermission(PERMISSION_OTHERS) && !isSenderTargetingSelf) return true;
+		sender.sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "unable-to-target-player", creatorName));
 		return false;
 	}
 
 	private boolean setPlayer(CommandContext context) {
-		player = null;
-		if (context.has(0)) context.getOfflinePlayer(0);
-		if (player == null) context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "must-specify-player"));
-		return (player != null);
+		playerName = null;
+		if (context.has(0)) playerName = context.getString(0);
+		if (playerName == null) {
+			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "must-specify-player"));
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	private boolean setPlayerRecord(CommandContext context) {
-		playerRecord = playerRecordManager.find(player.getName());
+		playerRecord = playerRecordManager.find(playerName);
 		if (playerRecord == null || playerRecord.getActiveBan() == null) {
-			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.WARNING, "player-is-not-banned", player.getName()));
+			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.WARNING, "player-is-not-banned", playerName));
+			return false;
+		} else {
+			return true;
 		}
-		return (player != null);
 	}
 
 }

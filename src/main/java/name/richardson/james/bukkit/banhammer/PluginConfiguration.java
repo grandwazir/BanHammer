@@ -20,14 +20,23 @@ package name.richardson.james.bukkit.banhammer;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.bukkit.configuration.ConfigurationSection;
 
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
+import name.richardson.james.bukkit.utilities.logging.PrefixedLogger;
 import name.richardson.james.bukkit.utilities.persistence.configuration.SimplePluginConfiguration;
 
 public class PluginConfiguration extends SimplePluginConfiguration {
 
 	private final Map<String, Long> limits = new LinkedHashMap<String, Long>();
+	private final Logger logger = PrefixedLogger.getLogger(this.getClass());
 
 	public PluginConfiguration(final File file, final InputStream defaults)
 	throws IOException {
@@ -35,7 +44,18 @@ public class PluginConfiguration extends SimplePluginConfiguration {
 	}
 
 	public Map<String, Long> getBanLimits() {
-		return Collections.unmodifiableMap(this.limits);
+		this.limits.clear();
+		final ConfigurationSection section = this.getConfiguration().getConfigurationSection("limits");
+		for (final String key : section.getKeys(false)) {
+			final String name = key;
+			final Long length = TimeFormatter.parseTime(section.getString(key));
+			if (length != 0) {
+				this.limits.put(name, length);
+			} else {
+				this.logger.log(Level.WARNING, "banhammer.limit-invalid", key);
+			}
+		}
+		return this.limits;
 	}
 
 	public List<String> getImmunePlayers() {

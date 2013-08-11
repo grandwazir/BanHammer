@@ -1,0 +1,55 @@
+# config.yml
+# - This configuration file is responsible for configuring the plugin.
+# - Any values _not set_ in this file will be set to the configuration default.
+# - Any _invalid_ values will be reset to the configuration default.
+# - To rebuild this file stop your server, delete it and then restart.
+# values:
+# - logging:
+# -- This value specifies the LOG_LEVEL that the plugin should operate in. A value of ALL will also log SQL transactions made by the plugin.
+# -- Valid values: OFF, SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST, ALL.
+# -- Default: INFO
+# - automatic-updates.branch:
+# -- This value specifies which branch to check when checking for updates.
+# -- Valid values: STABLE (latest release), DEVELOPMENT (latest snapshot release).
+# -- Default: STABLE
+# - automatic-updates.method:
+# -- This value specifies the operating method of the automatic updater. Not all updaters support all values but they all support OFF.
+# -- Valid values: UPDATE (update automatically), NOTIFY (notify administrators that an update is available), OFF (disable update checking).
+# -- Default: NOTIFY
+# - send-anonymous-statistics:
+# -- This value specifies if the plugin will send anonymous statistical information to mcstats.org.
+# -- Valid values: true or false
+# -- Default: true
+# - immune-players:
+# -- This list defines players who may not be banned by other players.
+# -- The only exception to this rule is if they have the `banhammer.ban` permission.
+# -- Valid values: Any player names
+# -- Default: [grandwazir]
+# - undo-time:
+# -- This value defines how long, after a ban has been made, the undo command can be used.
+# -- Valid values: Time format (m for minutes, s for seconds, h for hours, d for days, w for weeks)
+# -- Default: 1m (one minute)
+# - alias-plugin.enabled:
+# -- This value defines if BanHammer should check players for Alias using the Alias plugin.
+# -- Valid values: True or False
+# -- Default: False
+# - limits:
+# -- This is a map of names and times which form the limits which can apply to some bans
+# -- For example to restrict a player to banning for a `short` time you would define a limit called short and then give them the `banhammer.ban.short` permission.
+# -- Valid values: Any String followed by a time format
+
+logging: INFO
+send-anonymous-statistics: true
+automatic-updates:
+  branch: STABLE
+  method: NOTIFY
+alias-plugin:
+  enabled: false
+undo-time: 1m
+immune-players:
+  - grandwazir
+limits:
+  warning: 1h
+  short: 1d
+  medium: 3d
+  long: 7d
