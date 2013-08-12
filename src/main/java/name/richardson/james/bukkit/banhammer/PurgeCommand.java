@@ -59,20 +59,24 @@ public class PurgeCommand extends AbstractCommand {
 
 	@Override
 	public void execute(CommandContext context) {
-		if (!setPlayerName(context)) return;
-		if (!setPlayerRecord(context)) return;
-		List<BanRecord> records = new ArrayList<BanRecord>();
-		boolean own = context.getCommandSender().hasPermission(PERMISSION_OWN);
-		boolean others = context.getCommandSender().hasPermission(PERMISSION_OTHERS);
-		for (BanRecord ban : playerRecord.getBans()) {
-			boolean banCreatedBySender = ban.getCreator().getName().equalsIgnoreCase(context.getCommandSender().getName());
-			if (banCreatedBySender && !own) continue;
-			if (!banCreatedBySender && !others) continue;
-			records.add(ban);
+		if (isAuthorised(context.getCommandSender())) {
+			if (!setPlayerName(context)) return;
+			if (!setPlayerRecord(context)) return;
+			List<BanRecord> records = new ArrayList<BanRecord>();
+			boolean own = context.getCommandSender().hasPermission(PERMISSION_OWN);
+			boolean others = context.getCommandSender().hasPermission(PERMISSION_OTHERS);
+			for (BanRecord ban : playerRecord.getBans()) {
+				boolean banCreatedBySender = ban.getCreator().getName().equalsIgnoreCase(context.getCommandSender().getName());
+				if (banCreatedBySender && !own) continue;
+				if (!banCreatedBySender && !others) continue;
+				records.add(ban);
+			}
+			this.choiceFormatter.setArguments(records.size(), playerName);
+			banRecordManager.delete(records);
+			context.getCommandSender().sendMessage(this.choiceFormatter.getColouredMessage(ColourScheme.Style.INFO));
+		} else {
+			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "no-permission"));
 		}
-		this.choiceFormatter.setArguments(records.size(), playerName);
-		banRecordManager.delete(records);
-		context.getCommandSender().sendMessage(this.choiceFormatter.getColouredMessage(ColourScheme.Style.INFO));
 	}
 
 	private boolean setPlayerName(CommandContext context) {

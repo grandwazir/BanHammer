@@ -17,7 +17,6 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer;
 
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
@@ -31,15 +30,20 @@ import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
-@Permissions(permissions = {"banhammer.undo", "banhammer.undo.own", "banhammer.undo.others", "banhammer.undo.unrestricted"})
+@Permissions(permissions = {UndoCommand.PERMISSION_ALL, UndoCommand.PERMISSION_OWN, UndoCommand.PERMISSION_OTHERS, UndoCommand.PERMISSION_UNRESTRICTED})
 public class UndoCommand extends AbstractCommand {
+
+	public static final String PERMISSION_ALL = "banhammer.undo";
+	public static final String PERMISSION_OWN = "banhammer.undo.own";
+	public static final String PERMISSION_OTHERS = "banhammer.undo.others";
+	public static final String PERMISSION_UNRESTRICTED = "banhammer.undo.unrestricted";
 
 	private final BanRecordManager banRecordManager;
 	private final PlayerRecordManager playerRecordManager;
 	private final long undoTime;
 
 	private BanRecord ban;
-	private OfflinePlayer player;
+	private String playerName;
 	private PlayerRecord playerRecord;
 
 	public UndoCommand(PermissionManager permissionManager, PlayerRecordManager playerRecordManager, BanRecordManager banRecordManager, final long undoTime) {
@@ -56,43 +60,53 @@ public class UndoCommand extends AbstractCommand {
 		if (!setBan(context)) return;
 		if (!hasPermission(context.getCommandSender())) return;
 		banRecordManager.delete(ban);
-		context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.INFO, "ban-undone", player.getName()));
+		context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.INFO, "ban-undone", playerName));
 	}
 
 	private boolean hasPermission(CommandSender sender) {
-		final boolean isSenderTargetingSelf = (this.ban.getCreator().getName().equalsIgnoreCase(sender.getName())) ? true : false;
+		final boolean isSenderTargetingSelf = (this.ban.getCreator().getName().equalsIgnoreCase(sender.getName()));
 		final boolean withinTimeLimit = this.withinTimeLimit(sender);
-		if (sender.hasPermission("banhammer.undo.own") && withinTimeLimit && isSenderTargetingSelf) return true;
-		if (sender.hasPermission("banhammer.undo.others") && withinTimeLimit && !isSenderTargetingSelf) return true;
-		sender.sendMessage(getColourScheme().format(ColourScheme.Style.ERROR, "may-not-undo-that-players-ban"));
+		if (sender.hasPermission(PERMISSION_OWN) && withinTimeLimit && isSenderTargetingSelf) return true;
+		if (sender.hasPermission(PERMISSION_OTHERS) && withinTimeLimit && !isSenderTargetingSelf) return true;
+		sender.sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "may-not-undo-that-players-ban", ban.getCreator().getName()));
 		return false;
 	}
 
 	private boolean setBan(CommandContext context) {
 		ban = playerRecord.getActiveBan();
-		if (ban == null) context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.WARNING, "player-is-not-banned", player.getName()));
-		return (ban != null);
+		if (ban == null) {
+			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.WARNING, "player-is-not-banned", playerName));
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	private boolean setPlayer(CommandContext context) {
-		player = null;
-		if (context.has(0)) context.getOfflinePlayer(0);
-		if (player == null) context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "must-specify-player"));
-		return (player != null);
+		playerName = null;
+		if (context.has(0)) playerName = context.getString(0);
+		if (playerName == null) {
+			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "must-specify-player"));
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	private boolean setPlayerRecord(CommandContext context) {
-		playerRecord = playerRecordManager.find(player.getName());
+		playerRecord = playerRecordManager.find(playerName);
 		if (playerRecord == null || playerRecord.getBans().size() == 0) {
-			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.WARNING, "player-has-never-been-banned", player.getName()));
+			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.WARNING, "player-has-never-been-banned", playerName));
+			return false;
+		} else {
+			return true;
 		}
-		return (playerRecord != null);
 	}
 
 	private boolean withinTimeLimit(CommandSender sender) {
-		if (sender.hasPermission("banhammer.undo.unrestricted")) return true;
-		if ((System.currentTimeMillis() - ban.getExpiresAt().getTime()) <= this.undoTime) return true;
-		sender.sendMessage(getColourScheme().format(ColourScheme.Style.ERROR, "undo-time-expired"));
+		if (sender.hasPermission(PERMISSION_UNRESTRICTED)) return true;
+		if ((System.currentTimeMillis() - ban.getCreatedAt().getTime()) <= this.undoTime) return true;
+		sender.sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "undo-time-expired"));
 		return false;
 	}
 

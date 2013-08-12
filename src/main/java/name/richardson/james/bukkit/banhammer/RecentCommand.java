@@ -21,6 +21,7 @@ import java.util.List;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
+import name.richardson.james.bukkit.utilities.formatters.colours.ColourScheme;
 import name.richardson.james.bukkit.utilities.permissions.PermissionManager;
 import name.richardson.james.bukkit.utilities.permissions.Permissions;
 
@@ -28,9 +29,10 @@ import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordFormatter;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 
-@Permissions(permissions = {"banhammer.recent"})
+@Permissions(permissions = {RecentCommand.PERMISSION_ALL})
 public class RecentCommand extends AbstractCommand {
 
+	public static final String PERMISSION_ALL = "banhammer.recent";
 	public static final int DEFAULT_LIMIT = 5;
 
 	private final BanRecordManager banRecordManager;
@@ -44,18 +46,21 @@ public class RecentCommand extends AbstractCommand {
 
 	@Override
 	public void execute(CommandContext context) {
-		if (!setLimit(context)) return;
-		List<BanRecord> bans = banRecordManager.list(count);
-		for (BanRecord ban : bans) {
-			BanRecordFormatter formatter = new BanRecordFormatter(ban);
-			context.getCommandSender().sendMessage(formatter.getMessages());
+		if (isAuthorised(context.getCommandSender())) {
+			setLimit(context);
+			List<BanRecord> bans = banRecordManager.list(count);
+			for (BanRecord ban : bans) {
+				BanRecordFormatter formatter = new BanRecordFormatter(ban);
+				context.getCommandSender().sendMessage(formatter.getMessages());
+			}
+		} else {
+			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "no-permission"));
 		}
 	}
 
-	public boolean setLimit(CommandContext context) {
+	private void setLimit(CommandContext context) {
 		count = DEFAULT_LIMIT;
-		if (context.has(0)) context.getInt(0);
-		return true;
+		if (context.has(0)) count = context.getInt(0);
 	}
 
 }

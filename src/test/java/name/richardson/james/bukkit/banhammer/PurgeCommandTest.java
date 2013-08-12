@@ -35,11 +35,12 @@ public class PurgeCommandTest extends TestCase {
 	private PluginManager pluginManager;
 
 	@Test
-	public void testExecute()
+	public void testExecuteNoPermission()
 	throws Exception {
-
+		when(player.hasPermission(PurgeCommand.PERMISSION_ALL)).thenReturn(false);
+		command.execute(commandContext);
+		verify(player).sendMessage("§cYou are not allowed to do that.");
 	}
-
 
 	@Test
 	public void testExecuteNoPlayerName()
@@ -117,6 +118,7 @@ public class PurgeCommandTest extends TestCase {
 		command = new PurgeCommand(permissionManager, pluginManager, playerRecordManager, banRecordManager);
 		player = mock(Player.class);
 		when(player.getName()).thenReturn("frank");
+		when(player.hasPermission(PurgeCommand.PERMISSION_ALL)).thenReturn(true);
 		commandContext = mock(CommandContext.class);
 		when(commandContext.getCommandSender()).thenReturn(player);
 	}

@@ -17,7 +17,7 @@
   </parent>
 
   <repositories>
-      <repository>
+    <repository>
       <id>my-repo</id>
       <url>http://repository.james.richardson.name/releases</url>
     </repository>
