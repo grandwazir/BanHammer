@@ -62,7 +62,7 @@ public class AuditCommand extends AbstractCommand {
 		if (!setPlayerRecord(context)) return;
 		if (!hasPermission(context.getCommandSender())) return;
 		AuditSummary auditSummary = new AuditSummary(playerRecord.getCreatedBans(), banRecordManager.count());
-		choiceFormatter.setArguments(auditSummary.getTotalBanCount(), context.getCommandSender().getName(), auditSummary.getTotalBanCountPercentage());
+		choiceFormatter.setArguments(auditSummary.getTotalBanCount(), playerName, auditSummary.getTotalBanCountPercentage());
 		context.getCommandSender().sendMessage(choiceFormatter.getColouredMessage(ColourScheme.Style.HEADER));
 		context.getCommandSender().sendMessage(auditSummary.getMessages());
 	}
