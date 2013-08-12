@@ -68,7 +68,7 @@ public class BannedPlayerListenerTest extends TestCase {
 	@Test
 	public void testGetMessage()
 	throws Exception {
-		assertTrue("Message does not appear to have been translated!", listener.getMessage("banned-permanently").contentEquals("You have been permanently banned by {1}.\\n\\nReason: {0}."));
+		assertEquals("Message does not appear to have been translated!", listener.getMessage("banned-permanently"), ("You have been permanently banned by {1}.\n\nReason: {0}."));
 	}
 
 	@Test

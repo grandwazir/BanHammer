@@ -20,7 +20,7 @@ package name.richardson.james.bukkit.banhammer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.OfflinePlayer;
+import org.bukkit.plugin.PluginManager;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
@@ -33,50 +33,67 @@ import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
-@Permissions(permissions = {"banhammer.purge", "banhammer.purge.own", "banhammer.purge.others"})
+@Permissions(permissions = {PurgeCommand.PERMISSION_ALL, PurgeCommand.PERMISSION_OWN, PurgeCommand.PERMISSION_OTHERS})
 public class PurgeCommand extends AbstractCommand {
 
+	public static final String PERMISSION_ALL = "banhammer.purge";
+	public static final String PERMISSION_OWN = "banhammer.purge.own";
+	public static final String PERMISSION_OTHERS = "banhammer.purge.others";
+
 	private final BanRecordManager banRecordManager;
+	private final BanCountChoiceFormatter choiceFormatter;
+	private final PluginManager pluginManager;
 	private final PlayerRecordManager playerRecordManager;
 
-	private OfflinePlayer player;
+	private String playerName;
 	private PlayerRecord playerRecord;
 
-	public PurgeCommand(PermissionManager permissionManager, PlayerRecordManager playerRecordManager, BanRecordManager banRecordManager) {
+	public PurgeCommand(PermissionManager permissionManager, PluginManager pluginManager, PlayerRecordManager playerRecordManager, BanRecordManager banRecordManager) {
 		super(permissionManager);
+		this.pluginManager = pluginManager;
 		this.playerRecordManager = playerRecordManager;
 		this.banRecordManager = banRecordManager;
+		this.choiceFormatter = new BanCountChoiceFormatter();
+		this.choiceFormatter.setMessage("bans-purged");
 	}
 
 	@Override
 	public void execute(CommandContext context) {
-		if (!setPlayer(context)) return;
+		if (!setPlayerName(context)) return;
 		if (!setPlayerRecord(context)) return;
 		List<BanRecord> records = new ArrayList<BanRecord>();
-		boolean own = context.getCommandSender().hasPermission("banhammer.purge.own");
-		boolean others = context.getCommandSender().hasPermission("banhammer.purge.others");
+		boolean own = context.getCommandSender().hasPermission(PERMISSION_OWN);
+		boolean others = context.getCommandSender().hasPermission(PERMISSION_OTHERS);
 		for (BanRecord ban : playerRecord.getBans()) {
 			boolean banCreatedBySender = ban.getCreator().getName().equalsIgnoreCase(context.getCommandSender().getName());
 			if (banCreatedBySender && !own) continue;
 			if (!banCreatedBySender && !others) continue;
 			records.add(ban);
 		}
+		this.choiceFormatter.setArguments(records.size(), playerName);
 		banRecordManager.delete(records);
+		context.getCommandSender().sendMessage(this.choiceFormatter.getColouredMessage(ColourScheme.Style.INFO));
 	}
 
-	private boolean setPlayer(CommandContext context) {
-		player = null;
-		if (context.has(0)) context.getOfflinePlayer(0);
-		if (player == null) context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "must-specify-player"));
-		return (player != null);
+	private boolean setPlayerName(CommandContext context) {
+		playerName = null;
+		if (context.has(0)) playerName = context.getString(0);
+		if (playerName == null) {
+			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "must-specify-player"));
+		  return false;
+		} else {
+			return true;
+		}
 	}
 
 	private boolean setPlayerRecord(CommandContext context) {
-		playerRecord = playerRecordManager.find(player.getName());
+		playerRecord = playerRecordManager.find(playerName);
 		if (playerRecord == null || playerRecord.getBans().size() == 0) {
-			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.WARNING, "player-has-never-been-banned", player.getName()));
+			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.WARNING, "player-has-never-been-banned", playerName));
+			return false;
+		} else {
+			return true;
 		}
-		return (playerRecord != null);
 	}
 
 }

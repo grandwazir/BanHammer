@@ -62,6 +62,8 @@ public class AuditCommandTest extends TestCase {
 	throws Exception {
 		when(commandContext.has(0)).thenReturn(true);
 		when(commandContext.getString(0)).thenReturn("frank");
+		PlayerRecord playerRecord = getExamplePlayerRecord();
+		when(playerRecordManager.find("frank")).thenReturn(playerRecord);
 		when(player.hasPermission(AuditCommand.PERMISSION_OTHERS)).thenReturn(true);
 		command.execute(commandContext);
 		verify(player, atLeastOnce()).hasPermission(AuditCommand.PERMISSION_SELF);
