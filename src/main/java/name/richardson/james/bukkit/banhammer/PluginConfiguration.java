@@ -20,10 +20,7 @@ package name.richardson.james.bukkit.banhammer;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,9 +55,10 @@ public class PluginConfiguration extends SimplePluginConfiguration {
 		return this.limits;
 	}
 
-	public List<String> getImmunePlayers() {
-		final List<String> list = this.getConfiguration().getStringList("immune-players");
-		return (list != null) ? list : new ArrayList<String>();
+	public Set<String> getImmunePlayers() {
+		final Set<String> set = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+		set.addAll(this.getConfiguration().getStringList("immune-players"));
+		return set;
 	}
 
 	public long getUndoTime() {

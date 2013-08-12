@@ -20,10 +20,15 @@ package name.richardson.james.bukkit.banhammer;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 
+import name.richardson.james.bukkit.utilities.command.AbstractCommand;
+import name.richardson.james.bukkit.utilities.command.Command;
+import name.richardson.james.bukkit.utilities.command.HelpCommand;
+import name.richardson.james.bukkit.utilities.command.invoker.CommandInvoker;
+import name.richardson.james.bukkit.utilities.command.invoker.FallthroughCommandInvoker;
+import name.richardson.james.bukkit.utilities.command.matcher.OnlinePlayerMatcher;
 import name.richardson.james.bukkit.utilities.permissions.Permissions;
 import name.richardson.james.bukkit.utilities.plugin.AbstractDatabasePlugin;
 import name.richardson.james.bukkit.utilities.plugin.AbstractPlugin;
@@ -37,6 +42,7 @@ import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.event.AliasBannedPlayerListener;
 import name.richardson.james.bukkit.banhammer.ban.event.BannedPlayerListener;
 import name.richardson.james.bukkit.banhammer.ban.event.PlayerNotifier;
+import name.richardson.james.bukkit.banhammer.utilities.command.matcher.*;
 
 @Permissions(permissions = {BanHammer.PLUGIN_PERMISSION_NAME, BanHammer.NOTIFY_PERMISSION_NAME})
 public final class BanHammer extends AbstractDatabasePlugin {
@@ -58,25 +64,18 @@ public final class BanHammer extends AbstractDatabasePlugin {
 		return this.aliasHandler;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * name.richardson.james.bukkit.utilities.updater.Updatable#getArtifactID()
-	 */
-	public String getArtifactID() {
-		return "ban-hammer";
+	private void setAliasHandler(AliasHandler aliasHandler) {
+		this.aliasHandler = aliasHandler;
 	}
 
 	public BanRecordManager getBanRecordManager() {
 		return banRecordManager;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.bukkit.plugin.java.JavaPlugin#getDatabaseClasses()
-	 */
+	private void setBanRecordManager(BanRecordManager banRecordManager) {
+		this.banRecordManager = banRecordManager;
+	}
+
 	@Override
 	public List<Class<?>> getDatabaseClasses() {
 		final List<Class<?>> classes = new LinkedList<Class<?>>();
@@ -89,15 +88,8 @@ public final class BanHammer extends AbstractDatabasePlugin {
 		return playerRecordManager;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin#setupPersistence
-	 * ()
-	 */
-	public String getVersion() {
-		return this.getDescription().getVersion();
+	private void setPlayerRecordManager(PlayerRecordManager playerRecordManager) {
+		this.playerRecordManager = playerRecordManager;
 	}
 
 	@Override
@@ -113,24 +105,11 @@ public final class BanHammer extends AbstractDatabasePlugin {
 		}
 	}
 
-	private void loadManagers() {
-		this.playerRecordManager = new PlayerRecordManager(this.getDatabase());
-		this.banRecordManager = new BanRecordManager(this.getDatabase());
-	}
-
-	private void loadConfiguration()
-	throws IOException {
-		final File file = new File(this.getDataFolder().getPath() + File.separatorChar + AbstractPlugin.CONFIG_NAME);
-		final InputStream defaults = this.getResource(CONFIG_NAME);
-		this.configuration = new PluginConfiguration(file, defaults);
-		if (configuration.isAliasEnabled()) hookAlias();
-	}
-
 	protected void loadDatabase()
 	throws IOException {
 		super.loadDatabase();
-		this.playerRecordManager = new PlayerRecordManager(this.getDatabase());
-		this.banRecordManager = new BanRecordManager(this.getDatabase());
+		this.setPlayerRecordManager(new PlayerRecordManager(this.getDatabase()));
+		this.setBanRecordManager(new BanRecordManager(this.getDatabase()));
 	}
 
 	/**
@@ -142,19 +121,77 @@ public final class BanHammer extends AbstractDatabasePlugin {
 			this.getLocalisedLogger().log(Level.WARNING, "unable-to-hook-alias");
 		} else {
 			this.getLocalisedLogger().log(Level.FINE, "Using {0}.", plugin.getDescription().getFullName());
-			this.aliasHandler = plugin.getHandler();
+			this.setAliasHandler(plugin.getHandler());
 		}
 	}
 
+	private void loadConfiguration()
+	throws IOException {
+		final File file = new File(this.getDataFolder().getPath() + File.separatorChar + AbstractPlugin.CONFIG_NAME);
+		final InputStream defaults = this.getResource(CONFIG_NAME);
+		this.configuration = new PluginConfiguration(file, defaults);
+		if (configuration.isAliasEnabled()) hookAlias();
+	}
+
+	private void loadManagers() {
+		this.setPlayerRecordManager(new PlayerRecordManager(this.getDatabase()));
+		this.setBanRecordManager(new BanRecordManager(this.getDatabase()));
+	}
+
 	private void registerCommands() {
-		//TODO: Reimplement this nicely
+		// create argument matchers
+		PlayerRecordMatcher playerMatcher = new PlayerRecordMatcher(getPlayerRecordManager(), PlayerRecordManager.PlayerStatus.ANY);
+		PlayerRecordMatcher bannedPlayerMatcher = new PlayerRecordMatcher(getPlayerRecordManager(), PlayerRecordManager.PlayerStatus.BANNED);
+		PlayerRecordMatcher creatorPlayerMatcher = new PlayerRecordMatcher(getPlayerRecordManager(), PlayerRecordManager.PlayerStatus.CREATOR);
+		OnlinePlayerMatcher onlinePlayerMatcher = new OnlinePlayerMatcher(getServer());
+		BanLimitMatcher banLimitMatcher = new BanLimitMatcher(configuration.getBanLimits().keySet());
+		// create the commands
+		Set<Command> commands = new HashSet<Command>();
+		AbstractCommand command = new AuditCommand(getPermissionManager(), getPlayerRecordManager(), getBanRecordManager());
+		command.addMatcher(creatorPlayerMatcher);
+		commands.add(command);
+		command = new BanCommand(getPermissionManager(), this.getServer().getPluginManager(), getPlayerRecordManager(), configuration.getBanLimits(), configuration.getImmunePlayers());
+		command.addMatcher(onlinePlayerMatcher);
+		command.addMatcher(banLimitMatcher);
+		commands.add(command);
+		getCommand("ban").setExecutor(new FallthroughCommandInvoker(command));
+		command = new CheckCommand(getPermissionManager(), getPlayerRecordManager());
+		command.addMatcher(bannedPlayerMatcher);
+		commands.add(command);
+		command = new ExportCommand(getPermissionManager(), getPlayerRecordManager(), getServer());
+		commands.add(command);
+		command = new ImportCommand(getPermissionManager(), getPlayerRecordManager(), getServer());
+		commands.add(command);
+		command = new KickCommand(getPermissionManager(), getServer());
+		command.addMatcher(onlinePlayerMatcher);
+		commands.add(command);
+		getCommand("kick").setExecutor(new FallthroughCommandInvoker(command));
+		command = new LimitsCommand(getPermissionManager(), configuration.getBanLimits());
+		commands.add(command);
+		command = new PardonCommand(getPermissionManager(), getServer().getPluginManager(), getBanRecordManager(), getPlayerRecordManager());
+		command.addMatcher(bannedPlayerMatcher);
+		commands.add(command);
+		getCommand("pardon").setExecutor(new FallthroughCommandInvoker(command));
+		command = new PurgeCommand(getPermissionManager(), getServer().getPluginManager(), getPlayerRecordManager(), getBanRecordManager());
+		command.addMatcher(playerMatcher);
+		command = new RecentCommand(getPermissionManager(), getBanRecordManager());
+		commands.add(command);
+		command = new UndoCommand(getPermissionManager(), getPlayerRecordManager(), getBanRecordManager(), configuration.getUndoTime());
+		command.addMatcher(playerMatcher);
+		commands.add(command);
+		// create the invoker
+		command = new HelpCommand(getPermissionManager(), "bh", getDescription(), commands);
+		CommandInvoker invoker = new FallthroughCommandInvoker(command);
+		invoker.addCommands(commands);
+		// bind invoker to plugin command
+		getCommand("bh").setExecutor(invoker);
 	}
 
 	private void registerListeners() {
-		if (this.configuration.isAliasEnabled() && (this.aliasHandler != null)) {
-			new AliasBannedPlayerListener(this, this.getServer().getPluginManager(), getServer(), this.playerRecordManager, this.aliasHandler);
+		if (this.configuration.isAliasEnabled() && (this.getAliasHandler() != null)) {
+			new AliasBannedPlayerListener(this, this.getServer().getPluginManager(), getServer(), this.getPlayerRecordManager(), this.getAliasHandler());
 		} else {
-			new BannedPlayerListener(this, this.getServer().getPluginManager(), getServer(), this.playerRecordManager);
+			new BannedPlayerListener(this, this.getServer().getPluginManager(), getServer(), this.getPlayerRecordManager());
 		}
 		new PlayerNotifier(this, this.getServer().getPluginManager(), this.getServer());
 	}

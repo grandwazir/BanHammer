@@ -1,21 +1,21 @@
 package name.richardson.james.bukkit.banhammer.utilities.command.matcher;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.bukkit.event.Listener;
+
+import com.sun.xml.internal.bind.marshaller.MinimumEscapeHandler;
 
 import name.richardson.james.bukkit.utilities.command.matcher.Matcher;
 
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
-public class PlayerRecordMatcher implements Matcher, Listener {
+public class PlayerRecordMatcher implements Matcher {
+
+	public static int MINIMUM_ARGUMENT_LENGTH = 3;
 
 	private final PlayerRecordManager.PlayerStatus mode;
-	private final Set<String> playerNames = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
 	private final PlayerRecordManager playerRecordManager;
 
 	public PlayerRecordMatcher(PlayerRecordManager playerRecordManager, PlayerRecordManager.PlayerStatus mode) {
@@ -25,26 +25,15 @@ public class PlayerRecordMatcher implements Matcher, Listener {
 
 	@Override
 	public Set<String> matches(String argument) {
+		if (argument.length() < MINIMUM_ARGUMENT_LENGTH) return Collections.emptySet();
 		TreeSet<String> results = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
 		argument = argument.toLowerCase(Locale.ENGLISH);
-		for (String string : getPlayerNames()) {
+		for (PlayerRecord playerRecord : playerRecordManager.list(argument, mode)) {
 			if (results.size() == Matcher.MAX_MATCHES) break;
-			if (!string.toLowerCase(Locale.ENGLISH).startsWith(argument)) continue;
-			results.add(string);
+			if (!playerRecord.getName().toLowerCase(Locale.ENGLISH).startsWith(argument)) continue;
+			results.add(playerRecord.getName());
 		}
 		return results;
-	}
-
-	protected final Set<String> getPlayerNames() {
-		return playerNames;
-	}
-
-	private Set<String> setPlayerNames() {
-		List<PlayerRecord> playerRecordList = playerRecordManager.list("", mode);
-		for (PlayerRecord playerRecord : playerRecordList) {
-			playerNames.add(playerRecord.getName());
-		}
-		return playerNames;
 	}
 
 }
