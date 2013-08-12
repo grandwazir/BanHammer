@@ -1,5 +1,6 @@
 # Changelog for BanHammer (v2.2.6-SNAPSHOT)
 
+2013-08-12 18:43:30 +0100    deleted permissions.properties by mistake (James Richardson)  
 2013-08-12 18:40:01 +0100    copy across testing localisation to main resources (James Richardson)  
 2013-08-12 18:37:48 +0100    consolidated matchers (James Richardson)  
 2013-08-12 18:37:32 +0100    registered all commands correctly (James Richardson)  

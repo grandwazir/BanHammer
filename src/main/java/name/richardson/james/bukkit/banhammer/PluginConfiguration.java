@@ -38,6 +38,7 @@ public class PluginConfiguration extends SimplePluginConfiguration {
 	public PluginConfiguration(final File file, final InputStream defaults)
 	throws IOException {
 		super(file, defaults);
+		logger.config(toString());
 	}
 
 	public Map<String, Long> getBanLimits() {
@@ -67,6 +68,13 @@ public class PluginConfiguration extends SimplePluginConfiguration {
 
 	public boolean isAliasEnabled() {
 		return this.getConfiguration().getBoolean("alias-plugin.enabled");
+	}
+
+	@Override
+	public String toString() {
+		return "PluginConfiguration{" +
+		"limits=" + limits +
+		"} " + super.toString();
 	}
 
 }

@@ -64,6 +64,11 @@ public final class BanHammer extends AbstractDatabasePlugin {
 		return this.aliasHandler;
 	}
 
+	public String getArtifactId() {
+		return "ban-hammer";
+	}
+
+
 	private void setAliasHandler(AliasHandler aliasHandler) {
 		this.aliasHandler = aliasHandler;
 	}
@@ -97,19 +102,13 @@ public final class BanHammer extends AbstractDatabasePlugin {
 		try {
 			super.onEnable();
 			this.loadConfiguration();
+			this.loadDatabase();
 			this.loadManagers();
 			this.registerCommands();
 			this.registerListeners();
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	protected void loadDatabase()
-	throws IOException {
-		super.loadDatabase();
-		this.setPlayerRecordManager(new PlayerRecordManager(this.getDatabase()));
-		this.setBanRecordManager(new BanRecordManager(this.getDatabase()));
 	}
 
 	/**
