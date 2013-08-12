@@ -46,21 +46,21 @@ public class BanRecordFormatter implements Localised {
 	}
 
 	public final String getReason() {
-		return getColouredMessage(ColourScheme.Style.INFO, "reason-label", ban.getReason());
+		return getColouredMessage(ColourScheme.Style.INFO, "list-reason-label", ban.getReason());
 	}
 
 	public final String getLength() {
 		if (ban.getType() == BanRecord.Type.PERMANENT) {
-			return getColouredMessage(ColourScheme.Style.INFO, "length-label", getMessage("permanent"));
+			return getColouredMessage(ColourScheme.Style.INFO, "list-length-label", getMessage("permanent"));
 		} else {
 			final long length = ban.getExpiresAt().getTime() - ban.getCreatedAt().getTime();
-			return getColouredMessage(ColourScheme.Style.INFO, "length-label", TimeFormatter.millisToLongDHMS(length));
+			return getColouredMessage(ColourScheme.Style.INFO, "list-length-label", TimeFormatter.millisToLongDHMS(length));
 		}
 	}
 
 	public final String getExpiresAt() {
 		final String expiryDateString = DATE_FORMAT.format(ban.getExpiresAt());
-		return getColouredMessage(ColourScheme.Style.INFO, "expires-label", expiryDateString);
+		return getColouredMessage(ColourScheme.Style.INFO, "list-expires-label", expiryDateString);
 	}
 
 	public final String[] getMessages() {

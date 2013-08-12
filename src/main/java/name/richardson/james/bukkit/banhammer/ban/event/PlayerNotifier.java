@@ -57,7 +57,7 @@ public class PlayerNotifier extends AbstractListener implements Localised {
 		logger.log(Level.FINEST, "Received " + event.getEventName());
 		if (event.isSilent()) return;
 		BanRecordFormatter formatter = new BanRecordFormatter(event.getRecord());
-		server.broadcast(formatter.getHeader(), BanHammer.NOTIFY_PERMISSION_NAME);
+		server.broadcast(getColouredMessage(ColourScheme.Style.ERROR, "player-banned-by", event.getPlayerName(), event.getRecord().getCreator().getName()), BanHammer.NOTIFY_PERMISSION_NAME);
 		server.broadcast(formatter.getReason(), BanHammer.NOTIFY_PERMISSION_NAME);
 		server.broadcast(formatter.getLength(), BanHammer.NOTIFY_PERMISSION_NAME);
 	}

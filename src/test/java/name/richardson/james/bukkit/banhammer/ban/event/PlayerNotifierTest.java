@@ -38,9 +38,9 @@ public class PlayerNotifierTest extends TestCase {
 	throws Exception {
 		BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(getBanRecord(), false);
 		notifier.onPlayerBanned(event);
-		verify(server).broadcast("§d§bfrank§d banned by §bfrank§d on §b1 Jan 1970 01:00 (GMT)§d.", BanHammer.NOTIFY_PERMISSION_NAME);
-		verify(server).broadcast("§aReason: §bnull§a.", BanHammer.NOTIFY_PERMISSION_NAME);
-		verify(server).broadcast("§aLength: §bPermanent§a.", BanHammer.NOTIFY_PERMISSION_NAME);
+		verify(server).broadcast("§c§efrank§c has been banned by §efrank§c.", BanHammer.NOTIFY_PERMISSION_NAME);
+		verify(server).broadcast("§a- Reason: §bnull§a.", BanHammer.NOTIFY_PERMISSION_NAME);
+		verify(server).broadcast("§a- Length: §bPermanent§a.", BanHammer.NOTIFY_PERMISSION_NAME);
 	}
 
 	@Test

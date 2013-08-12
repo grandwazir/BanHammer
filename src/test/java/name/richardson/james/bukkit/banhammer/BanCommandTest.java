@@ -111,7 +111,7 @@ public class BanCommandTest extends TestCase {
 		doReturn(playerRecord).when(playerRecordManager).find("frank");
 		when(player.hasPermission("banhammer.ban")).thenReturn(true);
 		command.execute(commandContext);
-		verify(player).sendMessage("§c§efrank§c has been banned.");
+		verify(player).sendMessage("§cYou have banned §efrank§c.");
 		verify(pluginManager).callEvent(Matchers.<Event>any());
 	}
 
@@ -126,7 +126,7 @@ public class BanCommandTest extends TestCase {
 		doReturn(playerRecord).when(playerRecordManager).find("frank");
 		when(player.hasPermission("banhammer.ban.test")).thenReturn(true);
 		command.execute(commandContext);
-		verify(player).sendMessage("§c§efrank§c has been banned.");
+		verify(player).sendMessage("§cYou have banned §efrank§c.");
 		verify(pluginManager).callEvent(Matchers.<Event>any());
 	}
 

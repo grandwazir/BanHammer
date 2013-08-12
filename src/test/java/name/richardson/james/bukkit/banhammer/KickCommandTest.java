@@ -37,9 +37,9 @@ public class KickCommandTest extends TestCase {
 		when(commandContext.has(0)).thenReturn(true);
 		when(commandContext.getPlayer(0)).thenReturn(player);
 		command.execute(commandContext);
-		verify(player).kickPlayer("§cYou have been kicked by §efrank§c.\n\nReason: §eNo reason provided.§c.");
+		verify(player).kickPlayer("§cYou have been kicked by §efrank§c.\n\nReason: §eNo reason provided§c.");
 		verify(server).broadcast("§c§efrank§c has been kicked by §efrank§c.", BanHammer.NOTIFY_PERMISSION_NAME);
-		verify(server).broadcast("§eReason: §aNo reason provided.§e.", BanHammer.NOTIFY_PERMISSION_NAME);
+		verify(server).broadcast("§eReason: §aNo reason provided§e.", BanHammer.NOTIFY_PERMISSION_NAME);
 	}
 
 	@Test
