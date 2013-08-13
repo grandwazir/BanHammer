@@ -21,20 +21,21 @@ import java.io.IOException;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 
-import com.avaje.ebean.EbeanServer;
 import org.mcstats.Metrics;
 
-import name.richardson.james.bukkit.banhammer.BanHammer;
+import name.richardson.james.bukkit.utilities.listener.AbstractListener;
+
+import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerBannedEvent;
 import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
 
-public class MetricsListener implements Listener {
+public class MetricsListener extends AbstractListener {
 
-	/** The database. */
-	private final EbeanServer database;
-
+	private final BanRecordManager banRecordManager;
 	private final Metrics metrics;
 
 	/** The number of bans pardoned since the server started. */
@@ -55,6 +56,15 @@ public class MetricsListener implements Listener {
 	/** The total number of temporary bans made by this server. */
 	private int totalTemporaryBans;
 
+	public MetricsListener(Plugin plugin, PluginManager pluginManager, BanRecordManager banRecordManager) throws IOException {
+		super(plugin, pluginManager);
+		this.banRecordManager = banRecordManager;
+		this.metrics = new Metrics(plugin);
+		this.setInitialValues();
+		this.setupCustomMetrics();
+		this.metrics.start();
+	}
+
 	/**
 	 * Instantiates a new metrics listener.
 	 * 
@@ -63,14 +73,8 @@ public class MetricsListener implements Listener {
 	 * @throws IOException
 	 *           Signals that an I/O exception has occurred.
 	 */
-	public MetricsListener(final BanHammer plugin) throws IOException {
-		this.database = plugin.getDatabase();
-		plugin.getServer().getPluginManager().registerEvents(this, plugin);
-		this.metrics = new Metrics(plugin);
-		this.setInitialValues();
-		this.setupCustomMetrics();
-		this.metrics.start();
-	}
+
+
 
 	/**
 	 * When a player is banned, increment the statistics.
@@ -116,9 +120,20 @@ public class MetricsListener implements Listener {
 	 * Sets the initial values to report with Metrics.
 	 */
 	private void setInitialValues() {
-		//this.totalPermanentBans = BanRecord.getPermanentBanCount(this.database);
-		//this.totalTemporaryBans = BanRecord.getTemporaryBanCount(this.database);
-		//this.totalPardonedBans = BanRecord.getPardonedBanCount(this.database);
+		for (BanRecord record : banRecordManager.list()) {
+			if (record.getState() == BanRecord.State.PARDONED) {
+			 	this.totalPardonedBans++;
+				continue;
+			}
+			switch (record.getType()) {
+				case PERMANENT:
+					this.totalPermanentBans++;
+					break;
+				case TEMPORARY:
+					this.totalTemporaryBans++;
+					break;
+			}
+		}
 	}
 
 	/*

@@ -42,6 +42,7 @@ import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.event.AliasBannedPlayerListener;
 import name.richardson.james.bukkit.banhammer.ban.event.BannedPlayerListener;
 import name.richardson.james.bukkit.banhammer.ban.event.PlayerNotifier;
+import name.richardson.james.bukkit.banhammer.metrics.MetricsListener;
 import name.richardson.james.bukkit.banhammer.utilities.command.matcher.*;
 
 @Permissions(permissions = {BanHammer.PLUGIN_PERMISSION_NAME, BanHammer.NOTIFY_PERMISSION_NAME})
@@ -92,9 +93,15 @@ public final class BanHammer extends AbstractDatabasePlugin {
 			this.loadManagers();
 			this.registerCommands();
 			this.registerListeners();
+			this.setupMetrics();
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void setupMetrics()
+	throws IOException {
+		new MetricsListener(this, this.getServer().getPluginManager(), getBanRecordManager());
 	}
 
 	/**
