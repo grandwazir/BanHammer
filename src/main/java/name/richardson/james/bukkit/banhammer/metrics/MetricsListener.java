@@ -65,23 +65,6 @@ public class MetricsListener extends AbstractListener {
 		this.metrics.start();
 	}
 
-	/**
-	 * Instantiates a new metrics listener.
-	 * 
-	 * @param plugin
-	 *          the plugin that this listener belongs to.
-	 * @throws IOException
-	 *           Signals that an I/O exception has occurred.
-	 */
-
-
-
-	/**
-	 * When a player is banned, increment the statistics.
-	 * 
-	 * @param event
-	 *          the event
-	 */
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerBanned(final BanHammerPlayerBannedEvent event) {
 		switch (event.getRecord().getType()) {
@@ -96,12 +79,6 @@ public class MetricsListener extends AbstractListener {
 		}
 	}
 
-	/**
-	 * When a player is pardoned, increment the statistics.
-	 * 
-	 * @param event
-	 *          the event
-	 */
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerPardoned(final BanHammerPlayerPardonedEvent event) {
 		this.pardonedBans++;
@@ -116,9 +93,6 @@ public class MetricsListener extends AbstractListener {
 		}
 	}
 
-	/**
-	 * Sets the initial values to report with Metrics.
-	 */
 	private void setInitialValues() {
 		for (BanRecord record : banRecordManager.list()) {
 			if (record.getState() == BanRecord.State.PARDONED) {
@@ -136,13 +110,6 @@ public class MetricsListener extends AbstractListener {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * name.richardson.james.bukkit.utilities.metrics.AbstractMetricsListener#
-	 * setupCustomMetrics()
-	 */
 	private void setupCustomMetrics() {
 
 		// Create a graph to show the total amount of kits issued.

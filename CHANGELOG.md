@@ -1,5 +1,6 @@
 # Changelog for BanHammer (v2.2.6-SNAPSHOT)
 
+2013-08-13 20:29:00 +0100    import clean up (James Richardson)  
 2013-08-13 20:26:25 +0100    finished final refactor (for now) (James Richardson)  
 2013-08-13 19:38:57 +0100    final refactoring pass (James Richardson)  
 2013-08-12 19:34:36 +0100    fix audit command always using the name of the commandsender (James Richardson)  

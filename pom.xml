@@ -21,6 +21,10 @@
       <id>my-repo</id>
       <url>http://repository.james.richardson.name/releases</url>
     </repository>
+    <repository>
+       <id>Plugin Metrics</id>
+       <url>http://repo.mcstats.org/content/repositories/public</url>
+    </repository>
   </repositories>
 
   <dependencies>
@@ -33,6 +37,12 @@
            <groupId>name.richardson.james.bukkit</groupId>
            <artifactId>alias</artifactId>
            <version>1.4.0-SNAPSHOT</version>
+     </dependency>
+     <dependency>
+          <groupId>org.mcstats.bukkit</groupId>
+          <artifactId>metrics</artifactId>
+          <version>R6</version>
+          <scope>compile</scope>
      </dependency>
   </dependencies>
 
@@ -53,6 +63,7 @@
                   <artifactSet>
                     <includes>
                       <include>name.richardson.james.bukkit:bukkit-utilities</include>
+                      <include>org.mcstats.bukkit:metrics</include>
                     </includes>
                   </artifactSet>
                   <relocations>
@@ -60,6 +71,10 @@
                       <pattern>name.richardson.james.bukkit.utilities</pattern>
                       <shadedPattern>name.richardson.james.bukkit.banhammer.utilities</shadedPattern>
                     </relocation>
+                     <relocation>
+                         <pattern>org.mcstats.bukkit</pattern>
+                         <shadedPattern>name.richardson.james.bukkit.banhammer.utilities.metrics</shadedPattern>
+                     </relocation>
                   </relocations>
                   <minimizeJar>true</minimizeJar>
                 </configuration>
