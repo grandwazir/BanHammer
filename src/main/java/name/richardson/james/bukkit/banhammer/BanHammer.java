@@ -136,7 +136,6 @@ public final class BanHammer extends AbstractDatabasePlugin {
 		PlayerRecordMatcher bannedPlayerMatcher = new PlayerRecordMatcher(getPlayerRecordManager(), PlayerRecordManager.PlayerStatus.BANNED);
 		PlayerRecordMatcher creatorPlayerMatcher = new PlayerRecordMatcher(getPlayerRecordManager(), PlayerRecordManager.PlayerStatus.CREATOR);
 		OnlinePlayerMatcher onlinePlayerMatcher = new OnlinePlayerMatcher(getServer());
-		BanLimitMatcher banLimitMatcher = new BanLimitMatcher(configuration.getBanLimits().keySet());
 		// create the commands
 		Set<Command> commands = new HashSet<Command>();
 		AbstractCommand command = new AuditCommand(getPermissionManager(), getPlayerRecordManager(), getBanRecordManager());
@@ -144,7 +143,6 @@ public final class BanHammer extends AbstractDatabasePlugin {
 		commands.add(command);
 		command = new BanCommand(getPermissionManager(), this.getServer().getPluginManager(), getPlayerRecordManager(), configuration.getBanLimits(), configuration.getImmunePlayers());
 		command.addMatcher(onlinePlayerMatcher);
-		command.addMatcher(banLimitMatcher);
 		commands.add(command);
 		getCommand("ban").setExecutor(new FallthroughCommandInvoker(command));
 		command = new CheckCommand(getPermissionManager(), getPlayerRecordManager());

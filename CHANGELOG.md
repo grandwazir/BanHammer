@@ -1,5 +1,7 @@
 # Changelog for BanHammer (v2.2.6-SNAPSHOT)
 
+2013-08-13 20:51:44 +0100    register history command (James Richardson)  
+2013-08-13 20:46:06 +0100    fix shading conflict when implementing metrics (James Richardson)  
 2013-08-13 20:29:00 +0100    import clean up (James Richardson)  
 2013-08-13 20:26:25 +0100    finished final refactor (for now) (James Richardson)  
 2013-08-13 19:38:57 +0100    final refactoring pass (James Richardson)  
