@@ -30,6 +30,7 @@ import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
 import name.richardson.james.bukkit.utilities.formatters.colours.ColourScheme;
+import name.richardson.james.bukkit.utilities.formatters.localisation.LocalisedChoiceFormatter;
 import name.richardson.james.bukkit.utilities.permissions.PermissionManager;
 import name.richardson.james.bukkit.utilities.permissions.Permissions;
 
@@ -39,10 +40,15 @@ public class LimitsCommand extends AbstractCommand {
 	public static final String PERMISSION_ALL = "banhammer.limits";
 
 	private final Map<String, Long> limits;
+	private final LocalisedChoiceFormatter choiceFormatter = new LocalisedChoiceFormatter();
 
 	public LimitsCommand(PermissionManager permissionManager,  Map<String, Long> limits) {
 		super(permissionManager);
 		this.limits = limits;
+		this.choiceFormatter.setMessage("limits-header");
+		this.choiceFormatter.setLimits(0, 1, 2);
+		this.choiceFormatter.setFormats("no-limits", "one-limit", "many-limits");
+		this.choiceFormatter.setArguments(limits.size());
 	}
 
 	@Override
@@ -54,6 +60,7 @@ public class LimitsCommand extends AbstractCommand {
 				if (context.getCommandSender().hasPermission(BanCommand.PERMISSION_ALL + "." + limit.getKey())) colour = ChatColor.GREEN;
 				messages.add(colour + getMessage("limits-list-item", limit.getKey(), TimeFormatter.millisToLongDHMS(limit.getValue())));
 			}
+			context.getCommandSender().sendMessage(choiceFormatter.getColouredMessage(ColourScheme.Style.HEADER));
 			context.getCommandSender().sendMessage(StringUtils.join(messages, ", "));
 		} else {
 			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "no-permission"));
