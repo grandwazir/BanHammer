@@ -24,14 +24,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import com.avaje.ebean.EbeanServer;
+import org.mcstats.Metrics;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerBannedEvent;
 import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
-import name.richardson.james.bukkit.utilities.metrics.Metrics;
-import name.richardson.james.bukkit.utilities.metrics.Metrics.Graph;
-import name.richardson.james.bukkit.utilities.metrics.Metrics.Plotter;
 
 public class MetricsListener implements Listener {
 
@@ -134,40 +131,40 @@ public class MetricsListener implements Listener {
 	private void setupCustomMetrics() {
 
 		// Create a graph to show the total amount of kits issued.
-		final Graph graph = this.metrics.createGraph("Realtime Ban Statistics");
-		graph.addPlotter(new Plotter("Permanent bans") {
+		final Metrics.Graph graph = this.metrics.createGraph("Realtime Ban Statistics");
+		graph.addPlotter(new Metrics.Plotter("Permanent bans") {
 			@Override
 			public int getValue() {
 				return MetricsListener.this.permenantBans;
 			}
 		});
-		graph.addPlotter(new Plotter("Temporary bans") {
+		graph.addPlotter(new Metrics.Plotter("Temporary bans") {
 			@Override
 			public int getValue() {
 				return MetricsListener.this.temporaryBans;
 			}
 		});
-		graph.addPlotter(new Plotter("Pardoned bans") {
+		graph.addPlotter(new Metrics.Plotter("Pardoned bans") {
 			@Override
 			public int getValue() {
 				return MetricsListener.this.pardonedBans;
 			}
 		});
 		// Create a graph to show total ban statistics
-		final Graph graph2 = this.metrics.createGraph("Overall Ban Statistics");
-		graph2.addPlotter(new Plotter("Permanent bans") {
+		final Metrics.Graph graph2 = this.metrics.createGraph("Overall Ban Statistics");
+		graph2.addPlotter(new Metrics.Plotter("Permanent bans") {
 			@Override
 			public int getValue() {
 				return MetricsListener.this.totalPermanentBans;
 			}
 		});
-		graph2.addPlotter(new Plotter("Temporary bans") {
+		graph2.addPlotter(new Metrics.Plotter("Temporary bans") {
 			@Override
 			public int getValue() {
 				return MetricsListener.this.totalTemporaryBans;
 			}
 		});
-		graph2.addPlotter(new Plotter("Pardoned bans") {
+		graph2.addPlotter(new Metrics.Plotter("Pardoned bans") {
 			@Override
 			public int getValue() {
 				return MetricsListener.this.totalPardonedBans;
