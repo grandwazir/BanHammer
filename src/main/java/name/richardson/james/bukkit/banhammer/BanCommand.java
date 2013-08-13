@@ -106,7 +106,7 @@ public class BanCommand extends AbstractCommand {
 			String timeString = context.getFlag("t");
 			if (limits.containsKey(timeString)) {
 				time = limits.get(timeString);
-			} else{
+			} else {
 				time = TimeFormatter.parseTime(context.getFlag("t"));
 			}
 		} else {

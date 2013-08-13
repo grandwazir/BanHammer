@@ -54,7 +54,7 @@ public class PlayerNotifier extends AbstractListener implements Localised {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerBanned(final BanHammerPlayerBannedEvent event) {
-		logger.log(Level.FINEST, "Received " + event.getEventName());
+		logger.log(Level.FINER, "Received " + event.getEventName());
 		if (event.isSilent()) return;
 		BanRecordFormatter formatter = new BanRecordFormatter(event.getRecord());
 		server.broadcast(getColouredMessage(ColourScheme.Style.ERROR, "player-banned-by", event.getPlayerName(), event.getRecord().getCreator().getName()), BanHammer.NOTIFY_PERMISSION_NAME);
@@ -64,7 +64,7 @@ public class PlayerNotifier extends AbstractListener implements Localised {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerPardoned(final BanHammerPlayerPardonedEvent event) {
-		logger.log(Level.FINEST, "Received " + event.getEventName());
+		logger.log(Level.FINER, "Received " + event.getEventName());
 		if (event.isSilent()) return;
 		server.broadcast(getColouredMessage(ColourScheme.Style.INFO, "player-pardoned", event.getPlayerName()), BanHammer.NOTIFY_PERMISSION_NAME);
 	}

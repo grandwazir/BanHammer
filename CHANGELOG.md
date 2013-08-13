@@ -1,5 +1,6 @@
 # Changelog for BanHammer (v2.2.6-SNAPSHOT)
 
+2013-08-13 21:10:47 +0100    now parses limit names correctly (James Richardson)  
 2013-08-13 21:06:59 +0100    add new keys to testing suite (James Richardson)  
 2013-08-13 21:05:38 +0100    add choiceformatter to limits command (James Richardson)  
 2013-08-13 21:01:07 +0100    flag autocompletion broken at the moment remove it until it is fixed upstream (James Richardson)  
