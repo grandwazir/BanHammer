@@ -1,10 +1,9 @@
 package name.richardson.james.bukkit.banhammer.utilities.command.matcher;
 
-import java.util.*;
-
-import org.bukkit.event.Listener;
-
-import com.sun.xml.internal.bind.marshaller.MinimumEscapeHandler;
+import java.util.Collections;
+import java.util.Locale;
+import java.util.Set;
+import java.util.TreeSet;
 
 import name.richardson.james.bukkit.utilities.command.matcher.Matcher;
 
