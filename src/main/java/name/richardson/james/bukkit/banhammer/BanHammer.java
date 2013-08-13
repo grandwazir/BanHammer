@@ -150,6 +150,9 @@ public final class BanHammer extends AbstractDatabasePlugin {
 		command = new CheckCommand(getPermissionManager(), getPlayerRecordManager());
 		command.addMatcher(bannedPlayerMatcher);
 		commands.add(command);
+		command = new HistoryCommand(getPermissionManager(), getPlayerRecordManager());
+		command.addMatcher(playerMatcher);
+		commands.add(command);
 		command = new ExportCommand(getPermissionManager(), getPlayerRecordManager(), getServer());
 		commands.add(command);
 		command = new ImportCommand(getPermissionManager(), getPlayerRecordManager(), getServer());
