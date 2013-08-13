@@ -103,7 +103,12 @@ public class BanCommand extends AbstractCommand {
 
 	private void setExpiryTime(CommandContext context) {
 		if (context.hasFlag("t")) {
-			time = TimeFormatter.parseTime(context.getFlag("t"));
+			String timeString = context.getFlag("t");
+			if (limits.containsKey(timeString)) {
+				time = limits.get(timeString);
+			} else{
+				time = TimeFormatter.parseTime(context.getFlag("t"));
+			}
 		} else {
 			time = 0;
 		}

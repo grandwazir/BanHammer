@@ -1,5 +1,8 @@
 # Changelog for BanHammer (v2.2.6-SNAPSHOT)
 
+2013-08-13 21:06:59 +0100    add new keys to testing suite (James Richardson)  
+2013-08-13 21:05:38 +0100    add choiceformatter to limits command (James Richardson)  
+2013-08-13 21:01:07 +0100    flag autocompletion broken at the moment remove it until it is fixed upstream (James Richardson)  
 2013-08-13 20:51:44 +0100    register history command (James Richardson)  
 2013-08-13 20:46:06 +0100    fix shading conflict when implementing metrics (James Richardson)  
 2013-08-13 20:29:00 +0100    import clean up (James Richardson)  
