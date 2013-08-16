@@ -29,14 +29,14 @@ public class BanRecordManager {
 	}
 
 	public List<BanRecord> list() {
-		return this.database.find(BanRecord.class).findList();
+		return this.database.find(BanRecord.class).setUseCache(true).findList();
 	}
 
 	public List<BanRecord> list(int limit) {
-		return this.database.find(BanRecord.class).setMaxRows(limit).findList();
+		return this.database.find(BanRecord.class).setUseCache(true).setMaxRows(limit).findList();
 	}
 
 	public int count() {
-		return this.database.find(BanRecord.class).findRowCount();
+		return this.database.find(BanRecord.class).setUseCache(true).setReadOnly(true).findRowCount();
 	}
 }
