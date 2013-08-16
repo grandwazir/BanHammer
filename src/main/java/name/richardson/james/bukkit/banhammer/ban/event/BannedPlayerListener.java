@@ -70,6 +70,7 @@ public class BannedPlayerListener extends AbstractListener implements Localised 
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onPlayerLogin(final AsyncPlayerPreLoginEvent event) {
+		if (!server.getOnlineMode()) return;
 		LOGGER.log(Level.FINER, "Received " + event.getEventName());
 		final String playerName = event.getName();
 		if (this.isPlayerBanned(playerName)) {
@@ -81,6 +82,7 @@ public class BannedPlayerListener extends AbstractListener implements Localised 
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onPlayerLogin(final PlayerLoginEvent event) {
+		if (server.getOnlineMode()) return;
 		LOGGER.log(Level.FINER, "Received " + event.getEventName());
 		final String playerName = event.getPlayer().getName();
 		if (this.isPlayerBanned(playerName)) {

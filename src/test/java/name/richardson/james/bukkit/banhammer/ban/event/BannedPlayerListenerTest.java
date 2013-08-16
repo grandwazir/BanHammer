@@ -99,8 +99,10 @@ public class BannedPlayerListenerTest extends TestCase {
 		when(player.getName()).thenReturn("frank");
 		PlayerLoginEvent playerLoginEvent = new PlayerLoginEvent(player, "", null);
 		AsyncPlayerPreLoginEvent asyncPlayerPreLoginEvent = new AsyncPlayerPreLoginEvent("frank", null);
+		when(server.getOnlineMode()).thenReturn(false);
 		listener.onPlayerLogin(playerLoginEvent);
 		Assert.assertEquals("Player should be allowed to login!", playerLoginEvent.getResult(), PlayerLoginEvent.Result.ALLOWED);
+		when(server.getOnlineMode()).thenReturn(true);
 		listener.onPlayerLogin(asyncPlayerPreLoginEvent);
 		Assert.assertEquals("Player should be allowed to login!", asyncPlayerPreLoginEvent.getLoginResult(), AsyncPlayerPreLoginEvent.Result.ALLOWED);
 		verify(playerRecord, times(2)).isBanned();
@@ -118,8 +120,10 @@ public class BannedPlayerListenerTest extends TestCase {
 		when(playerRecordManager.find(anyString())).thenReturn(playerRecord);
 		PlayerLoginEvent playerLoginEvent = new PlayerLoginEvent(player, "", null);
 		AsyncPlayerPreLoginEvent asyncPlayerPreLoginEvent = new AsyncPlayerPreLoginEvent("frank", null);
+		when(server.getOnlineMode()).thenReturn(false);
 		listener.onPlayerLogin(playerLoginEvent);
 		Assert.assertEquals("Player should not be allowed to login!", PlayerLoginEvent.Result.KICK_BANNED, playerLoginEvent.getResult());
+		when(server.getOnlineMode()).thenReturn(true);
 		listener.onPlayerLogin(asyncPlayerPreLoginEvent);
 		Assert.assertEquals("Player should not be allowed to login!", AsyncPlayerPreLoginEvent.Result.KICK_BANNED, asyncPlayerPreLoginEvent.getLoginResult());
 		verify(playerRecord, times(2)).isBanned();
@@ -132,7 +136,9 @@ public class BannedPlayerListenerTest extends TestCase {
 		PlayerLoginEvent playerLoginEvent = new PlayerLoginEvent(player, "", null);
 		AsyncPlayerPreLoginEvent asyncPlayerPreLoginEvent = new AsyncPlayerPreLoginEvent("frank", null);
 		listener.onPlayerLogin(playerLoginEvent);
+		when(server.getOnlineMode()).thenReturn(false);
 		Assert.assertEquals("Player should be allowed to login!", playerLoginEvent.getResult(), PlayerLoginEvent.Result.ALLOWED);
+		when(server.getOnlineMode()).thenReturn(true);
 		listener.onPlayerLogin(asyncPlayerPreLoginEvent);
 		Assert.assertEquals("Player should be allowed to login!", asyncPlayerPreLoginEvent.getLoginResult(), AsyncPlayerPreLoginEvent.Result.ALLOWED);
 	}

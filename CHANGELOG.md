@@ -1,5 +1,7 @@
-# Changelog for BanHammer (v2.2.6-SNAPSHOT)
+# Changelog for BanHammer (v2.3.0-SNAPSHOT)
 
+2013-08-13 21:20:14 +0100    change release number (James Richardson)  
+2013-08-13 21:19:14 +0100    ready for beta release (James Richardson)  
 2013-08-13 21:10:47 +0100    now parses limit names correctly (James Richardson)  
 2013-08-13 21:06:59 +0100    add new keys to testing suite (James Richardson)  
 2013-08-13 21:05:38 +0100    add choiceformatter to limits command (James Richardson)  
