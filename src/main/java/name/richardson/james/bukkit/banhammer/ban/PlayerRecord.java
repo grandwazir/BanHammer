@@ -32,7 +32,6 @@ import com.avaje.ebean.validation.NotNull;
 
 @Entity()
 @Table(name = "banhammer_players")
-@CacheStrategy(readOnly = false, useBeanCache = true, warmingQuery ="order by id")
 public class PlayerRecord {
 
 	/** The bans. */

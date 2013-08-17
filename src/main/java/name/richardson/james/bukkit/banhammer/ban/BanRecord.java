@@ -25,7 +25,6 @@ import com.avaje.ebean.annotation.CacheStrategy;
 import com.avaje.ebean.validation.NotNull;
 
 @Entity()
-@CacheStrategy(readOnly = false, useBeanCache = true, warmingQuery ="order by id")
 @Table(name = "banhammer_bans")
 public class BanRecord {
 
