@@ -61,17 +61,17 @@ public class PlayerRecordManager {
 	public PlayerRecord find(String playerName) {
 		LOGGER.log(Level.FINER, "Finding PlayerRecord for " + playerName);
 		try {
-			return database.find(PlayerRecord.class).setUseCache(true).where().ieq("name", playerName).findUnique();
+			return database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
 		} catch (PersistenceException e) {
 			this.removeDuplicates(playerName);
-			return database.find(PlayerRecord.class).setUseCache(true).where().ieq("name", playerName).findUnique();
+			return database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
 		}
 	}
 
 	public List<PlayerRecord> list(String playerName, PlayerStatus status) {
-		List<PlayerRecord> records = database.find(PlayerRecord.class).setUseCache(true).setReadOnly(true).where().istartsWith("name", playerName).findList();
 		switch (status) {
 			case BANNED: {
+				List<PlayerRecord> records = database.find(PlayerRecord.class).where().istartsWith("name", playerName).findList();
 				ListIterator<PlayerRecord> i = records.listIterator();
 				while (i.hasNext()) {
 					PlayerRecord record = i.next();
@@ -80,6 +80,7 @@ public class PlayerRecordManager {
 				}
 				return records;
 			} case CREATOR: {
+				List<PlayerRecord> records = database.find(PlayerRecord.class).where().istartsWith("name", playerName).findList();
 				ListIterator<PlayerRecord> i = records.listIterator();
 				while (i.hasNext()) {
 					PlayerRecord record = i.next();
@@ -88,14 +89,14 @@ public class PlayerRecordManager {
 				}
 				return records;
 			} default: {
-				return records;
+				return database.find(PlayerRecord.class).where().istartsWith("name", playerName).findList();
 			}
 		}
 	}
 
 	public List<PlayerRecord> list() {
 		LOGGER.log(Level.FINER, "Returning list containing all PlayerRecords.");
-		return database.find(PlayerRecord.class).setUseCache(true).setReadOnly(true).findList();
+		return database.find(PlayerRecord.class).findList();
 	}
 
 	public void save(PlayerRecord record) {
@@ -118,7 +119,7 @@ public class PlayerRecordManager {
 	 */
 	private void removeDuplicates(String playerName) {
 		LOGGER.log(Level.WARNING, "duplicate-record-found");
-		final List<PlayerRecord> records = database.find(PlayerRecord.class).setUseCache(true).where().ieq("name", playerName).findList();
+		final List<PlayerRecord> records = database.find(PlayerRecord.class).where().ieq("name", playerName).findList();
 		for (final PlayerRecord record : records) {
 			if ((record.getCreatedBans().size() == 0) && (record.getBans().size() == 0)) {
 				this.delete(record);

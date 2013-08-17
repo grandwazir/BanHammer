@@ -23,9 +23,6 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.logging.Level;
 
-import com.avaje.ebean.Ebean;
-import com.avaje.ebean.cache.ServerCacheManager;
-
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.Command;
 import name.richardson.james.bukkit.utilities.command.HelpCommand;

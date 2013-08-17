@@ -1,6 +1,5 @@
 # Changelog for BanHammer (v2.3.0-SNAPSHOT)
 
-2013-08-16 23:15:34 +0100    related to [#86](https://github.com/grandwazir/BanHammer/ban-hammer/issues/86) prevent checking if a player is banned twice (James Richardson)  
 2013-08-13 21:20:14 +0100    change release number (James Richardson)  
 2013-08-13 21:19:14 +0100    ready for beta release (James Richardson)  
 2013-08-13 21:10:47 +0100    now parses limit names correctly (James Richardson)  
