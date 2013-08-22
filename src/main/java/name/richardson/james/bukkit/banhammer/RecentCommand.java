@@ -19,28 +19,32 @@ package name.richardson.james.bukkit.banhammer;
 
 import java.util.List;
 
+import org.bukkit.permissions.Permissible;
+
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.formatters.colours.ColourScheme;
-import name.richardson.james.bukkit.utilities.permissions.PermissionManager;
-import name.richardson.james.bukkit.utilities.permissions.Permissions;
+import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
+import name.richardson.james.bukkit.utilities.formatters.DefaultColourFormatter;
+import name.richardson.james.bukkit.utilities.localisation.Localisation;
+import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
-import name.richardson.james.bukkit.banhammer.ban.BanRecordFormatter;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 
-@Permissions(permissions = {RecentCommand.PERMISSION_ALL})
 public class RecentCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.recent";
-	public static final int DEFAULT_LIMIT = 5;
+
+	private static final int DEFAULT_LIMIT = 5;
+	private static final String NO_PERMISSION_KEY = "no-permission";
 
 	private final BanRecordManager banRecordManager;
+	private final Localisation localisation = new ResourceBundleByClassLocalisation(RecentCommand.class);
+	private final ColourFormatter colourFormatter = new DefaultColourFormatter();
 
 	private int count;
 
-	public RecentCommand(PermissionManager permissionManager, BanRecordManager banRecordManager) {
-		super(permissionManager);
+	public RecentCommand(BanRecordManager banRecordManager) {
 		this.banRecordManager = banRecordManager;
 	}
 
@@ -50,17 +54,26 @@ public class RecentCommand extends AbstractCommand {
 			setLimit(context);
 			List<BanRecord> bans = banRecordManager.list(count);
 			for (BanRecord ban : bans) {
-				BanRecordFormatter formatter = new BanRecordFormatter(ban);
+				BanRecord.BanRecordFormatter formatter = ban.getFormatter();
 				context.getCommandSender().sendMessage(formatter.getMessages());
 			}
 		} else {
-			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "no-permission"));
+			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(NO_PERMISSION_KEY), ColourFormatter.FormatStyle.ERROR));
 		}
 	}
 
+	@Override
+	public boolean isAuthorised(Permissible permissible) {
+		if(permissible.hasPermission(PERMISSION_ALL)) return true;
+		return false;
+	}
+
 	private void setLimit(CommandContext context) {
-		count = DEFAULT_LIMIT;
-		if (context.has(0)) count = context.getInt(0);
+		try {
+			count = Integer.parseInt(context.getString(0));
+		} catch (NumberFormatException e) {
+			count = DEFAULT_LIMIT;
+		}
 	}
 
 }

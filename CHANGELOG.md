@@ -1,5 +1,10 @@
 # Changelog for BanHammer (v2.3.0-SNAPSHOT)
 
+2013-08-17 10:06:43 +0100    another go at [#86](https://github.com/grandwazir/BanHammer/ban-hammer/issues/86) disable L2 database cache (James Richardson)  
+2013-08-17 10:05:42 +0100    Revert "related to [#86](https://github.com/grandwazir/BanHammer/ban-hammer/issues/86), attempt to work around a bug in the underlying persistence library" (James Richardson)  
+2013-08-17 00:21:15 +0100    delete old manager tests far to brittle, found a much better way of doing this when writing Alias (James Richardson)  
+2013-08-17 00:11:24 +0100    related to [#86](https://github.com/grandwazir/BanHammer/ban-hammer/issues/86), attempt to work around a bug in the underlying persistence library if the cache is not explictly the ORM can throw NPEs occasionally. More details at https://groups.google.com/forum/#!topic/ebean/XRzkdNyzYkU (James Richardson)  
+2013-08-16 23:15:34 +0100    related to [#86](https://github.com/grandwazir/BanHammer/ban-hammer/issues/86) prevent checking if a player is banned twice (James Richardson)  
 2013-08-13 21:20:14 +0100    change release number (James Richardson)  
 2013-08-13 21:19:14 +0100    ready for beta release (James Richardson)  
 2013-08-13 21:10:47 +0100    now parses limit names correctly (James Richardson)  

@@ -20,41 +20,47 @@ package name.richardson.james.bukkit.banhammer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.plugin.PluginManager;
+import org.bukkit.permissions.Permissible;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.formatters.colours.ColourScheme;
-import name.richardson.james.bukkit.utilities.permissions.PermissionManager;
-import name.richardson.james.bukkit.utilities.permissions.Permissions;
+import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
+import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
+import name.richardson.james.bukkit.utilities.formatters.DefaultColourFormatter;
+import name.richardson.james.bukkit.utilities.localisation.Localisation;
+import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
+import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
 
-@Permissions(permissions = {PurgeCommand.PERMISSION_ALL, PurgeCommand.PERMISSION_OWN, PurgeCommand.PERMISSION_OTHERS})
 public class PurgeCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.purge";
 	public static final String PERMISSION_OWN = "banhammer.purge.own";
 	public static final String PERMISSION_OTHERS = "banhammer.purge.others";
 
+	private static final String BANS_PURGED_KEY = "bans-purged";
+	private static final String NO_PERMISSION_KEY = "no-permission";
+	private static final String MUST_SPECIFY_PLAYER_KEY = "must-specify-player";
+	private static final String PLAYER_HAS_NEVER_BEEN_BANNED_KEY = "player-has-never-been-banned";
+
 	private final BanRecordManager banRecordManager;
-	private final BanCountChoiceFormatter choiceFormatter;
-	private final PluginManager pluginManager;
+	private final ChoiceFormatter choiceFormatter;
 	private final PlayerRecordManager playerRecordManager;
+	private final Localisation localisation = new ResourceBundleByClassLocalisation(PurgeCommand.class);
+	private final ColourFormatter colourFormatter = new DefaultColourFormatter();
 
 	private String playerName;
 	private PlayerRecord playerRecord;
 
-	public PurgeCommand(PermissionManager permissionManager, PluginManager pluginManager, PlayerRecordManager playerRecordManager, BanRecordManager banRecordManager) {
-		super(permissionManager);
-		this.pluginManager = pluginManager;
+	public PurgeCommand(PlayerRecordManager playerRecordManager, BanRecordManager banRecordManager) {
 		this.playerRecordManager = playerRecordManager;
 		this.banRecordManager = banRecordManager;
 		this.choiceFormatter = new BanCountChoiceFormatter();
-		this.choiceFormatter.setMessage("bans-purged");
+		this.choiceFormatter.setMessage(colourFormatter.format(localisation.getMessage(BANS_PURGED_KEY), ColourFormatter.FormatStyle.INFO));
 	}
 
 	@Override
@@ -73,17 +79,24 @@ public class PurgeCommand extends AbstractCommand {
 			}
 			this.choiceFormatter.setArguments(records.size(), playerName);
 			banRecordManager.delete(records);
-			context.getCommandSender().sendMessage(this.choiceFormatter.getColouredMessage(ColourScheme.Style.INFO));
+			context.getCommandSender().sendMessage(choiceFormatter.getMessage());
 		} else {
-			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "no-permission"));
+			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(NO_PERMISSION_KEY), ColourFormatter.FormatStyle.ERROR));
 		}
 	}
 
+	@Override
+	public boolean isAuthorised(Permissible permissible) {
+		if (permissible.hasPermission(PERMISSION_ALL)) return true;
+		if (permissible.hasPermission(PERMISSION_OTHERS)) return true;
+		if (permissible.hasPermission(PERMISSION_OWN)) return true;
+		return false;
+	}
+
 	private boolean setPlayerName(CommandContext context) {
-		playerName = null;
-		if (context.has(0)) playerName = context.getString(0);
+		playerName = context.getString(0);
 		if (playerName == null) {
-			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "must-specify-player"));
+			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(MUST_SPECIFY_PLAYER_KEY), ColourFormatter.FormatStyle.ERROR));
 		  return false;
 		} else {
 			return true;
@@ -93,7 +106,7 @@ public class PurgeCommand extends AbstractCommand {
 	private boolean setPlayerRecord(CommandContext context) {
 		playerRecord = playerRecordManager.find(playerName);
 		if (playerRecord == null || playerRecord.getBans().size() == 0) {
-			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.WARNING, "player-has-never-been-banned", playerName));
+			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(PLAYER_HAS_NEVER_BEEN_BANNED_KEY), ColourFormatter.FormatStyle.INFO, playerName));
 			return false;
 		} else {
 			return true;

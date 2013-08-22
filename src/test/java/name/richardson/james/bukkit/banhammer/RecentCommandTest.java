@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
 
 import junit.framework.TestCase;
 import org.junit.Before;
@@ -17,7 +16,6 @@ import name.richardson.james.bukkit.utilities.permissions.PermissionManager;
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -34,16 +32,16 @@ public class RecentCommandTest extends TestCase {
 	throws Exception {
 		when(player.hasPermission(RecentCommand.PERMISSION_ALL)).thenReturn(false);
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou are not allowed to do that.");
+		verify(player).sendMessage("§cYou are not allowed to view recent bans.");
 	}
 
 	@Test
 	public void testExecuteDefaultLimit()
 	throws Exception {
 		List<BanRecord> banRecords = getMockBans();
-		when(banRecordManager.list(RecentCommand.DEFAULT_LIMIT)).thenReturn(banRecords);
+		when(banRecordManager.list(5)).thenReturn(banRecords);
 		command.execute(commandContext);
-		verify(player, times(RecentCommand.DEFAULT_LIMIT)).sendMessage(any(String[].class));
+		verify(player, times(5)).sendMessage(any(String[].class));
 	}
 
 	@Test
@@ -51,11 +49,11 @@ public class RecentCommandTest extends TestCase {
 	throws Exception {
 		int count = 4;
 		when(commandContext.has(0)).thenReturn(true);
-		when(commandContext.getInt(0)).thenReturn(count);
+		when(commandContext.getString(0)).thenReturn("4");
 		List<BanRecord> banRecords = getMockBans();
 		when(banRecordManager.list(count)).thenReturn(banRecords);
 		command.execute(commandContext);
-		verify(player, times(RecentCommand.DEFAULT_LIMIT)).sendMessage(any(String[].class));
+		verify(player, times(5)).sendMessage(any(String[].class));
 	}
 
 	private BanRecord getMockBan(PlayerRecord playerRecord) {
@@ -67,6 +65,8 @@ public class RecentCommandTest extends TestCase {
 		when(ban.getPlayer()).thenReturn(playerRecord);
 		when(ban.getReason()).thenReturn("This is a test reason.");
 		when(ban.getType()).thenReturn(BanRecord.Type.PERMANENT);
+		BanRecord.BanRecordFormatter formatter = mock(BanRecord.BanRecordFormatter.class);
+		when(ban.getFormatter()).thenReturn(formatter);
 		return ban;
 	}
 
@@ -84,7 +84,7 @@ public class RecentCommandTest extends TestCase {
 		do {
 			BanRecord banRecord = getMockBan(playerRecord);
 			banRecords.add(banRecord);
-		} while (banRecords.size() != RecentCommand.DEFAULT_LIMIT);
+		} while (banRecords.size() != 5);
 		return banRecords;
 	}
 
@@ -93,7 +93,7 @@ public class RecentCommandTest extends TestCase {
 	throws Exception {
 		PermissionManager permissionManager = mock(PermissionManager.class);
 		banRecordManager = mock(BanRecordManager.class);
-		command = new RecentCommand(permissionManager, banRecordManager);
+		command = new RecentCommand(banRecordManager);
 		player = mock(Player.class);
 		when(player.getName()).thenReturn("frank");
 		when(player.hasPermission(RecentCommand.PERMISSION_ALL)).thenReturn(true);

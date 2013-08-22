@@ -40,7 +40,7 @@ public class HistoryCommandTest extends TestCase {
 		when(commandSender.getName()).thenReturn("console");
 		commandContext = mock(CommandContext.class);
 		when(commandContext.getCommandSender()).thenReturn(commandSender);
-		command = new HistoryCommand(permissionManager, playerRecordManager);
+		command = new HistoryCommand(playerRecordManager);
 	}
 
 	@Test
@@ -71,7 +71,7 @@ public class HistoryCommandTest extends TestCase {
 		when(playerRecordManager.find(anyString())).thenReturn(playerRecord);
 		when(commandSender.hasPermission(HistoryCommand.PERMISSION_OWN)).thenReturn(true);
 		command.execute(commandContext);
-		verify(commandSender, atLeastOnce()).sendMessage("§cYou are not allowed to do that.");
+		verify(commandSender, atLeastOnce()).sendMessage("§cYou may not view §ejoe§c's ban history.");
 	}
 
 	@Test
@@ -81,14 +81,14 @@ public class HistoryCommandTest extends TestCase {
 		when(playerRecordManager.find(anyString())).thenReturn(playerRecord);
 		when(commandSender.hasPermission(HistoryCommand.PERMISSION_OTHERS)).thenReturn(true);
 		command.execute(commandContext);
-		verify(commandSender, atLeastOnce()).sendMessage("§cYou are not allowed to do that.");
+		verify(commandSender, atLeastOnce()).sendMessage("§cYou may not view §econsole§c's ban history.");
 	}
 
 	@Test
 	public void testExecutePlayerHasNoRecord()
 	throws Exception {
 		command.execute(commandContext);
-		verify(commandSender).sendMessage("§e§aconsole§e has no ban history.");
+		verify(commandSender).sendMessage("§a§bconsole§a has never been banned.");
 	}
 
 	private BanRecord getMockBan(PlayerRecord playerRecord) {
@@ -100,6 +100,8 @@ public class HistoryCommandTest extends TestCase {
 		when(ban.getPlayer()).thenReturn(playerRecord);
 		when(ban.getReason()).thenReturn("This is a test reason.");
 		when(ban.getType()).thenReturn(BanRecord.Type.PERMANENT);
+		BanRecord.BanRecordFormatter formatter = mock(BanRecord.BanRecordFormatter.class);
+		when(ban.getFormatter()).thenReturn(formatter);
 		return ban;
 	}
 

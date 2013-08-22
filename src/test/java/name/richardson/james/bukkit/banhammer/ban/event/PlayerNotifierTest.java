@@ -3,10 +3,10 @@ package name.richardson.james.bukkit.banhammer.ban.event;
 import java.sql.Timestamp;
 
 import org.bukkit.Server;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 
 public class PlayerNotifierTest extends TestCase {
 
+	private CommandSender commandSender;
 	private PlayerNotifier notifier;
 	private Plugin plugin;
 	private PluginManager pluginManager;
@@ -28,9 +29,9 @@ public class PlayerNotifierTest extends TestCase {
 	@Test
 	public void testOnPlayerPardoned()
 	throws Exception {
-		BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(getBanRecord(), false);
+		BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(getBanRecord(), commandSender, false);
 		notifier.onPlayerPardoned(event);
-		verify(server).broadcast("§a§bfrank§a has been pardoned.", BanHammer.NOTIFY_PERMISSION_NAME);
+		verify(server).broadcast("§a§bfrank§a has been pardoned by §bnull§a.", BanHammer.NOTIFY_PERMISSION_NAME);
 	}
 
 	@Test
@@ -38,15 +39,13 @@ public class PlayerNotifierTest extends TestCase {
 	throws Exception {
 		BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(getBanRecord(), false);
 		notifier.onPlayerBanned(event);
-		verify(server).broadcast("§c§efrank§c has been banned by §efrank§c.", BanHammer.NOTIFY_PERMISSION_NAME);
-		verify(server).broadcast("§a- Reason: §bnull§a.", BanHammer.NOTIFY_PERMISSION_NAME);
-		verify(server).broadcast("§a- Length: §bPermanent§a.", BanHammer.NOTIFY_PERMISSION_NAME);
+		verify(server, times(3)).broadcast(anyString(), anyString());
 	}
 
 	@Test
 	public void testOnPlayerPardonedSilent()
 	throws Exception {
-		BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(getBanRecord(), true);
+		BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(getBanRecord(), commandSender, true);
 		notifier.onPlayerPardoned(event);
 		verify(server, never()).broadcast(anyString(), anyString());
 	}
@@ -69,13 +68,9 @@ public class PlayerNotifierTest extends TestCase {
 		when(banRecord.getPlayer()).thenReturn(playerRecord);
 		when(banRecord.getType()).thenReturn(BanRecord.Type.PERMANENT);
 		when(banRecord.getCreatedAt()).thenReturn(new Timestamp(0));
+		BanRecord.BanRecordFormatter formatter = mock(BanRecord.BanRecordFormatter.class);
+		when(banRecord.getFormatter()).thenReturn(formatter);
 		return banRecord;
-	}
-
-	@Test
-	public void testGetMessage()
-	throws Exception {
-		Assert.assertNotNull("Message not resolved correctly!", notifier.getMessage("header-label"));
 	}
 
 	@Before
@@ -84,6 +79,7 @@ public class PlayerNotifierTest extends TestCase {
 		plugin = mock(Plugin.class);
 		pluginManager = mock(PluginManager.class);
 		server = mock(Server.class);
+		commandSender = mock(CommandSender.class);
 		notifier = new PlayerNotifier(plugin, pluginManager, server);
 	}
 }

@@ -19,33 +19,40 @@ package name.richardson.james.bukkit.banhammer;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
+import org.bukkit.permissions.Permissible;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.formatters.colours.ColourScheme;
-import name.richardson.james.bukkit.utilities.permissions.PermissionManager;
-import name.richardson.james.bukkit.utilities.permissions.Permissions;
+import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
+import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
+import name.richardson.james.bukkit.utilities.formatters.DefaultColourFormatter;
+import name.richardson.james.bukkit.utilities.localisation.Localisation;
+import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
 
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
+import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
 
-@Permissions(permissions = {ImportCommand.PERMISSION_ALL})
 public class ImportCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.import";
-	private final BanCountChoiceFormatter choiceFormatter;
 
+	private static final String BANS_IMPORTED_KEY = "bans-imported";
+	private static final String NO_PERMISSION_KEY = "no-permission";
+	private static final String DEFAULT_BAN_IMPORT_REASON_KEY = "default-ban-import-reason";
+
+	private final ChoiceFormatter choiceFormatter;
 	private final PlayerRecordManager playerRecordManager;
 	private final Server server;
+	private final ColourFormatter colourFormatter = new DefaultColourFormatter();
+	private final Localisation localisation = new ResourceBundleByClassLocalisation(ImportCommand.class);
 
 	private String reason;
 
-	public ImportCommand(PermissionManager permissionManager, PlayerRecordManager playerRecordManager, Server server) {
-		super(permissionManager);
+	public ImportCommand(PlayerRecordManager playerRecordManager, Server server) {
 		this.playerRecordManager = playerRecordManager;
 		this.server = server;
 		this.choiceFormatter = new BanCountChoiceFormatter();
-		this.choiceFormatter.setMessage("bans-imported");
+		this.choiceFormatter.setMessage(colourFormatter.format(localisation.getMessage(BANS_IMPORTED_KEY), ColourFormatter.FormatStyle.INFO));
 	}
 
 	@Override
@@ -53,21 +60,31 @@ public class ImportCommand extends AbstractCommand {
 		if (isAuthorised(context.getCommandSender())) {
 			setReason(context);
 			for (OfflinePlayer player : this.server.getBannedPlayers()) {
-				playerRecordManager.new BannedPlayerBuilder().setPlayer(player.getName()).setCreator(context.getCommandSender().getName()).setReason(this.reason).save();
+				PlayerRecordManager.BannedPlayerBuilder builder = playerRecordManager.getBannedPlayerBuilder();
+				builder.setPlayer(player.getName());
+				builder.setCreator(context.getCommandSender().getName());
+				builder.setReason(this.reason);
+				builder.save();
 				player.setBanned(false);
 			}
 			choiceFormatter.setArguments(this.server.getBannedPlayers().size());
-			context.getCommandSender().sendMessage(choiceFormatter.getColouredMessage(ColourScheme.Style.INFO));
+			context.getCommandSender().sendMessage(choiceFormatter.getMessage());
 		} else {
-			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "no-permission"));
+			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(NO_PERMISSION_KEY), ColourFormatter.FormatStyle.ERROR));
 		}
+	}
+
+	@Override
+	public boolean isAuthorised(Permissible permissible) {
+		if (permissible.hasPermission(PERMISSION_ALL)) return true;
+		return false;
 	}
 
 	private void setReason(CommandContext context) {
 		if (context.has(0)) {
 			reason = context.getJoinedArguments(0);
 		} else {
-			reason = getMessage("default-ban-import-reason");
+			reason = localisation.getMessage(DEFAULT_BAN_IMPORT_REASON_KEY);
 		}
 	}
 

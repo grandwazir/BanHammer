@@ -36,7 +36,7 @@ public class ExportCommandTest extends TestCase {
 	public void testExecuteNoPermission()
 	throws Exception {
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou are not allowed to do that.");
+		verify(player).sendMessage("§cYou may not export bans.");
 	}
 
 	@Test
@@ -56,14 +56,13 @@ public class ExportCommandTest extends TestCase {
 	@Before
 	public void setUp()
 	throws Exception {
-		PermissionManager permissionManager = mock(PermissionManager.class);
 		playerRecordManager = mock(PlayerRecordManager.class);
 		server = mock(Server.class);
 		player = mock(Player.class);
 		when(player.getName()).thenReturn("frank");
 		commandContext = mock(CommandContext.class);
 		when(commandContext.getCommandSender()).thenReturn(player);
-		command = new ExportCommand(permissionManager, playerRecordManager, server);
+		command = new ExportCommand(playerRecordManager, server);
 	}
 
 }

@@ -28,7 +28,7 @@ public class LimitsCommandTest extends TestCase {
 	public void testExecuteNoPermission()
 	throws Exception {
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou are not allowed to do that.");
+		verify(player).sendMessage("§cYou may not view any limits.");
 	}
 
 	@Test
@@ -36,13 +36,14 @@ public class LimitsCommandTest extends TestCase {
 	throws Exception {
 		when(player.hasPermission(anyString())).thenReturn(true);
 		command.execute(commandContext);
+		verify(player).sendMessage("§dThere are a total of §b2 limits§d configured.");
 		verify(player).sendMessage("§atest (1 minute), §atest2 (10 seconds)");
 	}
 
 	private static Map<String, Long> getLimits() {
 		Map<String, Long> limits = new HashMap<String, Long>();
-		limits.put("test", 60000L);
-		limits.put("test2", 10000L);
+		limits.put("test", Long.valueOf(60000));
+		limits.put("test2", Long.valueOf(10000));
 		return limits;
 	}
 
@@ -50,12 +51,11 @@ public class LimitsCommandTest extends TestCase {
 	@Before
 	public void setUp()
 	throws Exception {
-		PermissionManager permissionManager = mock(PermissionManager.class);
 		player = mock(Player.class);
 		when(player.getName()).thenReturn("frank");
 		commandContext = mock(CommandContext.class);
 		when(commandContext.getCommandSender()).thenReturn(player);
-		command = new LimitsCommand(permissionManager, LimitsCommandTest.getLimits());
+		command = new LimitsCommand(LimitsCommandTest.getLimits());
 	}
 
 }

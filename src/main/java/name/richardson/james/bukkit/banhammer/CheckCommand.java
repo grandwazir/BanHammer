@@ -17,28 +17,35 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer;
 
-import org.bukkit.OfflinePlayer;
+import org.bukkit.permissions.Permissible;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.formatters.colours.ColourScheme;
-import name.richardson.james.bukkit.utilities.permissions.PermissionManager;
-import name.richardson.james.bukkit.utilities.permissions.Permissions;
+import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
+import name.richardson.james.bukkit.utilities.formatters.DefaultColourFormatter;
+import name.richardson.james.bukkit.utilities.localisation.Localisation;
+import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
 
-import name.richardson.james.bukkit.banhammer.ban.BanRecordFormatter;
+import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
-@Permissions(permissions = {"banhammer.check"})
 public class CheckCommand extends AbstractCommand {
 
+	public static final String PERMISSION_ALL = "banhammer.check";
+
+	private static final String NO_PERMISSION_KEY = "no-permission";
+	private static final String MUST_SPECIFY_PLAYER_KEY = "must-specify-player";
+	private static final String PLAYER_IS_NOT_BANNED_KEY = "player-is-not-banned";
+
+	private final ColourFormatter colourFormatter = new DefaultColourFormatter();
+	private final Localisation localisation = new ResourceBundleByClassLocalisation(CheckCommand.class);
 	private final PlayerRecordManager playerRecordManager;
 
-	private OfflinePlayer player;
+	private String playerName;
 	private PlayerRecord playerRecord;
 
-	public CheckCommand(PermissionManager permissionManager, PlayerRecordManager playerRecordManager) {
-		super(permissionManager);
+	public CheckCommand(PlayerRecordManager playerRecordManager) {
 		this.playerRecordManager = playerRecordManager;
 	}
 
@@ -47,24 +54,29 @@ public class CheckCommand extends AbstractCommand {
 		if (isAuthorised(context.getCommandSender())) {
 			if (!setPlayer(context)) return;
 			if (!setPlayerRecord(context)) return;
-			BanRecordFormatter banRecordFormatter = new BanRecordFormatter(playerRecord.getActiveBan());
+			BanRecord.BanRecordFormatter banRecordFormatter = playerRecord.getActiveBan().getFormatter();
 			context.getCommandSender().sendMessage(banRecordFormatter.getMessages());
 		} else {
-			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "no-permission"));
+			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(NO_PERMISSION_KEY), ColourFormatter.FormatStyle.ERROR));
 		}
 	}
 
+	@Override
+	public boolean isAuthorised(Permissible permissible) {
+		if (permissible.hasPermission(PERMISSION_ALL)) return true;
+		return false;
+	}
+
 	private boolean setPlayer(CommandContext context) {
-		player = null;
-		if (context.has(0) && context.getString(0).length() != 0) player = context.getOfflinePlayer(0);
-		if (player == null) context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "must-specify-player"));
-		return (player != null);
+		playerName = context.getString(0);
+		if (playerName == null) context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(MUST_SPECIFY_PLAYER_KEY), ColourFormatter.FormatStyle.ERROR));
+		return (playerName != null);
 	}
 
 	private boolean setPlayerRecord(CommandContext context) {
-		playerRecord = playerRecordManager.find(player.getName());
+		playerRecord = playerRecordManager.find(playerName);
 		if (playerRecord == null || !playerRecord.isBanned()) {
-			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.WARNING, "player-is-not-banned", player.getName()));
+			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(PLAYER_IS_NOT_BANNED_KEY), ColourFormatter.FormatStyle.INFO, playerName));
 			return false;
 		} else {
 			return true;

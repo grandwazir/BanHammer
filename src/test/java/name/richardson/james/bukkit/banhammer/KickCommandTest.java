@@ -27,15 +27,15 @@ public class KickCommandTest extends TestCase {
 	throws Exception {
 		when(player.hasPermission(anyString())).thenReturn(true);
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou must specify the name of a player!");
+		verify(player).sendMessage("§cYou must specify the name of an online player.");
 	}
 
 	@Test
 	public void testExecuteKickWithDefaultReason()
 	throws Exception {
 		when(player.hasPermission(anyString())).thenReturn(true);
-		when(commandContext.has(0)).thenReturn(true);
-		when(commandContext.getPlayer(0)).thenReturn(player);
+		when(commandContext.getString(0)).thenReturn("frank");
+		when(server.getPlayerExact("frank")).thenReturn(player);
 		command.execute(commandContext);
 		verify(player).kickPlayer("§cYou have been kicked by §efrank§c.\n\nReason: §eNo reason provided§c.");
 		verify(server).broadcast("§c§efrank§c has been kicked by §efrank§c.", BanHammer.NOTIFY_PERMISSION_NAME);
@@ -46,8 +46,8 @@ public class KickCommandTest extends TestCase {
 	public void testExecuteKickWithCustomReason()
 	throws Exception {
 		when(player.hasPermission(anyString())).thenReturn(true);
-		when(commandContext.has(0)).thenReturn(true);
-		when(commandContext.getPlayer(0)).thenReturn(player);
+		when(commandContext.getString(0)).thenReturn("frank");
+		when(server.getPlayerExact("frank")).thenReturn(player);
 		when(commandContext.has(1)).thenReturn(true);
 		when(commandContext.getJoinedArguments(1)).thenReturn("reason");
 		command.execute(commandContext);
@@ -61,18 +61,19 @@ public class KickCommandTest extends TestCase {
 	public void testExecuteNoPermission()
 	throws Exception {
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou are not allowed to do that.");
+		verify(player).sendMessage("§cYou may not kick other players.");
 	}
 
 	@Before
 	public void setUp()
 	throws Exception {
-		PermissionManager permissionManager = mock(PermissionManager.class);
 		server = mock(Server.class);
 		player = mock(Player.class);
 		when(player.getName()).thenReturn("frank");
 		commandContext = mock(CommandContext.class);
 		when(commandContext.getCommandSender()).thenReturn(player);
-		command = new KickCommand(permissionManager, server);
+		command = new KickCommand(server);
 	}
+
+
 }

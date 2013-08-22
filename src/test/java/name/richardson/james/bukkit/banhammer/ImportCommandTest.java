@@ -2,7 +2,6 @@ package name.richardson.james.bukkit.banhammer;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
@@ -34,7 +33,7 @@ public class ImportCommandTest extends TestCase {
 	public void testExecuteNoPermission()
 	throws Exception {
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou are not allowed to do that.");
+		verify(player).sendMessage("§cYou may not import bans.");
 	}
 
 	@Test
@@ -76,6 +75,6 @@ public class ImportCommandTest extends TestCase {
 		when(player.getName()).thenReturn("frank");
 		commandContext = mock(CommandContext.class);
 		when(commandContext.getCommandSender()).thenReturn(player);
-		command = new ImportCommand(permissionManager, playerRecordManager, server);
+		command = new ImportCommand(playerRecordManager, server);
 	}
 }

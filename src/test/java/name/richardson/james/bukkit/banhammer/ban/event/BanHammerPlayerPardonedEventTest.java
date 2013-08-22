@@ -1,6 +1,5 @@
 package name.richardson.james.bukkit.banhammer.ban.event;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +17,7 @@ public class BanHammerPlayerPardonedEventTest extends TestCase {
 	@Test
 	public void testGetHandlers()
 	throws Exception {
-		Assert.assertEquals("Handler lists should be set!", BanHammerPlayerPardonedEvent.getHandlerList(), event.getHandlers());
+		assertEquals("Handler lists should be set!", BanHammerPlayerPardonedEvent.getHandlerList(), event.getHandlers());
 	}
 
 	@Before
@@ -27,7 +26,7 @@ public class BanHammerPlayerPardonedEventTest extends TestCase {
 		BanRecord banRecord = mock(BanRecord.class);
 		PlayerRecord playerRecord = mock(PlayerRecord.class);
 		when(banRecord.getPlayer()).thenReturn(playerRecord);
-		event = new BanHammerPlayerPardonedEvent(banRecord, true);
+		event = new BanHammerPlayerPardonedEvent(banRecord, null, true);
 	}
 
 }

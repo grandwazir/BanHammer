@@ -14,9 +14,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import name.richardson.james.bukkit.utilities.formatters.colours.ColourScheme;
-import name.richardson.james.bukkit.utilities.formatters.localisation.ResourceBundles;
-
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
@@ -25,7 +22,7 @@ import static org.mockito.Mockito.*;
 
 public class BannedPlayerListenerTest extends TestCase {
 
-	private BannedPlayerListener listener;
+	private NormalBannedPlayerListener listener;
 	private PlayerRecordManager playerRecordManager;
 	private Server server;
 
@@ -36,45 +33,7 @@ public class BannedPlayerListenerTest extends TestCase {
 		PluginManager pluginManager = mock(PluginManager.class);
 		server = mock(Server.class);
 		playerRecordManager = mock(PlayerRecordManager.class);
-		listener = new BannedPlayerListener(plugin, pluginManager, server, playerRecordManager);
-	}
-
-	@Test
-	public void testGetColourScheme()
-	throws Exception {
-		assertNotNull("Class should have a colour scheme associated to it!", listener.getColourScheme());
-	}
-
-	@Test
-	public void testGetColouredMessage()
-	throws Exception {
-		assertTrue("Message does not appear to have a colour code within it!", listener.getColouredMessage(ColourScheme.Style.INFO, "banned-permanently").contains("§"));
-	}
-
-	@Test
-	public void testGetKickMessagePermanent() {
-		BanRecord banRecord = getExampleBanRecord();
-		when(banRecord.getType()).thenReturn(BanRecord.Type.PERMANENT);
-		Assert.assertEquals("Kick message is inconsistent!", listener.getKickMessage(banRecord), "§cYou have been permanently banned by §efrank§c.\n\nReason: §enull§c.");
-	}
-
-	@Test
-	public void testGetKickMessageTemporary() {
-		BanRecord banRecord = getExampleBanRecord();
-		when(banRecord.getType()).thenReturn(BanRecord.Type.TEMPORARY);
-		Assert.assertEquals("Kick message is inconsistent!", listener.getKickMessage(banRecord), "§cYou have been banned by §efrank§c until §enull§c.\n\nReason: §enull§c.");
-	}
-
-	@Test
-	public void testGetMessage()
-	throws Exception {
-		assertEquals("Message does not appear to have been translated!", listener.getMessage("banned-permanently"), ("You have been permanently banned by {1}.\n\nReason: {0}."));
-	}
-
-	@Test
-	public void testGetResourceBundle()
-	throws Exception {
-		Assert.assertEquals("Resource bundle should be the same as the Messages bundle!", listener.getResourceBundle(), ResourceBundles.MESSAGES.getBundle());
+		listener = new NormalBannedPlayerListener(plugin, pluginManager, server, playerRecordManager);
 	}
 
 	@Test

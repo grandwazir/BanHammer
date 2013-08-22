@@ -49,7 +49,7 @@ public class BanCommandTest extends TestCase {
 	public void testExecuteNoPlayerName()
 	throws Exception {
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou must specify the name of a player!");
+		verify(player).sendMessage("§cYou must specify the name of a player.");
 
 	}
 
@@ -58,7 +58,7 @@ public class BanCommandTest extends TestCase {
 		when(commandContext.has(0)).thenReturn(true);
 		when(commandContext.getString(0)).thenReturn("frank");
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou must specify a reason!");
+		verify(player).sendMessage("§cYou must specify a reason.");
 	}
 
 	@Test
@@ -70,7 +70,7 @@ public class BanCommandTest extends TestCase {
 		when(playerRecord.isBanned()).thenReturn(true);
 		doReturn(playerRecord).when(playerRecordManager).find("frank");
 		command.execute(commandContext);
-		verify(player).sendMessage("§e§afrank§e is already banned!");
+		verify(player).sendMessage("§c§efrank§c is already banned.");
 	}
 
 	@Test
@@ -84,7 +84,7 @@ public class BanCommandTest extends TestCase {
 		doReturn(playerRecord).when(playerRecordManager).find("frank");
 		when(player.hasPermission("banhammer.ban.test")).thenReturn(true);
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou are not allowed to do that.");
+		verify(player).sendMessage("§cYou may not ban §efrank§c.");
 		verify(player).hasPermission("banhammer.ban.test");
 	}
 
@@ -98,7 +98,7 @@ public class BanCommandTest extends TestCase {
 		PlayerRecord playerRecord = mock(PlayerRecord.class);
 		doReturn(playerRecord).when(playerRecordManager).find("grandwazir");
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou are not allowed to do that.");
+		verify(player).sendMessage("§cYou may not ban §egrandwazir§c.");
 		verify(player).hasPermission("banhammer.ban");
 	}
 
@@ -111,7 +111,7 @@ public class BanCommandTest extends TestCase {
 		doReturn(playerRecord).when(playerRecordManager).find("frank");
 		when(player.hasPermission("banhammer.ban")).thenReturn(true);
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou have banned §efrank§c.");
+		verify(player).sendMessage("§aYou have banned §bfrank§a.");
 		verify(pluginManager).callEvent(Matchers.<Event>any());
 	}
 
@@ -126,7 +126,7 @@ public class BanCommandTest extends TestCase {
 		doReturn(playerRecord).when(playerRecordManager).find("frank");
 		when(player.hasPermission("banhammer.ban.test")).thenReturn(true);
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou have banned §efrank§c.");
+		verify(player).sendMessage("§aYou have banned §bfrank§a.");
 		verify(pluginManager).callEvent(Matchers.<Event>any());
 	}
 
@@ -149,7 +149,7 @@ public class BanCommandTest extends TestCase {
 		field.set(null, server);
 		Permission permission = mock(Permission.class);
 		when(permissionManager.listPermissions()).thenReturn(Arrays.asList(permission));
-		command = new BanCommand(permissionManager, pluginManager, playerRecordManager, getLimits(), getImmunePlayers());
+		command = new BanCommand(pluginManager, playerRecordManager, getLimits(), getImmunePlayers());
 	}
 
 

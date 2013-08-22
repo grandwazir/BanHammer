@@ -23,32 +23,36 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
+import org.bukkit.permissions.Permissible;
 
 import org.apache.commons.lang.StringUtils;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
-import name.richardson.james.bukkit.utilities.formatters.colours.ColourScheme;
-import name.richardson.james.bukkit.utilities.formatters.localisation.LocalisedChoiceFormatter;
-import name.richardson.james.bukkit.utilities.permissions.PermissionManager;
-import name.richardson.james.bukkit.utilities.permissions.Permissions;
+import name.richardson.james.bukkit.utilities.formatters.*;
+import name.richardson.james.bukkit.utilities.localisation.Localisation;
+import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
 
-@Permissions(permissions = {LimitsCommand.PERMISSION_ALL})
+import name.richardson.james.bukkit.banhammer.utilities.formatters.BanLimitChoiceFormatter;
+
 public class LimitsCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.limits";
 
-	private final Map<String, Long> limits;
-	private final LocalisedChoiceFormatter choiceFormatter = new LocalisedChoiceFormatter();
+	private static final String HEADER_KEY = "header";
+	private static final String LIMIT_KEY = "limit";
+	private static final String NO_PERMISSION_KEY = "no-permission";
 
-	public LimitsCommand(PermissionManager permissionManager,  Map<String, Long> limits) {
-		super(permissionManager);
+	private final Map<String, Long> limits;
+	private final ChoiceFormatter choiceFormatter = new BanLimitChoiceFormatter();
+	private final Localisation localisation = new ResourceBundleByClassLocalisation(LimitsCommand.class);
+	private final ColourFormatter colourFormatter = new DefaultColourFormatter();
+	private final TimeFormatter timeFormatter = new PreciseDurationTimeFormatter();
+
+	public LimitsCommand(Map<String, Long> limits) {
 		this.limits = limits;
-		this.choiceFormatter.setMessage("limits-header");
-		this.choiceFormatter.setLimits(0, 1, 2);
-		this.choiceFormatter.setFormats("no-limits", "one-limit", "many-limits");
 		this.choiceFormatter.setArguments(limits.size());
+		this.choiceFormatter.setMessage(colourFormatter.format(localisation.getMessage(HEADER_KEY), ColourFormatter.FormatStyle.HEADER));
 	}
 
 	@Override
@@ -58,13 +62,20 @@ public class LimitsCommand extends AbstractCommand {
 			for (final Entry<String, Long> limit : this.limits.entrySet()) {
 				ChatColor colour = ChatColor.RED;
 				if (context.getCommandSender().hasPermission(BanCommand.PERMISSION_ALL + "." + limit.getKey())) colour = ChatColor.GREEN;
-				messages.add(colour + getMessage("limits-list-item", limit.getKey(), TimeFormatter.millisToLongDHMS(limit.getValue())));
+				String time = timeFormatter.getHumanReadableDuration(limit.getValue());
+				messages.add(colour + localisation.getMessage(LIMIT_KEY, limit.getKey(), time));
 			}
-			context.getCommandSender().sendMessage(choiceFormatter.getColouredMessage(ColourScheme.Style.HEADER));
+			context.getCommandSender().sendMessage(choiceFormatter.getMessage());
 			context.getCommandSender().sendMessage(StringUtils.join(messages, ", "));
 		} else {
-			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "no-permission"));
-		}
+			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(NO_PERMISSION_KEY), ColourFormatter.FormatStyle.ERROR));
+		}                                                              `
+	}
+
+	@Override
+	public boolean isAuthorised(Permissible permissible) {
+		if (permissible.hasPermission(PERMISSION_ALL)) return true;
+		return false;
 	}
 
 }

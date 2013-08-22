@@ -12,9 +12,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(JUnit4.class)
 public class BannedPlayerBuilderTest extends TestCase {
@@ -38,7 +36,7 @@ public class BannedPlayerBuilderTest extends TestCase {
 	@Test
 	public void testSetReason() throws Exception {
 		builder.setReason("fred");
-		Assert.assertSame("Reason is not consistent!", "fred", builder.getRecord().getReason());
+		assertSame("Reason is not consistent!", "fred", builder.getRecord().getReason());
 	}
 
 	@Test
@@ -54,27 +52,28 @@ public class BannedPlayerBuilderTest extends TestCase {
 	@Test
 	public void testSetExpiresTime() throws Exception {
 		builder.setExpiryTime(500);
-		Assert.assertTrue("Expiry time has not been offset correctly!", (builder.getRecord().getExpiresAt().getTime() - 500) == builder.getRecord().getCreatedAt().getTime());
+		assertTrue("Expiry time has not been offset correctly!", (builder.getRecord().getExpiresAt().getTime() - 500) == builder.getRecord().getCreatedAt().getTime());
 	}
 
 
 	@Test
 	public void testSetExpiresAt() throws Exception {
 		builder.setExpiresAt(new Timestamp(System.currentTimeMillis()));
-		Assert.assertNotNull("Expiry time has not been set!", builder.getRecord().getExpiresAt());
-		Assert.assertEquals("Expiry time has not been offset correctly!", builder.getRecord().getExpiresAt(), builder.getRecord().getCreatedAt());
+		assertNotNull("Expiry time has not been set!", builder.getRecord().getExpiresAt());
+		assertEquals("Expiry time has not been offset correctly!", builder.getRecord().getExpiresAt(), builder.getRecord().getCreatedAt());
 	}
 
 	@Test
 	public void testCreatedTime() throws Exception {
-		Assert.assertNotNull("Creation time should be set when object is created", builder.getRecord().getCreatedAt());
+		assertNotNull("Creation time should be set when object is created", builder.getRecord().getCreatedAt());
 	}
 
 	@Before
 	public void setUp() {
 		database = mock(EbeanServer.class);
 		manager = mock(PlayerRecordManager.class);
-		builder = manager.new BannedPlayerBuilder();
+		when(manager.getBannedPlayerBuilder()).thenCallRealMethod();
+		builder = manager.getBannedPlayerBuilder();
 	}
 
 }

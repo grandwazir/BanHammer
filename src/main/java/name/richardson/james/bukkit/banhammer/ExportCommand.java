@@ -18,32 +18,38 @@
 package name.richardson.james.bukkit.banhammer;
 
 import org.bukkit.Server;
+import org.bukkit.permissions.Permissible;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.formatters.colours.ColourScheme;
-import name.richardson.james.bukkit.utilities.formatters.localisation.LocalisedChoiceFormatter;
-import name.richardson.james.bukkit.utilities.permissions.PermissionManager;
-import name.richardson.james.bukkit.utilities.permissions.Permissions;
+import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
+import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
+import name.richardson.james.bukkit.utilities.formatters.DefaultColourFormatter;
+import name.richardson.james.bukkit.utilities.localisation.Localisation;
+import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
 
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
+import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
 
-@Permissions(permissions = {ExportCommand.PERMISSION_ALL})
 public class ExportCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.export";
 
+	private static final String BANS_EXPORTED_KEY = "bans-exported";
+	private static final String NO_PERMISSION_KEY = "no-permission";
+
 	private final PlayerRecordManager playerRecordManager;
 	private final Server server;
-	private final LocalisedChoiceFormatter choiceFormatter;
+	private final ChoiceFormatter choiceFormatter;
+	private final Localisation localisation = new ResourceBundleByClassLocalisation(ExportCommand.class);
+	private final ColourFormatter colourFormatter = new DefaultColourFormatter();
 
-	public ExportCommand(PermissionManager permissionManager, PlayerRecordManager playerRecordManager, Server server) {
-		super(permissionManager);
+	public ExportCommand(PlayerRecordManager playerRecordManager, Server server) {
 		this.playerRecordManager = playerRecordManager;
 		this.server = server;
 		this.choiceFormatter = new BanCountChoiceFormatter();
-		this.choiceFormatter.setMessage("bans-exported");
+		this.choiceFormatter.setMessage(colourFormatter.format(localisation.getMessage(BANS_EXPORTED_KEY), ColourFormatter.FormatStyle.INFO));
 	}
 
 	@Override
@@ -53,10 +59,16 @@ public class ExportCommand extends AbstractCommand {
 				this.server.getOfflinePlayer(playerRecord.getName()).setBanned(true);
 			}
 			this.choiceFormatter.setArguments(playerRecordManager.count());
-			context.getCommandSender().sendMessage(choiceFormatter.getColouredMessage(ColourScheme.Style.INFO));
+			context.getCommandSender().sendMessage(choiceFormatter.getMessage());
 		} else {
-			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "no-permission"));
+			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(NO_PERMISSION_KEY), ColourFormatter.FormatStyle.ERROR));
 		}
+	}
+
+	@Override
+	public boolean isAuthorised(Permissible permissible) {
+		if (permissible.hasPermission(PERMISSION_ALL)) return true;
+		return false;
 	}
 
 }

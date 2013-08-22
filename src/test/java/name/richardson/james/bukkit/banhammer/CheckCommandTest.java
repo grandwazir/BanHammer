@@ -37,9 +37,9 @@ public class CheckCommandTest extends TestCase {
 	public void testExecuteNoPlayerProvided()
 	throws Exception {
 		String[] arguments = {""};
-		CommandContext context = new PassthroughCommandContext(arguments, commandSender, server);
+		CommandContext context = new PassthroughCommandContext(arguments, commandSender);
 		command.execute(context);
-	 	verify(commandSender).sendMessage("§cYou must specify the name of a player!");
+	 	verify(commandSender).sendMessage("§cYou must specify a player name.");
 	}
 
 	@Test
@@ -49,9 +49,9 @@ public class CheckCommandTest extends TestCase {
 		OfflinePlayer player = mock(OfflinePlayer.class);
 		when(player.getName()).thenReturn("frank");
 		when(server.getOfflinePlayer(anyString())).thenReturn(player);
-		CommandContext context = new PassthroughCommandContext(arguments, commandSender, server);
+		CommandContext context = new PassthroughCommandContext(arguments, commandSender);
 		command.execute(context);
-		verify(commandSender).sendMessage("§e§afrank§e is not banned.");
+		verify(commandSender).sendMessage("§a§bfrank§a is not banned.");
 	}
 
 	@Test
@@ -64,9 +64,9 @@ public class CheckCommandTest extends TestCase {
 		PlayerRecord playerRecord = mock(PlayerRecord.class);
 		when(playerRecord.isBanned()).thenReturn(false);
 		when(playerRecordManager.find("frank")).thenReturn(playerRecord);
-		CommandContext context = new PassthroughCommandContext(arguments, commandSender, server);
+		CommandContext context = new PassthroughCommandContext(arguments, commandSender);
 		command.execute(context);
-		verify(commandSender).sendMessage("§e§afrank§e is not banned.");
+		verify(commandSender).sendMessage("§a§bfrank§a is not banned.");
 		verify(playerRecord).isBanned();
 	}
 
@@ -75,9 +75,9 @@ public class CheckCommandTest extends TestCase {
 	throws Exception {
 		when(commandSender.hasPermission(anyString())).thenReturn(false);
 		String[] arguments = {"frank"};
-		CommandContext context = new PassthroughCommandContext(arguments, commandSender, server);
+		CommandContext context = new PassthroughCommandContext(arguments, commandSender);
 		command.execute(context);
-		verify(commandSender).sendMessage("§cYou are not allowed to do that.");
+		verify(commandSender).sendMessage("§cYou may not check if players are banned.");
 	}
 
 	@Test
@@ -92,7 +92,7 @@ public class CheckCommandTest extends TestCase {
 		when(playerRecordManager.find("frank")).thenReturn(playerRecord);
 		BanRecord ban = getMockBan();
 		when(playerRecord.getActiveBan()).thenReturn(ban);
-		CommandContext context = new PassthroughCommandContext(arguments, commandSender, server);
+		CommandContext context = new PassthroughCommandContext(arguments, commandSender);
 		command.execute(context);
 		verify(commandSender).sendMessage((String[]) any());
 		verify(playerRecord).isBanned();
@@ -100,6 +100,7 @@ public class CheckCommandTest extends TestCase {
 
 	private BanRecord getMockBan() {
 		BanRecord ban = mock(BanRecord.class);
+		BanRecord.BanRecordFormatter formatter = mock(BanRecord.BanRecordFormatter.class, RETURNS_DEFAULTS);
 		long now = System.currentTimeMillis();
 		when(ban.getCreatedAt()).thenReturn(new Timestamp(now));
 		when(ban.getExpiresAt()).thenReturn(new Timestamp(now));
@@ -107,6 +108,7 @@ public class CheckCommandTest extends TestCase {
 		when(ban.getPlayer()).thenReturn(playerRecord);
 		when(ban.getReason()).thenReturn("This is a test reason.");
 		when(ban.getType()).thenReturn(BanRecord.Type.PERMANENT);
+		when(ban.getFormatter()).thenReturn(formatter);
 		return ban;
 	}
 
@@ -118,7 +120,7 @@ public class CheckCommandTest extends TestCase {
 		commandSender = mock(CommandSender.class);
 		when(commandSender.hasPermission(anyString())).thenReturn(true);
 		server = mock(Server.class);
-		command = new CheckCommand(permissionManager, playerRecordManager);
+		command = new CheckCommand(playerRecordManager);
 	}
 
 }

@@ -3,7 +3,6 @@ package name.richardson.james.bukkit.banhammer.ban;
 import javax.persistence.PersistenceException;
 import java.sql.Timestamp;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Level;
@@ -11,7 +10,7 @@ import java.util.logging.Logger;
 
 import com.avaje.ebean.EbeanServer;
 
-import name.richardson.james.bukkit.utilities.logging.PrefixedLogger;
+import name.richardson.james.bukkit.utilities.logging.PluginLoggerFactory;
 
 public class PlayerRecordManager {
 
@@ -20,10 +19,8 @@ public class PlayerRecordManager {
 		BANNED,
 		CREATOR
 	}
-
-	private final Logger LOGGER = PrefixedLogger.getLogger(PlayerRecordManager.class);
-
 	private final EbeanServer database;
+	private final Logger logger = PluginLoggerFactory.getLogger(PlayerRecordManager.class);
 
 	public PlayerRecordManager(EbeanServer database) {
 		if (database == null) throw new IllegalArgumentException();
@@ -37,7 +34,7 @@ public class PlayerRecordManager {
 	public PlayerRecord create(String playerName) {
 		PlayerRecord record = this.find(playerName);
 		if (record != null) return record;
-		LOGGER.log(Level.FINER, "Creating PlayerRecord for " + playerName);
+		logger.log(Level.FINER, "Creating PlayerRecord for " + playerName);
 		record = new PlayerRecord();
 		record.setName(playerName);
 		this.save(record);
@@ -49,23 +46,27 @@ public class PlayerRecordManager {
 	}
 
 	public void delete(List<PlayerRecord> records) {
-		LOGGER.log(Level.FINER, "Deleting PlayerRecords: " + records);
+		logger.log(Level.FINER, "Deleting PlayerRecords: " + records);
 		this.database.delete(records);
 	}
 
 	public boolean exists(String playerName) {
-		LOGGER.log(Level.FINER, "Checking to see if PlayerRecord exists for " + playerName);
+		logger.log(Level.FINER, "Checking to see if PlayerRecord exists for " + playerName);
 		return find(playerName) != null;
 	}
 
 	public PlayerRecord find(String playerName) {
-		LOGGER.log(Level.FINER, "Finding PlayerRecord for " + playerName);
+		logger.log(Level.FINER, "Finding PlayerRecord for " + playerName);
 		try {
 			return database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
 		} catch (PersistenceException e) {
 			this.removeDuplicates(playerName);
 			return database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
 		}
+	}
+
+	public BannedPlayerBuilder getBannedPlayerBuilder() {
+		return new BannedPlayerBuilder();
 	}
 
 	public List<PlayerRecord> list(String playerName, PlayerStatus status) {
@@ -95,7 +96,7 @@ public class PlayerRecordManager {
 	}
 
 	public List<PlayerRecord> list() {
-		LOGGER.log(Level.FINER, "Returning list containing all PlayerRecords.");
+		logger.log(Level.FINER, "Returning list containing all PlayerRecords.");
 		return database.find(PlayerRecord.class).findList();
 	}
 
@@ -104,11 +105,15 @@ public class PlayerRecordManager {
 	}
 
 	public void save(List<PlayerRecord> records) {
-		LOGGER.log(Level.FINER, "Saving PlayerRecords: " + records);
+		logger.log(Level.FINER, "Saving PlayerRecords: " + records);
 		this.database.save(records);
 	}
 
-	/**
+	protected EbeanServer getDatabase() {
+		return database;
+	}
+
+		/**
 	 * Delete duplicate player records.
 	 * <p/>
 	 * This happened due to a bug introduced around version 2.0. I thought it was
@@ -118,7 +123,7 @@ public class PlayerRecordManager {
 	 * @param playerName the player name
 	 */
 	private void removeDuplicates(String playerName) {
-		LOGGER.log(Level.WARNING, "duplicate-record-found");
+		logger.log(Level.WARNING, "duplicate-record-found");
 		final List<PlayerRecord> records = database.find(PlayerRecord.class).where().ieq("name", playerName).findList();
 		for (final PlayerRecord record : records) {
 			if ((record.getCreatedBans().size() == 0) && (record.getBans().size() == 0)) {
@@ -127,18 +132,23 @@ public class PlayerRecordManager {
 		}
 	}
 
-	protected EbeanServer getDatabase() {
-		return database;
-	}
-
 	public class BannedPlayerBuilder {
 
 		private final BanRecord record;
 
-		public BannedPlayerBuilder() {
+		private BannedPlayerBuilder() {
 			this.record = new BanRecord();
 			this.record.setState(BanRecord.State.NORMAL);
 			this.setExpiryTime(0);
+		}
+
+		public BanRecord getRecord() {
+			return record;
+		}
+
+		public boolean save() {
+			BanRecordManager manager = new BanRecordManager(PlayerRecordManager.this.getDatabase());
+			return manager.save(record);
 		}
 
 		public BannedPlayerBuilder setCreator(String playerName) {
@@ -168,15 +178,6 @@ public class PlayerRecordManager {
 		public BannedPlayerBuilder setReason(String reason) {
 			this.record.setReason(reason);
 			return this;
-		}
-
-		public BanRecord getRecord() {
-			return record;
-		}
-
-		public boolean save() {
-			BanRecordManager manager = new BanRecordManager(PlayerRecordManager.this.getDatabase());
-			return manager.save(record);
 		}
 
 	}

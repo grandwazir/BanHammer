@@ -44,7 +44,7 @@ public class UndoCommandTest extends TestCase {
 		when(commandContext.has(0)).thenReturn(true);
 		when(commandContext.getString(0)).thenReturn("frank");
 		command.execute(commandContext);
-		verify(player).sendMessage("§e§afrank§e has no ban history.");
+		verify(player).sendMessage("§e§afrank§e has never been banned.");
 	}
 
 	@Test
@@ -55,7 +55,7 @@ public class UndoCommandTest extends TestCase {
 		when(playerRecord.getActiveBan()).thenReturn(null);
 		when(playerRecordManager.find("frank")).thenReturn(playerRecord);
 		command.execute(commandContext);
-		verify(player).sendMessage("§e§afrank§e is not banned.");
+		verify(player).sendMessage("§a§bfrank§a is not banned.");
 	}
 
 	@Test
@@ -150,7 +150,7 @@ public class UndoCommandTest extends TestCase {
 		PermissionManager permissionManager = mock(PermissionManager.class);
 		playerRecordManager = mock(PlayerRecordManager.class);
 		banRecordManager = mock(BanRecordManager.class);
-		command = new UndoCommand(permissionManager, playerRecordManager, banRecordManager, undoTime);
+		command = new UndoCommand(playerRecordManager, banRecordManager, undoTime);
 		player = mock(Player.class);
 		when(player.getName()).thenReturn("frank");
 		commandContext = mock(CommandContext.class);

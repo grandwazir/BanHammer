@@ -41,7 +41,7 @@ public class AuditCommandTest extends TestCase {
 		when(commandContext.has(0)).thenReturn(true);
 		when(commandContext.getString(0)).thenReturn("frank");
 		command.execute(commandContext);
-		verify(player).sendMessage("§eNo bans have been issued by §afrank§e.");
+		verify(player).sendMessage("§a§bfrank§a has not made any bans yet.");
 	}
 
 	@Test
@@ -54,7 +54,7 @@ public class AuditCommandTest extends TestCase {
 		when(player.hasPermission(AuditCommand.PERMISSION_SELF)).thenReturn(true);
 		command.execute(commandContext);
 		verify(player, atLeastOnce()).hasPermission(AuditCommand.PERMISSION_OTHERS);
-		verify(player).sendMessage("§cYou are not allowed to do that.");
+		verify(player).sendMessage("§cYou may not audit bans made by §eted§c.");
 	}
 
 	@Test
@@ -67,7 +67,7 @@ public class AuditCommandTest extends TestCase {
 		when(player.hasPermission(AuditCommand.PERMISSION_OTHERS)).thenReturn(true);
 		command.execute(commandContext);
 		verify(player, atLeastOnce()).hasPermission(AuditCommand.PERMISSION_SELF);
-		verify(player).sendMessage("§cYou are not allowed to do that.");
+		verify(player).sendMessage("§cYou may not audit bans made by §efrank§c.");
 	}
 
 	@Test
@@ -97,13 +97,12 @@ public class AuditCommandTest extends TestCase {
 	@Before
 	public void setUp()
 	throws Exception {
-		PermissionManager permissionManager = mock(PermissionManager.class);
 		playerRecordManager = mock(PlayerRecordManager.class);
 		banRecordManager = mock(BanRecordManager.class);
 		player = mock(Player.class);
 		when(player.getName()).thenReturn("frank");
 		commandContext = mock(CommandContext.class);
 		when(commandContext.getCommandSender()).thenReturn(player);
-		command = new AuditCommand(permissionManager, playerRecordManager, banRecordManager);
+		command = new AuditCommand(playerRecordManager, banRecordManager);
 	}
 }

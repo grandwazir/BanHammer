@@ -3,12 +3,9 @@ package name.richardson.james.bukkit.banhammer.ban.event;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
-import com.avaje.ebean.EbeanServer;
-import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,19 +35,10 @@ public class AliasBannedPlayerListenerTest extends TestCase {
 		PlayerNameRecord playerNameRecord = mock(PlayerNameRecord.class);
 		when(playerNameRecord.getPlayerName()).thenReturn("joe");
 		when(playerNameRecordManager.find(anyString())).thenReturn(playerNameRecord);
-		BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(banRecord, false);
+		BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(banRecord, null, false);
 		listener.onPlayerPardoned(event);
 		verify(playerNameRecordManager, times(2)).find(anyString());
 		verify(playerNameRecord, times(1)).removeAssociation(playerNameRecord);
-	}
-
-	@Test
-	public void testIsPlayerBannedByBanHammer()
-	throws Exception {
-		when(playerRecordManager.exists(anyString())).thenReturn(true);
-		when(playerRecordManager.find(anyString())).thenReturn(playerRecord);
-		when(playerRecord.isBanned()).thenReturn(true);
-		Assert.assertTrue("Player should be banned", listener.isPlayerBanned("frank"));
 	}
 
 	@Test
@@ -64,7 +52,7 @@ public class AliasBannedPlayerListenerTest extends TestCase {
 		when(playerNameRecord.getPlayerName()).thenReturn("joe");
 		when(playerNameRecordManager.find(anyString())).thenReturn(playerNameRecord);
 		when(playerNameRecord.getAliases()).thenReturn(new HashSet<String>(Arrays.asList("joe")));
-		Assert.assertTrue("Player should be banned", listener.isPlayerBanned("frank"));
+		assertTrue("Player should be banned", listener.isPlayerBanned("frank"));
 	}
 
 	@Before
@@ -74,8 +62,7 @@ public class AliasBannedPlayerListenerTest extends TestCase {
 		PluginManager pluginManager = mock(PluginManager.class);
 		playerRecordManager = mock(PlayerRecordManager.class, RETURNS_MOCKS);
 		playerNameRecordManager = mock(PlayerNameRecordManager.class);
-		Server server = mock(Server.class);
 		playerRecord = mock(PlayerRecord.class, RETURNS_MOCKS);
-		listener = spy(new AliasBannedPlayerListener(plugin, pluginManager, server, playerRecordManager, playerNameRecordManager));
+		listener = new AliasBannedPlayerListener(plugin, pluginManager, playerRecordManager, playerNameRecordManager);
 	}
 }

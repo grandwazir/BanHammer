@@ -4,9 +4,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Server;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
 
 import junit.framework.TestCase;
@@ -58,7 +56,7 @@ public class PardonCommandTest extends TestCase {
 	public void testExecuteNoPlayer()
 	throws Exception {
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou must specify the name of a player!");
+		verify(player).sendMessage("§cYou must specify the name of a player.");
 	}
 
 	@Test
@@ -66,7 +64,7 @@ public class PardonCommandTest extends TestCase {
 		when(commandContext.has(0)).thenReturn(true);
 		when(commandContext.getString(0)).thenReturn("frank");
 		command.execute(commandContext);
-		verify(player).sendMessage("§e§afrank§e is not banned.");
+		verify(player).sendMessage("§a§bfrank§a is not banned.");
 	}
 
 	@Test
@@ -76,7 +74,7 @@ public class PardonCommandTest extends TestCase {
 		PlayerRecord playerRecord = getMockPlayerRecord();
 		when(playerRecordManager.find(anyString())).thenReturn(playerRecord);
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou may not pardon bans made by §ejoe§c.");
+		verify(player).sendMessage("§cYou may not pardon §efrank§c.");
 	}
 
 	@Test
@@ -87,7 +85,7 @@ public class PardonCommandTest extends TestCase {
 		when(playerRecordManager.find(anyString())).thenReturn(playerRecord);
 		when(player.hasPermission(PardonCommand.PERMISSION_OWN)).thenReturn(true);
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou may not pardon bans made by §ejoe§c.");
+		verify(player).sendMessage("§cYou may not pardon §efrank§c.");
 	}
 
 	@Test
@@ -99,7 +97,7 @@ public class PardonCommandTest extends TestCase {
 		when(playerRecord.getName()).thenReturn("frank");
 		when(player.hasPermission(PardonCommand.PERMISSION_OTHERS)).thenReturn(true);
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou may not pardon bans made by §efrank§c.");
+		verify(player).sendMessage("§cYou may not pardon §efrank§c.");
 	}
 
 	private BanRecord getMockBan(PlayerRecord playerRecord) {
@@ -133,7 +131,7 @@ public class PardonCommandTest extends TestCase {
 		banRecordManager = mock(BanRecordManager.class);
 		playerRecordManager = mock(PlayerRecordManager.class);
 		pluginManager = mock(PluginManager.class);
-		command = new PardonCommand(permissionManager, pluginManager, banRecordManager, playerRecordManager);
+		command = new PardonCommand(pluginManager, banRecordManager, playerRecordManager);
 		player = mock(Player.class);
 		when(player.getName()).thenReturn("frank");
 		commandContext = mock(CommandContext.class);

@@ -39,7 +39,7 @@ public class PurgeCommandTest extends TestCase {
 	throws Exception {
 		when(player.hasPermission(PurgeCommand.PERMISSION_ALL)).thenReturn(false);
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou are not allowed to do that.");
+		verify(player).sendMessage("§cYou are not allowed to purge bans.");
 	}
 
 	@Test
@@ -55,7 +55,7 @@ public class PurgeCommandTest extends TestCase {
 		when(commandContext.has(0)).thenReturn(true);
 		when(commandContext.getString(0)).thenReturn("frank");
 		command.execute(commandContext);
-		verify(player).sendMessage("§e§afrank§e has no ban history.");
+		verify(player).sendMessage("§a§bfrank§a has never been banned.");
 	}
 
 	@Test
@@ -115,7 +115,7 @@ public class PurgeCommandTest extends TestCase {
 		pluginManager = mock(PluginManager.class);
 		playerRecordManager = mock(PlayerRecordManager.class);
 		banRecordManager = mock(BanRecordManager.class);
-		command = new PurgeCommand(permissionManager, pluginManager, playerRecordManager, banRecordManager);
+		command = new PurgeCommand(playerRecordManager, banRecordManager);
 		player = mock(Player.class);
 		when(player.getName()).thenReturn("frank");
 		when(player.hasPermission(PurgeCommand.PERMISSION_ALL)).thenReturn(true);

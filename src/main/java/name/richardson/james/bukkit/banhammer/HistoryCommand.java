@@ -20,35 +20,37 @@ package name.richardson.james.bukkit.banhammer;
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.permissions.Permissible;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.formatters.colours.ColourScheme;
-import name.richardson.james.bukkit.utilities.permissions.PermissionManager;
-import name.richardson.james.bukkit.utilities.permissions.Permissions;
+import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
+import name.richardson.james.bukkit.utilities.formatters.DefaultColourFormatter;
+import name.richardson.james.bukkit.utilities.localisation.Localisation;
+import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
-import name.richardson.james.bukkit.banhammer.ban.BanRecordFormatter;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
-@Permissions(permissions = {HistoryCommand.PERMISSION_ALL, HistoryCommand.PERMISSION_OTHERS, HistoryCommand.PERMISSION_OWN})
 public class HistoryCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.history";
 	public static final String PERMISSION_OWN = "banhammer.history.own";
 	public static final String PERMISSION_OTHERS = "banhammer.history.others";
 
+	private static final String NO_PERMISSION_KEY = "no-permission";
+	private static final String PLAYER_HAS_NEVER_BEEN_BANNED_KEY = "player-has-never-been-banned";
+
 	private final PlayerRecordManager playerRecordManager;
+	private final ColourFormatter colourFormatter = new DefaultColourFormatter();
+	private final Localisation localisation = new ResourceBundleByClassLocalisation(HistoryCommand.class);
 
 	private String playerName;
 	private PlayerRecord playerRecord;
 
-	public HistoryCommand(PermissionManager permissionManager, PlayerRecordManager playerRecordManager) {
-		super(permissionManager);
+	public HistoryCommand(PlayerRecordManager playerRecordManager) {
 		this.playerRecordManager = playerRecordManager;
-		permissionManager.listPermissions().get(1).setDefault(PermissionDefault.TRUE);
 	}
 
 	@Override
@@ -58,16 +60,24 @@ public class HistoryCommand extends AbstractCommand {
 		if (!hasPermission(context.getCommandSender())) return;
 		List<BanRecord> bans = playerRecord.getBans();
 		for (BanRecord ban : bans) {
-			BanRecordFormatter formatter = new BanRecordFormatter(ban);
+			BanRecord.BanRecordFormatter formatter = ban.getFormatter();
 			context.getCommandSender().sendMessage(formatter.getMessages());
 		}
+	}
+
+	@Override
+	public boolean isAuthorised(Permissible permissible) {
+		if (permissible.hasPermission(PERMISSION_ALL)) return true;
+		if (permissible.hasPermission(PERMISSION_OWN)) return true;
+		if (permissible.hasPermission(PERMISSION_OTHERS)) return true;
+		return false;
 	}
 
 	private boolean hasPermission(CommandSender sender) {
 		final boolean isSenderTargetingSelf = playerName.equalsIgnoreCase(sender.getName());
 		if (sender.hasPermission(PERMISSION_OWN) && isSenderTargetingSelf) return true;
 		if (sender.hasPermission(PERMISSION_OTHERS) && !isSenderTargetingSelf) return true;
-		sender.sendMessage(getColouredMessage(ColourScheme.Style.ERROR, "no-permission"));
+		sender.sendMessage(colourFormatter.format(localisation.getMessage(NO_PERMISSION_KEY), ColourFormatter.FormatStyle.ERROR, playerName));
 		return false;
 	}
 
@@ -84,7 +94,7 @@ public class HistoryCommand extends AbstractCommand {
 	private boolean setPlayerRecord(CommandContext context) {
 		playerRecord = playerRecordManager.find(playerName);
 		if (playerRecord == null || playerRecord.getBans().size() == 0) {
-			context.getCommandSender().sendMessage(getColouredMessage(ColourScheme.Style.WARNING, "player-has-never-been-banned", playerName));
+			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(PLAYER_HAS_NEVER_BEEN_BANNED_KEY), ColourFormatter.FormatStyle.INFO, playerName));
 		}
 		return (playerRecord != null);
 	}

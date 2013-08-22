@@ -26,31 +26,34 @@ import java.util.logging.Logger;
 
 import org.bukkit.configuration.ConfigurationSection;
 
+import name.richardson.james.bukkit.utilities.formatters.PreciseDurationTimeFormatter;
 import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
-import name.richardson.james.bukkit.utilities.logging.PrefixedLogger;
+import name.richardson.james.bukkit.utilities.logging.PluginLoggerFactory;
 import name.richardson.james.bukkit.utilities.persistence.configuration.SimplePluginConfiguration;
 
-public class PluginConfiguration extends SimplePluginConfiguration {
+public final class PluginConfiguration extends SimplePluginConfiguration {
+
+	private static final String IMMUNE_PLAYERS_KEY = "immune-players";
+	private static final String UNDO_TIME_KEY = "undo-time";
+	private static final String ALIAS_PLUGIN_ENABLED_KEY = "alias-plugin.enabled";
+	private static final String LIMITS_KEY = "limits";
 
 	private final Map<String, Long> limits = new LinkedHashMap<String, Long>();
-	private final Logger logger = PrefixedLogger.getLogger(this.getClass());
+	private final TimeFormatter timeFormatter = new PreciseDurationTimeFormatter();
 
 	public PluginConfiguration(final File file, final InputStream defaults)
 	throws IOException {
 		super(file, defaults);
-		logger.config(toString());
 	}
 
 	public Map<String, Long> getBanLimits() {
 		this.limits.clear();
-		final ConfigurationSection section = this.getConfiguration().getConfigurationSection("limits");
+		final ConfigurationSection section = this.getConfiguration().getConfigurationSection(LIMITS_KEY);
 		for (final String key : section.getKeys(false)) {
 			final String name = key;
-			final Long length = TimeFormatter.parseTime(section.getString(key));
+			final Long length = timeFormatter.getDurationInMilliseconds(section.getString(key));
 			if (length != 0) {
 				this.limits.put(name, length);
-			} else {
-				this.logger.log(Level.WARNING, "banhammer.limit-invalid", key);
 			}
 		}
 		return this.limits;
@@ -58,16 +61,16 @@ public class PluginConfiguration extends SimplePluginConfiguration {
 
 	public Set<String> getImmunePlayers() {
 		final Set<String> set = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
-		set.addAll(this.getConfiguration().getStringList("immune-players"));
+		set.addAll(this.getConfiguration().getStringList(IMMUNE_PLAYERS_KEY));
 		return set;
 	}
 
 	public long getUndoTime() {
-		return TimeFormatter.parseTime(this.getConfiguration().getString("undo-time", "1m"));
+		return timeFormatter.getDurationInMilliseconds(this.getConfiguration().getString(UNDO_TIME_KEY, "1m"));
 	}
 
 	public boolean isAliasEnabled() {
-		return this.getConfiguration().getBoolean("alias-plugin.enabled");
+		return this.getConfiguration().getBoolean(ALIAS_PLUGIN_ENABLED_KEY);
 	}
 
 	@Override

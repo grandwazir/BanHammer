@@ -19,10 +19,19 @@ package name.richardson.james.bukkit.banhammer.ban;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.text.MessageFormat;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.avaje.ebean.annotation.CacheStrategy;
 import com.avaje.ebean.validation.NotNull;
+
+import name.richardson.james.bukkit.utilities.formatters.ApproximateTimeFormatter;
+import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
+import name.richardson.james.bukkit.utilities.formatters.DefaultColourFormatter;
+import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
+import name.richardson.james.bukkit.utilities.localisation.Localisation;
+import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
 
 @Entity()
 @Table(name = "banhammer_bans")
@@ -225,6 +234,10 @@ public class BanRecord {
 		"} ";
 	}
 
+	public BanRecordFormatter getFormatter() {
+		return new BanRecordFormatter(this);
+	}
+
 	/**
 	 * The valid states of a BanRecord
 	 */
@@ -262,4 +275,56 @@ public class BanRecord {
 		TEMPORARY
 	}
 
+	public static class BanRecordFormatter {
+
+		private static final DateFormat DATE_FORMAT = new SimpleDateFormat("d MMM yyyy HH:mm (z)");
+
+		private static final String HEADER_KEY = "header";
+		private static final String PERMANENT_KEY = "permanent";
+		private static final String REASON_KEY = "reason";
+		private static final String LENGTH_KEY = "length";
+		private static final String EXPIRES_KEY = "expires";
+
+		private final ColourFormatter colourFormatter= new DefaultColourFormatter();
+		private final Localisation localisation = new ResourceBundleByClassLocalisation(BanRecordFormatter.class);
+		private final TimeFormatter timeFormatter = new ApproximateTimeFormatter();
+		private final BanRecord ban;
+		private final List<String> messages= new ArrayList<String>();
+
+		private BanRecordFormatter(BanRecord ban) {
+			this.ban = ban;
+			messages.add(getHeader());
+			messages.add(getReason());
+			messages.add(getLength());
+			if (ban.getType() != Type.PERMANENT) messages.add(getExpiresAt());
+		}
+
+		public String getHeader() {
+			final String date = DATE_FORMAT.format(ban.getCreatedAt());
+			return colourFormatter.format(localisation.getMessage(HEADER_KEY), ColourFormatter.FormatStyle.HEADER, ban.getPlayer().getName(), ban.getCreator().getName(), date);
+		}
+
+		public String getReason() {
+			return colourFormatter.format(localisation.getMessage(REASON_KEY), ColourFormatter.FormatStyle.INFO, ban.getReason());
+		}
+
+		public String getLength() {
+			if (ban.getType() == Type.PERMANENT) {
+				return colourFormatter.format(localisation.getMessage(LENGTH_KEY), ColourFormatter.FormatStyle.INFO, localisation.getMessage(PERMANENT_KEY));
+			} else {
+				final long length = ban.getExpiresAt().getTime() - ban.getCreatedAt().getTime();
+				return colourFormatter.format(localisation.getMessage(LENGTH_KEY), ColourFormatter.FormatStyle.INFO, timeFormatter.getHumanReadableDuration(length));
+			}
+		}
+
+		public String getExpiresAt() {
+			final long time = ban.getExpiresAt().getTime();
+			return colourFormatter.format(localisation.getMessage(EXPIRES_KEY), ColourFormatter.FormatStyle.INFO, timeFormatter.getHumanReadableDuration(time));
+		}
+
+		public String[] getMessages() {
+			return this.messages.toArray(new String[messages.size()]);
+		}
+
+	}
 }

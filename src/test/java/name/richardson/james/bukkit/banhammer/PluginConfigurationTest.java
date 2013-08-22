@@ -22,25 +22,25 @@ public class PluginConfigurationTest extends TestCase {
 	@Test
 	public void testIsAliasEnabled()
 	throws Exception {
-		Assert.assertFalse("Default should be false!", configuration.isAliasEnabled());
+		assertFalse("Default should be false!", configuration.isAliasEnabled());
 	}
 
 	@Test
 	public void testGetUndoTime()
 	throws Exception {
-		Assert.assertEquals("Default undo time should be 1 minute (in milliseconds)", 60000L, configuration.getUndoTime());
+		assertEquals("Default undo time should be 1 minute (in milliseconds)", 60000L, configuration.getUndoTime());
 	}
 
 	@Test
 	public void testGetImmunePlayers()
 	throws Exception {
-		Assert.assertEquals("Immune player list should contain 1 name.", 1, configuration.getImmunePlayers().size());
+		assertEquals("Immune player list should contain 1 name.", 1, configuration.getImmunePlayers().size());
 	}
 
 	@Test
 	public void testGetBanLimits()
 	throws Exception {
-		Assert.assertEquals("Limit list should contain 4 limits.", 4, configuration.getBanLimits().size());
+		assertEquals("Limit list should contain 4 limits.", 4, configuration.getBanLimits().size());
 	}
 
 	@Test
@@ -48,7 +48,7 @@ public class PluginConfigurationTest extends TestCase {
 	throws Exception {
 		InputStream defaults = getClass().getClassLoader().getResourceAsStream("config-invalid.yml");
 		PluginConfiguration invalidConfiguration = new PluginConfiguration(folder.newFile("config-invalid.yml"), defaults);
-		Assert.assertEquals("Limit list should contain 3 limits.", 3, invalidConfiguration.getBanLimits().size());
+		assertEquals("Limit list should contain 3 limits.", 3, invalidConfiguration.getBanLimits().size());
 	}
 
 
