@@ -20,14 +20,14 @@ package name.richardson.james.bukkit.banhammer;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.plugin.java.JavaPlugin;
+
+import com.avaje.ebean.EbeanServer;
+import com.avaje.ebean.config.ServerConfig;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.Command;
@@ -36,6 +36,9 @@ import name.richardson.james.bukkit.utilities.command.invoker.CommandInvoker;
 import name.richardson.james.bukkit.utilities.command.invoker.FallthroughCommandInvoker;
 import name.richardson.james.bukkit.utilities.command.matcher.OnlinePlayerMatcher;
 import name.richardson.james.bukkit.utilities.logging.PluginLoggerFactory;
+import name.richardson.james.bukkit.utilities.persistence.database.DatabaseLoader;
+import name.richardson.james.bukkit.utilities.persistence.database.DatabaseLoaderFactory;
+import name.richardson.james.bukkit.utilities.persistence.database.SimpleDatabaseConfiguration;
 
 import name.richardson.james.bukkit.alias.Alias;
 import name.richardson.james.bukkit.alias.persistence.PlayerNameRecordManager;
@@ -52,13 +55,12 @@ public final class BanHammer extends JavaPlugin {
 
 	public static final String PLUGIN_PERMISSION_NAME = "banhammer";
 	public static final String NOTIFY_PERMISSION_NAME = "banhammer.notify";
-
 	private static final String CONFIG_NAME = "config.yml";
-
+	private static final String DATABASE_CONFIG_NAME = "database.yml";
 	private final Logger logger = PluginLoggerFactory.getLogger(BanHammer.class);
-
 	private BanRecordManager banRecordManager;
 	private PluginConfiguration configuration;
+	private EbeanServer database;
 	private PlayerNameRecordManager playerNameRecordManager;
 	private PlayerRecordManager playerRecordManager;
 
@@ -68,6 +70,10 @@ public final class BanHammer extends JavaPlugin {
 
 	private void setBanRecordManager(BanRecordManager banRecordManager) {
 		this.banRecordManager = banRecordManager;
+	}
+
+	public EbeanServer getDatabase() {
+		return database;
 	}
 
 	@Override
@@ -90,6 +96,7 @@ public final class BanHammer extends JavaPlugin {
 	public void onEnable() {
 		try {
 			this.loadConfiguration();
+			this.loadDatabase();
 			this.loadManagers();
 			this.registerCommands();
 			this.registerListeners();
@@ -120,6 +127,19 @@ public final class BanHammer extends JavaPlugin {
 		this.configuration = new PluginConfiguration(file, defaults);
 		this.logger.setLevel(configuration.getLogLevel());
 		if (configuration.isAliasEnabled()) hookAlias();
+	}
+
+	private void loadDatabase()
+	throws IOException {
+		ServerConfig serverConfig = new ServerConfig();
+		getServer().configureDbConfig(serverConfig);
+		serverConfig.setClasses(Arrays.asList(BanRecord.class, PlayerRecord.class));
+		final File file = new File(this.getDataFolder().getPath() + File.separatorChar + DATABASE_CONFIG_NAME);
+		final InputStream defaults = this.getResource(DATABASE_CONFIG_NAME);
+		final SimpleDatabaseConfiguration configuration = new SimpleDatabaseConfiguration(file, defaults, this.getName(), serverConfig);
+		final DatabaseLoader loader = DatabaseLoaderFactory.getDatabaseLoader(configuration);
+		loader.initalise();
+		this.database = loader.getEbeanServer();
 	}
 
 	private void loadManagers() {

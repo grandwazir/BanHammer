@@ -1,5 +1,6 @@
 # Changelog for BanHammer (v2.3.0-SNAPSHOT)
 
+2013-08-22 22:47:38 +0100    resolves [#78](https://github.com/grandwazir/BanHammer/ban-hammer/issues/78); adds silent ability to kick and ban (James Richardson)  
 2013-08-22 22:34:04 +0100    stray ` (James Richardson)  
 2013-08-22 22:33:38 +0100    refactoring and update to latest bukkitutils (James Richardson)  
 2013-08-17 10:06:43 +0100    another go at [#86](https://github.com/grandwazir/BanHammer/ban-hammer/issues/86) disable L2 database cache (James Richardson)  
