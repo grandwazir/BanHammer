@@ -62,7 +62,8 @@ public class KickCommand extends AbstractCommand {
 			Player player = server.getPlayerExact(playerName);
 			player.kickPlayer(message);
 			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(PLAYER_KICKED_NOTICE_KEY), ColourFormatter.FormatStyle.INFO, playerName));
-			if (!context.hasFlag("-s") && !context.hasFlag("-silent")) {
+			boolean silent = (context.hasFlag("s") || context.hasFlag("silent"));
+			if (!silent) {
 				server.broadcast(colourFormatter.format(localisation.getMessage(PLAYER_KICKED_KEY), ColourFormatter.FormatStyle.ERROR, playerName, context.getCommandSender().getName()), BanHammer.NOTIFY_PERMISSION_NAME);
 				server.broadcast(colourFormatter.format(localisation.getMessage(REASON_KEY), ColourFormatter.FormatStyle.WARNING, this.reason), BanHammer.NOTIFY_PERMISSION_NAME);
 			}

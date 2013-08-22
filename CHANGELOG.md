@@ -1,5 +1,7 @@
 # Changelog for BanHammer (v2.3.0-SNAPSHOT)
 
+2013-08-22 23:19:45 +0100    register PlayerNotifier (James Richardson)  
+2013-08-22 23:18:37 +0100    actually load the database (James Richardson)  
 2013-08-22 22:47:38 +0100    resolves [#78](https://github.com/grandwazir/BanHammer/ban-hammer/issues/78); adds silent ability to kick and ban (James Richardson)  
 2013-08-22 22:34:04 +0100    stray ` (James Richardson)  
 2013-08-22 22:33:38 +0100    refactoring and update to latest bukkitutils (James Richardson)  
