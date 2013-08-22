@@ -64,7 +64,8 @@ public class PardonCommand extends AbstractCommand {
 		if (!setPlayer(context)) return;
 		if (!setPlayerRecord(context)) return;
 		if (!hasPermission(context.getCommandSender())) return;
-		BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(playerRecord.getActiveBan(), context.getCommandSender(), false);
+		boolean silent = (context.hasFlag("s") || context.hasFlag("silent"));
+		BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(playerRecord.getActiveBan(), context.getCommandSender(), silent);
 		banRecordManager.delete(playerRecord.getActiveBan());
 		context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(PLAYER_PARDONED_KEY), ColourFormatter.FormatStyle.INFO, playerName));
 		pluginManager.callEvent(event);
