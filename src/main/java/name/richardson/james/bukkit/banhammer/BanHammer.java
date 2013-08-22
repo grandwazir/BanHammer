@@ -48,6 +48,7 @@ import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.event.AliasBannedPlayerListener;
 import name.richardson.james.bukkit.banhammer.ban.event.NormalBannedPlayerListener;
+import name.richardson.james.bukkit.banhammer.ban.event.PlayerNotifier;
 import name.richardson.james.bukkit.banhammer.metrics.MetricsListener;
 import name.richardson.james.bukkit.banhammer.utilities.command.matcher.PlayerRecordMatcher;
 
@@ -199,6 +200,7 @@ public final class BanHammer extends JavaPlugin {
 
 	private void registerListeners() {
 		new NormalBannedPlayerListener(this, this.getServer().getPluginManager(), getServer(), this.getPlayerRecordManager());
+		new PlayerNotifier(this, this.getServer().getPluginManager(), getServer());
 	}
 
 	private void setupMetrics()
