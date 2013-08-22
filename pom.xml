@@ -3,7 +3,7 @@
   <artifactId>ban-hammer</artifactId>
   <version>2.3.0-SNAPSHOT</version>
   <name>BanHammer</name>
-  <description>Bans, kicks and records.</description>
+  <description>Bans, kicks and records</description>
 
   <properties>
     <bukkitdevuploader.changeLog>Please see the [changelog](${project.url}wiki/Feature-changes) on GitHub.</bukkitdevuploader.changeLog>
