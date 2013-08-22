@@ -69,7 +69,7 @@ public class LimitsCommand extends AbstractCommand {
 			context.getCommandSender().sendMessage(StringUtils.join(messages, ", "));
 		} else {
 			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(NO_PERMISSION_KEY), ColourFormatter.FormatStyle.ERROR));
-		}                                                              `
+		}
 	}
 
 	@Override
