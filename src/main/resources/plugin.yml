@@ -1,6 +1,6 @@
-name: BanHammer
+name: ${project.name}
 main: name.richardson.james.bukkit.banhammer.BanHammer
-description: Bans, kicks and records.
+description: ${project.description}.
 version: ${project.version}
 commands:
   kick:
