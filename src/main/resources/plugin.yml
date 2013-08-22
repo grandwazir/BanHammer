@@ -15,7 +15,7 @@ commands:
   bh:
     description: 'Additional ban commands'
     usage: '/bh [check|history|purge|recent|reload]'
- permissions:
+permissions:
   banhammer:
     description: Allow players to use all the features of BanHammer
     children:
@@ -45,16 +45,17 @@ commands:
   banhammer.ban:
     description: Allow users ban any player from the server for any length of time
     children:
-      banhammer.permanent: Allow users to ban players permanently
+  banhammer.permanent:
+    description: Allow users to ban players permanently
   banhammer.check:
     description: Allow users to check if a player is banned
   banhammer.export:
     description: Allow users to export bans to banned-players.txt
   banhammer.history:
     description: Allow users to check anyone's ban history
-      children:
-        banhammer.history.own: true
-        banhammer.history.others: true
+    children:
+      banhammer.history.own: true
+      banhammer.history.others: true
   banhammer.history.others:
     description: Allow users to view the ban history of others
   banhammer.history.own:
@@ -71,9 +72,9 @@ commands:
     default: true
   banhammer.pardon:
     description: Allow users to pardon any ban
-      children:
-        banhammer.pardon.others: true
-        banhammer.pardon.own: true
+    children:
+      banhammer.pardon.others: true
+      banhammer.pardon.own: true
   banhammer.pardon.others:
     description: Allow users to pardon bans made by other players
   banhammer.pardon.own:

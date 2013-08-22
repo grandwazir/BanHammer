@@ -28,6 +28,8 @@ import name.richardson.james.bukkit.utilities.formatters.DefaultColourFormatter;
 import name.richardson.james.bukkit.utilities.localisation.Localisation;
 import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
 
+import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerBannedEvent;
+
 public class KickCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.kick";
@@ -38,6 +40,7 @@ public class KickCommand extends AbstractCommand {
 	private static final String NO_PERMISSION_KEY = "no-permission";
 	private static final String MUST_SPECIFY_PLAYER_KEY = "must-specify-player";
 	private static final String DEFAULT_KICK_REASON_KEY = "default-kick-reason";
+	private static final String PLAYER_KICKED_NOTICE_KEY = "player-kicked-notice";
 
 	private final Server server;
 	private final Localisation localisation = new ResourceBundleByClassLocalisation(KickCommand.class);
@@ -58,8 +61,11 @@ public class KickCommand extends AbstractCommand {
 			String message = colourFormatter.format(localisation.getMessage(KICK_NOTIFICATION_KEY), ColourFormatter.FormatStyle.ERROR, this.reason, context.getCommandSender().getName());
 			Player player = server.getPlayerExact(playerName);
 			player.kickPlayer(message);
-			server.broadcast(colourFormatter.format(localisation.getMessage(PLAYER_KICKED_KEY), ColourFormatter.FormatStyle.ERROR, playerName, context.getCommandSender().getName()), BanHammer.NOTIFY_PERMISSION_NAME);
-			server.broadcast(colourFormatter.format(localisation.getMessage(REASON_KEY), ColourFormatter.FormatStyle.WARNING, this.reason), BanHammer.NOTIFY_PERMISSION_NAME);
+			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(PLAYER_KICKED_NOTICE_KEY), ColourFormatter.FormatStyle.INFO, playerName));
+			if (!context.hasFlag("-s") && !context.hasFlag("-silent")) {
+				server.broadcast(colourFormatter.format(localisation.getMessage(PLAYER_KICKED_KEY), ColourFormatter.FormatStyle.ERROR, playerName, context.getCommandSender().getName()), BanHammer.NOTIFY_PERMISSION_NAME);
+				server.broadcast(colourFormatter.format(localisation.getMessage(REASON_KEY), ColourFormatter.FormatStyle.WARNING, this.reason), BanHammer.NOTIFY_PERMISSION_NAME);
+			}
 		} else {
 			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(NO_PERMISSION_KEY), ColourFormatter.FormatStyle.ERROR));
 		}

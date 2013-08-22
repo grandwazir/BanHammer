@@ -11,9 +11,7 @@ import name.richardson.james.bukkit.utilities.command.context.CommandContext;
 import name.richardson.james.bukkit.utilities.permissions.PermissionManager;
 
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class KickCommandTest extends TestCase {
 
@@ -40,6 +38,18 @@ public class KickCommandTest extends TestCase {
 		verify(player).kickPlayer("§cYou have been kicked by §efrank§c.\n\nReason: §eNo reason provided§c.");
 		verify(server).broadcast("§c§efrank§c has been kicked by §efrank§c.", BanHammer.NOTIFY_PERMISSION_NAME);
 		verify(server).broadcast("§eReason: §aNo reason provided§e.", BanHammer.NOTIFY_PERMISSION_NAME);
+	}
+
+	@Test
+	public void testExecuteSilentKickWithDefaultReason()
+	throws Exception {
+		when(player.hasPermission(anyString())).thenReturn(true);
+		when(commandContext.hasFlag(anyString())).thenReturn(true);
+		when(commandContext.getString(0)).thenReturn("frank");
+		when(server.getPlayerExact("frank")).thenReturn(player);
+		command.execute(commandContext);
+		verify(player).kickPlayer("§cYou have been kicked by §efrank§c.\n\nReason: §eNo reason provided§c.");
+		verify(server, never()).broadcast(anyString(), anyString());
 	}
 
 	@Test

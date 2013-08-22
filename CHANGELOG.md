@@ -1,5 +1,7 @@
 # Changelog for BanHammer (v2.3.0-SNAPSHOT)
 
+2013-08-22 22:34:04 +0100    stray ` (James Richardson)  
+2013-08-22 22:33:38 +0100    refactoring and update to latest bukkitutils (James Richardson)  
 2013-08-17 10:06:43 +0100    another go at [#86](https://github.com/grandwazir/BanHammer/ban-hammer/issues/86) disable L2 database cache (James Richardson)  
 2013-08-17 10:05:42 +0100    Revert "related to [#86](https://github.com/grandwazir/BanHammer/ban-hammer/issues/86), attempt to work around a bug in the underlying persistence library" (James Richardson)  
 2013-08-17 00:21:15 +0100    delete old manager tests far to brittle, found a much better way of doing this when writing Alias (James Richardson)  

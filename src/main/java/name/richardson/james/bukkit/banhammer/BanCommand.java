@@ -83,8 +83,10 @@ public class BanCommand extends AbstractCommand {
 		bannedPlayerBuilder.setReason(reason);
 		bannedPlayerBuilder.save();
 		context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(PLAYER_BANNED_KEY), ColourFormatter.FormatStyle.INFO, playerName));
-		BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(bannedPlayerBuilder.getRecord(), false);
-		pluginManager.callEvent(event);
+		if (!context.hasFlag("-s") && !context.hasFlag("-silent")) {
+			BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(bannedPlayerBuilder.getRecord(), false);
+			pluginManager.callEvent(event);
+		}
 	}
 
 	@Override

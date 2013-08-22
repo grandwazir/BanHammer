@@ -116,6 +116,20 @@ public class BanCommandTest extends TestCase {
 	}
 
 	@Test
+	public void testExecuteBanSilentPlayerPermanently() {
+		when(commandContext.hasFlag("-s")).thenReturn(true);
+		when(commandContext.has(anyInt())).thenReturn(true);
+		when(commandContext.getString(0)).thenReturn("frank");
+		when(commandContext.getJoinedArguments(1)).thenReturn("blah");
+		PlayerRecord playerRecord = mock(PlayerRecord.class);
+		doReturn(playerRecord).when(playerRecordManager).find("frank");
+		when(player.hasPermission("banhammer.ban")).thenReturn(true);
+		command.execute(commandContext);
+		verify(player).sendMessage("§aYou have banned §bfrank§a.");
+		verify(pluginManager, never()).callEvent(Matchers.<Event>any());
+	}
+
+	@Test
 	public void testExecuteBanPlayerWithinLimits() {
 		when(commandContext.has(anyInt())).thenReturn(true);
 		when(commandContext.getString(0)).thenReturn("frank");
