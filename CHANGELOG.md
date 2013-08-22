@@ -1,5 +1,6 @@
 # Changelog for BanHammer (v2.3.0-SNAPSHOT)
 
+2013-08-22 23:32:35 +0100    commit changelog (James Richardson)  
 2013-08-22 23:30:38 +0100    add silent flag to pardon command (James Richardson)  
 2013-08-22 23:29:52 +0100    fix a bug where events where not be called rather than made silent (James Richardson)  
 2013-08-22 23:19:45 +0100    register PlayerNotifier (James Richardson)  

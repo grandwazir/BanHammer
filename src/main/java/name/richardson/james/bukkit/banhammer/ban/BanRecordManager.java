@@ -33,7 +33,7 @@ public class BanRecordManager {
 	}
 
 	public List<BanRecord> list(int limit) {
-		return this.database.find(BanRecord.class).setMaxRows(limit).findList();
+		return this.database.find(BanRecord.class).setMaxRows(limit).orderBy().desc("createdAt").findList();
 	}
 
 	public int count() {
