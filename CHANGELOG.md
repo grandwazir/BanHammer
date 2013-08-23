@@ -1,5 +1,8 @@
 # Changelog for BanHammer (v2.3.0-SNAPSHOT)
 
+2013-08-23 12:02:33 +0100    fix using a _ instead of a - (James Richardson)  
+2013-08-23 11:54:06 +0100    added comments to database.yml (James Richardson)  
+2013-08-22 23:43:01 +0100    count is optional not required (James Richardson)  
 2013-08-22 23:41:56 +0100    automatic updating of plugin version and description (James Richardson)  
 2013-08-22 23:37:32 +0100    fix [#71](https://github.com/grandwazir/BanHammer/ban-hammer/issues/71); bans are now ordered by creation time in descending order (James Richardson)  
 2013-08-22 23:32:35 +0100    commit changelog (James Richardson)  

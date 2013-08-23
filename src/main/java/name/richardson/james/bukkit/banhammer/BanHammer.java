@@ -39,6 +39,8 @@ import name.richardson.james.bukkit.utilities.logging.PluginLoggerFactory;
 import name.richardson.james.bukkit.utilities.persistence.database.DatabaseLoader;
 import name.richardson.james.bukkit.utilities.persistence.database.DatabaseLoaderFactory;
 import name.richardson.james.bukkit.utilities.persistence.database.SimpleDatabaseConfiguration;
+import name.richardson.james.bukkit.utilities.updater.MavenPluginUpdater;
+import name.richardson.james.bukkit.utilities.updater.PluginUpdater;
 
 import name.richardson.james.bukkit.alias.Alias;
 import name.richardson.james.bukkit.alias.persistence.PlayerNameRecordManager;
@@ -56,9 +58,12 @@ public final class BanHammer extends JavaPlugin {
 
 	public static final String PLUGIN_PERMISSION_NAME = "banhammer";
 	public static final String NOTIFY_PERMISSION_NAME = "banhammer.notify";
+
 	private static final String CONFIG_NAME = "config.yml";
 	private static final String DATABASE_CONFIG_NAME = "database.yml";
+
 	private final Logger logger = PluginLoggerFactory.getLogger(BanHammer.class);
+
 	private BanRecordManager banRecordManager;
 	private PluginConfiguration configuration;
 	private EbeanServer database;
@@ -102,8 +107,16 @@ public final class BanHammer extends JavaPlugin {
 			this.registerCommands();
 			this.registerListeners();
 			this.setupMetrics();
+			this.updatePlugin();
 		} catch (final IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	private void updatePlugin() {
+		if (!configuration.getAutomaticUpdaterState().equals(PluginUpdater.State.OFF)) {
+			PluginUpdater updater = new MavenPluginUpdater("ban-hammer", "name.richardson.james.bukkit", getDescription(), configuration.getAutomaticUpdaterBranch(), configuration.getAutomaticUpdaterState());
+			new name.richardson.james.bukkit.utilities.updater.PlayerNotifier(this, this.getServer().getPluginManager(), updater);
 		}
 	}
 
