@@ -1,5 +1,6 @@
 # Changelog for BanHammer (v2.3.0-SNAPSHOT)
 
+2013-08-23 12:53:33 +0100    add silent parameter to usage information (James Richardson)  
 2013-08-23 12:45:54 +0100    most recent ban to appear at the bottom (James Richardson)  
 2013-08-23 12:44:38 +0100    fix bug with time duration formatting on ban broadcasts (James Richardson)  
 2013-08-23 12:27:51 +0100    fix test failure (James Richardson)  
