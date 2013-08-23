@@ -5,7 +5,7 @@
   <meta name="generator" content="HTML Tidy for HTML5 (experimental) for Linux https://github.com/w3c/tidy-html5/tree/c63cc39">
   <meta charset="utf-8">
 
-  <title>2.2.1</title>
+  <title>2.3.0</title>
   <meta name="author" content="James Richardson"><!-- Enable responsive viewport -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0"><!-- Import bootstrap .js -->
 
@@ -55,54 +55,56 @@
 
   <div class="container-narrow scroll-adjust">
     <div class="content">
-      <div class="alert">
-        <button type="button" class="close" data-dismiss="alert">×</button> This is not the current version of the plugin.
-      </div>
-
       <div class="page-header">
-        <h1>2.2.1 <small>Released on 31 May 2013</small></h1>
+        <h1>2.3.0 <small>Released on 23 August 2013</small></h1>
       </div>
 
       <ul class="inline">
         <li>
-          <a href="http://repository.james.richardson.name/releases/name/richardson/james/bukkit/ban-hammer/2.2.1/ban-hammer-2.2.1-shaded.jar"><button class="btn btn-large btn-primary" type="button">Download</button></a>
+          <a href="http://repository.james.richardson.name/releases/name/richardson/james/bukkit/ban-hammer/2.3.0/ban-hammer-2.3.0-shaded.jar"><button class="btn btn-large btn-primary" type="button">Download</button></a>
         </li>
 
         <li>
-          <a href="https://github.com/grandwazir/Banhammer/tree/v2.2.1"><button class="btn btn-large" type="button">Source</button></a>
+          <a href="https://github.com/grandwazir/Banhammer/tree/v2.3.0"><button class="btn btn-large" type="button">Source</button></a>
         </li>
       </ul>
 
       <div class="row-fluid">
         <div class="span12">
-          <div class='alert alert-block'>
-            The method of localising the plugin has changed. Editing the .properties file in the .jar is now the only supported way. Additionally some keys have changed.
-          </div>
-
           <h2 id='new_features'>New features</h2>
 
           <ul>
-            <li>Added dynamic caching of bans for faster logins.</li>
+            <li>Can now ban players silently; players will not be notified about the ban.</li>
 
-            <li>Added <code>banhammer.permanent</code> to permit players to ban permanently.</li>
+            <li>Can now kick players silently; players will not be notified about the kick.</li>
+
+            <li>Can now pardon players silently; players will not be notified about the pardon.</li>
           </ul>
 
           <h2 id='improvements'>Improvements</h2>
 
           <ul>
-            <li>Ban immune players can now be banned if the player has the <code>banhammer.ban</code> permission instead of <code>banhammer</code>.</li>
+            <li>Times now use new social style timestamps (e.g 2 days ago).</li>
 
-            <li>Reduced the number of keys required to be localised. Should make things easier for translaters.</li>
+            <li>Localisation now automatic for times; currently includes french, german and russian.</li>
 
-            <li>Debugging information is more helpful.</li>
+            <li>Recent command now lists the most recent ban at the bottom of chat.</li>
+
+            <li>Configuration files fully documented.</li>
+
+            <li>Improved logging in debugging mode.</li>
+
+            <li>UndoCommand is now more reliable.</li>
           </ul>
 
           <h2 id='bug_fixes'>Bug fixes</h2>
 
           <ul>
-            <li>Fixed issue where large databases could cause disconnects when using tab completion.</li>
+            <li>Fixed issue where ocassionally banned players were able to join under rare circumstances.</li>
 
-            <li>Fixed various localisation issues.</li>
+            <li>Disabled database caching due to a rare NPE caused by it.</li>
+
+            <li>Kick messages now broadcast correctly.</li>
           </ul>
         </div>
       </div>
