@@ -71,6 +71,7 @@
                   <artifactSet>
                     <includes>
                       <include>name.richardson.james.bukkit:bukkit-utilities</include>
+                      <include>org.mcstats.bukkit:metrics</include>
                     </includes>
                   </artifactSet>
                   <relocations>
@@ -79,7 +80,7 @@
                       <shadedPattern>name.richardson.james.bukkit.banhammer.utilities</shadedPattern>
                     </relocation>
                      <relocation>
-                         <pattern>org.mcstats.metrics</pattern>
+                         <pattern>org.mcstats.bukkit</pattern>
                          <shadedPattern>name.richardson.james.bukkit.banhammer.utilities.metrics</shadedPattern>
                      </relocation>
                   </relocations>
