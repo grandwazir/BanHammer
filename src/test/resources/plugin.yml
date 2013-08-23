@@ -1,0 +1,101 @@
+name: ${project.name}
+main: name.richardson.james.bukkit.banhammer.BanHammer
+description: ${project.description}.
+version: ${project.version}
+commands:
+  kick:
+    description: 'Kicks a specified player from the server.'
+    usage: '/kick [player] <reason>'
+  ban:
+    description: 'Bans a specified player from the server.'
+    usage: '/ban [player] [reason] <time>'
+  pardon:
+    description: 'Pardons a specified player'
+    usage: '/pardon [player]'
+  bh:
+    description: 'Additional ban commands'
+    usage: '/bh [check|history|purge|recent|reload]'
+permissions:
+  banhammer:
+    description: Allow players to use all the features of BanHammer
+    children:
+      banhammer.audit: true
+      banhammer.ban: true
+      banhammer.check: true
+      banhammer.export: true
+      banhammer.history: true
+      banhammer.import: true
+      banhammer.kick: true
+      banhammer.limits: true
+      banhammer.notify: true
+      banhammer.pardon: true
+      banhammer.purge: true
+      banhammer.recent: true
+      banhammer.undo: true
+  banhammer.audit:
+    description: Allow users to see a summary of the bans made by other players
+    children:
+      banhammer.audit.others: true
+      banhammer.audit.self: true
+  banhammer.audit.others:
+    description: Allow users to audit bans made by other players
+  banhammer.audit.self:
+    description: Allow users to audit bans that they have made themselves
+    default: true
+  banhammer.ban:
+    description: Allow users ban any player from the server for any length of time
+    children:
+  banhammer.permanent:
+    description: Allow users to ban players permanently
+  banhammer.check:
+    description: Allow users to check if a player is banned
+  banhammer.export:
+    description: Allow users to export bans to banned-players.txt
+  banhammer.history:
+    description: Allow users to check anyone's ban history
+    children:
+      banhammer.history.own: true
+      banhammer.history.others: true
+  banhammer.history.others:
+    description: Allow users to view the ban history of others
+  banhammer.history.own:
+    description: Allow users to view their own ban history
+    default: true
+  banhammer.import:
+    description: Allow users to import bans from banned-players.txt
+  banhammer.kick:
+    description: Allow users to kick other players from the server
+  banhammer.limits:
+    description: Allow users to check what ban limits are available for them to use
+  banhammer.notify:
+    description: Notify this player of administrative actions
+    default: true
+  banhammer.pardon:
+    description: Allow users to pardon any ban
+    children:
+      banhammer.pardon.others: true
+      banhammer.pardon.own: true
+  banhammer.pardon.others:
+    description: Allow users to pardon bans made by other players
+  banhammer.pardon.own:
+    description: Allow users to pardon bans that they have made themselves
+  banhammer.purge:
+    description: Allow users to all bans associated with a player
+  banhammer.purge.others:
+    description: Allow users to purge bans that others have made
+  banhammer.purge.own:
+    description: Allow users to purge bans they have made themselves
+  banhammer.recent:
+    description: Allow users to display a list of recent bans
+  banhammer.undo:
+    description: Allow users to undo a ban made by any player at any time
+    children:
+      banhammer.undo.others: true
+      banhammer.undo.own: true
+      banhammer.undo.unrestricted: true
+  banhammer.undo.others:
+    description: Allow a user to undo the bans of other players
+  banhammer.undo.own:
+    description: Allow a user to undo their own bans
+  banhammer.undo.unrestricted:
+    description: Allow users to undo all bans regardless of creation time

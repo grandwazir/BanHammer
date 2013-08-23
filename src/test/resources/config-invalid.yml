@@ -48,7 +48,7 @@ alias-plugin:
 undo-time: 1m
 immune-players:
   - grandwazir
-limits:
+ban-limits:
   warning: 1h
   short: 1d
   medium: 3d

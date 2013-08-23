@@ -1,0 +1,32 @@
+# database.yml
+# - This configuration file is responsible for configuring the database settings for the plugin.
+# - Any values _not set_ in this file will be set to the values in bukkit.yml.
+# - Any _invalid_ values will most likely throw an exception.
+# - To rebuild this file stop your server, delete it and then restart.
+# values:
+# - username:
+# -- This value specifies what username should be used when connecting to the database.
+# -- Valid values: Any String
+# -- Default: bukkit
+# - password:
+# -- This value specifies what password to use when connecting to the database.
+# -- Valid values: Any String
+# -- Default: walrus
+# - driver:
+# -- This value specifies the class name of the JDBC driver to use.
+# -- Two JDBC drivers are included in bukkit; MySQL and SQLite. YOu may use others if you provide the library yourself.
+# -- Valid values: org.sqlite.JDBC or com.mysql.jdbc.Driver.
+# -- Default: org.sqlite.JDBC
+# - isolation:
+# -- This value specifies what transaction level to use when operating the database.
+# -- Not all databases support all transaction levels. If you are unsure just leave this to the default.
+# -- For more information read https://publib.boulder.ibm.com/iseries/v5r2/ic2924/index.htm?info/rzaha/transiso.htm
+# -- Valid values: NONE, READ_UNCOMMITED, READ_COMMITED, REPEATABLE_READ, SERIALIZABLE
+# -- Default: SERIALIZABLE
+# - url:
+# -- This specifies the url of the database connection. It should not include the username or password.
+# -- As a special case, the plugin will replace {DIR} and {NAME} with the directory and name of the plugin respectively.
+# -- Valid values: Any String conforming to the JDBC format.
+# -- Default: jdbc:ted:{DIR}{NAME}.db
+
+database: {}

@@ -36,7 +36,7 @@ public final class PluginConfiguration extends SimplePluginConfiguration {
 	private static final String IMMUNE_PLAYERS_KEY = "immune-players";
 	private static final String UNDO_TIME_KEY = "undo-time";
 	private static final String ALIAS_PLUGIN_ENABLED_KEY = "alias-plugin.enabled";
-	private static final String LIMITS_KEY = "ban_limits";
+	private static final String LIMITS_KEY = "ban-limits";
 
 	private final Map<String, Long> limits = new LinkedHashMap<String, Long>();
 	private final TimeFormatter timeFormatter = new PreciseDurationTimeFormatter();
