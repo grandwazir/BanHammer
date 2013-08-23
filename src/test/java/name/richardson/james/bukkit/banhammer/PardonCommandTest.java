@@ -47,7 +47,7 @@ public class PardonCommandTest extends TestCase {
 		when(playerRecordManager.find(anyString())).thenReturn(playerRecord);
 		when(player.hasPermission(anyString())).thenReturn(true);
 		command.execute(commandContext);
-		verify(banRecordManager).delete(ban);
+		verify(banRecordManager).save(ban);
 		verify(pluginManager).callEvent(Matchers.<BanHammerPlayerBannedEvent>any());
 		verify(player).sendMessage("§a§bfrank§a has been pardoned.");
 	}
