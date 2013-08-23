@@ -23,6 +23,7 @@ import org.bukkit.permissions.Permissible;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
+import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
 import name.richardson.james.bukkit.utilities.formatters.DefaultColourFormatter;
 import name.richardson.james.bukkit.utilities.localisation.Localisation;
@@ -30,6 +31,7 @@ import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClass
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
+import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
 
 public class RecentCommand extends AbstractCommand {
 
@@ -39,6 +41,7 @@ public class RecentCommand extends AbstractCommand {
 	private static final String NO_PERMISSION_KEY = "no-permission";
 
 	private final BanRecordManager banRecordManager;
+	private final ChoiceFormatter choiceFormatter;
 	private final Localisation localisation = new ResourceBundleByClassLocalisation(RecentCommand.class);
 	private final ColourFormatter colourFormatter = new DefaultColourFormatter();
 
@@ -46,6 +49,8 @@ public class RecentCommand extends AbstractCommand {
 
 	public RecentCommand(BanRecordManager banRecordManager) {
 		this.banRecordManager = banRecordManager;
+		this.choiceFormatter = new BanCountChoiceFormatter();
+		this.choiceFormatter.setMessage(colourFormatter.format(localisation.getMessage("header"), ColourFormatter.FormatStyle.HEADER));
 	}
 
 	@Override
@@ -53,6 +58,7 @@ public class RecentCommand extends AbstractCommand {
 		if (isAuthorised(context.getCommandSender())) {
 			setLimit(context);
 			List<BanRecord> bans = banRecordManager.list(count);
+			context.getCommandSender().sendMessage(choiceFormatter.getMessage());
 			for (BanRecord ban : bans) {
 				BanRecord.BanRecordFormatter formatter = ban.getFormatter();
 				context.getCommandSender().sendMessage(formatter.getMessages());
