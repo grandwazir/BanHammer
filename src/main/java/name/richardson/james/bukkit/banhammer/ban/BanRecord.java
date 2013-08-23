@@ -26,10 +26,7 @@ import java.util.List;
 
 import com.avaje.ebean.validation.NotNull;
 
-import name.richardson.james.bukkit.utilities.formatters.ApproximateTimeFormatter;
-import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
-import name.richardson.james.bukkit.utilities.formatters.DefaultColourFormatter;
-import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
+import name.richardson.james.bukkit.utilities.formatters.*;
 import name.richardson.james.bukkit.utilities.localisation.Localisation;
 import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
 
@@ -288,6 +285,7 @@ public class BanRecord {
 		private final ColourFormatter colourFormatter= new DefaultColourFormatter();
 		private final Localisation localisation = new ResourceBundleByClassLocalisation(BanRecordFormatter.class);
 		private final TimeFormatter timeFormatter = new ApproximateTimeFormatter();
+		private final TimeFormatter durationFormatter = new PreciseDurationTimeFormatter();
 		private final BanRecord ban;
 		private final List<String> messages= new ArrayList<String>();
 
@@ -313,7 +311,7 @@ public class BanRecord {
 				return colourFormatter.format(localisation.getMessage(LENGTH_KEY), ColourFormatter.FormatStyle.INFO, localisation.getMessage(PERMANENT_KEY));
 			} else {
 				final long length = ban.getExpiresAt().getTime() - ban.getCreatedAt().getTime();
-				return colourFormatter.format(localisation.getMessage(LENGTH_KEY), ColourFormatter.FormatStyle.INFO, timeFormatter.getHumanReadableDuration(length));
+				return colourFormatter.format(localisation.getMessage(LENGTH_KEY), ColourFormatter.FormatStyle.INFO, durationFormatter.getHumanReadableDuration(length));
 			}
 		}
 

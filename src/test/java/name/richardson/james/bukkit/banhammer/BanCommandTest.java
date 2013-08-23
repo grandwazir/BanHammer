@@ -145,6 +145,21 @@ public class BanCommandTest extends TestCase {
 		verify(pluginManager).callEvent(Matchers.<Event>any());
 	}
 
+	@Test
+	public void testExecuteBanPlayerWithinDefinedLimit() {
+		when(commandContext.has(anyInt())).thenReturn(true);
+		when(commandContext.getString(0)).thenReturn("frank");
+		when(commandContext.getJoinedArguments(1)).thenReturn("blah");
+		when(commandContext.hasFlag("t")).thenReturn(true);
+		when(commandContext.getFlag("t")).thenReturn("test");
+		PlayerRecord playerRecord = mock(PlayerRecord.class);
+		doReturn(playerRecord).when(playerRecordManager).find("frank");
+		when(player.hasPermission("banhammer.ban.test")).thenReturn(true);
+		command.execute(commandContext);
+		verify(player).sendMessage("§aYou have banned §bfrank§a.");
+		verify(pluginManager).callEvent(Matchers.<Event>any());
+	}
+
 
 	@Before
 	public void setUp()

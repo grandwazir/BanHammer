@@ -1,5 +1,6 @@
 # Changelog for BanHammer (v2.3.0-SNAPSHOT)
 
+2013-08-23 12:27:51 +0100    fix test failure (James Richardson)  
 2013-08-23 12:26:30 +0100    fix bug where pardon command was deleting bans instead of modifying them (James Richardson)  
 2013-08-23 12:24:31 +0100    register the purge command (James Richardson)  
 2013-08-23 12:24:08 +0100    replace choiceformatter with simple message (James Richardson)  
