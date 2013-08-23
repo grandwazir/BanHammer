@@ -115,6 +115,7 @@ public final class BanHammer extends JavaPlugin {
 	private void updatePlugin() {
 		if (!configuration.getAutomaticUpdaterState().equals(PluginUpdater.State.OFF)) {
 			PluginUpdater updater = new MavenPluginUpdater("ban-hammer", "name.richardson.james.bukkit", getDescription(), configuration.getAutomaticUpdaterBranch(), configuration.getAutomaticUpdaterState());
+			this.getServer().getScheduler().runTaskAsynchronously(this, updater);
 			new name.richardson.james.bukkit.utilities.updater.PlayerNotifier(this, this.getServer().getPluginManager(), updater);
 		}
 	}

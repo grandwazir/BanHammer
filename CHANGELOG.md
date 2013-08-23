@@ -1,5 +1,8 @@
 # Changelog for BanHammer (v2.3.0-SNAPSHOT)
 
+2013-08-23 18:10:30 +0100    name is required (James Richardson)  
+2013-08-23 18:09:50 +0100    set logging prefix (James Richardson)  
+2013-08-23 18:09:39 +0100    fix shading (James Richardson)  
 2013-08-23 18:05:34 +0100    remove single class package (James Richardson)  
 2013-08-23 12:53:33 +0100    add silent parameter to usage information (James Richardson)  
 2013-08-23 12:45:54 +0100    most recent ban to appear at the bottom (James Richardson)  
