@@ -58,6 +58,7 @@ public class RecentCommand extends AbstractCommand {
 		if (isAuthorised(context.getCommandSender())) {
 			setLimit(context);
 			List<BanRecord> bans = banRecordManager.list(count);
+			choiceFormatter.setArguments(bans.size());
 			context.getCommandSender().sendMessage(choiceFormatter.getMessage());
 			for (BanRecord ban : bans) {
 				BanRecord.BanRecordFormatter formatter = ban.getFormatter();

@@ -1,5 +1,7 @@
 # Changelog for BanHammer (v2.3.0-SNAPSHOT)
 
+2013-08-23 12:18:15 +0100    send a header before returning list of recent bans (James Richardson)  
+2013-08-23 12:07:22 +0100    implement update checker and added localisation file for start up errors (James Richardson)  
 2013-08-23 12:02:33 +0100    fix using a _ instead of a - (James Richardson)  
 2013-08-23 11:54:06 +0100    added comments to database.yml (James Richardson)  
 2013-08-22 23:43:01 +0100    count is optional not required (James Richardson)  
