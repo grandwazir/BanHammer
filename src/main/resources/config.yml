@@ -33,7 +33,7 @@
 # -- This value defines if BanHammer should check players for Alias using the Alias plugin.
 # -- Valid values: True or False
 # -- Default: False
-# - limits:
+# - ban-limits:
 # -- This is a map of names and times which form the limits which can apply to some bans
 # -- For example to restrict a player to banning for a `short` time you would define a limit called short and then give them the `banhammer.ban.short` permission.
 # -- Valid values: Any String followed by a time format
@@ -48,7 +48,7 @@ alias-plugin:
 undo-time: 1m
 immune-players:
   - grandwazir
-limits:
+ban-limits:
   warning: 1h
   short: 1d
   medium: 3d
