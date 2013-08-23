@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.bukkit.permissions.Permissible;
 
+import com.google.common.collect.Lists;
+
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
@@ -58,6 +60,9 @@ public class RecentCommand extends AbstractCommand {
 			if (bans.size() == 0) {
 				context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage("no-bans"), ColourFormatter.FormatStyle.INFO));
 			}
+			// reverse the list so the most recent ban is at the bottom of the list
+			// this makes sense since the console scrolls down.
+			bans = Lists.reverse(bans);
 			for (BanRecord ban : bans) {
 				BanRecord.BanRecordFormatter formatter = ban.getFormatter();
 				context.getCommandSender().sendMessage(formatter.getMessages());
