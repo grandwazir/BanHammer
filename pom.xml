@@ -49,44 +49,49 @@
   <build>
       <resources>
           <resource>
-              <directory>src/main/resources/</directory>
+              <directory>src/main/resources</directory>
               <filtering>true</filtering>
+              <includes>
+                  <include>*.yml</include>
+                  <include>**/*.properties</include>
+              </includes>
           </resource>
       </resources>
       <plugins>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-shade-plugin</artifactId>
-             <!-- We want to bundle in BukkitUtilities -->
-            <version>2.1</version>
-            <executions>
-              <execution>
-                <phase>package</phase>
-                <goals>
-                  <goal>shade</goal>
-                </goals>
-                <configuration>
-                  <shadedArtifactAttached>true</shadedArtifactAttached>
-                  <shadedClassifierName>shaded</shadedClassifierName>
-                  <artifactSet>
-                    <includes>
-                      <include>name.richardson.james.bukkit:bukkit-utilities</include>
-                      <include>org.mcstats.bukkit:metrics</include>
-                    </includes>
-                  </artifactSet>
-                  <relocations>
-                    <relocation>
-                      <pattern>name.richardson.james.bukkit.utilities</pattern>
-                      <shadedPattern>name.richardson.james.bukkit.banhammer.utilities</shadedPattern>
-                    </relocation>
-                     <relocation>
-                         <pattern>org.mcstats.bukkit</pattern>
-                         <shadedPattern>name.richardson.james.bukkit.banhammer.utilities.metrics</shadedPattern>
-                     </relocation>
-                  </relocations>
-                </configuration>
-              </execution>
-            </executions>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-shade-plugin</artifactId>
+              <!-- We want to bundle in BukkitUtilities -->
+              <version>1.5</version>
+              <executions>
+                  <execution>
+                      <phase>package</phase>
+                      <goals>
+                          <goal>shade</goal>
+                      </goals>
+                      <configuration>
+                          <shadedArtifactAttached>true</shadedArtifactAttached>
+                          <shadedClassifierName>shaded</shadedClassifierName>
+                          <artifactSet>
+                              <includes>
+                                  <include>name.richardson.james.bukkit:bukkit-utilities</include>
+                                  <include>org.mcstats.bukkit:metrics</include>
+                              </includes>
+                          </artifactSet>
+                          <relocations>
+                              <relocation>
+                                  <pattern>name.richardson.james.bukkit.utilities</pattern>
+                                  <shadedPattern>name.richardson.james.bukkit.banhammer.utilities</shadedPattern>
+                              </relocation>
+                              <relocation>
+                                  <pattern>org.mcstats</pattern>
+                                  <shadedPattern>name.richardson.james.bukkit.banhammer.utilities.metrics</shadedPattern>
+                              </relocation>
+                          </relocations>
+                          <minimizeJar>true</minimizeJar>
+                      </configuration>
+                  </execution>
+              </executions>
           </plugin>
       </plugins>
   </build>
