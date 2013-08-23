@@ -28,6 +28,7 @@ import name.richardson.james.bukkit.utilities.formatters.DefaultColourFormatter;
 import name.richardson.james.bukkit.utilities.localisation.Localisation;
 import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
 
+import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
@@ -65,8 +66,10 @@ public class PardonCommand extends AbstractCommand {
 		if (!setPlayerRecord(context)) return;
 		if (!hasPermission(context.getCommandSender())) return;
 		boolean silent = (context.hasFlag("s") || context.hasFlag("silent"));
-		BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(playerRecord.getActiveBan(), context.getCommandSender(), silent);
-		banRecordManager.delete(playerRecord.getActiveBan());
+		BanRecord ban = playerRecord.getActiveBan();
+		ban.setState(BanRecord.State.PARDONED);
+		banRecordManager.save(ban);
+		BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(ban, context.getCommandSender(), silent);
 		context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(PLAYER_PARDONED_KEY), ColourFormatter.FormatStyle.INFO, playerName));
 		pluginManager.callEvent(event);
 	}

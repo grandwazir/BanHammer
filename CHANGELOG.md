@@ -1,5 +1,7 @@
 # Changelog for BanHammer (v2.3.0-SNAPSHOT)
 
+2013-08-23 12:24:31 +0100    register the purge command (James Richardson)  
+2013-08-23 12:24:08 +0100    replace choiceformatter with simple message (James Richardson)  
 2013-08-23 12:19:23 +0100    forgot to set choiceformatter argument (James Richardson)  
 2013-08-23 12:18:15 +0100    send a header before returning list of recent bans (James Richardson)  
 2013-08-23 12:07:22 +0100    implement update checker and added localisation file for start up errors (James Richardson)  
