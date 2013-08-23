@@ -198,6 +198,7 @@ public final class BanHammer extends JavaPlugin {
 		getCommand("pardon").setExecutor(new FallthroughCommandInvoker(command));
 		command = new PurgeCommand(getPlayerRecordManager(), getBanRecordManager());
 		command.addMatcher(playerMatcher);
+		commands.add(command);
 		command = new RecentCommand(getBanRecordManager());
 		commands.add(command);
 		command = new UndoCommand(getPlayerRecordManager(), getBanRecordManager(), configuration.getUndoTime());
