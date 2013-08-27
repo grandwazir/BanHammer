@@ -13,6 +13,7 @@ http://grandwazir.github.com/BanHammer/versions/2.2.0.html
 http://grandwazir.github.com/BanHammer/versions/2.0.4.html
 http://grandwazir.github.com/BanHammer/versions/2.0.6.html
 http://grandwazir.github.com/BanHammer/versions/2.0.3.html
+http://grandwazir.github.com/BanHammer/versions/2.3.1.html
 http://grandwazir.github.com/BanHammer/versions/2.0.1.html
 http://grandwazir.github.com/BanHammer/versions/2.3.0.html
 http://grandwazir.github.com/BanHammer/versions/2.0.7.html
