@@ -1,5 +1,8 @@
-# Changelog for BanHammer (v2.3.0-SNAPSHOT)
+# Changelog for BanHammer (v2.3.1-SNAPSHOT)
 
+
+**v2.3.0**  
+2013-08-23 18:58:23 +0100    added back BukkitUtil localisations (James Richardson)  
 2013-08-23 18:42:03 +0100    actually start the updater (James Richardson)  
 2013-08-23 18:10:30 +0100    name is required (James Richardson)  
 2013-08-23 18:09:50 +0100    set logging prefix (James Richardson)  

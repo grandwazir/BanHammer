@@ -35,6 +35,8 @@ import name.richardson.james.bukkit.utilities.command.HelpCommand;
 import name.richardson.james.bukkit.utilities.command.invoker.CommandInvoker;
 import name.richardson.james.bukkit.utilities.command.invoker.FallthroughCommandInvoker;
 import name.richardson.james.bukkit.utilities.command.matcher.OnlinePlayerMatcher;
+import name.richardson.james.bukkit.utilities.localisation.Localisation;
+import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
 import name.richardson.james.bukkit.utilities.logging.PluginLoggerFactory;
 import name.richardson.james.bukkit.utilities.persistence.database.DatabaseLoader;
 import name.richardson.james.bukkit.utilities.persistence.database.DatabaseLoaderFactory;
@@ -62,6 +64,7 @@ public final class BanHammer extends JavaPlugin {
 	private static final String DATABASE_CONFIG_NAME = "database.yml";
 
 	private final Logger logger = PluginLoggerFactory.getLogger(BanHammer.class);
+	private final Localisation localisation = new ResourceBundleByClassLocalisation(BanHammer.class);
 
 	private BanRecordManager banRecordManager;
 	private PluginConfiguration configuration;
@@ -126,7 +129,7 @@ public final class BanHammer extends JavaPlugin {
 	private void hookAlias() {
 		final Alias plugin = (Alias) this.getServer().getPluginManager().getPlugin("Alias");
 		if (plugin == null) {
-			logger.log(Level.WARNING, "unable-to-hook-alias");
+			logger.log(Level.WARNING, localisation.getMessage("unable-to-hook-alias"));
 		} else {
 			logger.log(Level.FINE, "Using {0}.", plugin.getDescription().getFullName());
 			this.playerNameRecordManager = plugin.getPlayerNameRecordManager();

@@ -50,10 +50,9 @@ public final class PluginConfiguration extends SimplePluginConfiguration {
 		this.limits.clear();
 		final ConfigurationSection section = this.getConfiguration().getConfigurationSection(LIMITS_KEY);
 		for (final String key : section.getKeys(false)) {
-			final String name = key;
 			final Long length = timeFormatter.getDurationInMilliseconds(section.getString(key));
 			if (length != 0) {
-				this.limits.put(name, length);
+				this.limits.put(key, length);
 			}
 		}
 		return this.limits;
