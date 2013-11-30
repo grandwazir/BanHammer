@@ -1,5 +1,9 @@
-# Changelog for BanHammer (v2.3.1-SNAPSHOT)
+# Changelog for BanHammer (v2.3.2-SNAPSHOT)
 
+
+**v2.3.1**  
+2013-08-27 21:47:34 +0100    add new localisation file from BukkitUtils (James Richardson)  
+2013-08-27 21:44:34 +0100    prepare to commit (James Richardson)  
 
 **v2.3.0**  
 2013-08-23 18:58:23 +0100    added back BukkitUtil localisations (James Richardson)  

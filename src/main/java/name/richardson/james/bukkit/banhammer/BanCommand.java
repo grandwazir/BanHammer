@@ -105,6 +105,7 @@ public class BanCommand extends AbstractCommand {
 		if (!immunePlayerTargeted && sender.hasPermission(BanCommand.PERMISSION_PERMANENT)) return true;
 		for (final String limitName : this.limits.keySet()) {
 			final String node = BanCommand.PERMISSION_ALL + "." + limitName;
+			if (time == 0) break;
 			if (!sender.hasPermission(node)) continue;
 			if (!immunePlayerTargeted && (this.limits.get(limitName) >= this.time)) return true;
 		}
