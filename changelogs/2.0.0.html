@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta name="generator" content="HTML Tidy for HTML5 (experimental) for Linux https://github.com/w3c/tidy-html5/tree/c63cc39">
+  <meta charset="utf-8">
+
+  <title>BanHammer: 2.0.0</title>
+  <meta name="author" content="James Richardson"><!-- Import bootstrap -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type="text/javascript" src="http://grandwazir.github.io/BanHammer/assets/js/jquery-1.10.2.min.js">
+</script>
+  <script type="text/javascript" src="http://grandwazir.github.io/BanHammer/assets/js/bootstrap.js">
+</script>
+  <link href="http://grandwazir.github.io/BanHammer/assets/css/bootstrap.css" rel="stylesheet">
+</head>
+
+<body>
+  <nav class="navbar navbar-default" role="navigation">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="navbar-collapse"><span class="sr-only">Toggle navigation</span></button> <a class="navbar-brand" href="http://grandwazir.github.io/BanHammer">BanHammer</a>
+      </div>
+
+      <div class="collapse navbar-collapse" id="navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation</a>
+
+            <ul class="dropdown-menu">
+              <li>
+                <a href="http://grandwazir.github.io/BanHammer/docs/getting_started.html">Getting started</a>
+              </li>
+
+              <li>
+                <a href="http://grandwazir.github.io/BanHammer/docs/permissions.html">Permissions</a>
+              </li>
+
+              <li>
+                <a href="http://grandwazir.github.io/BanHammer/docs/setting_up_the_database.html">Setting up the database</a>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <a href="http://grandwazir.github.io/BanHammer/download.html">Download</a>
+          </li>
+
+          <li>
+            <a href="http://grandwazir.github.io/BanHammer/features.html">Features</a>
+          </li>
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Elsewhere</a>
+
+            <ul class="dropdown-menu">
+              <li>
+                <a href="http://dev.bukkit.org/bukkit-plugins/banhammer">BukkitDev</a>
+              </li>
+
+              <li>
+                <a href="http://github.com/grandwazir/BanHammer">GitHub</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="content">
+    <div class="container">
+      <div class="alert alert-warning">
+        <strong>This is an old version and is no longer supported.</strong>
+      </div>
+
+      <div class="page-header">
+        <h1>2.0.0 <small>Released on 08 August 2012</small></h1>
+      </div>
+
+      <ul class="list-inline">
+        <li>
+          <a href="http://repository.james.richardson.name/releases/name/richardson/james/bukkit/ban-hammer/2.0.0/ban-hammer-2.0.0.jar"><button class="btn btn-large btn-primary" type="button">Download</button></a>
+        </li>
+
+        <li>
+          <a href="https://github.com/grandwazir/BanHammer/tree/v2.0.0"><button class="btn btn-large" type="button">Source</button></a>
+        </li>
+      </ul>
+
+      <div class="panel panel-warning">
+        <div class="panel-heading">
+          <h2 class="panel-title">Read before updating</h2>
+        </div>
+
+        <div class="panel-body">
+          <p><strong>Upgrading to BanHammer 2.0 will rebuild your database. Your data will be imported and nothing should be lost. If you are at all worried make sure you make a backup of your .db file or SQL tables.</strong></p>
+
+          <p>Do not manually delete the old bh_bans table. Doing so will render the schema invalid and all your bans will be lost. This will be fixed in a future update. Additionally if you display bans on a webpage you will also need to update your scripts to match the new schema.</p>
+        </div>
+      </div>
+
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h2 class="panel-title">New features</h2>
+        </div>
+
+        <div class="panel-body">
+          <ul>
+            <li>Added metrics</li>
+
+            <li>Added underlying support for plugin specific database settings.</li>
+
+            <li>Added two new events for others to listen to.</li>
+
+            <li>Add basic player immunity</li>
+
+            <li>Add feature which automatically deassociates pardoned players (if using Alias)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h2 class="panel-title">Improvements</h2>
+        </div>
+
+        <div class="panel-body">
+          <ul>
+            <li>Better formatting of time and dates.</li>
+
+            <li>Better colour formatting throughout</li>
+
+            <li>Performance improvements (Using AsyncPreLoginEvent)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h2 class="panel-title">Bug fixes</h2>
+        </div>
+
+        <div class="panel-body">
+          <ul>
+            <li>Fix issue with kick command showing weird formatting</li>
+
+            <li>Fix issue setting kick reason twice.</li>
+
+            <li>Added a couple of missing keys.</li>
+
+            <li>No longer an NPE when using recent command and having no bans in the database.</li>
+          </ul>
+        </div>
+      </div>
+
+      <ul class="pager">
+        <li class="previous disabled">
+          <a href="#">← Older</a>
+        </li>
+
+        <li class="next">
+          <a href="http://grandwazir.github.io/BanHammer/changelogs/2.0.1.html">Newer →</a>
+        </li>
+      </ul>
+    </div>
+    <hr>
+  </div>
+
+  <footer>
+    <div class="container">
+      <p class="text-center"><small>© 2013 James Richardson with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a> and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a></small></p>
+    </div>
+  </footer>
+</body>
+</html>

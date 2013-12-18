@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta name="generator" content="HTML Tidy for HTML5 (experimental) for Linux https://github.com/w3c/tidy-html5/tree/c63cc39">
+  <meta charset="utf-8">
+
+  <title>BanHammer: Getting started</title>
+  <meta name="description" content="A quick guide to getting started with BanHammer">
+  <meta name="author" content="James Richardson"><!-- Import bootstrap -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type="text/javascript" src="http://grandwazir.github.io/BanHammer/assets/js/jquery-1.10.2.min.js">
+</script>
+  <script type="text/javascript" src="http://grandwazir.github.io/BanHammer/assets/js/bootstrap.js">
+</script>
+  <link href="http://grandwazir.github.io/BanHammer/assets/css/bootstrap.css" rel="stylesheet">
+</head>
+
+<body>
+  <nav class="navbar navbar-default" role="navigation">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="navbar-collapse"><span class="sr-only">Toggle navigation</span></button> <a class="navbar-brand" href="http://grandwazir.github.io/BanHammer">BanHammer</a>
+      </div>
+
+      <div class="collapse navbar-collapse" id="navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation</a>
+
+            <ul class="dropdown-menu">
+              <li class="active">
+                <a href="http://grandwazir.github.io/BanHammer/docs/getting_started.html" class="active">Getting started</a>
+              </li>
+
+              <li>
+                <a href="http://grandwazir.github.io/BanHammer/docs/permissions.html">Permissions</a>
+              </li>
+
+              <li>
+                <a href="http://grandwazir.github.io/BanHammer/docs/setting_up_the_database.html">Setting up the database</a>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <a href="http://grandwazir.github.io/BanHammer/download.html">Download</a>
+          </li>
+
+          <li>
+            <a href="http://grandwazir.github.io/BanHammer/features.html">Features</a>
+          </li>
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Elsewhere</a>
+
+            <ul class="dropdown-menu">
+              <li>
+                <a href="http://dev.bukkit.org/bukkit-plugins/banhammer">BukkitDev</a>
+              </li>
+
+              <li>
+                <a href="http://github.com/grandwazir/BanHammer">GitHub</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="content">
+    <div class="container">
+      <div class="page-header">
+        <h1>Getting started</h1>
+      </div>
+
+      <p class="lead">Getting started with BanHammer couldn't be easier. Just download and drag it into your plugins folder and away you go. Still stuck? Read on.</p>
+
+      <h2>Kicking</h2>
+
+      <p>You can kick players easily using BanHammer. This does exactly the same as the vanilla command except it uses the same notification system for players as if you banned them. For example I am going to kick peppe70 for using a hacked client by typing <code>/kick peppe70 Using a hacked client</code>.</p>
+
+      <p>Kick actions are not recorded in the database but are logged to the server log.</p>
+
+      <h2>Banning</h2>
+
+      <p>All bans are recorded in the BanHammer database until you pardon a player or purge their ban history. Times are stored in milliseconds so you may need to do some conversion if you are doing a simple ban list for your website for example.</p>
+
+      <h3>Permanently</h3>
+
+      <p>You can ban players in a variety of interesting ways. Permanent bans are easiest to do. In this example I am going to ban tom by typing <code>/ban tom Being silly</code>. Anything after their name is included in the ban reason.</p>
+
+      <h3>Temporarily</h3>
+
+      <p>You can also ban players for a specific period of time. This is quite useful if it is someone's first offence or if you use short temporary bans as a warning system.</p>
+
+      <p>In this example I am going to ban alice for 1 day, 16 hours and 30 minutes: <code>/ban alice t:1d16h30m Being silly</code>.</p>
+
+      <p>Valid time units are: seconds (s), minutes (m), hours (h), days (d) and weeks (w).</p>
+
+      <h3>Setting a maximum length for temporary bans</h3>
+
+      <p>You can now set configurable ban limits to prevent moderators from issuing excessive bans. You give moderators the ability to ban up to a limit by giving them the relevant permission node. For example in the configuration below I have three ban limits:</p>
+
+      <div class="highlight">
+        <pre>
+<code class="text language-text" data-lang="text">ban-limits:
+    short: 1d
+    medium: 3d
+    long: 7d
+</code>
+</pre>
+      </div>
+
+      <p>If I wanted my moderators to only be able to ban for up to 3 days I would give them the following permission node:</p>
+
+      <div class="highlight">
+        <pre>
+<code class="text language-text" data-lang="text">banhammer.ban.medium
+</code>
+</pre>
+      </div>
+
+      <p>You can also use these as a short cut for specifying time when you ban a player. This becomes really useful when you define your limits as sanctions for specific offences and helps to ensure that your players are consistent with the bans they hand out.</p>
+
+      <p>In this example I am going to ban a player for 3 days by using the limit name: <code>/ban Yul t:medium</code>.</p>
+
+      <h2>Unbanning</h2>
+
+      <p>To understand this section properly you will need to know the difference between active and inactive bans. Active bans are bans that stop a player from logging into the server. Examples would include temporary bans which have not expired and permanent bans.</p>
+
+      <p>Inactive bans are any bans which have expired so they would be past temporary bans.</p>
+
+      <h3>Undoing</h3>
+
+      <p>You can undo a ban if you make a mistake. This is meant to be used shortly after you made the original ban and for that reason has a 1 minute time limit. This will erase all history of the ban from the database.</p>
+
+      <p>To undo a ban made by yourself type <code>/bh undo</code>.</p>
+
+      <p>To undo a ban made by another player type <code>/bh undo &lt;name&gt;</code>.</p>
+
+      <h3>Pardoning</h3>
+
+      <p>Pardoning a player will remove from the database any active bans and allow them to rejoin the server. I felt I was a bit mean to tom so I am going to pardon him now by typing <code>/pardon tom</code>.</p>
+
+      <p>If you only want your moderators to be able to pardon their own bans, for example to undo mistakes they make when issuing them, you can give them the permission node <code>banhammer.pardon.own</code>.</p>
+
+      <h3>Purging ban history</h3>
+
+      <p>Purging a player's ban history will remove all bans from the database (including expired ones) and leave them with a clean record. For example <code>/bh purge franlink123</code>.</p>
+
+      <p>Because this clears all evidence you should restrict access to this command to your most trusted moderators.</p>
+
+      <h2>Management</h2>
+
+      <p>Banhammer also comes with various extra commands which help in running your server.</p>
+
+      <h3>Checking if a player is banned</h3>
+
+      <p>You can easily check if a player is banned using the <code>/bh check</code> command. Depending on the type of ban you will get different information from the command. This is due to the way that bans are cached into memory. For the full details of a ban look through a player's ban history instead.</p>
+
+      <h3>Viewing recent bans</h3>
+
+      <p>You can also get a list of recent bans made by players on your server - useful for when you want to see what has been going on. This example gets me the last 5 bans made on the server: <code>/bh recent 5</code></p>
+
+      <h3>Reviewing a player's ban history</h3>
+
+      <p>You can get a report of all the bans associated with a particular player easily. The report includes who the date they were banned, who banned them, the reason given and how long for.</p>
+
+      <p>To view the ban history of someone else type <code>/bh history &lt;name&gt;</code>.</p>
+
+      <p>To view your own type <code>/bh history</code>.</p>
+
+      <h3>Auditing the bans of a player</h3>
+
+      <p>You can also get a report of all the bans made by a player on your server. This includes the following details:‭</p>
+
+      <ul>
+        <li>How many bans they have made</li>
+
+        <li>How many permanent bans they have issued</li>
+
+        <li>How many temporary bans they have issued</li>
+
+        <li>How many bans are still active</li>
+
+        <li>How many bans have since expired</li>
+
+        <li>How many bans that have been pardoned (by themselves or anyone else).</li>
+      </ul>
+
+      <p>To view an audit report of someone type <code>/bh audit &lt;name&gt;</code>.</p>
+
+      <p>To view your own type <code>/bh audit</code>.</p>
+
+      <h3>Importing and exporting bans</h3>
+
+      <p>You can now transfer the bans from BanHammer into banned-players.txt for when you want to convert to another plugin or if you find yourself in a situation where you need to go without Bukkit for a while.</p>
+
+      <h4>Importing bans</h4>
+
+      <p>BanHammer will add all the banned names in banned-players.txt to the database using the default reason specified for your language. By default this is "Imported from banned-players.txt".</p>
+
+      <p>All bans will be imported as permanent bans and as the names are imported they <em>will be removed</em> from basic list. This is to stop basic bans interfering with BanHammer. You import the bans by using the following command: <code>/bh import</code>.</p>
+
+      <p>On occasion some bans may not be imported. The only foreseeable reason for this is that a ban for that player already exists in the database. It will not be replaced however the basic ban will be removed like all the others.</p>
+
+      <h4>Exporting bans</h4>
+
+      <p>BanHammer can export the names of all the players who have bans to the basic ban list. You can do this by using the following command: <code>/bh export</code>.</p>
+
+      <p><em>All active bans will be converted into permanent bans when exported.</em></p>
+    </div>
+    <hr>
+  </div>
+
+  <footer>
+    <div class="container">
+      <p class="text-center"><small>© 2013 James Richardson with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a> and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a></small></p>
+    </div>
+  </footer>
+</body>
+</html>
