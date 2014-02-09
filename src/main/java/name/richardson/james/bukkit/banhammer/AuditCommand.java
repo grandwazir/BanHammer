@@ -111,7 +111,7 @@ public class AuditCommand extends AbstractCommand {
 		return false;
 	}
 
-	public class AuditSummary {
+	public final class AuditSummary {
 
 		private static final String TYPE_SUMMARY_KEY = "type-summary";
 		private static final String PERMANENT_BANS_PERCENTAGE_KEY = "permanent-bans-percentage";

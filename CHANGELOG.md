@@ -1,5 +1,6 @@
 # Changelog for BanHammer (v2.3.2-SNAPSHOT)
 
+2013-11-30 14:54:22 +0000    fixes [#91](https://github.com/grandwazir/BanHammer/ban-hammer/issues/91); players with specific limits could ban permanently (James Richardson)  
 
 **v2.3.1**  
 2013-08-27 21:47:34 +0100    add new localisation file from BukkitUtils (James Richardson)  

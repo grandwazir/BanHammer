@@ -46,9 +46,9 @@ public final class AliasBannedPlayerListener extends AbstractListener {
 		this.playerNameRecordManager = playerNameRecordManager;
 	}
 
-	public boolean isPlayerBanned(String playerName) {
+	public void createBanIfPlayerHasBannedAlias(String playerName) {
 		PlayerNameRecord playerNameRecord = playerNameRecordManager.find(playerName);
-		if (playerNameRecord == null) return false;
+		if (playerNameRecord == null) return;
 		Set<String> aliases = playerNameRecord.getAliases();
 		for (String alias : aliases) {
 			if (!this.playerRecordManager.exists(alias)) continue;
@@ -63,33 +63,16 @@ public final class AliasBannedPlayerListener extends AbstractListener {
 				builder.setReason(reason);
 				builder.setExpiresAt(playerRecord.getActiveBan().getExpiresAt());
 				builder.save();
-				return true;
 			}
 		}
-		return false;
 	}
 
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPlayerLogin(AsyncPlayerPreLoginEvent event) {
 		if (event.getLoginResult() == AsyncPlayerPreLoginEvent.Result.KICK_BANNED) return;
 		logger.log(Level.FINER, "Received " + event.getEventName());
 		final String playerName = event.getName();
-		if (this.isPlayerBanned(playerName)) {
-			final BanRecord record = this.playerRecordManager.find(playerName).getActiveBan();
-			final String message = this.getKickMessage(record);
-			event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, message);
-		}
-	}
-
-	private final String getKickMessage(BanRecord record) {
-		switch (record.getType()) {
-			case TEMPORARY: {
-				String time = timeFormatter.getHumanReadableDuration(record.getExpiresAt().getTime());
-				return colourFormatter.format(localisation.getMessage(BANNED_TEMPORARILY_KEY), ColourFormatter.FormatStyle.ERROR, record.getReason(), record.getCreator().getName(), time);
-			}
-			default: {
-				return colourFormatter.format(localisation.getMessage(BANNED_PERMANENTLY_KEY), ColourFormatter.FormatStyle.ERROR, record.getReason(), record.getCreator().getName());
-			}
-		}
+		createBanIfPlayerHasBannedAlias(playerName);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
