@@ -25,16 +25,14 @@ import org.bukkit.permissions.Permissible;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
-import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
-import name.richardson.james.bukkit.utilities.formatters.DefaultColourFormatter;
-import name.richardson.james.bukkit.utilities.localisation.Localisation;
-import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
+import name.richardson.james.bukkit.utilities.localisation.PluginLocalisation;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
+import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
 
 public class PurgeCommand extends AbstractCommand {
 
@@ -42,17 +40,9 @@ public class PurgeCommand extends AbstractCommand {
 	public static final String PERMISSION_OWN = "banhammer.purge.own";
 	public static final String PERMISSION_OTHERS = "banhammer.purge.others";
 
-	private static final String BANS_PURGED_KEY = "bans-purged";
-	private static final String NO_PERMISSION_KEY = "no-permission";
-	private static final String MUST_SPECIFY_PLAYER_KEY = "must-specify-player";
-	private static final String PLAYER_HAS_NEVER_BEEN_BANNED_KEY = "player-has-never-been-banned";
-
 	private final BanRecordManager banRecordManager;
 	private final ChoiceFormatter choiceFormatter;
 	private final PlayerRecordManager playerRecordManager;
-	private final Localisation localisation = new ResourceBundleByClassLocalisation(PurgeCommand.class);
-	private final ColourFormatter colourFormatter = new DefaultColourFormatter();
-
 	private String playerName;
 	private PlayerRecord playerRecord;
 
@@ -60,7 +50,7 @@ public class PurgeCommand extends AbstractCommand {
 		this.playerRecordManager = playerRecordManager;
 		this.banRecordManager = banRecordManager;
 		this.choiceFormatter = new BanCountChoiceFormatter();
-		this.choiceFormatter.setMessage(colourFormatter.format(localisation.getMessage(BANS_PURGED_KEY), ColourFormatter.FormatStyle.INFO));
+		this.choiceFormatter.setMessage(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.PURGE_SUMMARY));
 	}
 
 	@Override
@@ -81,7 +71,30 @@ public class PurgeCommand extends AbstractCommand {
 			banRecordManager.delete(records);
 			context.getCommandSender().sendMessage(choiceFormatter.getMessage());
 		} else {
-			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(NO_PERMISSION_KEY), ColourFormatter.FormatStyle.ERROR));
+			String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_NO_PERMISSION);
+			context.getCommandSender().sendMessage(message);
+		}
+	}
+
+	private boolean setPlayerRecord(CommandContext context) {
+		playerRecord = playerRecordManager.find(playerName);
+		if (playerRecord == null || playerRecord.getBans().size() == 0) {
+			String message = getLocalisation().formatAsInfoMessage(BanHammerLocalisation.PLAYER_NEVER_BEEN_BANNED, playerName);
+			context.getCommandSender().sendMessage(message);
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	private boolean setPlayerName(CommandContext context) {
+		playerName = context.getString(0);
+		if (playerName == null) {
+			String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_MUST_SPECIFY_PLAYER);
+			context.getCommandSender().sendMessage(message);
+		  return false;
+		} else {
+			return true;
 		}
 	}
 
@@ -91,26 +104,6 @@ public class PurgeCommand extends AbstractCommand {
 		if (permissible.hasPermission(PERMISSION_OTHERS)) return true;
 		if (permissible.hasPermission(PERMISSION_OWN)) return true;
 		return false;
-	}
-
-	private boolean setPlayerName(CommandContext context) {
-		playerName = context.getString(0);
-		if (playerName == null) {
-			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(MUST_SPECIFY_PLAYER_KEY), ColourFormatter.FormatStyle.ERROR));
-		  return false;
-		} else {
-			return true;
-		}
-	}
-
-	private boolean setPlayerRecord(CommandContext context) {
-		playerRecord = playerRecordManager.find(playerName);
-		if (playerRecord == null || playerRecord.getBans().size() == 0) {
-			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(PLAYER_HAS_NEVER_BEEN_BANNED_KEY), ColourFormatter.FormatStyle.INFO, playerName));
-			return false;
-		} else {
-			return true;
-		}
 	}
 
 }

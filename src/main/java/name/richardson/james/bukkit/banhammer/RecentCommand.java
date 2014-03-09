@@ -25,27 +25,18 @@ import com.google.common.collect.Lists;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
-import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
-import name.richardson.james.bukkit.utilities.formatters.DefaultColourFormatter;
-import name.richardson.james.bukkit.utilities.localisation.Localisation;
-import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
+import name.richardson.james.bukkit.utilities.localisation.PluginLocalisation;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
-import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
+import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
 
 public class RecentCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.recent";
-
 	private static final int DEFAULT_LIMIT = 5;
-	private static final String NO_PERMISSION_KEY = "no-permission";
 
 	private final BanRecordManager banRecordManager;
-	private final Localisation localisation = new ResourceBundleByClassLocalisation(RecentCommand.class);
-	private final ColourFormatter colourFormatter = new DefaultColourFormatter();
-
 	private int count;
 
 	public RecentCommand(BanRecordManager banRecordManager) {
@@ -58,7 +49,8 @@ public class RecentCommand extends AbstractCommand {
 			setLimit(context);
 			List<BanRecord> bans = banRecordManager.list(count);
 			if (bans.size() == 0) {
-				context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage("no-bans"), ColourFormatter.FormatStyle.INFO));
+				String message = getLocalisation().formatAsInfoMessage(BanHammerLocalisation.RECENT_NO_BANS);
+				context.getCommandSender().sendMessage(message);
 			}
 			// reverse the list so the most recent ban is at the bottom of the list
 			// this makes sense since the console scrolls down.
@@ -68,14 +60,9 @@ public class RecentCommand extends AbstractCommand {
 				context.getCommandSender().sendMessage(formatter.getMessages());
 			}
 		} else {
-			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(NO_PERMISSION_KEY), ColourFormatter.FormatStyle.ERROR));
+			String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_NO_PERMISSION);
+			context.getCommandSender().sendMessage(message);
 		}
-	}
-
-	@Override
-	public boolean isAuthorised(Permissible permissible) {
-		if(permissible.hasPermission(PERMISSION_ALL)) return true;
-		return false;
 	}
 
 	private void setLimit(CommandContext context) {
@@ -84,6 +71,11 @@ public class RecentCommand extends AbstractCommand {
 		} catch (NumberFormatException e) {
 			count = DEFAULT_LIMIT;
 		}
+	}
+
+	@Override
+	public boolean isAuthorised(Permissible permissible) {
+		return permissible.hasPermission(PERMISSION_ALL);
 	}
 
 }

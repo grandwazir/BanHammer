@@ -26,16 +26,14 @@ import org.bukkit.permissions.Permissible;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
-import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
-import name.richardson.james.bukkit.utilities.formatters.DefaultColourFormatter;
-import name.richardson.james.bukkit.utilities.localisation.Localisation;
-import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
+import name.richardson.james.bukkit.utilities.localisation.PluginLocalisation;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
+import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
 
 public class AuditCommand extends AbstractCommand {
 
@@ -43,16 +41,9 @@ public class AuditCommand extends AbstractCommand {
 	public static final String PERMISSION_SELF = "banhammer.audit.self";
 	public static final String PERMISSION_OTHERS = "banhammer.audit.others";
 
-	private static final String PLAYER_HAS_MADE_NO_BANS_KEY = "player-has-made-no-bans";
-	private static final String HEADER_KEY = "header";
-	private static final String NO_PERMISSION_KEY = "no-permission";
-
+	private final BanRecordManager banRecordManager;
 	private final ChoiceFormatter choiceFormatter;
 	private final PlayerRecordManager playerRecordManager;
-	private final Localisation localisation = new ResourceBundleByClassLocalisation(AuditCommand.class);
-	private final ColourFormatter colourFormatter = new DefaultColourFormatter();
-	private final BanRecordManager banRecordManager;
-
 	private String playerName;
 	private PlayerRecord playerRecord;
 
@@ -60,7 +51,7 @@ public class AuditCommand extends AbstractCommand {
 		this.playerRecordManager = playerRecordManager;
 		this.banRecordManager = banRecordManager;
 		this.choiceFormatter = new BanCountChoiceFormatter();
-		this.choiceFormatter.setMessage(colourFormatter.format(localisation.getMessage(HEADER_KEY), ColourFormatter.FormatStyle.HEADER));
+		this.choiceFormatter.setMessage(getLocalisation().formatAsHeaderMessage(BanHammerLocalisation.AUDIT_COMMAND_HEADER));
 	}
 
 	@Override
@@ -74,6 +65,36 @@ public class AuditCommand extends AbstractCommand {
 		context.getCommandSender().sendMessage(auditSummary.getMessages());
 	}
 
+	private boolean hasPermission(final CommandSender sender) {
+		final boolean isSenderCheckingSelf = playerName.equalsIgnoreCase(sender.getName());
+		if (sender.hasPermission(PERMISSION_SELF) && isSenderCheckingSelf) return true;
+		if (sender.hasPermission(PERMISSION_OTHERS) && !isSenderCheckingSelf) return true;
+		String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_NO_PERMISSION);
+		sender.sendMessage(message);
+		return false;
+	}
+
+	private boolean setPlayerName(CommandContext context) {
+		playerName = null;
+		if (context.hasArgument(0)) {
+			playerName = context.getString(0);
+		} else {
+			playerName = context.getCommandSender().getName();
+		}
+		return playerName != null;
+	}
+
+	private boolean setPlayerRecord(CommandContext context) {
+		playerRecord = playerRecordManager.find(playerName);
+		if (playerRecord != null && playerRecord.getCreatedBans().size() != 0 ) {
+			return true;
+		} else {
+			String message = getLocalisation().formatAsInfoMessage(name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation.PLAYER_HAS_MADE_NO_BANS, playerName);
+			context.getCommandSender().sendMessage(message);
+			return false;
+		}
+	}
+
 	@Override
 	public boolean isAuthorised(Permissible permissible) {
 		if (permissible.hasPermission(PERMISSION_ALL)) return true;
@@ -82,120 +103,20 @@ public class AuditCommand extends AbstractCommand {
 		return false;
 	}
 
-	private boolean setPlayerRecord(CommandContext context) {
-		playerRecord = playerRecordManager.find(playerName);
-		if (playerRecord != null && playerRecord.getCreatedBans().size() != 0 ) {
-			return true;
-		} else {
-			String message = colourFormatter.format(localisation.getMessage(PLAYER_HAS_MADE_NO_BANS_KEY), ColourFormatter.FormatStyle.INFO, playerName);
-			context.getCommandSender().sendMessage(message);
-			return false;
-		}
-	}
-
-	private boolean setPlayerName(CommandContext context) {
-		playerName = null;
-		if (context.has(0)) {
-			playerName = context.getString(0);
-		} else {
-			playerName = context.getCommandSender().getName();
-		}
-		return playerName != null;
-	}
-
-	private boolean hasPermission(final CommandSender sender) {
-		final boolean isSenderCheckingSelf = playerName.equalsIgnoreCase(sender.getName());
-		if (sender.hasPermission(PERMISSION_SELF) && isSenderCheckingSelf) return true;
-		if (sender.hasPermission(PERMISSION_OTHERS) && !isSenderCheckingSelf) return true;
-		sender.sendMessage(colourFormatter.format(localisation.getMessage(NO_PERMISSION_KEY), ColourFormatter.FormatStyle.ERROR, playerName));
-		return false;
-	}
-
 	public final class AuditSummary {
 
-		private static final String TYPE_SUMMARY_KEY = "type-summary";
-		private static final String PERMANENT_BANS_PERCENTAGE_KEY = "permanent-bans-percentage";
-		private static final String TEMPORARY_BANS_PERCENTAGE_KEY = "temporary-bans-percentage";
-		private static final String STATUS_SUMMARY_KEY = "status-summary";
-		private static final String ACTIVE_BANS_PERCENTAGE_KEY = "active-bans-percentage";
-		private static final String EXPIRED_BANS_PERCENTAGE_KEY = "expired-bans-percentage";
-		private static final String PARDONED_BANS_PERCENTAGE_KEY = "pardoned-bans-percentage";
-
 		private final List<BanRecord> bans;
-		private final Localisation localisation = new ResourceBundleByClassLocalisation(AuditSummary.class);
-		private final ColourFormatter colourFormatter = new DefaultColourFormatter();
-
-		private int permanentBans;
-		private int temporaryBans;
+		private int expiredBans;
 		private int normalBans;
 		private int pardonedBans;
-		private int expiredBans;
+		private int permanentBans;
+		private int temporaryBans;
 		private int total;
 
 		private AuditSummary(List<BanRecord> bans, int total) {
 			this.bans = bans;
 			this.total = total;
 			this.update();
-		}
-
-		public int getExpiredBanCount() {
-			return expiredBans;
-		}
-
-		public float getExpiredBanCountPercentage() {
-			return (float) expiredBans / this.bans.size();
-		}
-
-		public int getNormalBanCount() {
-			return normalBans;
-		}
-
-		public float getNormalBanCountPercentage() {
-			return (float) normalBans / this.bans.size();
-		}
-
-		public int getPardonedBanCount() {
-			return pardonedBans;
-		}
-
-		public float getPardonedBanCountPercentage() {
-			return (float) pardonedBans / this.bans.size();
-		}
-
-		public int getPermanentBanCount() {
-			return permanentBans;
-		}
-
-		public float getPermanentBanCountPercentage() {
-			return (float) permanentBans / this.bans.size();
-		}
-
-		public int getTemporaryBanCount() {
-			return temporaryBans;
-		}
-
-		public float getTemporaryBanCountPercentage() {
-			return (float) temporaryBans / this.bans.size();
-		}
-
-		public int getTotalBanCount() {
-			return this.bans.size();
-		}
-
-		public float getTotalBanCountPercentage() {
-			return (float) this.bans.size() / total;
-		}
-
-		public String[] getMessages() {
-			List<String> messages = new ArrayList<String>();
-			messages.add(colourFormatter.format(localisation.getMessage(TYPE_SUMMARY_KEY), ColourFormatter.FormatStyle.HEADER));
-			messages.add(colourFormatter.format(localisation.getMessage(PERMANENT_BANS_PERCENTAGE_KEY), ColourFormatter.FormatStyle.INFO, getPermanentBanCount(), getPermanentBanCountPercentage()));
-			messages.add(colourFormatter.format(localisation.getMessage(TEMPORARY_BANS_PERCENTAGE_KEY), ColourFormatter.FormatStyle.INFO, getTemporaryBanCount(), getTemporaryBanCountPercentage()));
-			messages.add(colourFormatter.format(localisation.getMessage(STATUS_SUMMARY_KEY), ColourFormatter.FormatStyle.HEADER));
-			messages.add(colourFormatter.format(localisation.getMessage(ACTIVE_BANS_PERCENTAGE_KEY), ColourFormatter.FormatStyle.INFO, getNormalBanCount(), getNormalBanCountPercentage()));
-			messages.add(colourFormatter.format(localisation.getMessage(EXPIRED_BANS_PERCENTAGE_KEY), ColourFormatter.FormatStyle.INFO, getExpiredBanCount(), getExpiredBanCountPercentage()));
-			messages.add(colourFormatter.format(localisation.getMessage(PARDONED_BANS_PERCENTAGE_KEY), ColourFormatter.FormatStyle.INFO, getPardonedBanCount(), getPardonedBanCountPercentage()));
-			return messages.toArray(new String[messages.size()]);
 		}
 
 		private void update() {
@@ -220,6 +141,66 @@ public class AuditCommand extends AbstractCommand {
 						break;
 				}
 			}
+		}
+
+		public String[] getMessages() {
+			List<String> messages = new ArrayList<String>();
+			messages.add(getLocalisation().formatAsHeaderMessage(BanHammerLocalisation.AUDIT_TYPE_SUMMARY));
+			messages.add(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.AUDIT_PERMANENT_BANS_PERCENTAGE, getPermanentBanCount(), getPardonedBanCountPercentage()));
+			messages.add(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.AUDIT_TEMPORARY_BANS_PERCENTAGE, getTemporaryBanCount(), getTemporaryBanCountPercentage()));
+			messages.add(getLocalisation().formatAsHeaderMessage(BanHammerLocalisation.AUDIT_STATUS_SUMMARY));
+			messages.add(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.AUDIT_ACTIVE_BANS_PERCENTAGE, getNormalBanCount(), getNormalBanCountPercentage()));
+			messages.add(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.AUDIT_EXPIRED_BANS_PERCENTAGE, getExpiredBanCount(), getExpiredBanCountPercentage()));
+			messages.add(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.AUDIT_PARDONED_BANS_PERCENTAGE, getPardonedBanCount(), getPardonedBanCountPercentage()));
+			return messages.toArray(new String[messages.size()]);
+		}
+
+		public float getTemporaryBanCountPercentage() {
+			return (float) temporaryBans / this.bans.size();
+		}
+
+		public int getTemporaryBanCount() {
+			return temporaryBans;
+		}
+
+		public int getPermanentBanCount() {
+			return permanentBans;
+		}
+
+		public float getPardonedBanCountPercentage() {
+			return (float) pardonedBans / this.bans.size();
+		}
+
+		public int getPardonedBanCount() {
+			return pardonedBans;
+		}
+
+		public float getNormalBanCountPercentage() {
+			return (float) normalBans / this.bans.size();
+		}
+
+		public int getNormalBanCount() {
+			return normalBans;
+		}
+
+		public float getExpiredBanCountPercentage() {
+			return (float) expiredBans / this.bans.size();
+		}
+
+		public int getExpiredBanCount() {
+			return expiredBans;
+		}
+
+		public float getPermanentBanCountPercentage() {
+			return (float) permanentBans / this.bans.size();
+		}
+
+		public int getTotalBanCount() {
+			return this.bans.size();
+		}
+
+		public float getTotalBanCountPercentage() {
+			return (float) this.bans.size() / total;
 		}
 
 	}

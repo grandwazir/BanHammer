@@ -20,15 +20,15 @@ package name.richardson.james.bukkit.banhammer;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.bukkit.configuration.ConfigurationSection;
 
-import name.richardson.james.bukkit.utilities.formatters.PreciseDurationTimeFormatter;
-import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
-import name.richardson.james.bukkit.utilities.logging.PluginLoggerFactory;
+import name.richardson.james.bukkit.utilities.formatters.time.PreciseDurationTimeFormatter;
+import name.richardson.james.bukkit.utilities.formatters.time.TimeFormatter;
 import name.richardson.james.bukkit.utilities.persistence.configuration.SimplePluginConfiguration;
 
 public final class PluginConfiguration extends SimplePluginConfiguration {

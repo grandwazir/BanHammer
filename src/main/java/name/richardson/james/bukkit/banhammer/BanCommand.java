@@ -26,37 +26,25 @@ import org.bukkit.plugin.PluginManager;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.formatters.ApproximateTimeFormatter;
-import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
-import name.richardson.james.bukkit.utilities.formatters.DefaultColourFormatter;
-import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
-import name.richardson.james.bukkit.utilities.localisation.Localisation;
-import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
+import name.richardson.james.bukkit.utilities.formatters.time.ApproximateTimeFormatter;
+import name.richardson.james.bukkit.utilities.formatters.time.TimeFormatter;
+import name.richardson.james.bukkit.utilities.localisation.PluginLocalisation;
 
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerBannedEvent;
+import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
 
 public class BanCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.ban";
 	public static final String PERMISSION_PERMANENT = "banhammer.ban.permanent";
 
-	private static final String PLAYER_BANNED_KEY = "player-banned";
-	private static final String NO_PERMISSION_TO_BAN_THAT_LONG_KEY = "no-permission-to-ban-that-long";
-	private static final String NO_PERMISSION_KEY = "no-permission";
-	private static final String MUST_SPECIFY_PLAYER_KEY = "must-specify-player";
-	private static final String PLAYER_IS_ALREADY_BANNED_KEY = "player-is-already-banned";
-	private static final String MUST_SPECIFY_REASON_KEY = "must-specify-reason";
-
-	private final ColourFormatter colourFormatter = new DefaultColourFormatter();
 	private final Set<String> immunePlayers;
 	private final Map<String, Long> limits;
-	private final Localisation localisation = new ResourceBundleByClassLocalisation(BanCommand.class);
 	private final PlayerRecordManager playerRecordManager;
 	private final PluginManager pluginManager;
 	private final TimeFormatter timeFormatter = new ApproximateTimeFormatter();
-
 	private String playerName;
 	private PlayerRecord playerRecord;
 	private String reason;
@@ -82,8 +70,9 @@ public class BanCommand extends AbstractCommand {
 		bannedPlayerBuilder.setExpiryTime(time);
 		bannedPlayerBuilder.setReason(reason);
 		bannedPlayerBuilder.save();
-		context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(PLAYER_BANNED_KEY), ColourFormatter.FormatStyle.INFO, playerName));
-		boolean silent = (context.hasFlag("s") || context.hasFlag("silent"));
+		String message = getLocalisation().formatAsInfoMessage(BanHammerLocalisation.PLAYER_BANNED, playerName);
+		context.getCommandSender().sendMessage(message);
+		boolean silent = (context.hasSwitch("s") || context.hasSwitch("silent"));
 		BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(bannedPlayerBuilder.getRecord(), silent);
 		pluginManager.callEvent(event);
 	}
@@ -109,12 +98,13 @@ public class BanCommand extends AbstractCommand {
 			if (!sender.hasPermission(node)) continue;
 			if (!immunePlayerTargeted && (this.limits.get(limitName) >= this.time)) return true;
 		}
-		sender.sendMessage(colourFormatter.format(localisation.getMessage(NO_PERMISSION_KEY), ColourFormatter.FormatStyle.ERROR, playerName));
+		String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_NO_PERMISSION);
+		sender.sendMessage(message);
 		return false;
 	}
 
 	private void setExpiryTime(CommandContext context) {
-		if (context.hasFlag("t")) {
+		if (context.hasSwitch("t")) {
 			String timeString = context.getFlag("t");
 			if (limits.containsKey(timeString)) {
 				time = limits.get(timeString);
@@ -128,9 +118,10 @@ public class BanCommand extends AbstractCommand {
 
 	private boolean setPlayerName(CommandContext context) {
 		playerName = null;
-		if (context.has(0)) playerName = context.getString(0);
+		if (context.hasArgument(0)) playerName = context.getString(0);
 		if (playerName == null) {
-			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(MUST_SPECIFY_PLAYER_KEY), ColourFormatter.FormatStyle.ERROR));
+			String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_MUST_SPECIFY_PLAYER);
+			context.getCommandSender().sendMessage(message);
 			return false;
 		} else {
 			return true;
@@ -140,7 +131,8 @@ public class BanCommand extends AbstractCommand {
 	private boolean setPlayerRecord(CommandContext context) {
 		playerRecord = playerRecordManager.find(playerName);
 		if (playerRecord != null && playerRecord.isBanned()) {
-			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(PLAYER_IS_ALREADY_BANNED_KEY), ColourFormatter.FormatStyle.ERROR, playerName));
+			String message = getLocalisation().formatAsErrorMessage(BanHammerLocalisation.BAN_PLAYER_IS_ALREADY_BANNED, playerName);
+			context.getCommandSender().sendMessage(message);
 			return false;
 		} else {
 			return true;
@@ -148,29 +140,31 @@ public class BanCommand extends AbstractCommand {
 	}
 
 	private boolean setReason(CommandContext context) {
-		if (context.has(1)) {
+		if (context.hasArgument(1)) {
 			reason = context.getJoinedArguments(1);
 			return true;
 		} else {
-			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(MUST_SPECIFY_REASON_KEY), ColourFormatter.FormatStyle.ERROR));
+			String message = getLocalisation().formatAsErrorMessage(BanHammerLocalisation.BAN_MUST_SPECIFY_REASON);
+			context.getCommandSender().sendMessage(message);
 			return false;
 		}
 	}
 
 	@Override
 	public String toString() {
-		return "BanCommand{" +
-		"colourFormatter=" + colourFormatter +
-		", immunePlayers=" + immunePlayers +
-		", limits=" + limits +
-		", localisation=" + localisation +
-		", playerRecordManager=" + playerRecordManager +
-		", pluginManager=" + pluginManager +
-		", timeFormatter=" + timeFormatter +
-		", playerName='" + playerName + '\'' +
-		", playerRecord=" + playerRecord +
-		", reason='" + reason + '\'' +
-		", time=" + time +
-		"} " + super.toString();
+		final StringBuilder sb = new StringBuilder("BanCommand{");
+		sb.append("immunePlayers=").append(immunePlayers);
+		sb.append(", limits=").append(limits);
+		sb.append(", playerName='").append(playerName).append('\'');
+		sb.append(", playerRecord=").append(playerRecord);
+		sb.append(", playerRecordManager=").append(playerRecordManager);
+		sb.append(", pluginManager=").append(pluginManager);
+		sb.append(", reason='").append(reason).append('\'');
+		sb.append(", time=").append(time);
+		sb.append(", timeFormatter=").append(timeFormatter);
+		sb.append(", ").append(super.toString());
+		sb.append('}');
+		return sb.toString();
 	}
+
 }

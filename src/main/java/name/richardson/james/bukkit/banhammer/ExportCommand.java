@@ -23,33 +23,26 @@ import org.bukkit.permissions.Permissible;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
-import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
-import name.richardson.james.bukkit.utilities.formatters.DefaultColourFormatter;
-import name.richardson.james.bukkit.utilities.localisation.Localisation;
-import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
+import name.richardson.james.bukkit.utilities.localisation.PluginLocalisation;
 
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
+import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
 
 public class ExportCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.export";
 
-	private static final String BANS_EXPORTED_KEY = "bans-exported";
-	private static final String NO_PERMISSION_KEY = "no-permission";
-
+	private final ChoiceFormatter choiceFormatter;
 	private final PlayerRecordManager playerRecordManager;
 	private final Server server;
-	private final ChoiceFormatter choiceFormatter;
-	private final Localisation localisation = new ResourceBundleByClassLocalisation(ExportCommand.class);
-	private final ColourFormatter colourFormatter = new DefaultColourFormatter();
 
 	public ExportCommand(PlayerRecordManager playerRecordManager, Server server) {
 		this.playerRecordManager = playerRecordManager;
 		this.server = server;
 		this.choiceFormatter = new BanCountChoiceFormatter();
-		this.choiceFormatter.setMessage(colourFormatter.format(localisation.getMessage(BANS_EXPORTED_KEY), ColourFormatter.FormatStyle.INFO));
+		this.choiceFormatter.setMessage(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.EXPORT_SUMMARY));
 	}
 
 	@Override
@@ -61,14 +54,14 @@ public class ExportCommand extends AbstractCommand {
 			this.choiceFormatter.setArguments(playerRecordManager.count());
 			context.getCommandSender().sendMessage(choiceFormatter.getMessage());
 		} else {
-			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(NO_PERMISSION_KEY), ColourFormatter.FormatStyle.ERROR));
+			String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_NO_PERMISSION);
+			context.getCommandSender().sendMessage(message);
 		}
 	}
 
 	@Override
 	public boolean isAuthorised(Permissible permissible) {
-		if (permissible.hasPermission(PERMISSION_ALL)) return true;
-		return false;
+		return permissible.hasPermission(PERMISSION_ALL);
 	}
 
 }

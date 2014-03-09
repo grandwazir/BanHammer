@@ -24,6 +24,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.avaje.ebean.EbeanServer;
@@ -36,12 +37,13 @@ import name.richardson.james.bukkit.utilities.command.invoker.CommandInvoker;
 import name.richardson.james.bukkit.utilities.command.invoker.FallthroughCommandInvoker;
 import name.richardson.james.bukkit.utilities.command.matcher.OnlinePlayerMatcher;
 import name.richardson.james.bukkit.utilities.localisation.Localisation;
-import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
+import name.richardson.james.bukkit.utilities.localisation.StrictResourceBundleLocalisation;
 import name.richardson.james.bukkit.utilities.logging.PluginLoggerFactory;
+import name.richardson.james.bukkit.utilities.persistence.configuration.DatabaseConfiguration;
+import name.richardson.james.bukkit.utilities.persistence.configuration.SimpleDatabaseConfiguration;
 import name.richardson.james.bukkit.utilities.persistence.database.DatabaseLoader;
 import name.richardson.james.bukkit.utilities.persistence.database.DatabaseLoaderFactory;
-import name.richardson.james.bukkit.utilities.persistence.database.SimpleDatabaseConfiguration;
-import name.richardson.james.bukkit.utilities.updater.MavenPluginUpdater;
+import name.richardson.james.bukkit.utilities.updater.BukkitDevPluginUpdater;
 import name.richardson.james.bukkit.utilities.updater.PluginUpdater;
 
 import name.richardson.james.bukkit.alias.Alias;
@@ -54,22 +56,22 @@ import name.richardson.james.bukkit.banhammer.ban.event.AliasBannedPlayerListene
 import name.richardson.james.bukkit.banhammer.ban.event.NormalBannedPlayerListener;
 import name.richardson.james.bukkit.banhammer.ban.event.PlayerNotifier;
 import name.richardson.james.bukkit.banhammer.utilities.command.matcher.PlayerRecordMatcher;
+import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
 
 public final class BanHammer extends JavaPlugin {
 
-	public static final String PLUGIN_PERMISSION_NAME = "banhammer";
 	public static final String NOTIFY_PERMISSION_NAME = "banhammer.notify";
+	public static final int PROJECT_ID = 31269;
 
 	private static final String CONFIG_NAME = "config.yml";
 	private static final String DATABASE_CONFIG_NAME = "database.yml";
 
 	private final Logger logger = PluginLoggerFactory.getLogger(BanHammer.class);
-	private final Localisation localisation = new ResourceBundleByClassLocalisation(BanHammer.class);
+	private final Localisation localisation = new StrictResourceBundleLocalisation();
 
 	private BanRecordManager banRecordManager;
 	private PluginConfiguration configuration;
 	private EbeanServer database;
-	private PlayerNameRecordManager playerNameRecordManager;
 	private PlayerRecordManager playerRecordManager;
 
 	public BanRecordManager getBanRecordManager() {
@@ -117,7 +119,7 @@ public final class BanHammer extends JavaPlugin {
 
 	private void updatePlugin() {
 		if (!configuration.getAutomaticUpdaterState().equals(PluginUpdater.State.OFF)) {
-			PluginUpdater updater = new MavenPluginUpdater("ban-hammer", "name.richardson.james.bukkit", getDescription(), configuration.getAutomaticUpdaterBranch(), configuration.getAutomaticUpdaterState());
+			PluginUpdater updater = new BukkitDevPluginUpdater(this.getDescription(), configuration.getAutomaticUpdaterBranch(), configuration.getAutomaticUpdaterState(), PROJECT_ID, this.getDataFolder(), Bukkit.getVersion());
 			this.getServer().getScheduler().runTaskAsynchronously(this, updater);
 			new name.richardson.james.bukkit.utilities.updater.PlayerNotifier(this, this.getServer().getPluginManager(), updater);
 		}
@@ -129,11 +131,11 @@ public final class BanHammer extends JavaPlugin {
 	private void hookAlias() {
 		final Alias plugin = (Alias) this.getServer().getPluginManager().getPlugin("Alias");
 		if (plugin == null) {
-			logger.log(Level.WARNING, localisation.getMessage("unable-to-hook-alias"));
+			logger.log(Level.WARNING, localisation.getMessage(BanHammerLocalisation.PLUGIN_UNABLE_TO_HOOK_ALIAS));
 		} else {
 			logger.log(Level.FINE, "Using {0}.", plugin.getDescription().getFullName());
-			this.playerNameRecordManager = plugin.getPlayerNameRecordManager();
-			new AliasBannedPlayerListener(this, this.getServer().getPluginManager(), this.getPlayerRecordManager(), this.playerNameRecordManager);
+			PlayerNameRecordManager playerNameRecordManager = plugin.getPlayerNameRecordManager();
+			new AliasBannedPlayerListener(this, this.getServer().getPluginManager(), this.getPlayerRecordManager(), playerNameRecordManager);
 		}
 	}
 
@@ -153,7 +155,7 @@ public final class BanHammer extends JavaPlugin {
 		serverConfig.setClasses(Arrays.asList(BanRecord.class, PlayerRecord.class));
 		final File file = new File(this.getDataFolder().getPath() + File.separatorChar + DATABASE_CONFIG_NAME);
 		final InputStream defaults = this.getResource(DATABASE_CONFIG_NAME);
-		final SimpleDatabaseConfiguration configuration = new SimpleDatabaseConfiguration(file, defaults, this.getName(), serverConfig);
+		final DatabaseConfiguration configuration = new SimpleDatabaseConfiguration(file, defaults, serverConfig, this.getName());
 		final DatabaseLoader loader = DatabaseLoaderFactory.getDatabaseLoader(configuration);
 		loader.initalise();
 		this.database = loader.getEbeanServer();
@@ -208,7 +210,7 @@ public final class BanHammer extends JavaPlugin {
 		command.addMatcher(playerMatcher);
 		commands.add(command);
 		// create the invoker
-		command = new HelpCommand("bh", commands);
+		command = new HelpCommand(this.getDescription(), "bh", commands);
 		CommandInvoker invoker = new FallthroughCommandInvoker(command);
 		invoker.addCommands(commands);
 		// bind invoker to plugin command

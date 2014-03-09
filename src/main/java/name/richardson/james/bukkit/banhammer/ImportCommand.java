@@ -24,35 +24,26 @@ import org.bukkit.permissions.Permissible;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
-import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
-import name.richardson.james.bukkit.utilities.formatters.DefaultColourFormatter;
-import name.richardson.james.bukkit.utilities.localisation.Localisation;
-import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
+import name.richardson.james.bukkit.utilities.localisation.PluginLocalisation;
 
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
+import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
 
 public class ImportCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.import";
 
-	private static final String BANS_IMPORTED_KEY = "bans-imported";
-	private static final String NO_PERMISSION_KEY = "no-permission";
-	private static final String DEFAULT_BAN_IMPORT_REASON_KEY = "default-ban-import-reason";
-
 	private final ChoiceFormatter choiceFormatter;
 	private final PlayerRecordManager playerRecordManager;
 	private final Server server;
-	private final ColourFormatter colourFormatter = new DefaultColourFormatter();
-	private final Localisation localisation = new ResourceBundleByClassLocalisation(ImportCommand.class);
-
 	private String reason;
 
 	public ImportCommand(PlayerRecordManager playerRecordManager, Server server) {
 		this.playerRecordManager = playerRecordManager;
 		this.server = server;
 		this.choiceFormatter = new BanCountChoiceFormatter();
-		this.choiceFormatter.setMessage(colourFormatter.format(localisation.getMessage(BANS_IMPORTED_KEY), ColourFormatter.FormatStyle.INFO));
+		this.choiceFormatter.setMessage(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.IMPORT_SUMMARY));
 	}
 
 	@Override
@@ -70,21 +61,21 @@ public class ImportCommand extends AbstractCommand {
 			choiceFormatter.setArguments(this.server.getBannedPlayers().size());
 			context.getCommandSender().sendMessage(choiceFormatter.getMessage());
 		} else {
-			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(NO_PERMISSION_KEY), ColourFormatter.FormatStyle.ERROR));
+			String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_NO_PERMISSION);
+			context.getCommandSender().sendMessage(message);
 		}
 	}
 
 	@Override
 	public boolean isAuthorised(Permissible permissible) {
-		if (permissible.hasPermission(PERMISSION_ALL)) return true;
-		return false;
+		return permissible.hasPermission(PERMISSION_ALL);
 	}
 
 	private void setReason(CommandContext context) {
-		if (context.has(0)) {
+		if (context.hasArgument(0)) {
 			reason = context.getJoinedArguments(0);
 		} else {
-			reason = localisation.getMessage(DEFAULT_BAN_IMPORT_REASON_KEY);
+			reason = getLocalisation().getMessage(BanHammerLocalisation.IMPORT_DEFAULT_REASON);
 		}
 	}
 

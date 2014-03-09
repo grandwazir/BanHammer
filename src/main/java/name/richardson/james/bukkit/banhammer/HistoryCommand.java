@@ -24,14 +24,12 @@ import org.bukkit.permissions.Permissible;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
-import name.richardson.james.bukkit.utilities.formatters.DefaultColourFormatter;
-import name.richardson.james.bukkit.utilities.localisation.Localisation;
-import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
+import name.richardson.james.bukkit.utilities.localisation.PluginLocalisation;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
+import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
 
 public class HistoryCommand extends AbstractCommand {
 
@@ -39,13 +37,7 @@ public class HistoryCommand extends AbstractCommand {
 	public static final String PERMISSION_OWN = "banhammer.history.own";
 	public static final String PERMISSION_OTHERS = "banhammer.history.others";
 
-	private static final String NO_PERMISSION_KEY = "no-permission";
-	private static final String PLAYER_HAS_NEVER_BEEN_BANNED_KEY = "player-has-never-been-banned";
-
 	private final PlayerRecordManager playerRecordManager;
-	private final ColourFormatter colourFormatter = new DefaultColourFormatter();
-	private final Localisation localisation = new ResourceBundleByClassLocalisation(HistoryCommand.class);
-
 	private String playerName;
 	private PlayerRecord playerRecord;
 
@@ -65,25 +57,18 @@ public class HistoryCommand extends AbstractCommand {
 		}
 	}
 
-	@Override
-	public boolean isAuthorised(Permissible permissible) {
-		if (permissible.hasPermission(PERMISSION_ALL)) return true;
-		if (permissible.hasPermission(PERMISSION_OWN)) return true;
-		if (permissible.hasPermission(PERMISSION_OTHERS)) return true;
-		return false;
-	}
-
-	private boolean hasPermission(CommandSender sender) {
-		final boolean isSenderTargetingSelf = playerName.equalsIgnoreCase(sender.getName());
-		if (sender.hasPermission(PERMISSION_OWN) && isSenderTargetingSelf) return true;
-		if (sender.hasPermission(PERMISSION_OTHERS) && !isSenderTargetingSelf) return true;
-		sender.sendMessage(colourFormatter.format(localisation.getMessage(NO_PERMISSION_KEY), ColourFormatter.FormatStyle.ERROR, playerName));
-		return false;
+	private boolean setPlayerRecord(CommandContext context) {
+		playerRecord = playerRecordManager.find(playerName);
+		if (playerRecord == null || playerRecord.getBans().size() == 0) {
+			String message = getLocalisation().formatAsInfoMessage(BanHammerLocalisation.PLAYER_NEVER_BEEN_BANNED, playerName);
+			context.getCommandSender().sendMessage(message);
+		}
+		return (playerRecord != null);
 	}
 
 	private boolean setPlayerName(CommandContext context) {
 		playerName = null;
-		if (context.has(0)) {
+		if (context.hasArgument(0)) {
 			playerName = context.getString(0);
 		} else {
 			playerName = context.getCommandSender().getName();
@@ -91,12 +76,21 @@ public class HistoryCommand extends AbstractCommand {
 		return true;
 	}
 
-	private boolean setPlayerRecord(CommandContext context) {
-		playerRecord = playerRecordManager.find(playerName);
-		if (playerRecord == null || playerRecord.getBans().size() == 0) {
-			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(PLAYER_HAS_NEVER_BEEN_BANNED_KEY), ColourFormatter.FormatStyle.INFO, playerName));
-		}
-		return (playerRecord != null);
+	private boolean hasPermission(CommandSender sender) {
+		final boolean isSenderTargetingSelf = playerName.equalsIgnoreCase(sender.getName());
+		if (sender.hasPermission(PERMISSION_OWN) && isSenderTargetingSelf) return true;
+		if (sender.hasPermission(PERMISSION_OTHERS) && !isSenderTargetingSelf) return true;
+		String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_NO_PERMISSION);
+		sender.sendMessage(message);
+		return false;
+	}
+
+	@Override
+	public boolean isAuthorised(Permissible permissible) {
+		if (permissible.hasPermission(PERMISSION_ALL)) return true;
+		if (permissible.hasPermission(PERMISSION_OWN)) return true;
+		if (permissible.hasPermission(PERMISSION_OTHERS)) return true;
+		return false;
 	}
 
 }

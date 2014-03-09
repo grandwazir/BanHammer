@@ -22,15 +22,13 @@ import org.bukkit.permissions.Permissible;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
-import name.richardson.james.bukkit.utilities.formatters.DefaultColourFormatter;
-import name.richardson.james.bukkit.utilities.localisation.Localisation;
-import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
+import name.richardson.james.bukkit.utilities.localisation.PluginLocalisation;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
+import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
 
 public class UndoCommand extends AbstractCommand {
 
@@ -39,19 +37,9 @@ public class UndoCommand extends AbstractCommand {
 	public static final String PERMISSION_OTHERS = "banhammer.undo.others";
 	public static final String PERMISSION_UNRESTRICTED = "banhammer.undo.unrestricted";
 
-	private static final String BAN_UNDONE_KEY = "ban-undone";
-	private static final String MAY_NOT_UNDO_THAT_PLAYERS_BAN_KEY = "may-not-undo-that-players-ban";
-	private static final String PLAYER_IS_NOT_BANNED_KEY = "player-is-not-banned";
-	private static final String MUST_SPECIFY_PLAYER_KEY = "must-specify-player";
-	private static final String PLAYER_HAS_NEVER_BEEN_BANNED_KEY = "player-has-never-been-banned";
-	private static final String UNDO_TIME_EXPIRED = "undo-time-expired";
-
 	private final BanRecordManager banRecordManager;
 	private final PlayerRecordManager playerRecordManager;
-	private final Localisation localisation = new ResourceBundleByClassLocalisation(UndoCommand.class);
-	private final ColourFormatter colourFormatter = new DefaultColourFormatter();
 	private final long undoTime;
-
 	private BanRecord ban;
 	private String playerName;
 	private PlayerRecord playerRecord;
@@ -69,30 +57,15 @@ public class UndoCommand extends AbstractCommand {
 		if (!setBan(context)) return;
 		if (!hasPermission(context.getCommandSender())) return;
 		banRecordManager.delete(ban);
-		context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(BAN_UNDONE_KEY), ColourFormatter.FormatStyle.INFO, playerName));
+		String message = getLocalisation().formatAsInfoMessage(BanHammerLocalisation.UNDO_COMPLETE, playerName);
+		context.getCommandSender().sendMessage(message);
 	}
 
-	@Override
-	public boolean isAuthorised(Permissible permissible) {
-		if (permissible.hasPermission(PERMISSION_ALL)) return true;
-		if (permissible.hasPermission(PERMISSION_OWN)) return true;
-		if (permissible.hasPermission(PERMISSION_OTHERS)) return true;
-		return false;
-	}
-
-	private boolean hasPermission(CommandSender sender) {
-		final boolean isSenderTargetingSelf = (this.ban.getCreator().getName().equalsIgnoreCase(sender.getName()));
-		final boolean withinTimeLimit = this.withinTimeLimit(sender);
-		if (sender.hasPermission(PERMISSION_OWN) && withinTimeLimit && isSenderTargetingSelf) return true;
-		if (sender.hasPermission(PERMISSION_OTHERS) && withinTimeLimit && !isSenderTargetingSelf) return true;
-		sender.sendMessage(colourFormatter.format(localisation.getMessage(MAY_NOT_UNDO_THAT_PLAYERS_BAN_KEY), ColourFormatter.FormatStyle.ERROR, ban.getCreator().getName()));
-		return false;
-	}
-
-	private boolean setBan(CommandContext context) {
-		ban = playerRecord.getActiveBan();
-		if (ban == null) {
-			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(PLAYER_IS_NOT_BANNED_KEY), ColourFormatter.FormatStyle.INFO, playerName));
+	private boolean setPlayerRecord(CommandContext context) {
+		playerRecord = playerRecordManager.find(playerName);
+		if (playerRecord == null || playerRecord.getBans().size() == 0) {
+			String message = getLocalisation().formatAsInfoMessage(BanHammerLocalisation.PLAYER_NEVER_BEEN_BANNED, playerName);
+			context.getCommandSender().sendMessage(message);
 			return false;
 		} else {
 			return true;
@@ -101,30 +74,48 @@ public class UndoCommand extends AbstractCommand {
 
 	private boolean setPlayer(CommandContext context) {
 		playerName = null;
-		if (context.has(0)) playerName = context.getString(0);
+		if (context.hasArgument(0)) playerName = context.getString(0);
 		if (playerName == null) {
-			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(MUST_SPECIFY_PLAYER_KEY), ColourFormatter.FormatStyle.ERROR));
+			String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_NO_PERMISSION);
+			context.getCommandSender().sendMessage(message);
 			return false;
 		} else {
 			return true;
 		}
 	}
 
-	private boolean setPlayerRecord(CommandContext context) {
-		playerRecord = playerRecordManager.find(playerName);
-		if (playerRecord == null || playerRecord.getBans().size() == 0) {
-			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(PLAYER_HAS_NEVER_BEEN_BANNED_KEY), ColourFormatter.FormatStyle.WARNING, playerName));
+	private boolean setBan(CommandContext context) {
+		ban = playerRecord.getActiveBan();
+		if (ban == null) {
+			String message = getLocalisation().formatAsErrorMessage(BanHammerLocalisation.PLAYER_NOT_BANNED);
+			context.getCommandSender().sendMessage(message);
 			return false;
 		} else {
 			return true;
 		}
+	}
+
+	private boolean hasPermission(CommandSender sender) {
+		final boolean isSenderTargetingSelf = (this.ban.getCreator().getName().equalsIgnoreCase(sender.getName()));
+		final boolean withinTimeLimit = this.withinTimeLimit(sender);
+		if (sender.hasPermission(PERMISSION_OWN) && withinTimeLimit && isSenderTargetingSelf) return true;
+		if (sender.hasPermission(PERMISSION_OTHERS) && withinTimeLimit && !isSenderTargetingSelf) return true;
+		String message = getLocalisation().formatAsInfoMessage(BanHammerLocalisation.UNDO_NOT_PERMITTED, ban.getCreator().getName());
+		sender.sendMessage(message);
+		return false;
 	}
 
 	private boolean withinTimeLimit(CommandSender sender) {
 		if (sender.hasPermission(PERMISSION_UNRESTRICTED)) return true;
 		if ((System.currentTimeMillis() - ban.getCreatedAt().getTime()) <= this.undoTime) return true;
-		sender.sendMessage(colourFormatter.format(localisation.getMessage(UNDO_TIME_EXPIRED), ColourFormatter.FormatStyle.ERROR));
+		String message = getLocalisation().formatAsErrorMessage(BanHammerLocalisation.UNDO_TIME_EXPIRED);
+		sender.sendMessage(message);
 		return false;
+	}
+
+	@Override
+	public boolean isAuthorised(Permissible permissible) {
+		return permissible.hasPermission(PERMISSION_ALL) || permissible.hasPermission(PERMISSION_OWN) || permissible.hasPermission(PERMISSION_OTHERS);
 	}
 
 }

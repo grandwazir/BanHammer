@@ -23,29 +23,15 @@ import org.bukkit.permissions.Permissible;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
-import name.richardson.james.bukkit.utilities.formatters.DefaultColourFormatter;
-import name.richardson.james.bukkit.utilities.localisation.Localisation;
-import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
+import name.richardson.james.bukkit.utilities.localisation.PluginLocalisation;
 
-import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerBannedEvent;
+import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
 
 public class KickCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.kick";
 
-	private static final String KICK_NOTIFICATION_KEY = "kick-notification";
-	private static final String PLAYER_KICKED_KEY = "player-kicked";
-	private static final String REASON_KEY = "reason";
-	private static final String NO_PERMISSION_KEY = "no-permission";
-	private static final String MUST_SPECIFY_PLAYER_KEY = "must-specify-player";
-	private static final String DEFAULT_KICK_REASON_KEY = "default-kick-reason";
-	private static final String PLAYER_KICKED_NOTICE_KEY = "player-kicked-notice";
-
 	private final Server server;
-	private final Localisation localisation = new ResourceBundleByClassLocalisation(KickCommand.class);
-	private final ColourFormatter colourFormatter = new DefaultColourFormatter();
-
 	private String playerName;
 	private String reason;
 
@@ -58,30 +44,35 @@ public class KickCommand extends AbstractCommand {
 		if (isAuthorised(context.getCommandSender())) {
 			if (!setPlayerName(context)) return;
 			if (!setReason(context)) return;
-			String message = colourFormatter.format(localisation.getMessage(KICK_NOTIFICATION_KEY), ColourFormatter.FormatStyle.ERROR, this.reason, context.getCommandSender().getName());
+			String message = getLocalisation().formatAsErrorMessage(BanHammerLocalisation.KICK_PLAYER_NOTIFICATION, this.reason, context.getCommandSender().getName());
 			Player player = server.getPlayerExact(playerName);
 			player.kickPlayer(message);
-			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(PLAYER_KICKED_NOTICE_KEY), ColourFormatter.FormatStyle.INFO, playerName));
-			boolean silent = (context.hasFlag("s") || context.hasFlag("silent"));
+		  message = getLocalisation().formatAsInfoMessage(BanHammerLocalisation.KICK_SENDER_NOTIFICATION, playerName);
+			context.getCommandSender().sendMessage(message);
+			boolean silent = (context.hasSwitch("s") || context.hasSwitch("silent"));
 			if (!silent) {
-				server.broadcast(colourFormatter.format(localisation.getMessage(PLAYER_KICKED_KEY), ColourFormatter.FormatStyle.ERROR, playerName, context.getCommandSender().getName()), BanHammer.NOTIFY_PERMISSION_NAME);
-				server.broadcast(colourFormatter.format(localisation.getMessage(REASON_KEY), ColourFormatter.FormatStyle.WARNING, this.reason), BanHammer.NOTIFY_PERMISSION_NAME);
+				server.broadcast(getLocalisation().formatAsErrorMessage(BanHammerLocalisation.KICK_PLAYER_KICKED, playerName, context.getCommandSender().getName()), BanHammer.NOTIFY_PERMISSION_NAME);
+				server.broadcast(getLocalisation().formatAsWarningMessage(BanHammerLocalisation.KICK_REASON_FOR_PLAYER_KICK, this.reason), BanHammer.NOTIFY_PERMISSION_NAME);
 			}
 		} else {
-			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(NO_PERMISSION_KEY), ColourFormatter.FormatStyle.ERROR));
+			String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_NO_PERMISSION);
+			context.getCommandSender().sendMessage(message);
 		}
 	}
 
-	@Override
-	public boolean isAuthorised(Permissible permissible) {
-		if (permissible.hasPermission(PERMISSION_ALL)) return true;
-		return false;
+	private boolean setReason(CommandContext context) {
+		if (context.hasArgument(1)) {
+			reason = context.getJoinedArguments(1);
+		} else {
+			reason = getLocalisation().getMessage(BanHammerLocalisation.KICK_DEFAULT_REASON);
+		}
+		return true;
 	}
 
 	private boolean setPlayerName(CommandContext commandContext) {
 		playerName = commandContext.getString(0);
 		if (playerName == null || server.getPlayerExact(playerName) == null) {
-			String message = colourFormatter.format(localisation.getMessage(MUST_SPECIFY_PLAYER_KEY), ColourFormatter.FormatStyle.ERROR);
+			String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_MUST_SPECIFY_PLAYER);
 			commandContext.getCommandSender().sendMessage(message);
 			return false;
 		} else {
@@ -89,13 +80,10 @@ public class KickCommand extends AbstractCommand {
 		}
 	}
 
-	private boolean setReason(CommandContext context) {
-		if (context.has(1)) {
-			reason = context.getJoinedArguments(1);
-		} else {
-			reason = localisation.getMessage(DEFAULT_KICK_REASON_KEY);
-		}
-		return true;
+	@Override
+	public boolean isAuthorised(Permissible permissible) {
+		if (permissible.hasPermission(PERMISSION_ALL)) return true;
+		return false;
 	}
 
 }

@@ -29,30 +29,26 @@ import org.apache.commons.lang.StringUtils;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.formatters.*;
-import name.richardson.james.bukkit.utilities.localisation.Localisation;
-import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
+import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
+import name.richardson.james.bukkit.utilities.formatters.time.PreciseDurationTimeFormatter;
+import name.richardson.james.bukkit.utilities.formatters.time.TimeFormatter;
+import name.richardson.james.bukkit.utilities.localisation.PluginLocalisation;
 
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanLimitChoiceFormatter;
+import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
 
 public class LimitsCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.limits";
 
-	private static final String HEADER_KEY = "header";
-	private static final String LIMIT_KEY = "limit";
-	private static final String NO_PERMISSION_KEY = "no-permission";
-
-	private final Map<String, Long> limits;
 	private final ChoiceFormatter choiceFormatter = new BanLimitChoiceFormatter();
-	private final Localisation localisation = new ResourceBundleByClassLocalisation(LimitsCommand.class);
-	private final ColourFormatter colourFormatter = new DefaultColourFormatter();
+	private final Map<String, Long> limits;
 	private final TimeFormatter timeFormatter = new PreciseDurationTimeFormatter();
 
 	public LimitsCommand(Map<String, Long> limits) {
 		this.limits = limits;
 		this.choiceFormatter.setArguments(limits.size());
-		this.choiceFormatter.setMessage(colourFormatter.format(localisation.getMessage(HEADER_KEY), ColourFormatter.FormatStyle.HEADER));
+		this.choiceFormatter.setMessage(getLocalisation().formatAsHeaderMessage(BanHammerLocalisation.LIMIT_SUMMARY));
 	}
 
 	@Override
@@ -63,19 +59,19 @@ public class LimitsCommand extends AbstractCommand {
 				ChatColor colour = ChatColor.RED;
 				if (context.getCommandSender().hasPermission(BanCommand.PERMISSION_ALL + "." + limit.getKey())) colour = ChatColor.GREEN;
 				String time = timeFormatter.getHumanReadableDuration(limit.getValue());
-				messages.add(colour + localisation.getMessage(LIMIT_KEY, limit.getKey(), time));
+				messages.add(colour + getLocalisation().getMessage(BanHammerLocalisation.LIMIT_ENTRY, limit.getKey(), time));
 			}
 			context.getCommandSender().sendMessage(choiceFormatter.getMessage());
 			context.getCommandSender().sendMessage(StringUtils.join(messages, ", "));
 		} else {
-			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(NO_PERMISSION_KEY), ColourFormatter.FormatStyle.ERROR));
+			String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_NO_PERMISSION);
+			context.getCommandSender().sendMessage(message);
 		}
 	}
 
 	@Override
 	public boolean isAuthorised(Permissible permissible) {
-		if (permissible.hasPermission(PERMISSION_ALL)) return true;
-		return false;
+		return permissible.hasPermission(PERMISSION_ALL);
 	}
 
 }

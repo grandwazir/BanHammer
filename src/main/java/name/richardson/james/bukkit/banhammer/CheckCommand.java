@@ -21,27 +21,18 @@ import org.bukkit.permissions.Permissible;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
-import name.richardson.james.bukkit.utilities.formatters.DefaultColourFormatter;
-import name.richardson.james.bukkit.utilities.localisation.Localisation;
-import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
+import name.richardson.james.bukkit.utilities.localisation.PluginLocalisation;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
+import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
 
 public class CheckCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.check";
 
-	private static final String NO_PERMISSION_KEY = "no-permission";
-	private static final String MUST_SPECIFY_PLAYER_KEY = "must-specify-player";
-	private static final String PLAYER_IS_NOT_BANNED_KEY = "player-is-not-banned";
-
-	private final ColourFormatter colourFormatter = new DefaultColourFormatter();
-	private final Localisation localisation = new ResourceBundleByClassLocalisation(CheckCommand.class);
 	private final PlayerRecordManager playerRecordManager;
-
 	private String playerName;
 	private PlayerRecord playerRecord;
 
@@ -57,7 +48,8 @@ public class CheckCommand extends AbstractCommand {
 			BanRecord.BanRecordFormatter banRecordFormatter = playerRecord.getActiveBan().getFormatter();
 			context.getCommandSender().sendMessage(banRecordFormatter.getMessages());
 		} else {
-			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(NO_PERMISSION_KEY), ColourFormatter.FormatStyle.ERROR));
+			String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_NO_PERMISSION);
+			context.getCommandSender().sendMessage(message);
 		}
 	}
 
@@ -69,14 +61,20 @@ public class CheckCommand extends AbstractCommand {
 
 	private boolean setPlayer(CommandContext context) {
 		playerName = context.getString(0);
-		if (playerName == null) context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(MUST_SPECIFY_PLAYER_KEY), ColourFormatter.FormatStyle.ERROR));
-		return (playerName != null);
+		if (playerName == null) {
+			String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_MUST_SPECIFY_PLAYER);
+			context.getCommandSender().sendMessage(message);
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	private boolean setPlayerRecord(CommandContext context) {
 		playerRecord = playerRecordManager.find(playerName);
 		if (playerRecord == null || !playerRecord.isBanned()) {
-			context.getCommandSender().sendMessage(colourFormatter.format(localisation.getMessage(PLAYER_IS_NOT_BANNED_KEY), ColourFormatter.FormatStyle.INFO, playerName));
+			String message = getLocalisation().formatAsErrorMessage(BanHammerLocalisation.PLAYER_NOT_BANNED);
+			context.getCommandSender().sendMessage(message);
 			return false;
 		} else {
 			return true;
