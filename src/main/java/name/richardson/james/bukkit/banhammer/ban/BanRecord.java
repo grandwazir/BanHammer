@@ -26,13 +26,54 @@ import java.util.List;
 
 import com.avaje.ebean.validation.NotNull;
 
-import name.richardson.james.bukkit.utilities.formatters.*;
-import name.richardson.james.bukkit.utilities.localisation.Localisation;
-import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
+import name.richardson.james.bukkit.utilities.formatters.time.ApproximateTimeFormatter;
+import name.richardson.james.bukkit.utilities.formatters.time.PreciseDurationTimeFormatter;
+import name.richardson.james.bukkit.utilities.formatters.time.TimeFormatter;
+import name.richardson.james.bukkit.utilities.localisation.FormattedLocalisation;
+import name.richardson.james.bukkit.utilities.localisation.StrictResourceBundleLocalisation;
+
+import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
 
 @Entity()
 @Table(name = "banhammer_bans")
 public class BanRecord {
+
+	/**
+	 * The valid states of a BanRecord
+	 */
+	public enum State {
+
+		/**
+		 * If a ban is currently active.
+		 */
+		NORMAL,
+
+		/**
+		 * If a ban has expired.
+		 */
+		EXPIRED,
+
+		/**
+		 * If a ban has been pardoned.
+		 */
+		PARDONED
+	}
+
+	/**
+	 * The valid types of a BanRecord
+	 */
+	public enum Type {
+
+		/**
+		 * A ban which will never expire.
+		 */
+		PERMANENT,
+
+		/**
+		 * A ban which will expire after a period of time.
+		 */
+		TEMPORARY
+	}
 
 	/**
 	 * The created at.
@@ -128,6 +169,10 @@ public class BanRecord {
 		this.expiresAt = expiresAt;
 	}
 
+	public BanRecordFormatter getFormatter() {
+		return new BanRecordFormatter(this);
+	}
+
 	/**
 	 * Gets the id.
 	 *
@@ -201,6 +246,14 @@ public class BanRecord {
 		this.state = state;
 	}
 
+	private boolean hasExpired() {
+		if (this.getType() == Type.TEMPORARY) {
+			return ((this.expiresAt.getTime() - System.currentTimeMillis()) < 0);
+		} else {
+			return false;
+		}
+	}
+
 	/**
 	 * Gets the type.
 	 *
@@ -208,14 +261,6 @@ public class BanRecord {
 	 */
 	public BanRecord.Type getType() {
 		return (this.expiresAt == null) ? BanRecord.Type.PERMANENT : BanRecord.Type.TEMPORARY;
-	}
-
-	private boolean hasExpired() {
-		if (this.getType() == Type.TEMPORARY) {
-			return ((this.expiresAt.getTime() - System.currentTimeMillis()) < 0);
-		} else {
-			return false;
-		}
 	}
 
 	@Override
@@ -231,63 +276,15 @@ public class BanRecord {
 		"} ";
 	}
 
-	public BanRecordFormatter getFormatter() {
-		return new BanRecordFormatter(this);
-	}
-
-	/**
-	 * The valid states of a BanRecord
-	 */
-	public enum State {
-
-		/**
-		 * If a ban is currently active.
-		 */
-		NORMAL,
-
-		/**
-		 * If a ban has expired.
-		 */
-		EXPIRED,
-
-		/**
-		 * If a ban has been pardoned.
-		 */
-		PARDONED
-	}
-
-	/**
-	 * The valid types of a BanRecord
-	 */
-	public enum Type {
-
-		/**
-		 * A ban which will never expire.
-		 */
-		PERMANENT,
-
-		/**
-		 * A ban which will expire after a period of time.
-		 */
-		TEMPORARY
-	}
-
 	public static class BanRecordFormatter {
 
 		private static final DateFormat DATE_FORMAT = new SimpleDateFormat("d MMM yyyy HH:mm (z)");
 
-		private static final String HEADER_KEY = "header";
-		private static final String PERMANENT_KEY = "permanent";
-		private static final String REASON_KEY = "reason";
-		private static final String LENGTH_KEY = "length";
-		private static final String EXPIRES_KEY = "expires";
-
-		private final ColourFormatter colourFormatter= new DefaultColourFormatter();
-		private final Localisation localisation = new ResourceBundleByClassLocalisation(BanRecordFormatter.class);
-		private final TimeFormatter timeFormatter = new ApproximateTimeFormatter();
-		private final TimeFormatter durationFormatter = new PreciseDurationTimeFormatter();
 		private final BanRecord ban;
-		private final List<String> messages= new ArrayList<String>();
+		private final TimeFormatter durationFormatter = new PreciseDurationTimeFormatter();
+		private final FormattedLocalisation localisation = new StrictResourceBundleLocalisation();
+		private final List<String> messages = new ArrayList<String>();
+		private final TimeFormatter timeFormatter = new ApproximateTimeFormatter();
 
 		private BanRecordFormatter(BanRecord ban) {
 			this.ban = ban;
@@ -299,25 +296,25 @@ public class BanRecord {
 
 		public String getHeader() {
 			final String date = DATE_FORMAT.format(ban.getCreatedAt());
-			return colourFormatter.format(localisation.getMessage(HEADER_KEY), ColourFormatter.FormatStyle.HEADER, ban.getPlayer().getName(), ban.getCreator().getName(), date);
+			return localisation.formatAsHeaderMessage(BanHammerLocalisation.FORMATTER_SUMMARY, ban.getPlayer().getName(), ban.getCreator().getName(), date);
 		}
 
 		public String getReason() {
-			return colourFormatter.format(localisation.getMessage(REASON_KEY), ColourFormatter.FormatStyle.INFO, ban.getReason());
+			return localisation.formatAsInfoMessage(BanHammerLocalisation.FORMATTER_REASON, ban.getReason());
 		}
 
 		public String getLength() {
 			if (ban.getType() == Type.PERMANENT) {
-				return colourFormatter.format(localisation.getMessage(LENGTH_KEY), ColourFormatter.FormatStyle.INFO, localisation.getMessage(PERMANENT_KEY));
+				return localisation.formatAsInfoMessage(BanHammerLocalisation.FORMATTER_LENGTH, localisation.getMessage(BanHammerLocalisation.FORMATTER_PERMANENT));
 			} else {
 				final long length = ban.getExpiresAt().getTime() - ban.getCreatedAt().getTime();
-				return colourFormatter.format(localisation.getMessage(LENGTH_KEY), ColourFormatter.FormatStyle.INFO, durationFormatter.getHumanReadableDuration(length));
+				return localisation.formatAsInfoMessage(BanHammerLocalisation.FORMATTER_LENGTH, durationFormatter.getHumanReadableDuration(length));
 			}
 		}
 
 		public String getExpiresAt() {
 			final long time = ban.getExpiresAt().getTime();
-			return colourFormatter.format(localisation.getMessage(EXPIRES_KEY), ColourFormatter.FormatStyle.INFO, timeFormatter.getHumanReadableDuration(time));
+			return localisation.formatAsInfoMessage(BanHammerLocalisation.FORMATTER_EXPIRES_AT, timeFormatter.getHumanReadableDuration(time));
 		}
 
 		public String[] getMessages() {

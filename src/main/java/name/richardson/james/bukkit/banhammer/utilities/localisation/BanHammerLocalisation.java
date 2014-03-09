@@ -39,4 +39,25 @@ public interface BanHammerLocalisation {
 	public static final String UNDO_COMPLETE = "undo.complete";
 	public static final String UNDO_NOT_PERMITTED = "undo.not-permitted";
 	public static final String UNDO_TIME_EXPIRED = "undo.time-expired";
+	public static final String ALIAS_BAN_REASON = "alias.ban-reason";
+	public static final String LISTENER_PLAYER_BANNED_TEMPORARILY = "listener.player-banned-temporarily";
+	public static final String LISTENER_PLAYER_BANNED_PERMANENTLY = "listener.player-banned-permanently";
+	public static final String NOTIFY_PLAYER_BANNED = "notifier.player-banned";
+	public static final String NOTIFY_PLAYER_PARDONED = "notifier.player-pardoned";
+
+	public static final String FORMATTER_SUMMARY = "formatter.summary";
+	public static final String FORMATTER_REASON = "formatter.reason";
+	public static final String FORMATTER_LENGTH = "formatter.length";
+	public static final String FORMATTER_PERMANENT = "formatter.permanent";
+	public static final String FORMATTER_EXPIRES_AT = "formatter.expires_at";
+
+	public static final String CHOICE_NO_LIMITS = "choice.no-limits";
+	public static final String CHOICE_ONE_LIMIT = "choice.one-limit";
+	public static final String CHOICE_MANY_LIMITS = "choice.many-limits";
+
+	public static final String CHOICE_NO_BANS = "choice.no-bans";
+	public static final String CHOICE_ONE_BAN = "choice.one-ban";
+	public static final String CHOICE_MANY_BANS = "choice.many-bans";
+
+
 }

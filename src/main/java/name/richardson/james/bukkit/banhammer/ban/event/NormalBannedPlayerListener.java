@@ -12,31 +12,25 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
-import name.richardson.james.bukkit.utilities.formatters.ApproximateTimeFormatter;
-import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
-import name.richardson.james.bukkit.utilities.formatters.ColourFormatter.FormatStyle;
-import name.richardson.james.bukkit.utilities.formatters.DefaultColourFormatter;
-import name.richardson.james.bukkit.utilities.formatters.TimeFormatter;
+import name.richardson.james.bukkit.utilities.formatters.time.ApproximateTimeFormatter;
+import name.richardson.james.bukkit.utilities.formatters.time.TimeFormatter;
 import name.richardson.james.bukkit.utilities.listener.AbstractListener;
-import name.richardson.james.bukkit.utilities.localisation.Localisation;
-import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
+import name.richardson.james.bukkit.utilities.localisation.FormattedLocalisation;
+import name.richardson.james.bukkit.utilities.localisation.StrictResourceBundleLocalisation;
 import name.richardson.james.bukkit.utilities.logging.PluginLoggerFactory;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
+import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
 
 public final class NormalBannedPlayerListener extends AbstractListener {
 
-	private static final String BANNED_TEMPORARILY_KEY = "banned-temporarily";
-	private static final String BANNED_PERMANENTLY_KEY = "banned-permanently";
-
-	private final ColourFormatter colourFormatter = new DefaultColourFormatter();
-	private final Localisation localisation = new ResourceBundleByClassLocalisation(NormalBannedPlayerListener.class);
 	private final Logger logger = PluginLoggerFactory.getLogger(NormalBannedPlayerListener.class);
 	private final PlayerRecordManager playerRecordManager;
 	private final Server server;
 	private final TimeFormatter timeFormatter = new ApproximateTimeFormatter();
+	private final FormattedLocalisation localisation = new StrictResourceBundleLocalisation();
 
 	public NormalBannedPlayerListener(Plugin plugin, PluginManager pluginManager, Server server, PlayerRecordManager playerRecordManager) {
 		super(plugin, pluginManager);
@@ -79,25 +73,14 @@ public final class NormalBannedPlayerListener extends AbstractListener {
 		}
 	}
 
-	@Override
-	public String toString() {
-		return "BannedPlayerListener{" +
-		"playerRecordManager=" + playerRecordManager +
-		", server=" + server +
-		", localisation=" + localisation +
-		", colourFormatter=" + colourFormatter +
-		", timeFormatter=" + timeFormatter +
-		"} " + super.toString();
-	}
-
-	private final String getKickMessage(BanRecord record) {
+	private String getKickMessage(BanRecord record) {
 		switch (record.getType()) {
 			case TEMPORARY: {
 				String time = timeFormatter.getHumanReadableDuration(record.getExpiresAt().getTime());
-				return colourFormatter.format(localisation.getMessage(BANNED_TEMPORARILY_KEY), FormatStyle.ERROR, record.getReason(), record.getCreator().getName(), time);
+				return localisation.formatAsErrorMessage(BanHammerLocalisation.LISTENER_PLAYER_BANNED_TEMPORARILY, record.getReason(), record.getCreator().getName(), time);
 			}
 			default: {
-				return colourFormatter.format(localisation.getMessage(BANNED_PERMANENTLY_KEY), FormatStyle.ERROR, record.getReason(), record.getCreator().getName());
+				return localisation.formatAsErrorMessage(BanHammerLocalisation.LISTENER_PLAYER_BANNED_PERMANENTLY, record.getReason(), record.getCreator().getName());
 			}
 		}
 	}

@@ -2,13 +2,12 @@ package name.richardson.james.bukkit.banhammer.utilities.formatters;
 
 import name.richardson.james.bukkit.utilities.formatters.AbstractChoiceFormatter;
 
-/**
- * Created with IntelliJ IDEA. User: james Date: 22/08/13 Time: 17:05 To change this template use File | Settings | File Templates.
- */
+import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
+
 public class BanLimitChoiceFormatter extends AbstractChoiceFormatter {
 
 	public BanLimitChoiceFormatter() {
-		setFormats("no-limits", "one-limit", "many-limits");
+		setFormats(BanHammerLocalisation.CHOICE_NO_LIMITS, BanHammerLocalisation.CHOICE_ONE_LIMIT, BanHammerLocalisation.CHOICE_MANY_LIMITS);
 		setLimits(0,1,2);
 	}
 

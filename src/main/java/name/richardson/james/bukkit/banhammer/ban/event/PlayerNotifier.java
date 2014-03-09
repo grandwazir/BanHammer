@@ -9,24 +9,19 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
-import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
-import name.richardson.james.bukkit.utilities.formatters.DefaultColourFormatter;
 import name.richardson.james.bukkit.utilities.listener.AbstractListener;
-import name.richardson.james.bukkit.utilities.localisation.Localisation;
-import name.richardson.james.bukkit.utilities.localisation.ResourceBundleByClassLocalisation;
+import name.richardson.james.bukkit.utilities.localisation.FormattedLocalisation;
+import name.richardson.james.bukkit.utilities.localisation.StrictResourceBundleLocalisation;
 import name.richardson.james.bukkit.utilities.logging.PluginLoggerFactory;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
 
 public class PlayerNotifier extends AbstractListener {
 
-	private static final String PLAYER_BANNED_BY_KEY = "player-banned-by";
-	private static final String PLAYER_PARDONED_KEY = "player-pardoned-by";
-
+	private final FormattedLocalisation localisation = new StrictResourceBundleLocalisation();
 	private final Logger logger = PluginLoggerFactory.getLogger(PlayerNotifier.class);
-	private final ColourFormatter colourFormatter = new DefaultColourFormatter();
-	private final Localisation localisation = new ResourceBundleByClassLocalisation(PlayerNotifier.class);
 	private final Server server;
 
 	public PlayerNotifier(final Plugin plugin, final PluginManager pluginManager, final Server server) {
@@ -39,7 +34,8 @@ public class PlayerNotifier extends AbstractListener {
 		logger.log(Level.FINER, "Received " + event.getEventName());
 		if (event.isSilent()) return;
 		BanRecord.BanRecordFormatter formatter = event.getRecord().getFormatter();
-		server.broadcast(colourFormatter.format(localisation.getMessage(PLAYER_BANNED_BY_KEY), ColourFormatter.FormatStyle.ERROR, event.getPlayerName(), event.getRecord().getCreator().getName()), BanHammer.NOTIFY_PERMISSION_NAME);
+		String message = localisation.formatAsErrorMessage(BanHammerLocalisation.NOTIFY_PLAYER_BANNED, event.getPlayerName(), event.getRecord().getCreator().getName());
+		server.broadcast(message, BanHammer.NOTIFY_PERMISSION_NAME);
 		server.broadcast(formatter.getReason(), BanHammer.NOTIFY_PERMISSION_NAME);
 		server.broadcast(formatter.getLength(), BanHammer.NOTIFY_PERMISSION_NAME);
 	}
@@ -48,7 +44,8 @@ public class PlayerNotifier extends AbstractListener {
 	public void onPlayerPardoned(final BanHammerPlayerPardonedEvent event) {
 		logger.log(Level.FINER, "Received " + event.getEventName());
 		if (event.isSilent()) return;
-		server.broadcast(colourFormatter.format(localisation.getMessage(PLAYER_PARDONED_KEY), ColourFormatter.FormatStyle.INFO, event.getPlayerName(), event.getSender().getName()), BanHammer.NOTIFY_PERMISSION_NAME);
+		String message = localisation.formatAsErrorMessage(BanHammerLocalisation.NOTIFY_PLAYER_PARDONED, event.getPlayerName(), event.getSender().getName());
+		server.broadcast(message, BanHammer.NOTIFY_PERMISSION_NAME);
 	}
 
 }
