@@ -23,7 +23,6 @@ public class LimitsCommandTest {
 	public void testExecuteNoPermission()
 	throws Exception {
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou may not view any limits.");
 	}
 
 	@Test

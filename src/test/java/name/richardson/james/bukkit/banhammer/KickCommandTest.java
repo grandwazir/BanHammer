@@ -23,7 +23,6 @@ public class KickCommandTest {
 	throws Exception {
 		when(player.hasPermission(anyString())).thenReturn(true);
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou must specify the name of a player.");
 	}
 
 	@Test
@@ -35,7 +34,7 @@ public class KickCommandTest {
 		command.execute(commandContext);
 		verify(player).kickPlayer("§cYou have been kicked by §efrank§c.\n\nReason: §eNo reason provided§c.");
 		verify(server).broadcast("§c§efrank§c has been kicked by §efrank§c.", BanHammer.NOTIFY_PERMISSION_NAME);
-		verify(server).broadcast("§eReason: §aNo reason provided§e.", BanHammer.NOTIFY_PERMISSION_NAME);
+		verify(server).broadcast("§e- Reason: §aNo reason provided§e.", BanHammer.NOTIFY_PERMISSION_NAME);
 	}
 
 	@Test
@@ -61,7 +60,7 @@ public class KickCommandTest {
 		command.execute(commandContext);
 		verify(player).kickPlayer("§cYou have been kicked by §efrank§c.\n\nReason: §ereason§c.");
 		verify(server).broadcast("§c§efrank§c has been kicked by §efrank§c.", BanHammer.NOTIFY_PERMISSION_NAME);
-		verify(server).broadcast("§eReason: §areason§e.", BanHammer.NOTIFY_PERMISSION_NAME);
+		verify(server).broadcast("§e- Reason: §areason§e.", BanHammer.NOTIFY_PERMISSION_NAME);
 	}
 
 
@@ -69,7 +68,6 @@ public class KickCommandTest {
 	public void testExecuteNoPermission()
 	throws Exception {
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou may not kick other players.");
 	}
 
 	@Before

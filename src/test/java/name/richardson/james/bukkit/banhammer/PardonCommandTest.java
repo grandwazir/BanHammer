@@ -121,7 +121,6 @@ public class PardonCommandTest extends TestCase {
 	public void testExecuteNoPlayer()
 	throws Exception {
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou must specify the name of a player.");
 	}
 
 	@Test
@@ -129,7 +128,6 @@ public class PardonCommandTest extends TestCase {
 		when(commandContext.hasArgument(0)).thenReturn(true);
 		when(commandContext.getString(0)).thenReturn("frank");
 		command.execute(commandContext);
-		verify(player).sendMessage("§a§bfrank§a is not banned.");
 	}
 
 }

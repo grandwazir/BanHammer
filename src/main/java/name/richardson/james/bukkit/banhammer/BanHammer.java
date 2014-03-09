@@ -39,6 +39,7 @@ import name.richardson.james.bukkit.utilities.command.matcher.OnlinePlayerMatche
 import name.richardson.james.bukkit.utilities.localisation.Localisation;
 import name.richardson.james.bukkit.utilities.localisation.StrictResourceBundleLocalisation;
 import name.richardson.james.bukkit.utilities.logging.PluginLoggerFactory;
+import name.richardson.james.bukkit.utilities.logging.PrefixedLogger;
 import name.richardson.james.bukkit.utilities.persistence.configuration.DatabaseConfiguration;
 import name.richardson.james.bukkit.utilities.persistence.configuration.SimpleDatabaseConfiguration;
 import name.richardson.james.bukkit.utilities.persistence.database.DatabaseLoader;
@@ -141,6 +142,7 @@ public final class BanHammer extends JavaPlugin {
 
 	private void loadConfiguration()
 	throws IOException {
+		PrefixedLogger.setPrefix(this.getName());
 		final File file = new File(this.getDataFolder().getPath() + File.separatorChar + CONFIG_NAME);
 		final InputStream defaults = this.getResource(CONFIG_NAME);
 		this.configuration = new PluginConfiguration(file, defaults);
@@ -153,6 +155,7 @@ public final class BanHammer extends JavaPlugin {
 		ServerConfig serverConfig = new ServerConfig();
 		getServer().configureDbConfig(serverConfig);
 		serverConfig.setClasses(Arrays.asList(BanRecord.class, PlayerRecord.class));
+		serverConfig.setName(this.getName());
 		final File file = new File(this.getDataFolder().getPath() + File.separatorChar + DATABASE_CONFIG_NAME);
 		final InputStream defaults = this.getResource(DATABASE_CONFIG_NAME);
 		final DatabaseConfiguration configuration = new SimpleDatabaseConfiguration(file, defaults, serverConfig, this.getName());

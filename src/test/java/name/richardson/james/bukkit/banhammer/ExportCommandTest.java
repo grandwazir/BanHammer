@@ -29,7 +29,6 @@ public class ExportCommandTest {
 	public void testExecuteNoPermission()
 	throws Exception {
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou may not export bans.");
 	}
 
 	@Test

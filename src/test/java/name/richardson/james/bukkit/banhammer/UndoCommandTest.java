@@ -32,7 +32,6 @@ public class UndoCommandTest extends TestCase {
 	public void testExecuteNoPlayerName()
 	throws Exception {
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou must specify the name of a player!");
 	}
 
 	@Test

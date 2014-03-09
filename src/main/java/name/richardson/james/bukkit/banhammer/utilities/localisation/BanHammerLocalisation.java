@@ -27,7 +27,6 @@ public interface BanHammerLocalisation {
 	public static final String KICK_PLAYER_NOTIFICATION = "kickcommand.player-notification";
 	public static final String KICK_SENDER_NOTIFICATION = "kickcommand.sender-notification";
 	public static final String KICK_PLAYER_KICKED = "kickcommand.player-kicked-from-server";
-	public static final String KICK_REASON_FOR_PLAYER_KICK = "kickcommand.reason";
 	public static final String KICK_DEFAULT_REASON = "kickcommand.default-reason";
 	public static final String LIMIT_SUMMARY = "limitscommand.summary";
 	public static final String LIMIT_ENTRY = "limitscommand.entry";

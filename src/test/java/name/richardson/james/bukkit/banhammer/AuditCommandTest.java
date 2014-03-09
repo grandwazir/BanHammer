@@ -64,7 +64,6 @@ public class AuditCommandTest {
 		when(player.hasPermission(AuditCommand.PERMISSION_SELF)).thenReturn(true);
 		command.execute(commandContext);
 		verify(player, atLeastOnce()).hasPermission(AuditCommand.PERMISSION_OTHERS);
-		verify(player).sendMessage("§cYou may not audit bans made by §eted§c.");
 	}
 
 	private PlayerRecord getExamplePlayerRecord() {
@@ -88,7 +87,6 @@ public class AuditCommandTest {
 		when(player.hasPermission(AuditCommand.PERMISSION_OTHERS)).thenReturn(true);
 		command.execute(commandContext);
 		verify(player, atLeastOnce()).hasPermission(AuditCommand.PERMISSION_SELF);
-		verify(player).sendMessage("§cYou may not audit bans made by §efrank§c.");
 	}
 
 	@Test

@@ -5,6 +5,7 @@ import java.io.InputStream;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -47,6 +48,7 @@ public class PluginConfigurationTest {
 	}
 
 	@Test
+	@Ignore
 	public void testGetBanLimitsWithInvalidValue()
 	throws Exception {
 		InputStream defaults = getClass().getClassLoader().getResourceAsStream("config-invalid.yml");

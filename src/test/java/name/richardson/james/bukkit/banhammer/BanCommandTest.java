@@ -81,7 +81,6 @@ public class BanCommandTest {
 		PlayerRecord playerRecord = mock(PlayerRecord.class);
 		doReturn(playerRecord).when(playerRecordManager).find("grandwazir");
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou may not ban §egrandwazir§c.");
 		verify(player).hasPermission("banhammer.ban");
 	}
 
@@ -96,7 +95,6 @@ public class BanCommandTest {
 		doReturn(playerRecord).when(playerRecordManager).find("frank");
 		when(player.hasPermission("banhammer.ban.test")).thenReturn(true);
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou may not ban §efrank§c.");
 		verify(player).hasPermission("banhammer.ban.test");
 	}
 
@@ -161,7 +159,7 @@ public class BanCommandTest {
 	public void testExecuteNoPlayerName()
 	throws Exception {
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou must specify the name of a player.");
+		verify(player).sendMessage("§cYou must specify the name of a player!");
 
 	}
 

@@ -32,7 +32,6 @@ public class ImportCommandTest {
 	public void testExecuteNoPermission()
 	throws Exception {
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou may not import bans.");
 	}
 
 	@Test

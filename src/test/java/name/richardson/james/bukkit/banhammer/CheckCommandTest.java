@@ -36,7 +36,7 @@ public class CheckCommandTest {
 		String[] arguments = {""};
 		CommandContext context = new PassthroughCommandContext(arguments, commandSender);
 		command.execute(context);
-	 	verify(commandSender).sendMessage("§cYou must specify a player name.");
+	 	verify(commandSender).sendMessage("§cYou must specify the name of a player!");
 	}
 
 	@Test
@@ -63,7 +63,6 @@ public class CheckCommandTest {
 		when(playerRecordManager.find("frank")).thenReturn(playerRecord);
 		CommandContext context = new PassthroughCommandContext(arguments, commandSender);
 		command.execute(context);
-		verify(commandSender).sendMessage("§a§bfrank§a is not banned.");
 		verify(playerRecord).isBanned();
 	}
 
@@ -74,7 +73,6 @@ public class CheckCommandTest {
 		String[] arguments = {"frank"};
 		CommandContext context = new PassthroughCommandContext(arguments, commandSender);
 		command.execute(context);
-		verify(commandSender).sendMessage("§cYou may not check if players are banned.");
 	}
 
 	@Test

@@ -64,7 +64,7 @@ public class UndoCommand extends AbstractCommand {
 	private boolean setPlayerRecord(CommandContext context) {
 		playerRecord = playerRecordManager.find(playerName);
 		if (playerRecord == null || playerRecord.getBans().size() == 0) {
-			String message = getLocalisation().formatAsInfoMessage(BanHammerLocalisation.PLAYER_NEVER_BEEN_BANNED, playerName);
+			String message = getLocalisation().formatAsWarningMessage(BanHammerLocalisation.PLAYER_NEVER_BEEN_BANNED, playerName);
 			context.getCommandSender().sendMessage(message);
 			return false;
 		} else {
@@ -87,7 +87,7 @@ public class UndoCommand extends AbstractCommand {
 	private boolean setBan(CommandContext context) {
 		ban = playerRecord.getActiveBan();
 		if (ban == null) {
-			String message = getLocalisation().formatAsErrorMessage(BanHammerLocalisation.PLAYER_NOT_BANNED);
+			String message = getLocalisation().formatAsInfoMessage(BanHammerLocalisation.PLAYER_NOT_BANNED, playerName);
 			context.getCommandSender().sendMessage(message);
 			return false;
 		} else {
@@ -100,7 +100,7 @@ public class UndoCommand extends AbstractCommand {
 		final boolean withinTimeLimit = this.withinTimeLimit(sender);
 		if (sender.hasPermission(PERMISSION_OWN) && withinTimeLimit && isSenderTargetingSelf) return true;
 		if (sender.hasPermission(PERMISSION_OTHERS) && withinTimeLimit && !isSenderTargetingSelf) return true;
-		String message = getLocalisation().formatAsInfoMessage(BanHammerLocalisation.UNDO_NOT_PERMITTED, ban.getCreator().getName());
+		String message = getLocalisation().formatAsErrorMessage(BanHammerLocalisation.UNDO_NOT_PERMITTED, ban.getCreator().getName());
 		sender.sendMessage(message);
 		return false;
 	}

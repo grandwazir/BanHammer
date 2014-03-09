@@ -1,5 +1,10 @@
 # Changelog for BanHammer (v2.3.2-SNAPSHOT)
 
+2014-03-09 13:58:50 +0000    update tests (James Richardson)  
+2014-03-09 13:44:49 +0000    merge properties file (James Richardson)  
+2014-03-09 13:04:00 +0000    refactor other classes to new localisation format (James Richardson)  
+2014-03-09 12:38:08 +0000    coverted to new command format (James Richardson)  
+2014-02-09 17:45:54 +0000    fix Alias listener not being registered correctly (James Richardson)  
 2013-11-30 14:54:22 +0000    fixes [#91](https://github.com/grandwazir/BanHammer/ban-hammer/issues/91); players with specific limits could ban permanently (James Richardson)  
 
 **v2.3.1**  

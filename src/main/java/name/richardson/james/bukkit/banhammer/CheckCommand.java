@@ -73,7 +73,7 @@ public class CheckCommand extends AbstractCommand {
 	private boolean setPlayerRecord(CommandContext context) {
 		playerRecord = playerRecordManager.find(playerName);
 		if (playerRecord == null || !playerRecord.isBanned()) {
-			String message = getLocalisation().formatAsErrorMessage(BanHammerLocalisation.PLAYER_NOT_BANNED);
+			String message = getLocalisation().formatAsInfoMessage(BanHammerLocalisation.PLAYER_NOT_BANNED, playerName);
 			context.getCommandSender().sendMessage(message);
 			return false;
 		} else {

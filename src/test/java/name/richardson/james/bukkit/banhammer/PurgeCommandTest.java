@@ -48,7 +48,6 @@ public class PurgeCommandTest extends TestCase {
 	throws Exception {
 		when(player.hasPermission(PurgeCommand.PERMISSION_ALL)).thenReturn(false);
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou are not allowed to purge bans.");
 	}
 
 	@Test

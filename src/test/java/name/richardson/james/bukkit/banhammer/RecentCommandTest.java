@@ -31,7 +31,6 @@ public class RecentCommandTest extends TestCase {
 	throws Exception {
 		when(player.hasPermission(RecentCommand.PERMISSION_ALL)).thenReturn(false);
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou are not allowed to view recent bans.");
 	}
 
 	@Test

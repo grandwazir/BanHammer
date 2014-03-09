@@ -52,7 +52,7 @@ public class KickCommand extends AbstractCommand {
 			boolean silent = (context.hasSwitch("s") || context.hasSwitch("silent"));
 			if (!silent) {
 				server.broadcast(getLocalisation().formatAsErrorMessage(BanHammerLocalisation.KICK_PLAYER_KICKED, playerName, context.getCommandSender().getName()), BanHammer.NOTIFY_PERMISSION_NAME);
-				server.broadcast(getLocalisation().formatAsWarningMessage(BanHammerLocalisation.KICK_REASON_FOR_PLAYER_KICK, this.reason), BanHammer.NOTIFY_PERMISSION_NAME);
+				server.broadcast(getLocalisation().formatAsWarningMessage(BanHammerLocalisation.FORMATTER_REASON, this.reason), BanHammer.NOTIFY_PERMISSION_NAME);
 			}
 		} else {
 			String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_NO_PERMISSION);
