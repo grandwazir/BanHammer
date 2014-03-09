@@ -3,17 +3,15 @@ package name.richardson.james.bukkit.banhammer;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
-import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.permissions.PermissionManager;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
-public class KickCommandTest extends TestCase {
+public class KickCommandTest {
 
 	private KickCommand command;
 	private CommandContext commandContext;
@@ -25,7 +23,7 @@ public class KickCommandTest extends TestCase {
 	throws Exception {
 		when(player.hasPermission(anyString())).thenReturn(true);
 		command.execute(commandContext);
-		verify(player).sendMessage("§cYou must specify the name of an online player.");
+		verify(player).sendMessage("§cYou must specify the name of a player.");
 	}
 
 	@Test
@@ -44,7 +42,7 @@ public class KickCommandTest extends TestCase {
 	public void testExecuteSilentKickWithDefaultReason()
 	throws Exception {
 		when(player.hasPermission(anyString())).thenReturn(true);
-		when(commandContext.hasFlag(anyString())).thenReturn(true);
+		when(commandContext.hasSwitch(anyString())).thenReturn(true);
 		when(commandContext.getString(0)).thenReturn("frank");
 		when(server.getPlayerExact("frank")).thenReturn(player);
 		command.execute(commandContext);
@@ -58,7 +56,7 @@ public class KickCommandTest extends TestCase {
 		when(player.hasPermission(anyString())).thenReturn(true);
 		when(commandContext.getString(0)).thenReturn("frank");
 		when(server.getPlayerExact("frank")).thenReturn(player);
-		when(commandContext.has(1)).thenReturn(true);
+		when(commandContext.hasArgument(1)).thenReturn(true);
 		when(commandContext.getJoinedArguments(1)).thenReturn("reason");
 		command.execute(commandContext);
 		verify(player).kickPlayer("§cYou have been kicked by §efrank§c.\n\nReason: §ereason§c.");

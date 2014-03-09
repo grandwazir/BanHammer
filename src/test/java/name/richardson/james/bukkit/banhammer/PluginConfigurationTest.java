@@ -11,8 +11,11 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
 @RunWith(JUnit4.class)
-public class PluginConfigurationTest extends TestCase {
+public class PluginConfigurationTest {
 
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();

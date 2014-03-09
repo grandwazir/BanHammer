@@ -11,7 +11,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.permissions.PermissionManager;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
@@ -48,7 +47,7 @@ public class RecentCommandTest extends TestCase {
 	public void testExecuteCustomLimit()
 	throws Exception {
 		int count = 4;
-		when(commandContext.has(0)).thenReturn(true);
+		when(commandContext.hasArgument(0)).thenReturn(true);
 		when(commandContext.getString(0)).thenReturn("4");
 		List<BanRecord> banRecords = getMockBans();
 		when(banRecordManager.list(count)).thenReturn(banRecords);
@@ -91,7 +90,6 @@ public class RecentCommandTest extends TestCase {
 	@Before
 	public void setUp()
 	throws Exception {
-		PermissionManager permissionManager = mock(PermissionManager.class);
 		banRecordManager = mock(BanRecordManager.class);
 		command = new RecentCommand(banRecordManager);
 		player = mock(Player.class);

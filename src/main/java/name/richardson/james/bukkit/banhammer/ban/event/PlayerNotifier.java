@@ -44,7 +44,7 @@ public class PlayerNotifier extends AbstractListener {
 	public void onPlayerPardoned(final BanHammerPlayerPardonedEvent event) {
 		logger.log(Level.FINER, "Received " + event.getEventName());
 		if (event.isSilent()) return;
-		String message = localisation.formatAsErrorMessage(BanHammerLocalisation.NOTIFY_PLAYER_PARDONED, event.getPlayerName(), event.getSender().getName());
+		String message = localisation.formatAsInfoMessage(BanHammerLocalisation.NOTIFY_PLAYER_PARDONED, event.getPlayerName(), event.getSender().getName());
 		server.broadcast(message, BanHammer.NOTIFY_PERMISSION_NAME);
 	}
 

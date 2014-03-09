@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.permissions.PermissionManager;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
@@ -21,9 +20,7 @@ import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class PurgeCommandTest extends TestCase {
 
@@ -32,7 +29,19 @@ public class PurgeCommandTest extends TestCase {
 	private CommandContext commandContext;
 	private Player player;
 	private PlayerRecordManager playerRecordManager;
-	private PluginManager pluginManager;
+
+	@Before
+	public void setUp()
+	throws Exception {
+		playerRecordManager = mock(PlayerRecordManager.class);
+		banRecordManager = mock(BanRecordManager.class);
+		command = new PurgeCommand(playerRecordManager, banRecordManager);
+		player = mock(Player.class);
+		when(player.getName()).thenReturn("frank");
+		when(player.hasPermission(PurgeCommand.PERMISSION_ALL)).thenReturn(true);
+		commandContext = mock(CommandContext.class);
+		when(commandContext.getCommandSender()).thenReturn(player);
+	}
 
 	@Test
 	public void testExecuteNoPermission()
@@ -52,28 +61,15 @@ public class PurgeCommandTest extends TestCase {
 	@Test
 	public void testExecuteNoPlayerRecord()
 	throws Exception {
-		when(commandContext.has(0)).thenReturn(true);
+		when(commandContext.hasArgument(0)).thenReturn(true);
 		when(commandContext.getString(0)).thenReturn("frank");
 		command.execute(commandContext);
 		verify(player).sendMessage("§a§bfrank§a has never been banned.");
 	}
 
 	@Test
-	public void testExecutePurgeOwnBans() throws Exception {
-		when(commandContext.has(0)).thenReturn(true);
-		when(commandContext.getString(0)).thenReturn("frank");
-		PlayerRecord playerRecord = getMockPlayerRecord();
-		when(playerRecord.getName()).thenReturn("frank");
-		when(playerRecordManager.find(anyString())).thenReturn(playerRecord);
-		when(player.hasPermission(PurgeCommand.PERMISSION_OWN)).thenReturn(true);
-		command.execute(commandContext);
-		verify(banRecordManager).delete(anyList());
-		verify(player).sendMessage("§aPurged §bone ban§a associated with §bfrank§a.");
-	}
-
-	@Test
 	public void testExecutePurgeAllBans() throws Exception {
-		when(commandContext.has(0)).thenReturn(true);
+		when(commandContext.hasArgument(0)).thenReturn(true);
 		when(commandContext.getString(0)).thenReturn("joe");
 		PlayerRecord playerRecord = getMockPlayerRecord();
 		when(playerRecordManager.find(anyString())).thenReturn(playerRecord);
@@ -83,16 +79,17 @@ public class PurgeCommandTest extends TestCase {
 		verify(player).sendMessage("§aPurged §bone ban§a associated with §bjoe§a.");
 	}
 
-	private BanRecord getMockBan(PlayerRecord playerRecord) {
-		BanRecord ban = mock(BanRecord.class);
-		long now = System.currentTimeMillis();
-		when(ban.getCreatedAt()).thenReturn(new Timestamp(now));
-		when(ban.getExpiresAt()).thenReturn(new Timestamp(now));
-		when(ban.getCreator()).thenReturn(playerRecord);
-		when(ban.getPlayer()).thenReturn(playerRecord);
-		when(ban.getReason()).thenReturn("This is a test reason.");
-		when(ban.getType()).thenReturn(BanRecord.Type.PERMANENT);
-		return ban;
+	@Test
+	public void testExecutePurgeOwnBans() throws Exception {
+		when(commandContext.hasArgument(0)).thenReturn(true);
+		when(commandContext.getString(0)).thenReturn("frank");
+		PlayerRecord playerRecord = getMockPlayerRecord();
+		when(playerRecord.getName()).thenReturn("frank");
+		when(playerRecordManager.find(anyString())).thenReturn(playerRecord);
+		when(player.hasPermission(PurgeCommand.PERMISSION_OWN)).thenReturn(true);
+		command.execute(commandContext);
+		verify(banRecordManager).delete(anyList());
+		verify(player).sendMessage("§aPurged §bone ban§a associated with §bfrank§a.");
 	}
 
 	private PlayerRecord getMockPlayerRecord() {
@@ -107,20 +104,16 @@ public class PurgeCommandTest extends TestCase {
 		return playerRecord;
 	}
 
-
-	@Before
-	public void setUp()
-	throws Exception {
-		PermissionManager permissionManager = mock(PermissionManager.class);
-		pluginManager = mock(PluginManager.class);
-		playerRecordManager = mock(PlayerRecordManager.class);
-		banRecordManager = mock(BanRecordManager.class);
-		command = new PurgeCommand(playerRecordManager, banRecordManager);
-		player = mock(Player.class);
-		when(player.getName()).thenReturn("frank");
-		when(player.hasPermission(PurgeCommand.PERMISSION_ALL)).thenReturn(true);
-		commandContext = mock(CommandContext.class);
-		when(commandContext.getCommandSender()).thenReturn(player);
+	private BanRecord getMockBan(PlayerRecord playerRecord) {
+		BanRecord ban = mock(BanRecord.class);
+		long now = System.currentTimeMillis();
+		when(ban.getCreatedAt()).thenReturn(new Timestamp(now));
+		when(ban.getExpiresAt()).thenReturn(new Timestamp(now));
+		when(ban.getCreator()).thenReturn(playerRecord);
+		when(ban.getPlayer()).thenReturn(playerRecord);
+		when(ban.getReason()).thenReturn("This is a test reason.");
+		when(ban.getType()).thenReturn(BanRecord.Type.PERMANENT);
+		return ban;
 	}
 
 

@@ -6,7 +6,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 
-import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +13,6 @@ import org.junit.runners.JUnit4;
 
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
 import name.richardson.james.bukkit.utilities.command.context.PassthroughCommandContext;
-import name.richardson.james.bukkit.utilities.permissions.PermissionManager;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
@@ -24,11 +22,10 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 @RunWith(JUnit4.class)
-public class CheckCommandTest extends TestCase {
+public class CheckCommandTest {
 
 	private CheckCommand command;
 	private CommandSender commandSender;
-	private PermissionManager permissionManager;
 	private PlayerRecord playerRecord;
 	private PlayerRecordManager playerRecordManager;
 	private Server server;
@@ -115,7 +112,6 @@ public class CheckCommandTest extends TestCase {
 	@Before
 	public void setUp()
 	throws Exception {
-		permissionManager = mock(PermissionManager.class);
 		playerRecordManager = mock(PlayerRecordManager.class);
 		commandSender = mock(CommandSender.class);
 		when(commandSender.hasPermission(anyString())).thenReturn(true);

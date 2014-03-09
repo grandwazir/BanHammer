@@ -11,16 +11,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.permissions.PermissionManager;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class UndoCommandTest extends TestCase {
 
@@ -41,7 +38,7 @@ public class UndoCommandTest extends TestCase {
 	@Test
 	public void testExecuteNoPlayerRecord()
 	throws Exception {
-		when(commandContext.has(0)).thenReturn(true);
+		when(commandContext.hasArgument(0)).thenReturn(true);
 		when(commandContext.getString(0)).thenReturn("frank");
 		command.execute(commandContext);
 		verify(player).sendMessage("§e§afrank§e has never been banned.");
@@ -49,7 +46,7 @@ public class UndoCommandTest extends TestCase {
 
 	@Test
 	public void testExecuteNoBanRecord() {
-		when(commandContext.has(0)).thenReturn(true);
+		when(commandContext.hasArgument(0)).thenReturn(true);
 		when(commandContext.getString(0)).thenReturn("frank");
 		PlayerRecord playerRecord = getMockPlayerRecord();
 		when(playerRecord.getActiveBan()).thenReturn(null);
@@ -60,7 +57,7 @@ public class UndoCommandTest extends TestCase {
 
 	@Test
 	public void testExecuteFailedNoPermissionSelf() {
-		when(commandContext.has(0)).thenReturn(true);
+		when(commandContext.hasArgument(0)).thenReturn(true);
 		when(commandContext.getString(0)).thenReturn("frank");
 		PlayerRecord playerRecord = getMockPlayerRecord();
 		when(playerRecordManager.find("frank")).thenReturn(playerRecord);
@@ -71,7 +68,7 @@ public class UndoCommandTest extends TestCase {
 
 	@Test
 	public void testExecuteFailedNoPermissionOthers() {
-		when(commandContext.has(0)).thenReturn(true);
+		when(commandContext.hasArgument(0)).thenReturn(true);
 		when(commandContext.getString(0)).thenReturn("frank");
 		PlayerRecord playerRecord = getMockPlayerRecord();
 		when(playerRecord.getName()).thenReturn("joe");
@@ -83,7 +80,7 @@ public class UndoCommandTest extends TestCase {
 
 	@Test
 	public void testExecuteFailedOutsideTimeLimit() {
-		when(commandContext.has(0)).thenReturn(true);
+		when(commandContext.hasArgument(0)).thenReturn(true);
 		when(commandContext.getString(0)).thenReturn("frank");
 		PlayerRecord playerRecord = getMockPlayerRecord();
 		when(playerRecordManager.find("frank")).thenReturn(playerRecord);
@@ -96,7 +93,7 @@ public class UndoCommandTest extends TestCase {
 
 	@Test
 	public void testExecuteSuccessWithinTimeLimit() {
-		when(commandContext.has(0)).thenReturn(true);
+		when(commandContext.hasArgument(0)).thenReturn(true);
 		when(commandContext.getString(0)).thenReturn("frank");
 		PlayerRecord playerRecord = getMockPlayerRecord();
 		when(playerRecordManager.find("frank")).thenReturn(playerRecord);
@@ -108,7 +105,7 @@ public class UndoCommandTest extends TestCase {
 
 	@Test
 	public void testExecuteSuccessUnrestricted() {
-		when(commandContext.has(0)).thenReturn(true);
+		when(commandContext.hasArgument(0)).thenReturn(true);
 		when(commandContext.getString(0)).thenReturn("frank");
 		PlayerRecord playerRecord = getMockPlayerRecord();
 		when(playerRecordManager.find("frank")).thenReturn(playerRecord);
@@ -147,7 +144,6 @@ public class UndoCommandTest extends TestCase {
 	@Before
 	public void setUp()
 	throws Exception {
-		PermissionManager permissionManager = mock(PermissionManager.class);
 		playerRecordManager = mock(PlayerRecordManager.class);
 		banRecordManager = mock(BanRecordManager.class);
 		command = new UndoCommand(playerRecordManager, banRecordManager, undoTime);

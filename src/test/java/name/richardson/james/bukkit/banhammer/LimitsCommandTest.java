@@ -5,20 +5,15 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
-import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.permissions.PermissionManager;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-public class LimitsCommandTest extends TestCase {
+public class LimitsCommandTest {
 
 	private LimitsCommand command;
 	private CommandContext commandContext;
@@ -42,8 +37,8 @@ public class LimitsCommandTest extends TestCase {
 
 	private static Map<String, Long> getLimits() {
 		Map<String, Long> limits = new HashMap<String, Long>();
-		limits.put("test", Long.valueOf(60000));
-		limits.put("test2", Long.valueOf(10000));
+		limits.put("test", (long) 60000);
+		limits.put("test2", (long) 10000);
 		return limits;
 	}
 

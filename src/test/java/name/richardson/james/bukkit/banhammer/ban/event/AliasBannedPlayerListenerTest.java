@@ -1,8 +1,5 @@
 package name.richardson.james.bukkit.banhammer.ban.event;
 
-import java.util.Arrays;
-import java.util.HashSet;
-
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
@@ -23,8 +20,17 @@ public class AliasBannedPlayerListenerTest extends TestCase {
 
 	private AliasBannedPlayerListener listener;
 	private PlayerNameRecordManager playerNameRecordManager;
-	private PlayerRecord playerRecord;
-	private PlayerRecordManager playerRecordManager;
+
+	@Before
+	public void setUp()
+	throws Exception {
+		Plugin plugin = mock(Plugin.class);
+		PluginManager pluginManager = mock(PluginManager.class);
+		PlayerRecordManager playerRecordManager = mock(PlayerRecordManager.class, RETURNS_MOCKS);
+		playerNameRecordManager = mock(PlayerNameRecordManager.class);
+		PlayerRecord playerRecord = mock(PlayerRecord.class, RETURNS_MOCKS);
+		listener = new AliasBannedPlayerListener(plugin, pluginManager, playerRecordManager, playerNameRecordManager);
+	}
 
 	@Test
 	public void testOnPlayerPardoned()
@@ -39,30 +45,5 @@ public class AliasBannedPlayerListenerTest extends TestCase {
 		listener.onPlayerPardoned(event);
 		verify(playerNameRecordManager, times(2)).find(anyString());
 		verify(playerNameRecord, times(1)).removeAssociation(playerNameRecord);
-	}
-
-	@Test
-	public void testIsPlayerBannedByAlias()
-	throws Exception {
-		when(playerRecordManager.exists("joe")).thenReturn(true);
-		when(playerRecordManager.create(anyString())).thenReturn(playerRecord);
-		when(playerRecordManager.find("joe")).thenReturn(playerRecord);
-		when(playerRecord.isBanned()).thenReturn(true);
-		PlayerNameRecord playerNameRecord = mock(PlayerNameRecord.class);
-		when(playerNameRecord.getPlayerName()).thenReturn("joe");
-		when(playerNameRecordManager.find(anyString())).thenReturn(playerNameRecord);
-		when(playerNameRecord.getAliases()).thenReturn(new HashSet<String>(Arrays.asList("joe")));
-		assertTrue("Player should be banned", listener.isPlayerBanned("frank"));
-	}
-
-	@Before
-	public void setUp()
-	throws Exception {
-		Plugin plugin = mock(Plugin.class);
-		PluginManager pluginManager = mock(PluginManager.class);
-		playerRecordManager = mock(PlayerRecordManager.class, RETURNS_MOCKS);
-		playerNameRecordManager = mock(PlayerNameRecordManager.class);
-		playerRecord = mock(PlayerRecord.class, RETURNS_MOCKS);
-		listener = new AliasBannedPlayerListener(plugin, pluginManager, playerRecordManager, playerNameRecordManager);
 	}
 }

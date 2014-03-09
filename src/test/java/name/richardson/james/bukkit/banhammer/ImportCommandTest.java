@@ -13,7 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.permissions.PermissionManager;
 
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
@@ -21,7 +20,7 @@ import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
-public class ImportCommandTest extends TestCase {
+public class ImportCommandTest {
 
 	private ImportCommand command;
 	private CommandContext commandContext;
@@ -52,7 +51,7 @@ public class ImportCommandTest extends TestCase {
 	@Test
 	public void testExecuteWithCustomReason()
 	throws Exception {
-		when(commandContext.has(0)).thenReturn(true);
+		when(commandContext.hasArgument(0)).thenReturn(true);
 		when(commandContext.getString(0)).thenReturn("blah");
 		when(player.hasPermission(anyString())).thenReturn(true);
 		OfflinePlayer offlinePlayer = mock(OfflinePlayer.class);
@@ -67,7 +66,6 @@ public class ImportCommandTest extends TestCase {
 	@Before
 	public void setUp()
 	throws Exception {
-		PermissionManager permissionManager = mock(PermissionManager.class);
 		EbeanServer database = mock(EbeanServer.class);
 		playerRecordManager = spy(new PlayerRecordManager(database));
 		server = mock(Server.class);
