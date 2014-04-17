@@ -64,7 +64,7 @@ public class KickCommand extends AbstractCommand {
 			 	server.broadcast(getLocalisation().formatAsWarningMessage(BanHammerLocalisation.KICK_PLAYER_KICKED, player.getName(), senderName), BanHammer.NOTIFY_PERMISSION_NAME);
 				server.broadcast(getLocalisation().formatAsWarningMessage(BanHammerLocalisation.FORMATTER_REASON, reason), BanHammer.NOTIFY_PERMISSION_NAME);
 			}
-			player.kickPlayer(getLocalisation().formatAsErrorMessage(KICK_PLAYER_NOTIFICATION, senderName, reason));
+			player.kickPlayer(getLocalisation().formatAsErrorMessage(KICK_PLAYER_NOTIFICATION, reason, senderName));
 		}
 	}
 
