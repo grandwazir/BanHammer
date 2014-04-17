@@ -46,6 +46,7 @@ public class HistoryCommand extends AbstractCommand {
 		super(HISTORY_COMMAND_NAME, HISTORY_COMMAND_DESC);
 		this.playerRecordManager = playerRecordManager;
 		this.playerName = PlayerNamePositionalArgument.getInstance(playerRecordManager, 0, false, PlayerRecordManager.PlayerStatus.ANY);
+		addArgument(playerName);
 	}
 
 	@Override
