@@ -120,8 +120,6 @@ public class BanCommand extends AbstractCommand {
 			if (!sender.hasPermission(node)) continue;
 			if (!immunePlayerTargeted && (this.limits.get(limitName) >= this.time.getDuration())) return true;
 		}
-		String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_NO_PERMISSION);
-		sender.sendMessage(message);
 		return false;
 	}
 

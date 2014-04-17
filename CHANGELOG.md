@@ -1,5 +1,6 @@
 # Changelog for BanHammer (v2.3.2-SNAPSHOT)
 
+2014-04-17 18:42:49 +0100    fix history command argument not being registered (James Richardson)  
 2014-04-17 14:23:23 +0100    migrated across to the new command structure (James Richardson)  
 2014-03-09 14:41:51 +0000    snapshot release (James Richardson)  
 2014-03-09 13:58:50 +0000    update tests (James Richardson)  
