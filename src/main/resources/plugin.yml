@@ -12,9 +12,9 @@ commands:
   pardon:
     description: 'Pardons a specified player'
     usage: '/pardon [player]'
+    aliases: [unban]
   bh:
     description: 'Additional ban commands'
-    usage: '/bh [check|history|purge|recent|reload]'
 permissions:
   banhammer:
     description: Allow players to use all the features of BanHammer
