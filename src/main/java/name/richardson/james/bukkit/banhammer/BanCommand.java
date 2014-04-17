@@ -17,23 +17,23 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer;
 
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.PluginManager;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
-import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.formatters.time.ApproximateTimeFormatter;
-import name.richardson.james.bukkit.utilities.formatters.time.TimeFormatter;
+import name.richardson.james.bukkit.utilities.command.argument.*;
 import name.richardson.james.bukkit.utilities.localisation.PluginLocalisation;
 
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerBannedEvent;
-import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
+
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation.*;
 
 public class BanCommand extends AbstractCommand {
 
@@ -44,37 +44,54 @@ public class BanCommand extends AbstractCommand {
 	private final Map<String, Long> limits;
 	private final PlayerRecordManager playerRecordManager;
 	private final PluginManager pluginManager;
-	private final TimeFormatter timeFormatter = new ApproximateTimeFormatter();
-	private String playerName;
-	private PlayerRecord playerRecord;
-	private String reason;
-	private long time;
+	private final Argument reason;
+	private final SilentSwitchArgument silent;
+	private final TimeMarshaller time;
+	private final Argument player;
 
-	public BanCommand(PluginManager pluginManager, PlayerRecordManager playerRecordManager, Map<String, Long> limits, Set<String> immunePlayers) {
+	public BanCommand(Server server, PluginManager pluginManager, PlayerRecordManager playerRecordManager, Map<String, Long> limits, Set<String> immunePlayers) {
+		super(BANCOMMAND_NAME, BANCOMMAND_DESC);
 		this.playerRecordManager = playerRecordManager;
 		this.limits = limits;
 		this.immunePlayers = immunePlayers;
 		this.pluginManager = pluginManager;
+		player = PlayerNamePositionalArgument.getInstance(server, 0, true);
+		time = TimeOptionArgument.getInstance();
+		silent = SilentSwitchArgument.getInstance();
+		reason = ReasonPositionalArgument.getInstance(1, true);
+		addArgument(silent);
+		addArgument(time);
+		addArgument(player);
+		addArgument(reason);
 	}
 
 	@Override
-	public void execute(CommandContext context) {
-		if (!setPlayerName(context)) return;
-		if (!setReason(context)) return;
-		if (!setPlayerRecord(context)) return;
-		setExpiryTime(context);
-		if (!hasPermission(context.getCommandSender())) return;
-		PlayerRecordManager.BannedPlayerBuilder bannedPlayerBuilder = playerRecordManager.getBannedPlayerBuilder();
-		bannedPlayerBuilder.setPlayer(playerName);
-		bannedPlayerBuilder.setCreator(context.getCommandSender().getName());
-		bannedPlayerBuilder.setExpiryTime(time);
-		bannedPlayerBuilder.setReason(reason);
-		bannedPlayerBuilder.save();
-		String message = getLocalisation().formatAsInfoMessage(BanHammerLocalisation.PLAYER_BANNED, playerName);
-		context.getCommandSender().sendMessage(message);
-		boolean silent = (context.hasSwitch("s") || context.hasSwitch("silent"));
-		BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(bannedPlayerBuilder.getRecord(), silent);
-		pluginManager.callEvent(event);
+	public void execute() {
+		CommandSender sender = getContext().getCommandSender();
+		List<String> messages = new ArrayList<String>();
+		List<BanRecord> records = new ArrayList<BanRecord>();
+		Collection<String> players = player.getStrings();
+		boolean silent = this.silent.isSet();
+		long time = this.time.getDuration();
+		for (String player : players) {
+			if (!hasPermission(sender, player)) {
+				messages.add(getLocalisation().formatAsInfoMessage(COMMAND_NO_PERMISSION));
+			} else if (playerRecordManager.exists(player) && playerRecordManager.find(player).getActiveBan() != null) {
+				messages.add(getLocalisation().formatAsErrorMessage(BAN_PLAYER_IS_ALREADY_BANNED, player));
+			} else {
+				PlayerRecordManager.BannedPlayerBuilder bannedPlayerBuilder = playerRecordManager.getBannedPlayerBuilder();
+				bannedPlayerBuilder.setPlayer(player);
+				bannedPlayerBuilder.setCreator(sender.getName());
+				bannedPlayerBuilder.setReason(reason.getString());
+				if (time > 0) bannedPlayerBuilder.setExpiryTime(time);
+				bannedPlayerBuilder.save();
+				records.add(bannedPlayerBuilder.getRecord());
+				messages.add(getLocalisation().formatAsInfoMessage(PLAYER_BANNED, player));
+				BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(records, silent);
+				pluginManager.callEvent(event);
+			}
+		}
+		sender.sendMessage(messages.toArray(new String[messages.size()]));
 	}
 
 	@Override
@@ -88,83 +105,24 @@ public class BanCommand extends AbstractCommand {
 		return false;
 	}
 
-	private boolean hasPermission(final CommandSender sender) {
-		boolean immunePlayerTargeted = this.immunePlayers.contains(this.playerName);
+	@Override
+	public boolean isAsynchronousCommand() {
+		return false;
+	}
+
+	private boolean hasPermission(final CommandSender sender, String playerName) {
+		boolean immunePlayerTargeted = this.immunePlayers.contains(playerName);
 		if (sender.hasPermission(BanCommand.PERMISSION_ALL)) return true;
 		if (!immunePlayerTargeted && sender.hasPermission(BanCommand.PERMISSION_PERMANENT)) return true;
 		for (final String limitName : this.limits.keySet()) {
 			final String node = BanCommand.PERMISSION_ALL + "." + limitName;
-			if (time == 0) break;
+			if (time.getDuration() == 0) break;
 			if (!sender.hasPermission(node)) continue;
-			if (!immunePlayerTargeted && (this.limits.get(limitName) >= this.time)) return true;
+			if (!immunePlayerTargeted && (this.limits.get(limitName) >= this.time.getDuration())) return true;
 		}
 		String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_NO_PERMISSION);
 		sender.sendMessage(message);
 		return false;
-	}
-
-	private void setExpiryTime(CommandContext context) {
-		if (context.hasSwitch("t")) {
-			String timeString = context.getFlag("t");
-			if (limits.containsKey(timeString)) {
-				time = limits.get(timeString);
-			} else {
-				time = timeFormatter.getDurationInMilliseconds(context.getFlag("t"));
-			}
-		} else {
-			time = 0;
-		}
-	}
-
-	private boolean setPlayerName(CommandContext context) {
-		playerName = null;
-		if (context.hasArgument(0)) playerName = context.getString(0);
-		if (playerName == null) {
-			String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_MUST_SPECIFY_PLAYER);
-			context.getCommandSender().sendMessage(message);
-			return false;
-		} else {
-			return true;
-		}
-	}
-
-	private boolean setPlayerRecord(CommandContext context) {
-		playerRecord = playerRecordManager.find(playerName);
-		if (playerRecord != null && playerRecord.isBanned()) {
-			String message = getLocalisation().formatAsErrorMessage(BanHammerLocalisation.BAN_PLAYER_IS_ALREADY_BANNED, playerName);
-			context.getCommandSender().sendMessage(message);
-			return false;
-		} else {
-			return true;
-		}
-	}
-
-	private boolean setReason(CommandContext context) {
-		if (context.hasArgument(1)) {
-			reason = context.getJoinedArguments(1);
-			return true;
-		} else {
-			String message = getLocalisation().formatAsErrorMessage(BanHammerLocalisation.BAN_MUST_SPECIFY_REASON);
-			context.getCommandSender().sendMessage(message);
-			return false;
-		}
-	}
-
-	@Override
-	public String toString() {
-		final StringBuilder sb = new StringBuilder("BanCommand{");
-		sb.append("immunePlayers=").append(immunePlayers);
-		sb.append(", limits=").append(limits);
-		sb.append(", playerName='").append(playerName).append('\'');
-		sb.append(", playerRecord=").append(playerRecord);
-		sb.append(", playerRecordManager=").append(playerRecordManager);
-		sb.append(", pluginManager=").append(pluginManager);
-		sb.append(", reason='").append(reason).append('\'');
-		sb.append(", time=").append(time);
-		sb.append(", timeFormatter=").append(timeFormatter);
-		sb.append(", ").append(super.toString());
-		sb.append('}');
-		return sb.toString();
 	}
 
 }

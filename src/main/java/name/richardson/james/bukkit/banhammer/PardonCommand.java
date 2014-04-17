@@ -17,90 +17,85 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.PluginManager;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
-import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.localisation.PluginLocalisation;
+import name.richardson.james.bukkit.utilities.command.argument.Argument;
+import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositionalArgument;
+import name.richardson.james.bukkit.utilities.command.argument.SilentSwitchArgument;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
 import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
+
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation.PLAYER_NOT_BANNED;
 
 public class PardonCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.pardon";
 	public static final String PERMISSION_OWN = "banhammer.pardon.own";
 	public static final String PERMISSION_OTHERS = "banhammer.pardon.others";
-
 	private final BanRecordManager banRecordManager;
 	private final PlayerRecordManager playerRecordManager;
+	private final Argument players;
 	private final PluginManager pluginManager;
-	private String playerName;
-	private PlayerRecord playerRecord;
+	private final SilentSwitchArgument silent;
 
 	public PardonCommand(PluginManager pluginManager, BanRecordManager banRecordManager, PlayerRecordManager playerRecordManager) {
+		super(BanHammerLocalisation.PARDON_COMMAND_NAME, BanHammerLocalisation.PARDON_COMMAND_DESC);
 		this.pluginManager = pluginManager;
 		this.banRecordManager = banRecordManager;
 		this.playerRecordManager = playerRecordManager;
+		this.silent = SilentSwitchArgument.getInstance();
+		this.players = PlayerNamePositionalArgument.getInstance(playerRecordManager, 0, true, PlayerRecordManager.PlayerStatus.BANNED);
+		addArgument(silent);
+		addArgument(players);
 	}
 
 	@Override
-	public void execute(CommandContext context) {
-		if (!setPlayer(context)) return;
-		if (!setPlayerRecord(context)) return;
-		if (!hasPermission(context.getCommandSender())) return;
-		boolean silent = (context.hasSwitch("s") || context.hasSwitch("silent"));
-		BanRecord ban = playerRecord.getActiveBan();
-		ban.setState(BanRecord.State.PARDONED);
-		banRecordManager.save(ban);
-		BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(ban, context.getCommandSender(), silent);
-		String message = getLocalisation().formatAsInfoMessage(BanHammerLocalisation.PARDON_PLAYER, playerName);
-		context.getCommandSender().sendMessage(message);
-		pluginManager.callEvent(event);
-	}
-
-	private boolean setPlayerRecord(CommandContext context) {
-		playerRecord = playerRecordManager.find(playerName);
-		if (playerRecord == null || playerRecord.getActiveBan() == null) {
-			String message = getLocalisation().formatAsErrorMessage(BanHammerLocalisation.PLAYER_NOT_BANNED);
-			context.getCommandSender().sendMessage(message);
-			return false;
-		} else {
-			return true;
-		}
-	}
-
-	private boolean setPlayer(CommandContext context) {
-		playerName = null;
-		if (context.hasArgument(0)) playerName = context.getString(0);
-		if (playerName == null) {
-			String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_MUST_SPECIFY_PLAYER);
-			context.getCommandSender().sendMessage(message);
-			return false;
-		} else {
-			return true;
-		}
-	}
-
-	private boolean hasPermission(CommandSender sender) {
-		String creatorName = playerRecord.getActiveBan().getCreator().getName();
-		final boolean isSenderTargetingSelf = (creatorName.equalsIgnoreCase(sender.getName()));
-		if (sender.hasPermission(PERMISSION_OWN) && isSenderTargetingSelf) return true;
-		if (sender.hasPermission(PERMISSION_OTHERS) && !isSenderTargetingSelf) return true;
-		String message = getLocalisation().formatAsErrorMessage(BanHammerLocalisation.PARDON_UNABLE_TO_TARGET_PLAYER, playerName);
-		sender.sendMessage(message);
+	public boolean isAsynchronousCommand() {
 		return false;
 	}
 
 	@Override
 	public boolean isAuthorised(Permissible permissible) {
 		return permissible.hasPermission(PERMISSION_ALL) || permissible.hasPermission(PERMISSION_OWN) || permissible.hasPermission(PERMISSION_OTHERS);
+	}
+
+	@Override
+	protected void execute() {
+		boolean silent = this.silent.isSet();
+		final List<String> messages = new ArrayList<String>();
+		final Collection<String> players = this.players.getStrings();
+		final CommandSender sender = getContext().getCommandSender();
+		for (String playerName : players) {
+			BanRecord record = (playerRecordManager.exists(playerName)) ? playerRecordManager.find(playerName).getActiveBan() : null;
+			if (record == null) {
+				messages.add(getLocalisation().formatAsInfoMessage(PLAYER_NOT_BANNED, playerName));
+			} else if (hasPermission(sender, record.getCreator().getName())) {
+				record.setState(BanRecord.State.PARDONED);
+				banRecordManager.save(record);
+				if (silent) messages.add(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.PARDON_PLAYER, playerName));
+				BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(record, sender, silent);
+				pluginManager.callEvent(event);
+			} else {
+				messages.add(getLocalisation().formatAsErrorMessage(BanHammerLocalisation.PARDON_UNABLE_TO_TARGET_PLAYER, playerName));
+			}
+		}
+		sender.sendMessage(messages.toArray(new String[messages.size()]));
+	}
+
+	private boolean hasPermission(CommandSender sender, String creatorName) {
+		final boolean isSenderTargetingSelf = (creatorName.equalsIgnoreCase(sender.getName()));
+		return sender.hasPermission(PERMISSION_OWN) && isSenderTargetingSelf || sender.hasPermission(PERMISSION_OTHERS) && !isSenderTargetingSelf;
 	}
 
 }

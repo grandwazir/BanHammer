@@ -1,5 +1,6 @@
 # Changelog for BanHammer (v2.3.2-SNAPSHOT)
 
+2014-03-09 14:41:51 +0000    snapshot release (James Richardson)  
 2014-03-09 13:58:50 +0000    update tests (James Richardson)  
 2014-03-09 13:44:49 +0000    merge properties file (James Richardson)  
 2014-03-09 13:04:00 +0000    refactor other classes to new localisation format (James Richardson)  

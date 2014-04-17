@@ -24,9 +24,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permissible;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
-import name.richardson.james.bukkit.utilities.command.context.CommandContext;
+import name.richardson.james.bukkit.utilities.command.argument.Argument;
+import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositionalArgument;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
-import name.richardson.james.bukkit.utilities.localisation.PluginLocalisation;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
@@ -35,7 +35,10 @@ import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
 import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
 
-public class AuditCommand extends AbstractCommand {
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation.*;
+import static name.richardson.james.bukkit.utilities.localisation.PluginLocalisation.COMMAND_NO_PERMISSION;
+
+public final class AuditCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.audit";
 	public static final String PERMISSION_SELF = "banhammer.audit.self";
@@ -43,63 +46,51 @@ public class AuditCommand extends AbstractCommand {
 
 	private final BanRecordManager banRecordManager;
 	private final ChoiceFormatter choiceFormatter;
+	private final Argument playerName;
 	private final PlayerRecordManager playerRecordManager;
-	private String playerName;
-	private PlayerRecord playerRecord;
 
 	public AuditCommand(PlayerRecordManager playerRecordManager, BanRecordManager banRecordManager) {
+		super(AUDIT_COMMAND_NAME, AUDIT_COMMAND_DESC);
 		this.playerRecordManager = playerRecordManager;
 		this.banRecordManager = banRecordManager;
+		this.playerName = PlayerNamePositionalArgument.getInstance(playerRecordManager, 0, false, PlayerRecordManager.PlayerStatus.CREATOR);
+		addArgument(playerName);
 		this.choiceFormatter = new BanCountChoiceFormatter();
-		this.choiceFormatter.setMessage(getLocalisation().formatAsHeaderMessage(BanHammerLocalisation.AUDIT_COMMAND_HEADER));
+		this.choiceFormatter.setMessage(getLocalisation().formatAsHeaderMessage(AUDIT_COMMAND_HEADER));
 	}
 
 	@Override
-	public void execute(CommandContext context) {
-		if (!setPlayerName(context)) return;
-		if (!setPlayerRecord(context)) return;
-		if (!hasPermission(context.getCommandSender())) return;
-		AuditSummary auditSummary = new AuditSummary(playerRecord.getCreatedBans(), banRecordManager.count());
-		choiceFormatter.setArguments(auditSummary.getTotalBanCount(), playerName, auditSummary.getTotalBanCountPercentage());
-		context.getCommandSender().sendMessage(choiceFormatter.getMessage());
-		context.getCommandSender().sendMessage(auditSummary.getMessages());
-	}
-
-	private boolean hasPermission(final CommandSender sender) {
-		final boolean isSenderCheckingSelf = playerName.equalsIgnoreCase(sender.getName());
-		if (sender.hasPermission(PERMISSION_SELF) && isSenderCheckingSelf) return true;
-		if (sender.hasPermission(PERMISSION_OTHERS) && !isSenderCheckingSelf) return true;
-		String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_NO_PERMISSION);
-		sender.sendMessage(message);
-		return false;
-	}
-
-	private boolean setPlayerName(CommandContext context) {
-		playerName = null;
-		if (context.hasArgument(0)) {
-			playerName = context.getString(0);
+	protected void execute() {
+		String playerName = (this.playerName.getString() == null) ? getContext().getCommandSender().getName() : this.playerName.getString();
+		List<String> messages = new ArrayList<String>();
+		if (!hasPermission(getContext().getCommandSender(), playerName)) {
+			messages.add(getLocalisation().formatAsErrorMessage(COMMAND_NO_PERMISSION));
 		} else {
-			playerName = context.getCommandSender().getName();
+			if (playerRecordManager.exists(playerName)) {
+				PlayerRecord record = playerRecordManager.find(playerName);
+				AuditSummary auditSummary = new AuditSummary(record.getCreatedBans(), banRecordManager.count());
+				choiceFormatter.setArguments(auditSummary.getTotalBanCount(), playerName, auditSummary.getTotalBanCountPercentage());
+				messages.add(choiceFormatter.getMessage());
+				messages.addAll(auditSummary.getMessages());
+			} else {
+				messages.add(getLocalisation().formatAsInfoMessage(PLAYER_HAS_MADE_NO_BANS, playerName));
+			}
 		}
-		return playerName != null;
+		getContext().getCommandSender().sendMessage(messages.toArray(new String[messages.size()]));
 	}
 
-	private boolean setPlayerRecord(CommandContext context) {
-		playerRecord = playerRecordManager.find(playerName);
-		if (playerRecord != null && playerRecord.getCreatedBans().size() != 0 ) {
-			return true;
-		} else {
-			String message = getLocalisation().formatAsInfoMessage(name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation.PLAYER_HAS_MADE_NO_BANS, playerName);
-			context.getCommandSender().sendMessage(message);
-			return false;
-		}
+	private boolean hasPermission(final CommandSender sender, String targetName) {
+		final boolean isSenderCheckingSelf = targetName.equalsIgnoreCase(sender.getName());
+		return sender.hasPermission(PERMISSION_SELF) && isSenderCheckingSelf || sender.hasPermission(PERMISSION_OTHERS) && !isSenderCheckingSelf;
 	}
 
 	@Override
 	public boolean isAuthorised(Permissible permissible) {
-		if (permissible.hasPermission(PERMISSION_ALL)) return true;
-		if (permissible.hasPermission(PERMISSION_OTHERS)) return true;
-		if (permissible.hasPermission(PERMISSION_SELF)) return true;
+		return permissible.hasPermission(PERMISSION_ALL) || permissible.hasPermission(PERMISSION_OTHERS) || permissible.hasPermission(PERMISSION_SELF);
+	}
+
+	@Override
+	public boolean isAsynchronousCommand() {
 		return false;
 	}
 
@@ -143,7 +134,7 @@ public class AuditCommand extends AbstractCommand {
 			}
 		}
 
-		public String[] getMessages() {
+		public List<String> getMessages() {
 			List<String> messages = new ArrayList<String>();
 			messages.add(getLocalisation().formatAsHeaderMessage(BanHammerLocalisation.AUDIT_TYPE_SUMMARY));
 			messages.add(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.AUDIT_PERMANENT_BANS_PERCENTAGE, getPermanentBanCount(), getPardonedBanCountPercentage()));
@@ -152,7 +143,7 @@ public class AuditCommand extends AbstractCommand {
 			messages.add(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.AUDIT_ACTIVE_BANS_PERCENTAGE, getNormalBanCount(), getNormalBanCountPercentage()));
 			messages.add(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.AUDIT_EXPIRED_BANS_PERCENTAGE, getExpiredBanCount(), getExpiredBanCountPercentage()));
 			messages.add(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.AUDIT_PARDONED_BANS_PERCENTAGE, getPardonedBanCount(), getPardonedBanCountPercentage()));
-			return messages.toArray(new String[messages.size()]);
+			return messages;
 		}
 
 		public float getTemporaryBanCountPercentage() {

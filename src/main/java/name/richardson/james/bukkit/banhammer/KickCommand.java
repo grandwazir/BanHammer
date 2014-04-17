@@ -17,72 +17,65 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer;
 
+import java.util.Set;
+
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
-import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.localisation.PluginLocalisation;
+import name.richardson.james.bukkit.utilities.command.argument.*;
 
 import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
+
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation.KICK_PLAYER_NOTIFICATION;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation.KICK_SENDER_NOTIFICATION;
 
 public class KickCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.kick";
 
+	private final PlayerMarshaller player;
 	private final Server server;
-	private String playerName;
-	private String reason;
+	private final Argument reason;
+	private final SilentSwitchArgument silent;
 
 	public KickCommand(Server server) {
+		super(BanHammerLocalisation.KICK_COMMAND_NAME, BanHammerLocalisation.KICK_COMMAND_DESC);
 		this.server = server;
+		this.player = PlayerPositionalArgument.getInstance(server, 0, true);
+		this.reason = ReasonPositionalArgument.getInstance(1, false);
+		this.silent = SilentSwitchArgument.getInstance();
+		addArgument(silent);
+		addArgument(player);
+		addArgument(reason);
 	}
 
 	@Override
-	public void execute(CommandContext context) {
-		if (isAuthorised(context.getCommandSender())) {
-			if (!setPlayerName(context)) return;
-			if (!setReason(context)) return;
-			String message = getLocalisation().formatAsErrorMessage(BanHammerLocalisation.KICK_PLAYER_NOTIFICATION, this.reason, context.getCommandSender().getName());
-			Player player = server.getPlayerExact(playerName);
-			player.kickPlayer(message);
-		  message = getLocalisation().formatAsInfoMessage(BanHammerLocalisation.KICK_SENDER_NOTIFICATION, playerName);
-			context.getCommandSender().sendMessage(message);
-			boolean silent = (context.hasSwitch("s") || context.hasSwitch("silent"));
-			if (!silent) {
-				server.broadcast(getLocalisation().formatAsErrorMessage(BanHammerLocalisation.KICK_PLAYER_KICKED, playerName, context.getCommandSender().getName()), BanHammer.NOTIFY_PERMISSION_NAME);
-				server.broadcast(getLocalisation().formatAsWarningMessage(BanHammerLocalisation.FORMATTER_REASON, this.reason), BanHammer.NOTIFY_PERMISSION_NAME);
+	protected void execute() {
+		String reason = (this.reason.getString() == null) ? getLocalisation().getMessage(BanHammerLocalisation.KICK_DEFAULT_REASON) : this.reason.getString();
+		boolean silent = this.silent.isSet();
+		Set<Player> players = this.player.getPlayers();
+		for (Player player : players) {
+			final String senderName = getContext().getCommandSender().getName();
+			if (silent) {
+				getContext().getCommandSender().sendMessage((getLocalisation().formatAsInfoMessage(KICK_SENDER_NOTIFICATION, player.getName())));
+			} else {
+			 	server.broadcast(getLocalisation().formatAsWarningMessage(BanHammerLocalisation.KICK_PLAYER_KICKED, player.getName(), senderName), BanHammer.NOTIFY_PERMISSION_NAME);
+				server.broadcast(getLocalisation().formatAsWarningMessage(BanHammerLocalisation.FORMATTER_REASON, reason), BanHammer.NOTIFY_PERMISSION_NAME);
 			}
-		} else {
-			String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_NO_PERMISSION);
-			context.getCommandSender().sendMessage(message);
+			player.kickPlayer(getLocalisation().formatAsErrorMessage(KICK_PLAYER_NOTIFICATION, senderName, reason));
 		}
 	}
 
-	private boolean setReason(CommandContext context) {
-		if (context.hasArgument(1)) {
-			reason = context.getJoinedArguments(1);
-		} else {
-			reason = getLocalisation().getMessage(BanHammerLocalisation.KICK_DEFAULT_REASON);
-		}
-		return true;
-	}
-
-	private boolean setPlayerName(CommandContext commandContext) {
-		playerName = commandContext.getString(0);
-		if (playerName == null || server.getPlayerExact(playerName) == null) {
-			String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_MUST_SPECIFY_PLAYER);
-			commandContext.getCommandSender().sendMessage(message);
-			return false;
-		} else {
-			return true;
-		}
-	}
 
 	@Override
 	public boolean isAuthorised(Permissible permissible) {
-		if (permissible.hasPermission(PERMISSION_ALL)) return true;
+		return permissible.hasPermission(PERMISSION_ALL);
+	}
+
+	@Override
+	public boolean isAsynchronousCommand() {
 		return false;
 	}
 

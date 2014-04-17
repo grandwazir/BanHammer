@@ -21,14 +21,13 @@ import org.bukkit.Server;
 import org.bukkit.permissions.Permissible;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
-import name.richardson.james.bukkit.utilities.command.context.CommandContext;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
-import name.richardson.james.bukkit.utilities.localisation.PluginLocalisation;
 
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
-import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
+
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation.*;
 
 public class ExportCommand extends AbstractCommand {
 
@@ -39,29 +38,30 @@ public class ExportCommand extends AbstractCommand {
 	private final Server server;
 
 	public ExportCommand(PlayerRecordManager playerRecordManager, Server server) {
+		super(EXPORT_COMMAND_NAME, EXPORT_COMMAND_DESC);
 		this.playerRecordManager = playerRecordManager;
 		this.server = server;
 		this.choiceFormatter = new BanCountChoiceFormatter();
-		this.choiceFormatter.setMessage(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.EXPORT_SUMMARY));
-	}
-
-	@Override
-	public void execute(CommandContext context) {
-		if (isAuthorised(context.getCommandSender())) {
-			for (PlayerRecord playerRecord : playerRecordManager.list("", PlayerRecordManager.PlayerStatus.BANNED)) {
-				this.server.getOfflinePlayer(playerRecord.getName()).setBanned(true);
-			}
-			this.choiceFormatter.setArguments(playerRecordManager.count());
-			context.getCommandSender().sendMessage(choiceFormatter.getMessage());
-		} else {
-			String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_NO_PERMISSION);
-			context.getCommandSender().sendMessage(message);
-		}
+		this.choiceFormatter.setMessage(getLocalisation().formatAsInfoMessage(EXPORT_SUMMARY));
 	}
 
 	@Override
 	public boolean isAuthorised(Permissible permissible) {
 		return permissible.hasPermission(PERMISSION_ALL);
+	}
+
+	@Override
+	public boolean isAsynchronousCommand() {
+		return false;
+	}
+
+	@Override
+	protected void execute() {
+		for (PlayerRecord playerRecord : playerRecordManager.list("", PlayerRecordManager.PlayerStatus.BANNED)) {
+			this.server.getOfflinePlayer(playerRecord.getName()).setBanned(true);
+		}
+		this.choiceFormatter.setArguments(playerRecordManager.count());
+		getContext().getCommandSender().sendMessage(choiceFormatter.getMessage());
 	}
 
 }

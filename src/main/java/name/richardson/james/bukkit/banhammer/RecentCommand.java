@@ -17,6 +17,7 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.permissions.Permissible;
@@ -24,8 +25,8 @@ import org.bukkit.permissions.Permissible;
 import com.google.common.collect.Lists;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
-import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.localisation.PluginLocalisation;
+import name.richardson.james.bukkit.utilities.command.argument.BanCountOptionArgument;
+import name.richardson.james.bukkit.utilities.command.argument.IntegerMarshaller;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
@@ -37,45 +38,41 @@ public class RecentCommand extends AbstractCommand {
 	private static final int DEFAULT_LIMIT = 5;
 
 	private final BanRecordManager banRecordManager;
-	private int count;
+	private IntegerMarshaller count;
 
 	public RecentCommand(BanRecordManager banRecordManager) {
+		super(BanHammerLocalisation.RECENT_COMMAND_NAME, BanHammerLocalisation.RECENT_COMMAND_DESC);
 		this.banRecordManager = banRecordManager;
+		this.count = BanCountOptionArgument.getInstance(DEFAULT_LIMIT);
+		addArgument(count);
 	}
 
 	@Override
-	public void execute(CommandContext context) {
-		if (isAuthorised(context.getCommandSender())) {
-			setLimit(context);
-			List<BanRecord> bans = banRecordManager.list(count);
-			if (bans.size() == 0) {
-				String message = getLocalisation().formatAsInfoMessage(BanHammerLocalisation.RECENT_NO_BANS);
-				context.getCommandSender().sendMessage(message);
-			}
+	protected void execute() {
+ 		int count = this.count.getInteger();
+		List<BanRecord> bans = banRecordManager.list(count);
+		List<String> messages = new ArrayList<String>();
+		if (bans.isEmpty()) {
+			messages.add(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.RECENT_NO_BANS));
+		} else {
 			// reverse the list so the most recent ban is at the bottom of the list
 			// this makes sense since the console scrolls down.
-			bans = Lists.reverse(bans);
-			for (BanRecord ban : bans) {
+			for (BanRecord ban : Lists.reverse(bans)) {
 				BanRecord.BanRecordFormatter formatter = ban.getFormatter();
-				context.getCommandSender().sendMessage(formatter.getMessages());
+				messages.addAll(formatter.getMessages());
 			}
-		} else {
-			String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_NO_PERMISSION);
-			context.getCommandSender().sendMessage(message);
 		}
-	}
-
-	private void setLimit(CommandContext context) {
-		try {
-			count = Integer.parseInt(context.getString(0));
-		} catch (NumberFormatException e) {
-			count = DEFAULT_LIMIT;
-		}
+		getContext().getCommandSender().sendMessage(messages.toArray(new String[messages.size()]));
 	}
 
 	@Override
 	public boolean isAuthorised(Permissible permissible) {
 		return permissible.hasPermission(PERMISSION_ALL);
+	}
+
+	@Override
+	public boolean isAsynchronousCommand() {
+		return true;
 	}
 
 }

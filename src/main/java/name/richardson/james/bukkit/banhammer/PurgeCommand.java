@@ -18,14 +18,15 @@
 package name.richardson.james.bukkit.banhammer;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permissible;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
-import name.richardson.james.bukkit.utilities.command.context.CommandContext;
+import name.richardson.james.bukkit.utilities.command.argument.Argument;
+import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositionalArgument;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
-import name.richardson.james.bukkit.utilities.localisation.PluginLocalisation;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
@@ -43,66 +44,50 @@ public class PurgeCommand extends AbstractCommand {
 	private final BanRecordManager banRecordManager;
 	private final ChoiceFormatter choiceFormatter;
 	private final PlayerRecordManager playerRecordManager;
-	private String playerName;
-	private PlayerRecord playerRecord;
+	private final Argument players;
 
 	public PurgeCommand(PlayerRecordManager playerRecordManager, BanRecordManager banRecordManager) {
+		super(BanHammerLocalisation.PURGE_COMMAND_NAME, BanHammerLocalisation.PURGE_COMMAND_DESC);
 		this.playerRecordManager = playerRecordManager;
 		this.banRecordManager = banRecordManager;
 		this.choiceFormatter = new BanCountChoiceFormatter();
 		this.choiceFormatter.setMessage(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.PURGE_SUMMARY));
+		this.players = PlayerNamePositionalArgument.getInstance(playerRecordManager, 0, true, PlayerRecordManager.PlayerStatus.ANY);
+		addArgument(players);
 	}
 
 	@Override
-	public void execute(CommandContext context) {
-		if (isAuthorised(context.getCommandSender())) {
-			if (!setPlayerName(context)) return;
-			if (!setPlayerRecord(context)) return;
-			List<BanRecord> records = new ArrayList<BanRecord>();
-			boolean own = context.getCommandSender().hasPermission(PERMISSION_OWN);
-			boolean others = context.getCommandSender().hasPermission(PERMISSION_OTHERS);
-			for (BanRecord ban : playerRecord.getBans()) {
-				boolean banCreatedBySender = ban.getCreator().getName().equalsIgnoreCase(context.getCommandSender().getName());
-				if (banCreatedBySender && !own) continue;
-				if (!banCreatedBySender && !others) continue;
-				records.add(ban);
+	protected void execute() {
+		Collection<String> players = this.players.getStrings();
+		Collection<BanRecord> records = new ArrayList<BanRecord>();
+		final CommandSender sender = getContext().getCommandSender();
+		boolean own = sender.hasPermission(PERMISSION_OWN);
+		boolean others = sender.hasPermission(PERMISSION_OTHERS);
+		for (String playerName : players) {
+			PlayerRecord record = playerRecordManager.find(playerName);
+			if (record != null) {
+				for (BanRecord ban : record.getBans()) {
+					boolean banCreatedBySender = ban.getCreator().getName().equalsIgnoreCase(sender.getName());
+					if (banCreatedBySender && !own) continue;
+					if (!banCreatedBySender && !others) continue;
+					records.add(ban);
+				}
+			} else {
+				sender.sendMessage(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.PLAYER_NEVER_BEEN_BANNED, playerName));
 			}
 			this.choiceFormatter.setArguments(records.size(), playerName);
 			banRecordManager.delete(records);
-			context.getCommandSender().sendMessage(choiceFormatter.getMessage());
-		} else {
-			String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_NO_PERMISSION);
-			context.getCommandSender().sendMessage(message);
-		}
-	}
-
-	private boolean setPlayerRecord(CommandContext context) {
-		playerRecord = playerRecordManager.find(playerName);
-		if (playerRecord == null || playerRecord.getBans().size() == 0) {
-			String message = getLocalisation().formatAsInfoMessage(BanHammerLocalisation.PLAYER_NEVER_BEEN_BANNED, playerName);
-			context.getCommandSender().sendMessage(message);
-			return false;
-		} else {
-			return true;
-		}
-	}
-
-	private boolean setPlayerName(CommandContext context) {
-		playerName = context.getString(0);
-		if (playerName == null) {
-			String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_MUST_SPECIFY_PLAYER);
-			context.getCommandSender().sendMessage(message);
-		  return false;
-		} else {
-			return true;
+			sender.sendMessage(choiceFormatter.getMessage());
 		}
 	}
 
 	@Override
 	public boolean isAuthorised(Permissible permissible) {
-		if (permissible.hasPermission(PERMISSION_ALL)) return true;
-		if (permissible.hasPermission(PERMISSION_OTHERS)) return true;
-		if (permissible.hasPermission(PERMISSION_OWN)) return true;
+		return permissible.hasPermission(PERMISSION_ALL) || permissible.hasPermission(PERMISSION_OTHERS) || permissible.hasPermission(PERMISSION_OWN);
+	}
+
+	@Override
+	public boolean isAsynchronousCommand() {
 		return false;
 	}
 

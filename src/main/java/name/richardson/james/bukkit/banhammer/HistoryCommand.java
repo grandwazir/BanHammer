@@ -17,80 +17,69 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permissible;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
-import name.richardson.james.bukkit.utilities.command.context.CommandContext;
-import name.richardson.james.bukkit.utilities.localisation.PluginLocalisation;
+import name.richardson.james.bukkit.utilities.command.argument.Argument;
+import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositionalArgument;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
-import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
+
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation.*;
+import static name.richardson.james.bukkit.utilities.localisation.PluginLocalisation.COMMAND_NO_PERMISSION;
 
 public class HistoryCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.history";
 	public static final String PERMISSION_OWN = "banhammer.history.own";
 	public static final String PERMISSION_OTHERS = "banhammer.history.others";
-
+	private final Argument playerName;
 	private final PlayerRecordManager playerRecordManager;
-	private String playerName;
-	private PlayerRecord playerRecord;
 
 	public HistoryCommand(PlayerRecordManager playerRecordManager) {
+		super(HISTORY_COMMAND_NAME, HISTORY_COMMAND_DESC);
 		this.playerRecordManager = playerRecordManager;
+		this.playerName = PlayerNamePositionalArgument.getInstance(playerRecordManager, 0, false, PlayerRecordManager.PlayerStatus.ANY);
 	}
 
 	@Override
-	public void execute(CommandContext context) {
-		if (!setPlayerName(context)) return;
-		if (!setPlayerRecord(context)) return;
-		if (!hasPermission(context.getCommandSender())) return;
-		List<BanRecord> bans = playerRecord.getBans();
-		for (BanRecord ban : bans) {
-			BanRecord.BanRecordFormatter formatter = ban.getFormatter();
-			context.getCommandSender().sendMessage(formatter.getMessages());
-		}
-	}
-
-	private boolean setPlayerRecord(CommandContext context) {
-		playerRecord = playerRecordManager.find(playerName);
-		if (playerRecord == null || playerRecord.getBans().size() == 0) {
-			String message = getLocalisation().formatAsInfoMessage(BanHammerLocalisation.PLAYER_NEVER_BEEN_BANNED, playerName);
-			context.getCommandSender().sendMessage(message);
-		}
-		return (playerRecord != null);
-	}
-
-	private boolean setPlayerName(CommandContext context) {
-		playerName = null;
-		if (context.hasArgument(0)) {
-			playerName = context.getString(0);
-		} else {
-			playerName = context.getCommandSender().getName();
-		}
-		return true;
-	}
-
-	private boolean hasPermission(CommandSender sender) {
-		final boolean isSenderTargetingSelf = playerName.equalsIgnoreCase(sender.getName());
-		if (sender.hasPermission(PERMISSION_OWN) && isSenderTargetingSelf) return true;
-		if (sender.hasPermission(PERMISSION_OTHERS) && !isSenderTargetingSelf) return true;
-		String message = getLocalisation().formatAsErrorMessage(PluginLocalisation.COMMAND_NO_PERMISSION);
-		sender.sendMessage(message);
+	public boolean isAsynchronousCommand() {
 		return false;
 	}
 
 	@Override
 	public boolean isAuthorised(Permissible permissible) {
-		if (permissible.hasPermission(PERMISSION_ALL)) return true;
-		if (permissible.hasPermission(PERMISSION_OWN)) return true;
-		if (permissible.hasPermission(PERMISSION_OTHERS)) return true;
-		return false;
+		return permissible.hasPermission(PERMISSION_ALL) || permissible.hasPermission(PERMISSION_OWN) || permissible.hasPermission(PERMISSION_OTHERS);
+	}
+
+	@Override
+	protected void execute() {
+		final CommandSender sender = getContext().getCommandSender();
+		final String playerName = (this.playerName.getString() == null) ? sender.getName() : this.playerName.getString();
+		final List<String> messages = new ArrayList<String>();
+		if (!hasPermission(sender, playerName)) {
+			messages.add(getLocalisation().formatAsErrorMessage(COMMAND_NO_PERMISSION));
+		} else if (!playerRecordManager.exists(playerName)) {
+			messages.add(getLocalisation().formatAsInfoMessage(PLAYER_NEVER_BEEN_BANNED, playerName));
+		} else {
+			PlayerRecord record = playerRecordManager.find(playerName);
+			for (BanRecord ban : record.getBans()) {
+				BanRecord.BanRecordFormatter formatter = ban.getFormatter();
+				messages.addAll(formatter.getMessages());
+			}
+		}
+		sender.sendMessage(messages.toArray(new String[messages.size()]));
+	}
+
+	private boolean hasPermission(CommandSender sender, String playerName) {
+		final boolean isSenderTargetingSelf = playerName.equalsIgnoreCase(sender.getName());
+		return sender.hasPermission(PERMISSION_OWN) && isSenderTargetingSelf || sender.hasPermission(PERMISSION_OTHERS) && !isSenderTargetingSelf;
 	}
 
 }

@@ -1,6 +1,7 @@
 package name.richardson.james.bukkit.banhammer.ban;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import com.avaje.ebean.EbeanServer;
@@ -18,7 +19,7 @@ public class BanRecordManager {
 		this.delete(Arrays.asList(ban));
 	}
 
-	public int delete(List<BanRecord> bans) {
+	public int delete(Collection<BanRecord> bans) {
 		return this.database.delete(bans);
 	}
 

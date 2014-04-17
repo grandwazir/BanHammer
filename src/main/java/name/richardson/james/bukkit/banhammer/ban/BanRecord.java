@@ -22,6 +22,8 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import com.avaje.ebean.validation.NotNull;
@@ -317,8 +319,8 @@ public class BanRecord {
 			return localisation.formatAsInfoMessage(BanHammerLocalisation.FORMATTER_EXPIRES_AT, timeFormatter.getHumanReadableDuration(time));
 		}
 
-		public String[] getMessages() {
-			return this.messages.toArray(new String[messages.size()]);
+		public Collection<String> getMessages() {
+			return Collections.unmodifiableCollection(messages);
 		}
 
 	}

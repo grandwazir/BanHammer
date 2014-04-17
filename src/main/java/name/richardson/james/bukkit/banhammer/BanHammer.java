@@ -30,12 +30,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.config.ServerConfig;
 
-import name.richardson.james.bukkit.utilities.command.AbstractCommand;
-import name.richardson.james.bukkit.utilities.command.Command;
-import name.richardson.james.bukkit.utilities.command.HelpCommand;
-import name.richardson.james.bukkit.utilities.command.invoker.CommandInvoker;
-import name.richardson.james.bukkit.utilities.command.invoker.FallthroughCommandInvoker;
-import name.richardson.james.bukkit.utilities.command.matcher.OnlinePlayerMatcher;
+import name.richardson.james.bukkit.utilities.command.*;
 import name.richardson.james.bukkit.utilities.localisation.Localisation;
 import name.richardson.james.bukkit.utilities.localisation.StrictResourceBundleLocalisation;
 import name.richardson.james.bukkit.utilities.logging.PluginLoggerFactory;
@@ -56,7 +51,6 @@ import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.event.AliasBannedPlayerListener;
 import name.richardson.james.bukkit.banhammer.ban.event.NormalBannedPlayerListener;
 import name.richardson.james.bukkit.banhammer.ban.event.PlayerNotifier;
-import name.richardson.james.bukkit.banhammer.utilities.command.matcher.PlayerRecordMatcher;
 import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
 
 public final class BanHammer extends JavaPlugin {
@@ -170,51 +164,37 @@ public final class BanHammer extends JavaPlugin {
 	}
 
 	private void registerCommands() {
-		// create argument matchers
-		PlayerRecordMatcher playerMatcher = new PlayerRecordMatcher(getPlayerRecordManager(), PlayerRecordManager.PlayerStatus.ANY);
-		PlayerRecordMatcher bannedPlayerMatcher = new PlayerRecordMatcher(getPlayerRecordManager(), PlayerRecordManager.PlayerStatus.BANNED);
-		PlayerRecordMatcher creatorPlayerMatcher = new PlayerRecordMatcher(getPlayerRecordManager(), PlayerRecordManager.PlayerStatus.CREATOR);
-		OnlinePlayerMatcher onlinePlayerMatcher = new OnlinePlayerMatcher(getServer());
-		// create the commands
 		Set<Command> commands = new HashSet<Command>();
 		AbstractCommand command = new AuditCommand(getPlayerRecordManager(), getBanRecordManager());
-		command.addMatcher(creatorPlayerMatcher);
 		commands.add(command);
-		command = new BanCommand(this.getServer().getPluginManager(), getPlayerRecordManager(), configuration.getBanLimits(), configuration.getImmunePlayers());
-		command.addMatcher(onlinePlayerMatcher);
+		command = new BanCommand(this.getServer(), this.getServer().getPluginManager(), getPlayerRecordManager(), configuration.getBanLimits(), configuration.getImmunePlayers());
 		commands.add(command);
-		getCommand("ban").setExecutor(new FallthroughCommandInvoker(command));
+		getCommand("ban").setExecutor(new FallthroughCommandInvoker(this, this.getServer().getScheduler(), command));
 		command = new CheckCommand(getPlayerRecordManager());
-		command.addMatcher(bannedPlayerMatcher);
 		commands.add(command);
 		command = new HistoryCommand(getPlayerRecordManager());
-		command.addMatcher(playerMatcher);
 		commands.add(command);
 		command = new ExportCommand(getPlayerRecordManager(), getServer());
 		commands.add(command);
 		command = new ImportCommand(getPlayerRecordManager(), getServer());
 		commands.add(command);
 		command = new KickCommand(getServer());
-		command.addMatcher(onlinePlayerMatcher);
 		commands.add(command);
-		getCommand("kick").setExecutor(new FallthroughCommandInvoker(command));
+		getCommand("kick").setExecutor(new FallthroughCommandInvoker(this, this.getServer().getScheduler(), command));
 		command = new LimitsCommand(configuration.getBanLimits());
 		commands.add(command);
 		command = new PardonCommand(getServer().getPluginManager(), getBanRecordManager(), getPlayerRecordManager());
-		command.addMatcher(bannedPlayerMatcher);
 		commands.add(command);
-		getCommand("pardon").setExecutor(new FallthroughCommandInvoker(command));
+		getCommand("pardon").setExecutor(new FallthroughCommandInvoker(this, this.getServer().getScheduler(), command));
 		command = new PurgeCommand(getPlayerRecordManager(), getBanRecordManager());
-		command.addMatcher(playerMatcher);
 		commands.add(command);
 		command = new RecentCommand(getBanRecordManager());
 		commands.add(command);
 		command = new UndoCommand(getPlayerRecordManager(), getBanRecordManager(), configuration.getUndoTime());
-		command.addMatcher(playerMatcher);
 		commands.add(command);
 		// create the invoker
-		command = new HelpCommand(this.getDescription(), "bh", commands);
-		CommandInvoker invoker = new FallthroughCommandInvoker(command);
+		command = new HelpCommand(commands, "bh");
+		CommandInvoker invoker = new FallthroughCommandInvoker(this, this.getServer().getScheduler(), command);
 		invoker.addCommands(commands);
 		// bind invoker to plugin command
 		getCommand("bh").setExecutor(invoker);
