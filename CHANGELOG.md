@@ -1,5 +1,7 @@
 # Changelog for BanHammer (v2.3.2-SNAPSHOT)
 
+2014-04-17 20:16:30 +0100    fixes [#88](https://github.com/grandwazir/BanHammer/ban-hammer/issues/88) added an alias to pardon command (James Richardson)  
+2014-04-17 20:14:41 +0100    fix double printing of a message (James Richardson)  
 2014-04-17 18:42:49 +0100    fix history command argument not being registered (James Richardson)  
 2014-04-17 14:23:23 +0100    migrated across to the new command structure (James Richardson)  
 2014-03-09 14:41:51 +0000    snapshot release (James Richardson)  

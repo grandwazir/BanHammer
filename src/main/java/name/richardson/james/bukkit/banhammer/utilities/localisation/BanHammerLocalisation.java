@@ -6,6 +6,11 @@ public interface BanHammerLocalisation extends PluginLocalisation {
 
 	public static final String PLAYER_HAS_MADE_NO_BANS = "shared.player-has-made-no-bans";
 
+
+	public static final String ARGUMENT_ALL_ID = "argument.all.id";
+	public static final String ARGUMENT_ALL_NAME = "argument.all.name";
+	public static final String ARGUMENT_ALL_DESC = "argument.all.desc";
+
 	public static final String ARGUMENT_BANCOUNT_ID = "argument.bancount.id";
 	public static final String ARGUMENT_BANCOUNT_NAME = "argument.bancount.name";
 	public static final String ARGUMENT_BANCOUNT_DESC = "argument.bancount.desc";

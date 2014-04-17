@@ -24,7 +24,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permissible;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
+import name.richardson.james.bukkit.utilities.command.argument.AllOptionArgument;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
+import name.richardson.james.bukkit.utilities.command.argument.BooleanMarshaller;
 import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositionalArgument;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 
@@ -44,6 +46,7 @@ public final class AuditCommand extends AbstractCommand {
 	public static final String PERMISSION_SELF = "banhammer.audit.self";
 	public static final String PERMISSION_OTHERS = "banhammer.audit.others";
 
+	private final BooleanMarshaller all;
 	private final BanRecordManager banRecordManager;
 	private final ChoiceFormatter choiceFormatter;
 	private final Argument playerName;
@@ -54,6 +57,8 @@ public final class AuditCommand extends AbstractCommand {
 		this.playerRecordManager = playerRecordManager;
 		this.banRecordManager = banRecordManager;
 		this.playerName = PlayerNamePositionalArgument.getInstance(playerRecordManager, 0, false, PlayerRecordManager.PlayerStatus.CREATOR);
+		this.all = AllOptionArgument.getInstance();
+		addArgument(all);
 		addArgument(playerName);
 		this.choiceFormatter = new BanCountChoiceFormatter();
 		this.choiceFormatter.setMessage(getLocalisation().formatAsHeaderMessage(AUDIT_COMMAND_HEADER));
@@ -66,9 +71,15 @@ public final class AuditCommand extends AbstractCommand {
 		if (!hasPermission(getContext().getCommandSender(), playerName)) {
 			messages.add(getLocalisation().formatAsErrorMessage(COMMAND_NO_PERMISSION));
 		} else {
-			if (playerRecordManager.exists(playerName)) {
+			AuditSummary auditSummary = null;
+			if (all.isSet()) {
+				auditSummary = new AuditSummary(banRecordManager.list(), banRecordManager.count());
+				playerName = "Everyone";
+			} else if (playerRecordManager.exists(playerName)) {
 				PlayerRecord record = playerRecordManager.find(playerName);
-				AuditSummary auditSummary = new AuditSummary(record.getCreatedBans(), banRecordManager.count());
+				auditSummary = new AuditSummary(record.getCreatedBans(), banRecordManager.count());
+			}
+			if (auditSummary != null) {
 				choiceFormatter.setArguments(auditSummary.getTotalBanCount(), playerName, auditSummary.getTotalBanCountPercentage());
 				messages.add(choiceFormatter.getMessage());
 				messages.addAll(auditSummary.getMessages());
@@ -81,7 +92,7 @@ public final class AuditCommand extends AbstractCommand {
 
 	private boolean hasPermission(final CommandSender sender, String targetName) {
 		final boolean isSenderCheckingSelf = targetName.equalsIgnoreCase(sender.getName());
-		return sender.hasPermission(PERMISSION_SELF) && isSenderCheckingSelf || sender.hasPermission(PERMISSION_OTHERS) && !isSenderCheckingSelf;
+		return this.all.isSet() && sender.hasPermission(PERMISSION_ALL) || (sender.hasPermission(PERMISSION_SELF) && isSenderCheckingSelf || sender.hasPermission(PERMISSION_OTHERS) && !isSenderCheckingSelf);
 	}
 
 	@Override
