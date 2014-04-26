@@ -99,6 +99,7 @@ public final class AuditCommand extends AbstractCommand {
 				} else {
 					messages.add(PLAYER_HAS_NEVER_MADE_ANY_BANS.asInfoMessage(player));
 				}
+				if (all.isSet()) break;
 			}
 		}
 		getContext().getCommandSender().sendMessage(messages.toArray(new String[messages.size()]));

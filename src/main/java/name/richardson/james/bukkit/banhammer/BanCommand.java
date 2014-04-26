@@ -53,7 +53,7 @@ public class BanCommand extends AbstractCommand {
 		this.limits = limits;
 		this.immunePlayers = immunePlayers;
 		this.pluginManager = pluginManager;
-		player = PlayerNamePositionalArgument.getInstance(server, 0, true, true);
+		player = PlayerNamePositionalArgument.getInstance(server, 0, true);
 		time = TimeOptionArgument.getInstance();
 		silent = SilentSwitchArgument.getInstance();
 		reason = ReasonPositionalArgument.getInstance(1, true);
