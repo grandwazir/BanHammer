@@ -101,7 +101,7 @@ public final class AuditCommand extends AbstractCommand {
 
 	private boolean hasPermission(final CommandSender sender, String targetName) {
 		final boolean isSenderCheckingSelf = targetName.equalsIgnoreCase(sender.getName());
-		return this.all.isSet() && sender.hasPermission(PERMISSION_AUDIT_ALL) || (sender.hasPermission(PERMISSION_SELF) && isSenderCheckingSelf || sender.hasPermission(PERMISSION_OTHERS) && !isSenderCheckingSelf);
+		return this.all.isSet() && sender.hasPermission(PERMISSION_AUDIT_ALL) || (!all.isSet() && sender.hasPermission(PERMISSION_SELF) && isSenderCheckingSelf) || (!all.isSet() && sender.hasPermission(PERMISSION_OTHERS) && !isSenderCheckingSelf);
 	}
 
 	public final class AuditSummary {

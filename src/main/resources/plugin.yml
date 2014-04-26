@@ -37,14 +37,18 @@ permissions:
     children:
       banhammer.audit.others: true
       banhammer.audit.self: true
+      banhammer.audit.all: true
   banhammer.audit.others:
     description: Allow users to audit bans made by other players
   banhammer.audit.self:
     description: Allow users to audit bans that they have made themselves
     default: true
+  banhammer.audit.all:
+    description: Allow users to audit all bans that were made
   banhammer.ban:
     description: Allow users ban any player from the server for any length of time
     children:
+      banhammer.ban.permanent: true
   banhammer.permanent:
     description: Allow users to ban players permanently
   banhammer.check:
