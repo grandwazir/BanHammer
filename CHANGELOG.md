@@ -1,5 +1,6 @@
 # Changelog for BanHammer (v2.3.2-SNAPSHOT)
 
+2014-04-26 14:27:29 +0100    add additional information to check and history commands to show if a ban was pardoned (James Richardson)  
 2014-04-26 14:19:52 +0100    added support to check command to check multiple players (James Richardson)  
 2014-04-26 14:14:54 +0100    refactored localisation (James Richardson)  
 2014-04-17 20:31:18 +0100    fix getting the strings the wrong way around (James Richardson)  
