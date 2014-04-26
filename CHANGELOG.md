@@ -1,5 +1,9 @@
 # Changelog for BanHammer (v2.3.2-SNAPSHOT)
 
+2014-04-26 16:34:55 +0100    fix build issue (James Richardson)  
+
+**v2.4.0**  
+2014-04-26 16:28:13 +0100    prepare to release (James Richardson)  
 2014-04-26 15:45:26 +0100    if all is set break the playerName loop (James Richardson)  
 2014-04-26 15:44:18 +0100    audit command now supports multiple players (James Richardson)  
 2014-04-26 15:01:11 +0100    fix audit permissions (James Richardson)  
