@@ -39,7 +39,6 @@ public class BanHammerPlayerBannedEvent extends BanHammerPlayerEvent {
 		return BanHammerPlayerBannedEvent.handlers;
 	}
 
-	@Deprecated
 	public BanHammerPlayerBannedEvent(final BanRecord record, final boolean silent) {
 		super(record, silent);
 	}

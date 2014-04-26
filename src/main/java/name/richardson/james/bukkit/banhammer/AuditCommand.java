@@ -17,9 +17,7 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permissible;
@@ -76,11 +74,11 @@ public final class AuditCommand extends AbstractCommand {
 
 	@Override
 	protected void execute() {
-		String playerName = (this.playerName.getString() == null) ? getContext().getCommandSender().getName() : this.playerName.getString();
-		Collection<String> playerNames = this.playerName.getStrings();
-		if (playerNames.isEmpty()) playerNames.add(playerName);
+		String player = (this.playerName.getString() == null) ? getContext().getCommandSender().getName() : this.playerName.getString();
+		Collection<String> playerNames = new ArrayList<String>(this.playerName.getStrings());
+		if (playerNames.isEmpty()) playerNames.add(player);
 		List<String> messages = new ArrayList<String>();
-		for (String player : playerNames) {
+		for (String playerName : playerNames) {
 			if (!hasPermission(getContext().getCommandSender(), player)) {
 				messages.add(BukkitUtilities.INVOKER_NO_PERMISSION.asErrorMessage());
 			} else {
@@ -93,11 +91,11 @@ public final class AuditCommand extends AbstractCommand {
 					auditSummary = new AuditSummary(record.getCreatedBans(), banRecordManager.count());
 				}
 				if (auditSummary != null) {
-					choiceFormatter.setArguments(auditSummary.getTotalBanCount(), player, auditSummary.getTotalBanCountPercentage());
+					choiceFormatter.setArguments(auditSummary.getTotalBanCount(), playerName, auditSummary.getTotalBanCountPercentage());
 					messages.add(choiceFormatter.getMessage());
 					messages.addAll(auditSummary.getMessages());
 				} else {
-					messages.add(PLAYER_HAS_NEVER_MADE_ANY_BANS.asInfoMessage(player));
+					messages.add(PLAYER_HAS_NEVER_MADE_ANY_BANS.asInfoMessage(playerName));
 				}
 				if (all.isSet()) break;
 			}
