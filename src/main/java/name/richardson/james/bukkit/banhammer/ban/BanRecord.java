@@ -289,7 +289,12 @@ public class BanRecord {
 			messages.add(getHeader());
 			messages.add(getReason());
 			messages.add(getLength());
-			if (ban.getType() != Type.PERMANENT) messages.add(getExpiresAt());
+			if (ban.getType() != Type.PERMANENT && ban.getState() != State.PARDONED) messages.add(getExpiresAt());
+			if (ban.getState() == State.PARDONED) messages.add(getPardoned());
+		}
+
+		private String getPardoned() {
+			return BAN_WAS_PARDONED.asInfoMessage();
 		}
 
 		public String getExpiresAt() {

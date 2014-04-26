@@ -1,5 +1,7 @@
 # Changelog for BanHammer (v2.3.2-SNAPSHOT)
 
+2014-04-26 14:19:52 +0100    added support to check command to check multiple players (James Richardson)  
+2014-04-26 14:14:54 +0100    refactored localisation (James Richardson)  
 2014-04-17 20:31:18 +0100    fix getting the strings the wrong way around (James Richardson)  
 2014-04-17 20:30:07 +0100    check in missing file (James Richardson)  
 2014-04-17 20:29:13 +0100    fixes [#74](https://github.com/grandwazir/BanHammer/ban-hammer/issues/74) by allowing the audit command to show details for everyone (James Richardson)  

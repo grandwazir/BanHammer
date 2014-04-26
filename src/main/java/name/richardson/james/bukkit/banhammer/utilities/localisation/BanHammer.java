@@ -87,6 +87,7 @@ public enum BanHammer implements Localised, MessageFormatter {
 	PERMANENT ("permanent"),
 	REASON ("reason"),
 	BAN_SUMMARY ("ban-summary"),
+	BAN_WAS_PARDONED ("ban-was-pardoned"),
 
 	HISTORY_COMMAND_NAME ("command.history.name"),
 	HISTORY_COMMAND_DESC ("command.history.desc"),
