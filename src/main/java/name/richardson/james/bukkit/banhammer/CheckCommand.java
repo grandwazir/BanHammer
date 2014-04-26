@@ -17,6 +17,10 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.bukkit.permissions.Permissible;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
@@ -57,15 +61,19 @@ public class CheckCommand extends AbstractCommand {
 
 	@Override
 	protected void execute() {
-		// currently only supports checking one player at once.
-		if (playerRecordManager.exists(player.getString())) {
-			PlayerRecord record = playerRecordManager.find(player.getString());
-			BanRecord.BanRecordFormatter formatter = record.getActiveBan().getFormatter();
-			getContext().getCommandSender().sendMessage(formatter.getMessages().toArray(new String[3]));
-		} else {
-			String message = PLAYER_NOT_BANNED.asInfoMessage(player.getString());
-			getContext().getCommandSender().sendMessage(message);
+		Collection<String> players = player.getStrings();
+		Collection<String> messages = new ArrayList<String>();
+		for (String player : players) {
+			final PlayerRecord playerRecord = playerRecordManager.find(player);
+			if (playerRecord != null && playerRecord.isBanned()) {
+				BanRecord.BanRecordFormatter formatter = playerRecord.getActiveBan().getFormatter();
+				messages.addAll(formatter.getMessages());
+			} else {
+				String message = PLAYER_NOT_BANNED.asInfoMessage(player);
+				messages.add(message);
+			}
 		}
+		getContext().getCommandSender().sendMessage(messages.toArray(new String[messages.size()]));
 	}
 
 }
