@@ -69,13 +69,15 @@ public class HistoryCommand extends AbstractCommand {
 		final List<String> messages = new ArrayList<String>();
 		if (!hasPermission(sender, playerName)) {
 			messages.add(BukkitUtilities.INVOKER_NO_PERMISSION.asErrorMessage());
-		} else if (!playerRecordManager.exists(playerName)) {
-			messages.add(PLAYER_NEVER_BEEN_BANNED.asInfoMessage(playerName));
 		} else {
 			PlayerRecord record = playerRecordManager.find(playerName);
-			for (BanRecord ban : record.getBans()) {
-				BanRecord.BanRecordFormatter formatter = ban.getFormatter();
-				messages.addAll(formatter.getMessages());
+			if (record != null && !record.getBans().isEmpty()) {
+				for (BanRecord ban : record.getBans()) {
+					BanRecord.BanRecordFormatter formatter = ban.getFormatter();
+					messages.addAll(formatter.getMessages());
+				}
+			} else {
+				messages.add(PLAYER_NEVER_BEEN_BANNED.asInfoMessage(playerName));
 			}
 		}
 		sender.sendMessage(messages.toArray(new String[messages.size()]));
