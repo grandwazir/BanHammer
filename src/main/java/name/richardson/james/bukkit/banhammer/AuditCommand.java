@@ -44,6 +44,7 @@ public final class AuditCommand extends AbstractCommand {
 	public static final String PERMISSION_ALL = "banhammer.audit";
 	public static final String PERMISSION_SELF = "banhammer.audit.self";
 	public static final String PERMISSION_OTHERS = "banhammer.audit.others";
+	public static final String PERMISSION_AUDIT_ALL = "banhammer.audit.all";
 	private final BooleanMarshaller all;
 	private final BanRecordManager banRecordManager;
 	private final ChoiceFormatter choiceFormatter;
@@ -100,7 +101,7 @@ public final class AuditCommand extends AbstractCommand {
 
 	private boolean hasPermission(final CommandSender sender, String targetName) {
 		final boolean isSenderCheckingSelf = targetName.equalsIgnoreCase(sender.getName());
-		return this.all.isSet() && sender.hasPermission(PERMISSION_ALL) || (sender.hasPermission(PERMISSION_SELF) && isSenderCheckingSelf || sender.hasPermission(PERMISSION_OTHERS) && !isSenderCheckingSelf);
+		return this.all.isSet() && sender.hasPermission(PERMISSION_AUDIT_ALL) || (sender.hasPermission(PERMISSION_SELF) && isSenderCheckingSelf || sender.hasPermission(PERMISSION_OTHERS) && !isSenderCheckingSelf);
 	}
 
 	public final class AuditSummary {

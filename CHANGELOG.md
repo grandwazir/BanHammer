@@ -1,5 +1,7 @@
 # Changelog for BanHammer (v2.3.2-SNAPSHOT)
 
+2014-04-26 14:36:29 +0100    history command now correctly handles requests from players who have no ban history (James Richardson)  
+2014-04-26 14:29:09 +0100    suppress notification message if action is not silent (James Richardson)  
 2014-04-26 14:27:29 +0100    add additional information to check and history commands to show if a ban was pardoned (James Richardson)  
 2014-04-26 14:19:52 +0100    added support to check command to check multiple players (James Richardson)  
 2014-04-26 14:14:54 +0100    refactored localisation (James Richardson)  
