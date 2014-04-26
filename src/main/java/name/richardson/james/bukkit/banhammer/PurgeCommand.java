@@ -33,27 +33,37 @@ import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
-import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
+
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
 
 public class PurgeCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.purge";
 	public static final String PERMISSION_OWN = "banhammer.purge.own";
 	public static final String PERMISSION_OTHERS = "banhammer.purge.others";
-
 	private final BanRecordManager banRecordManager;
 	private final ChoiceFormatter choiceFormatter;
 	private final PlayerRecordManager playerRecordManager;
 	private final Argument players;
 
 	public PurgeCommand(PlayerRecordManager playerRecordManager, BanRecordManager banRecordManager) {
-		super(BanHammerLocalisation.PURGE_COMMAND_NAME, BanHammerLocalisation.PURGE_COMMAND_DESC);
+		super(PURGE_COMMAND_NAME, PURGE_COMMAND_DESC);
 		this.playerRecordManager = playerRecordManager;
 		this.banRecordManager = banRecordManager;
 		this.choiceFormatter = new BanCountChoiceFormatter();
-		this.choiceFormatter.setMessage(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.PURGE_SUMMARY));
+		this.choiceFormatter.setMessage(PURGE_SUMMARY.asInfoMessage());
 		this.players = PlayerNamePositionalArgument.getInstance(playerRecordManager, 0, true, PlayerRecordManager.PlayerStatus.ANY);
 		addArgument(players);
+	}
+
+	@Override
+	public boolean isAsynchronousCommand() {
+		return false;
+	}
+
+	@Override
+	public boolean isAuthorised(Permissible permissible) {
+		return permissible.hasPermission(PERMISSION_ALL) || permissible.hasPermission(PERMISSION_OTHERS) || permissible.hasPermission(PERMISSION_OWN);
 	}
 
 	@Override
@@ -73,22 +83,12 @@ public class PurgeCommand extends AbstractCommand {
 					records.add(ban);
 				}
 			} else {
-				sender.sendMessage(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.PLAYER_NEVER_BEEN_BANNED, playerName));
+				sender.sendMessage(PLAYER_NEVER_BEEN_BANNED.asInfoMessage(playerName));
 			}
 			this.choiceFormatter.setArguments(records.size(), playerName);
 			banRecordManager.delete(records);
 			sender.sendMessage(choiceFormatter.getMessage());
 		}
-	}
-
-	@Override
-	public boolean isAuthorised(Permissible permissible) {
-		return permissible.hasPermission(PERMISSION_ALL) || permissible.hasPermission(PERMISSION_OTHERS) || permissible.hasPermission(PERMISSION_OWN);
-	}
-
-	@Override
-	public boolean isAsynchronousCommand() {
-		return false;
 	}
 
 }

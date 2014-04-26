@@ -32,10 +32,8 @@ import name.richardson.james.bukkit.utilities.formatters.time.PreciseDurationTim
 import name.richardson.james.bukkit.utilities.formatters.time.TimeFormatter;
 
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanLimitChoiceFormatter;
-import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation.LIMIT_COMMAND_DESC;
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation.LIMIT_COMMAND_NAME;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
 
 public class LimitsCommand extends AbstractCommand {
 
@@ -49,7 +47,7 @@ public class LimitsCommand extends AbstractCommand {
 		super(LIMIT_COMMAND_NAME, LIMIT_COMMAND_DESC);
 		this.limits = limits;
 		this.choiceFormatter.setArguments(limits.size());
-		this.choiceFormatter.setMessage(getLocalisation().formatAsHeaderMessage(BanHammerLocalisation.LIMIT_SUMMARY));
+		this.choiceFormatter.setMessage(LIMIT_SUMMARY.asHeaderMessage());
 	}
 
 	@Override
@@ -60,7 +58,7 @@ public class LimitsCommand extends AbstractCommand {
 			ChatColor colour = ChatColor.RED;
 			if (commandSender.hasPermission(BanCommand.PERMISSION_ALL + "." + limit.getKey())) colour = ChatColor.GREEN;
 			String time = timeFormatter.getHumanReadableDuration(limit.getValue());
-			messages.add(colour + getLocalisation().getMessage(BanHammerLocalisation.LIMIT_ENTRY, limit.getKey(), time));
+			messages.add(colour + LIMIT_ENTRY.asMessage(limit.getKey(), time));
 		}
 		commandSender.sendMessage(choiceFormatter.getMessage());
 		commandSender.sendMessage(messages.toArray(new String[messages.size()]));

@@ -34,9 +34,8 @@ import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
-import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation.PLAYER_NOT_BANNED;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
 
 public class PardonCommand extends AbstractCommand {
 
@@ -50,7 +49,7 @@ public class PardonCommand extends AbstractCommand {
 	private final SilentSwitchArgument silent;
 
 	public PardonCommand(PluginManager pluginManager, BanRecordManager banRecordManager, PlayerRecordManager playerRecordManager) {
-		super(BanHammerLocalisation.PARDON_COMMAND_NAME, BanHammerLocalisation.PARDON_COMMAND_DESC);
+		super(PARDON_COMMAND_NAME, PARDON_COMMAND_DESC);
 		this.pluginManager = pluginManager;
 		this.banRecordManager = banRecordManager;
 		this.playerRecordManager = playerRecordManager;
@@ -79,15 +78,15 @@ public class PardonCommand extends AbstractCommand {
 		for (String playerName : players) {
 			BanRecord record = (playerRecordManager.exists(playerName)) ? playerRecordManager.find(playerName).getActiveBan() : null;
 			if (record == null) {
-				messages.add(getLocalisation().formatAsInfoMessage(PLAYER_NOT_BANNED, playerName));
+				messages.add(PLAYER_NOT_BANNED.asInfoMessage(playerName));
 			} else if (hasPermission(sender, record.getCreator().getName())) {
 				record.setState(BanRecord.State.PARDONED);
 				banRecordManager.save(record);
-				if (silent) messages.add(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.PARDON_PLAYER, playerName));
+				if (silent) messages.add(PARDON_PLAYER.asInfoMessage(playerName));
 				BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(record, sender, silent);
 				pluginManager.callEvent(event);
 			} else {
-				messages.add(getLocalisation().formatAsErrorMessage(BanHammerLocalisation.PARDON_UNABLE_TO_TARGET_PLAYER, playerName));
+				messages.add(PARDON_UNABLE_TO_TARGET_PLAYER.asErrorMessage(playerName));
 			}
 		}
 		sender.sendMessage(messages.toArray(new String[messages.size()]));

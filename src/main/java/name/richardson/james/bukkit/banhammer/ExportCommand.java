@@ -27,7 +27,9 @@ import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation.*;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.EXPORT_COMMAND_NAME;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.EXPORT_COMMAND_DESC;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.EXPORT_SUMMARY;
 
 public class ExportCommand extends AbstractCommand {
 
@@ -42,7 +44,7 @@ public class ExportCommand extends AbstractCommand {
 		this.playerRecordManager = playerRecordManager;
 		this.server = server;
 		this.choiceFormatter = new BanCountChoiceFormatter();
-		this.choiceFormatter.setMessage(getLocalisation().formatAsInfoMessage(EXPORT_SUMMARY));
+		this.choiceFormatter.setMessage(EXPORT_SUMMARY.asInfoMessage());
 	}
 
 	@Override

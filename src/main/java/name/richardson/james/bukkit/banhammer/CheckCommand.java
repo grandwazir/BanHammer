@@ -26,10 +26,10 @@ import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositio
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
-import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation.CHECK_COMMAND_DESC;
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation.CHECK_COMMAND_NAME;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.CHECK_COMMAND_DESC;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.CHECK_COMMAND_NAME;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.PLAYER_NOT_BANNED;
 
 public class CheckCommand extends AbstractCommand {
 
@@ -63,7 +63,7 @@ public class CheckCommand extends AbstractCommand {
 			BanRecord.BanRecordFormatter formatter = record.getActiveBan().getFormatter();
 			getContext().getCommandSender().sendMessage(formatter.getMessages().toArray(new String[3]));
 		} else {
-			String message = getLocalisation().formatAsErrorMessage(BanHammerLocalisation.PLAYER_NOT_BANNED, player.getString());
+			String message = PLAYER_NOT_BANNED.asInfoMessage(player.getString());
 			getContext().getCommandSender().sendMessage(message);
 		}
 	}

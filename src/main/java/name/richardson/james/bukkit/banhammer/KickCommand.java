@@ -26,10 +26,7 @@ import org.bukkit.permissions.Permissible;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.argument.*;
 
-import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
-
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation.KICK_PLAYER_NOTIFICATION;
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation.KICK_SENDER_NOTIFICATION;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
 
 public class KickCommand extends AbstractCommand {
 
@@ -41,7 +38,7 @@ public class KickCommand extends AbstractCommand {
 	private final SilentSwitchArgument silent;
 
 	public KickCommand(Server server) {
-		super(BanHammerLocalisation.KICK_COMMAND_NAME, BanHammerLocalisation.KICK_COMMAND_DESC);
+		super(KICK_COMMAND_NAME, KICK_COMMAND_DESC);
 		this.server = server;
 		this.player = PlayerPositionalArgument.getInstance(server, 0, true);
 		this.reason = ReasonPositionalArgument.getInstance(1, false);
@@ -53,18 +50,18 @@ public class KickCommand extends AbstractCommand {
 
 	@Override
 	protected void execute() {
-		String reason = (this.reason.getString() == null) ? getLocalisation().getMessage(BanHammerLocalisation.KICK_DEFAULT_REASON) : this.reason.getString();
+		String reason = (this.reason.getString() == null) ? KICK_DEFAULT_REASON.asMessage() : this.reason.getString();
 		boolean silent = this.silent.isSet();
 		Set<Player> players = this.player.getPlayers();
 		for (Player player : players) {
 			final String senderName = getContext().getCommandSender().getName();
 			if (silent) {
-				getContext().getCommandSender().sendMessage((getLocalisation().formatAsInfoMessage(KICK_SENDER_NOTIFICATION, player.getName())));
+				getContext().getCommandSender().sendMessage(KICK_SENDER_NOTIFICATION.asInfoMessage(player.getName()));
 			} else {
-			 	server.broadcast(getLocalisation().formatAsWarningMessage(BanHammerLocalisation.KICK_PLAYER_KICKED, player.getName(), senderName), BanHammer.NOTIFY_PERMISSION_NAME);
-				server.broadcast(getLocalisation().formatAsWarningMessage(BanHammerLocalisation.FORMATTER_REASON, reason), BanHammer.NOTIFY_PERMISSION_NAME);
+			 	server.broadcast(KICK_PLAYER_KICKED.asErrorMessage(player.getName(), senderName), BanHammer.NOTIFY_PERMISSION_NAME);
+				server.broadcast(REASON.asWarningMessage(reason), BanHammer.NOTIFY_PERMISSION_NAME);
 			}
-			player.kickPlayer(getLocalisation().formatAsErrorMessage(KICK_PLAYER_NOTIFICATION, reason, senderName));
+			player.kickPlayer(KICK_PLAYER_NOTIFICATION.asErrorMessage(reason, senderName));
 		}
 	}
 

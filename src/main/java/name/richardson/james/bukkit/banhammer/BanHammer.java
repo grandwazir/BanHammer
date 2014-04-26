@@ -31,8 +31,6 @@ import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.config.ServerConfig;
 
 import name.richardson.james.bukkit.utilities.command.*;
-import name.richardson.james.bukkit.utilities.localisation.Localisation;
-import name.richardson.james.bukkit.utilities.localisation.StrictResourceBundleLocalisation;
 import name.richardson.james.bukkit.utilities.logging.PluginLoggerFactory;
 import name.richardson.james.bukkit.utilities.logging.PrefixedLogger;
 import name.richardson.james.bukkit.utilities.persistence.configuration.DatabaseConfiguration;
@@ -51,7 +49,8 @@ import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.event.AliasBannedPlayerListener;
 import name.richardson.james.bukkit.banhammer.ban.event.NormalBannedPlayerListener;
 import name.richardson.james.bukkit.banhammer.ban.event.PlayerNotifier;
-import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
+
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.PLUGIN_UNABLE_TO_HOOK_ALIAS;
 
 public final class BanHammer extends JavaPlugin {
 
@@ -62,7 +61,6 @@ public final class BanHammer extends JavaPlugin {
 	private static final String DATABASE_CONFIG_NAME = "database.yml";
 
 	private final Logger logger = PluginLoggerFactory.getLogger(BanHammer.class);
-	private final Localisation localisation = new StrictResourceBundleLocalisation();
 
 	private BanRecordManager banRecordManager;
 	private PluginConfiguration configuration;
@@ -126,7 +124,7 @@ public final class BanHammer extends JavaPlugin {
 	private void hookAlias() {
 		final Alias plugin = (Alias) this.getServer().getPluginManager().getPlugin("Alias");
 		if (plugin == null) {
-			logger.log(Level.WARNING, localisation.getMessage(BanHammerLocalisation.PLUGIN_UNABLE_TO_HOOK_ALIAS));
+			logger.log(Level.WARNING, PLUGIN_UNABLE_TO_HOOK_ALIAS.asMessage());
 		} else {
 			logger.log(Level.FINE, "Using {0}.", plugin.getDescription().getFullName());
 			PlayerNameRecordManager playerNameRecordManager = plugin.getPlayerNameRecordManager();

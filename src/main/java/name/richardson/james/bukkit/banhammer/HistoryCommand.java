@@ -26,13 +26,16 @@ import org.bukkit.permissions.Permissible;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositionalArgument;
+import name.richardson.james.bukkit.utilities.localisation.BaseLocalisation;
+import name.richardson.james.bukkit.utilities.localisation.BukkitUtilities;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation.*;
-import static name.richardson.james.bukkit.utilities.localisation.PluginLocalisation.COMMAND_NO_PERMISSION;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.HISTORY_COMMAND_NAME;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.HISTORY_COMMAND_DESC;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.PLAYER_NEVER_BEEN_BANNED;
 
 public class HistoryCommand extends AbstractCommand {
 
@@ -65,9 +68,9 @@ public class HistoryCommand extends AbstractCommand {
 		final String playerName = (this.playerName.getString() == null) ? sender.getName() : this.playerName.getString();
 		final List<String> messages = new ArrayList<String>();
 		if (!hasPermission(sender, playerName)) {
-			messages.add(getLocalisation().formatAsErrorMessage(COMMAND_NO_PERMISSION));
+			messages.add(BukkitUtilities.INVOKER_NO_PERMISSION.asErrorMessage());
 		} else if (!playerRecordManager.exists(playerName)) {
-			messages.add(getLocalisation().formatAsInfoMessage(PLAYER_NEVER_BEEN_BANNED, playerName));
+			messages.add(PLAYER_NEVER_BEEN_BANNED.asInfoMessage(playerName));
 		} else {
 			PlayerRecord record = playerRecordManager.find(playerName);
 			for (BanRecord ban : record.getBans()) {

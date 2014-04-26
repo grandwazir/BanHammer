@@ -31,9 +31,8 @@ import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
-import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation.*;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
 
 public class UndoCommand extends AbstractCommand {
 
@@ -41,19 +40,28 @@ public class UndoCommand extends AbstractCommand {
 	public static final String PERMISSION_OWN = "banhammer.undo.own";
 	public static final String PERMISSION_OTHERS = "banhammer.undo.others";
 	public static final String PERMISSION_UNRESTRICTED = "banhammer.undo.unrestricted";
-
 	private final BanRecordManager banRecordManager;
-	private final Argument players;
 	private final PlayerRecordManager playerRecordManager;
+	private final Argument players;
 	private final long undoTime;
 
 	public UndoCommand(PlayerRecordManager playerRecordManager, BanRecordManager banRecordManager, final long undoTime) {
-		super(BanHammerLocalisation.UNDO_COMMAND_NAME, BanHammerLocalisation.UNDO_COMMAND_DESC);
+		super(UNDO_COMMAND_NAME, UNDO_COMMAND_DESC);
 		this.playerRecordManager = playerRecordManager;
 		this.banRecordManager = banRecordManager;
 		this.undoTime = undoTime;
 		this.players = PlayerNamePositionalArgument.getInstance(playerRecordManager, 0, true, PlayerRecordManager.PlayerStatus.BANNED);
 		addArgument(players);
+	}
+
+	@Override
+	public boolean isAsynchronousCommand() {
+		return false;
+	}
+
+	@Override
+	public boolean isAuthorised(Permissible permissible) {
+		return permissible.hasPermission(PERMISSION_ALL) || permissible.hasPermission(PERMISSION_OWN) || permissible.hasPermission(PERMISSION_OTHERS);
 	}
 
 	@Override
@@ -64,16 +72,16 @@ public class UndoCommand extends AbstractCommand {
 			PlayerRecord record = playerRecordManager.find(playerName);
 			BanRecord ban = (record == null || record.getActiveBan() == null) ? null : record.getActiveBan();
 			if (record == null) {
-				messages.add(getLocalisation().formatAsWarningMessage(PLAYER_NEVER_BEEN_BANNED, playerName));
+				messages.add(PLAYER_NEVER_BEEN_BANNED.asWarningMessage(playerName));
 			} else if (ban == null) {
-				messages.add(getLocalisation().formatAsWarningMessage(PLAYER_NOT_BANNED, playerName));
+				messages.add(PLAYER_NOT_BANNED.asWarningMessage(playerName));
 			} else if (!hasPermission(getContext().getCommandSender(), ban)) {
-				messages.add(getLocalisation().formatAsErrorMessage(UNDO_NOT_PERMITTED, ban.getCreator().getName()));
+				messages.add(UNDO_NOT_PERMITTED.asErrorMessage(ban.getCreator().getName()));
 			} else if (!withinTimeLimit(getContext().getCommandSender(), ban)) {
-				messages.add(getLocalisation().formatAsErrorMessage(UNDO_TIME_EXPIRED));
+				messages.add(UNDO_TIME_EXPIRED.asErrorMessage());
 			} else {
 				banRecordManager.delete(ban);
-				messages.add(getLocalisation().formatAsInfoMessage(UNDO_COMPLETE, playerName));
+				messages.add(UNDO_COMPLETE.asInfoMessage(playerName));
 			}
 		}
 		getContext().getCommandSender().sendMessage(messages.toArray(new String[messages.size()]));
@@ -86,16 +94,6 @@ public class UndoCommand extends AbstractCommand {
 
 	private boolean withinTimeLimit(CommandSender sender, final BanRecord ban) {
 		return sender.hasPermission(PERMISSION_UNRESTRICTED) || (System.currentTimeMillis() - ban.getCreatedAt().getTime()) <= this.undoTime;
-	}
-
-	@Override
-	public boolean isAuthorised(Permissible permissible) {
-		return permissible.hasPermission(PERMISSION_ALL) || permissible.hasPermission(PERMISSION_OWN) || permissible.hasPermission(PERMISSION_OTHERS);
-	}
-
-	@Override
-	public boolean isAsynchronousCommand() {
-		return false;
 	}
 
 }

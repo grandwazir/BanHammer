@@ -15,14 +15,15 @@ import org.bukkit.plugin.PluginManager;
 import name.richardson.james.bukkit.utilities.formatters.time.ApproximateTimeFormatter;
 import name.richardson.james.bukkit.utilities.formatters.time.TimeFormatter;
 import name.richardson.james.bukkit.utilities.listener.AbstractListener;
-import name.richardson.james.bukkit.utilities.localisation.FormattedLocalisation;
-import name.richardson.james.bukkit.utilities.localisation.StrictResourceBundleLocalisation;
 import name.richardson.james.bukkit.utilities.logging.PluginLoggerFactory;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
-import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
+
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.LISTENER_PLAYER_BANNED_PERMANENTLY;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.LISTENER_PLAYER_BANNED_TEMPORARILY;
+
 
 public final class NormalBannedPlayerListener extends AbstractListener {
 
@@ -30,7 +31,6 @@ public final class NormalBannedPlayerListener extends AbstractListener {
 	private final PlayerRecordManager playerRecordManager;
 	private final Server server;
 	private final TimeFormatter timeFormatter = new ApproximateTimeFormatter();
-	private final FormattedLocalisation localisation = new StrictResourceBundleLocalisation();
 
 	public NormalBannedPlayerListener(Plugin plugin, PluginManager pluginManager, Server server, PlayerRecordManager playerRecordManager) {
 		super(plugin, pluginManager);
@@ -77,10 +77,10 @@ public final class NormalBannedPlayerListener extends AbstractListener {
 		switch (record.getType()) {
 			case TEMPORARY: {
 				String time = timeFormatter.getHumanReadableDuration(record.getExpiresAt().getTime());
-				return localisation.formatAsErrorMessage(BanHammerLocalisation.LISTENER_PLAYER_BANNED_TEMPORARILY, record.getReason(), record.getCreator().getName(), time);
+				return LISTENER_PLAYER_BANNED_TEMPORARILY.asErrorMessage(record.getReason(), record.getCreator().getName(), time);
 			}
 			default: {
-				return localisation.formatAsErrorMessage(BanHammerLocalisation.LISTENER_PLAYER_BANNED_PERMANENTLY, record.getReason(), record.getCreator().getName());
+				return LISTENER_PLAYER_BANNED_PERMANENTLY.asErrorMessage(record.getReason(), record.getCreator().getName());
 			}
 		}
 	}

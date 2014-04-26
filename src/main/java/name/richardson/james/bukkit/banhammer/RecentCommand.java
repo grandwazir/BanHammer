@@ -30,30 +30,40 @@ import name.richardson.james.bukkit.utilities.command.argument.IntegerMarshaller
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
-import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
+
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
 
 public class RecentCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.recent";
 	private static final int DEFAULT_LIMIT = 5;
-
 	private final BanRecordManager banRecordManager;
 	private IntegerMarshaller count;
 
 	public RecentCommand(BanRecordManager banRecordManager) {
-		super(BanHammerLocalisation.RECENT_COMMAND_NAME, BanHammerLocalisation.RECENT_COMMAND_DESC);
+		super(RECENT_COMMAND_NAME, RECENT_COMMAND_DESC);
 		this.banRecordManager = banRecordManager;
 		this.count = BanCountOptionArgument.getInstance(DEFAULT_LIMIT);
 		addArgument(count);
 	}
 
 	@Override
+	public boolean isAsynchronousCommand() {
+		return true;
+	}
+
+	@Override
+	public boolean isAuthorised(Permissible permissible) {
+		return permissible.hasPermission(PERMISSION_ALL);
+	}
+
+	@Override
 	protected void execute() {
- 		int count = this.count.getInteger();
+		int count = this.count.getInteger();
 		List<BanRecord> bans = banRecordManager.list(count);
 		List<String> messages = new ArrayList<String>();
 		if (bans.isEmpty()) {
-			messages.add(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.RECENT_NO_BANS));
+			messages.add(RECENT_NO_BANS.asInfoMessage());
 		} else {
 			// reverse the list so the most recent ban is at the bottom of the list
 			// this makes sense since the console scrolls down.
@@ -63,16 +73,6 @@ public class RecentCommand extends AbstractCommand {
 			}
 		}
 		getContext().getCommandSender().sendMessage(messages.toArray(new String[messages.size()]));
-	}
-
-	@Override
-	public boolean isAuthorised(Permissible permissible) {
-		return permissible.hasPermission(PERMISSION_ALL);
-	}
-
-	@Override
-	public boolean isAsynchronousCommand() {
-		return true;
 	}
 
 }

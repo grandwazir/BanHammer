@@ -31,10 +31,8 @@ import com.avaje.ebean.validation.NotNull;
 import name.richardson.james.bukkit.utilities.formatters.time.ApproximateTimeFormatter;
 import name.richardson.james.bukkit.utilities.formatters.time.PreciseDurationTimeFormatter;
 import name.richardson.james.bukkit.utilities.formatters.time.TimeFormatter;
-import name.richardson.james.bukkit.utilities.localisation.FormattedLocalisation;
-import name.richardson.james.bukkit.utilities.localisation.StrictResourceBundleLocalisation;
 
-import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
 
 @Entity()
 @Table(name = "banhammer_bans")
@@ -126,15 +124,6 @@ public class BanRecord {
 	}
 
 	/**
-	 * Sets the created at.
-	 *
-	 * @param time the new created at
-	 */
-	public void setCreatedAt(final Timestamp time) {
-		this.createdAt = time;
-	}
-
-	/**
 	 * Gets the creator.
 	 *
 	 * @return the creator
@@ -145,30 +134,12 @@ public class BanRecord {
 	}
 
 	/**
-	 * Sets the creator.
-	 *
-	 * @param creator the new creator
-	 */
-	public void setCreator(final PlayerRecord creator) {
-		this.creator = creator;
-	}
-
-	/**
 	 * Gets the expires at.
 	 *
 	 * @return the expires at
 	 */
 	public Timestamp getExpiresAt() {
 		return this.expiresAt;
-	}
-
-	/**
-	 * Sets the expires at.
-	 *
-	 * @param expiresAt the new expires at
-	 */
-	public void setExpiresAt(final Timestamp expiresAt) {
-		this.expiresAt = expiresAt;
 	}
 
 	public BanRecordFormatter getFormatter() {
@@ -185,15 +156,6 @@ public class BanRecord {
 	}
 
 	/**
-	 * Sets the id.
-	 *
-	 * @param id the new id
-	 */
-	public void setId(final int id) {
-		this.id = id;
-	}
-
-	/**
 	 * Gets the player.
 	 *
 	 * @return the player
@@ -203,30 +165,12 @@ public class BanRecord {
 	}
 
 	/**
-	 * Sets the player.
-	 *
-	 * @param player the new player
-	 */
-	public void setPlayer(final PlayerRecord player) {
-		this.player = player;
-	}
-
-	/**
 	 * Gets the reason.
 	 *
 	 * @return the reason
 	 */
 	public String getReason() {
 		return this.reason;
-	}
-
-	/**
-	 * Sets the reason.
-	 *
-	 * @param reason the new reason
-	 */
-	public void setReason(final String reason) {
-		this.reason = reason;
 	}
 
 	/**
@@ -240,29 +184,75 @@ public class BanRecord {
 	}
 
 	/**
-	 * Sets the state.
-	 *
-	 * @param state the new state
-	 */
-	public void setState(final State state) {
-		this.state = state;
-	}
-
-	private boolean hasExpired() {
-		if (this.getType() == Type.TEMPORARY) {
-			return ((this.expiresAt.getTime() - System.currentTimeMillis()) < 0);
-		} else {
-			return false;
-		}
-	}
-
-	/**
 	 * Gets the type.
 	 *
 	 * @return the type
 	 */
 	public BanRecord.Type getType() {
 		return (this.expiresAt == null) ? BanRecord.Type.PERMANENT : BanRecord.Type.TEMPORARY;
+	}
+
+	/**
+	 * Sets the created at.
+	 *
+	 * @param time the new created at
+	 */
+	public void setCreatedAt(final Timestamp time) {
+		this.createdAt = time;
+	}
+
+	/**
+	 * Sets the creator.
+	 *
+	 * @param creator the new creator
+	 */
+	public void setCreator(final PlayerRecord creator) {
+		this.creator = creator;
+	}
+
+	/**
+	 * Sets the expires at.
+	 *
+	 * @param expiresAt the new expires at
+	 */
+	public void setExpiresAt(final Timestamp expiresAt) {
+		this.expiresAt = expiresAt;
+	}
+
+	/**
+	 * Sets the id.
+	 *
+	 * @param id the new id
+	 */
+	public void setId(final int id) {
+		this.id = id;
+	}
+
+	/**
+	 * Sets the player.
+	 *
+	 * @param player the new player
+	 */
+	public void setPlayer(final PlayerRecord player) {
+		this.player = player;
+	}
+
+	/**
+	 * Sets the reason.
+	 *
+	 * @param reason the new reason
+	 */
+	public void setReason(final String reason) {
+		this.reason = reason;
+	}
+
+	/**
+	 * Sets the state.
+	 *
+	 * @param state the new state
+	 */
+	public void setState(final State state) {
+		this.state = state;
 	}
 
 	@Override
@@ -278,13 +268,19 @@ public class BanRecord {
 		"} ";
 	}
 
+	private boolean hasExpired() {
+		if (this.getType() == Type.TEMPORARY) {
+			return ((this.expiresAt.getTime() - System.currentTimeMillis()) < 0);
+		} else {
+			return false;
+		}
+	}
+
 	public static class BanRecordFormatter {
 
 		private static final DateFormat DATE_FORMAT = new SimpleDateFormat("d MMM yyyy HH:mm (z)");
-
 		private final BanRecord ban;
 		private final TimeFormatter durationFormatter = new PreciseDurationTimeFormatter();
-		private final FormattedLocalisation localisation = new StrictResourceBundleLocalisation();
 		private final List<String> messages = new ArrayList<String>();
 		private final TimeFormatter timeFormatter = new ApproximateTimeFormatter();
 
@@ -296,31 +292,31 @@ public class BanRecord {
 			if (ban.getType() != Type.PERMANENT) messages.add(getExpiresAt());
 		}
 
-		public String getHeader() {
-			final String date = DATE_FORMAT.format(ban.getCreatedAt());
-			return localisation.formatAsHeaderMessage(BanHammerLocalisation.FORMATTER_SUMMARY, ban.getPlayer().getName(), ban.getCreator().getName(), date);
+		public String getExpiresAt() {
+			final long time = ban.getExpiresAt().getTime();
+			return EXPIRES_AT.asInfoMessage(timeFormatter.getHumanReadableDuration(time));
 		}
 
-		public String getReason() {
-			return localisation.formatAsInfoMessage(BanHammerLocalisation.FORMATTER_REASON, ban.getReason());
+		public String getHeader() {
+			final String date = DATE_FORMAT.format(ban.getCreatedAt());
+			return BAN_SUMMARY.asHeaderMessage(ban.getPlayer().getName(), ban.getCreator().getName(), date);
 		}
 
 		public String getLength() {
 			if (ban.getType() == Type.PERMANENT) {
-				return localisation.formatAsInfoMessage(BanHammerLocalisation.FORMATTER_LENGTH, localisation.getMessage(BanHammerLocalisation.FORMATTER_PERMANENT));
+				return LENGTH.asInfoMessage(PERMANENT.toString());
 			} else {
 				final long length = ban.getExpiresAt().getTime() - ban.getCreatedAt().getTime();
-				return localisation.formatAsInfoMessage(BanHammerLocalisation.FORMATTER_LENGTH, durationFormatter.getHumanReadableDuration(length));
+				return LENGTH.asInfoMessage(durationFormatter.getHumanReadableDuration(length));
 			}
-		}
-
-		public String getExpiresAt() {
-			final long time = ban.getExpiresAt().getTime();
-			return localisation.formatAsInfoMessage(BanHammerLocalisation.FORMATTER_EXPIRES_AT, timeFormatter.getHumanReadableDuration(time));
 		}
 
 		public Collection<String> getMessages() {
 			return Collections.unmodifiableCollection(messages);
+		}
+
+		public String getReason() {
+			return REASON.asInfoMessage(ban.getReason());
 		}
 
 	}

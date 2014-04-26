@@ -10,17 +10,16 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
 import name.richardson.james.bukkit.utilities.listener.AbstractListener;
-import name.richardson.james.bukkit.utilities.localisation.FormattedLocalisation;
-import name.richardson.james.bukkit.utilities.localisation.StrictResourceBundleLocalisation;
 import name.richardson.james.bukkit.utilities.logging.PluginLoggerFactory;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
-import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
+
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.NOTIFY_PLAYER_BANNED;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.NOTIFY_PLAYER_PARDONED;
 
 public class PlayerNotifier extends AbstractListener {
 
-	private final FormattedLocalisation localisation = new StrictResourceBundleLocalisation();
 	private final Logger logger = PluginLoggerFactory.getLogger(PlayerNotifier.class);
 	private final Server server;
 
@@ -34,7 +33,7 @@ public class PlayerNotifier extends AbstractListener {
 		logger.log(Level.FINER, "Received " + event.getEventName());
 		if (event.isSilent()) return;
 		BanRecord.BanRecordFormatter formatter = event.getRecord().getFormatter();
-		String message = localisation.formatAsErrorMessage(BanHammerLocalisation.NOTIFY_PLAYER_BANNED, event.getPlayerName(), event.getRecord().getCreator().getName());
+		String message = NOTIFY_PLAYER_BANNED.asInfoMessage(event.getPlayerName(), event.getRecord().getCreator().getName());
 		server.broadcast(message, BanHammer.NOTIFY_PERMISSION_NAME);
 		server.broadcast(formatter.getReason(), BanHammer.NOTIFY_PERMISSION_NAME);
 		server.broadcast(formatter.getLength(), BanHammer.NOTIFY_PERMISSION_NAME);
@@ -44,7 +43,7 @@ public class PlayerNotifier extends AbstractListener {
 	public void onPlayerPardoned(final BanHammerPlayerPardonedEvent event) {
 		logger.log(Level.FINER, "Received " + event.getEventName());
 		if (event.isSilent()) return;
-		String message = localisation.formatAsInfoMessage(BanHammerLocalisation.NOTIFY_PLAYER_PARDONED, event.getPlayerName(), event.getSender().getName());
+		String message = NOTIFY_PLAYER_PARDONED.asInfoMessage(event.getPlayerName(), event.getSender().getName());
 		server.broadcast(message, BanHammer.NOTIFY_PERMISSION_NAME);
 	}
 

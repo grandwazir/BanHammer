@@ -5,7 +5,7 @@ import org.bukkit.Server;
 import name.richardson.james.bukkit.utilities.command.argument.suggester.OnlinePlayerSuggester;
 import name.richardson.james.bukkit.utilities.command.argument.suggester.Suggester;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation.*;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
 
 public class PlayerPositionalArgument {
 

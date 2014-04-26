@@ -29,7 +29,7 @@ import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation.*;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
 
 public class ImportCommand extends AbstractCommand {
 
@@ -45,7 +45,7 @@ public class ImportCommand extends AbstractCommand {
 		this.server = server;
 		this.reason = ReasonPositionalArgument.getInstance(0, false);
 		this.choiceFormatter = new BanCountChoiceFormatter();
-		this.choiceFormatter.setMessage(getLocalisation().formatAsInfoMessage(IMPORT_SUMMARY));
+		this.choiceFormatter.setMessage(IMPORT_SUMMARY.asInfoMessage());
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class ImportCommand extends AbstractCommand {
 
 	@Override
 	protected void execute() {
-		String reason = (this.reason.getString() == null) ? getLocalisation().getMessage(IMPORT_DEFAULT_REASON) : this.reason.getString();
+		String reason = (this.reason.getString() == null) ? IMPORT_DEFAULT_REASON.asMessage() : this.reason.getString();
 		final String senderName = getContext().getCommandSender().getName();
 		for (OfflinePlayer player : this.server.getBannedPlayers()) {
 			PlayerRecordManager.BannedPlayerBuilder builder = playerRecordManager.getBannedPlayerBuilder();

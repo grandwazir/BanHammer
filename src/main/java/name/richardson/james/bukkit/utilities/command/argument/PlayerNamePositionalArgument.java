@@ -8,7 +8,7 @@ import name.richardson.james.bukkit.utilities.command.argument.suggester.Suggest
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.utilities.command.matcher.PlayerRecordMatcher;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation.*;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
 
 public class PlayerNamePositionalArgument {
 

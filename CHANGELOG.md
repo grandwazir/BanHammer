@@ -1,5 +1,8 @@
 # Changelog for BanHammer (v2.3.2-SNAPSHOT)
 
+2014-04-17 20:31:18 +0100    fix getting the strings the wrong way around (James Richardson)  
+2014-04-17 20:30:07 +0100    check in missing file (James Richardson)  
+2014-04-17 20:29:13 +0100    fixes [#74](https://github.com/grandwazir/BanHammer/ban-hammer/issues/74) by allowing the audit command to show details for everyone (James Richardson)  
 2014-04-17 20:16:30 +0100    fixes [#88](https://github.com/grandwazir/BanHammer/ban-hammer/issues/88) added an alias to pardon command (James Richardson)  
 2014-04-17 20:14:41 +0100    fix double printing of a message (James Richardson)  
 2014-04-17 18:42:49 +0100    fix history command argument not being registered (James Richardson)  

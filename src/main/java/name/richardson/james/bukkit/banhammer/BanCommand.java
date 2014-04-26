@@ -21,33 +21,31 @@ import java.util.*;
 
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.PluginManager;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.argument.*;
-import name.richardson.james.bukkit.utilities.localisation.PluginLocalisation;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerBannedEvent;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation.*;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
+import static name.richardson.james.bukkit.utilities.localisation.BukkitUtilities.INVOKER_NO_PERMISSION;
 
 public class BanCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.ban";
 	public static final String PERMISSION_PERMANENT = "banhammer.ban.permanent";
-
 	private final Set<String> immunePlayers;
 	private final Map<String, Long> limits;
+	private final Argument player;
 	private final PlayerRecordManager playerRecordManager;
 	private final PluginManager pluginManager;
 	private final Argument reason;
 	private final SilentSwitchArgument silent;
 	private final TimeMarshaller time;
-	private final Argument player;
 
 	public BanCommand(Server server, PluginManager pluginManager, PlayerRecordManager playerRecordManager, Map<String, Long> limits, Set<String> immunePlayers) {
 		super(BANCOMMAND_NAME, BANCOMMAND_DESC);
@@ -75,9 +73,9 @@ public class BanCommand extends AbstractCommand {
 		long time = this.time.getDuration();
 		for (String player : players) {
 			if (!hasPermission(sender, player)) {
-				messages.add(getLocalisation().formatAsInfoMessage(COMMAND_NO_PERMISSION));
+				messages.add(INVOKER_NO_PERMISSION.asErrorMessage());
 			} else if (playerRecordManager.exists(player) && playerRecordManager.find(player).getActiveBan() != null) {
-				messages.add(getLocalisation().formatAsErrorMessage(BAN_PLAYER_IS_ALREADY_BANNED, player));
+				messages.add(PLAYER_IS_ALREADY_BANNED.asWarningMessage(player));
 			} else {
 				PlayerRecordManager.BannedPlayerBuilder bannedPlayerBuilder = playerRecordManager.getBannedPlayerBuilder();
 				bannedPlayerBuilder.setPlayer(player);
@@ -86,12 +84,17 @@ public class BanCommand extends AbstractCommand {
 				if (time > 0) bannedPlayerBuilder.setExpiryTime(time);
 				bannedPlayerBuilder.save();
 				records.add(bannedPlayerBuilder.getRecord());
-				messages.add(getLocalisation().formatAsInfoMessage(PLAYER_BANNED, player));
+				messages.add(PLAYER_BANNED.asInfoMessage(player));
 				BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(records, silent);
 				pluginManager.callEvent(event);
 			}
 		}
 		sender.sendMessage(messages.toArray(new String[messages.size()]));
+	}
+
+	@Override
+	public boolean isAsynchronousCommand() {
+		return false;
 	}
 
 	@Override
@@ -105,17 +108,12 @@ public class BanCommand extends AbstractCommand {
 		return false;
 	}
 
-	@Override
-	public boolean isAsynchronousCommand() {
-		return false;
-	}
-
 	private boolean hasPermission(final CommandSender sender, String playerName) {
 		boolean immunePlayerTargeted = this.immunePlayers.contains(playerName);
-		if (sender.hasPermission(BanCommand.PERMISSION_ALL)) return true;
-		if (!immunePlayerTargeted && sender.hasPermission(BanCommand.PERMISSION_PERMANENT)) return true;
+		if (sender.hasPermission(PERMISSION_ALL)) return true;
+		if (!immunePlayerTargeted && sender.hasPermission(PERMISSION_PERMANENT)) return true;
 		for (final String limitName : this.limits.keySet()) {
-			final String node = BanCommand.PERMISSION_ALL + "." + limitName;
+			final String node = PERMISSION_ALL + "." + limitName;
 			if (time.getDuration() == 0) break;
 			if (!sender.hasPermission(node)) continue;
 			if (!immunePlayerTargeted && (this.limits.get(limitName) >= this.time.getDuration())) return true;

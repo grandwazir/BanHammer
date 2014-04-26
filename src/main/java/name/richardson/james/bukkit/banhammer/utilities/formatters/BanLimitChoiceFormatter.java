@@ -2,12 +2,12 @@ package name.richardson.james.bukkit.banhammer.utilities.formatters;
 
 import name.richardson.james.bukkit.utilities.formatters.AbstractChoiceFormatter;
 
-import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
 
 public class BanLimitChoiceFormatter extends AbstractChoiceFormatter {
 
 	public BanLimitChoiceFormatter() {
-		setFormats(BanHammerLocalisation.CHOICE_NO_LIMITS, BanHammerLocalisation.CHOICE_ONE_LIMIT, BanHammerLocalisation.CHOICE_MANY_LIMITS);
+		setFormats(CHOICE_NO_LIMITS, CHOICE_ONE_LIMIT, CHOICE_MANY_LIMITS);
 		setLimits(0,1,2);
 	}
 

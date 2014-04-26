@@ -29,23 +29,21 @@ import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.BooleanMarshaller;
 import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositionalArgument;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
+import name.richardson.james.bukkit.utilities.localisation.BukkitUtilities;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
-import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerLocalisation.*;
-import static name.richardson.james.bukkit.utilities.localisation.PluginLocalisation.COMMAND_NO_PERMISSION;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
 
 public final class AuditCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.audit";
 	public static final String PERMISSION_SELF = "banhammer.audit.self";
 	public static final String PERMISSION_OTHERS = "banhammer.audit.others";
-
 	private final BooleanMarshaller all;
 	private final BanRecordManager banRecordManager;
 	private final ChoiceFormatter choiceFormatter;
@@ -61,7 +59,17 @@ public final class AuditCommand extends AbstractCommand {
 		addArgument(all);
 		addArgument(playerName);
 		this.choiceFormatter = new BanCountChoiceFormatter();
-		this.choiceFormatter.setMessage(getLocalisation().formatAsHeaderMessage(AUDIT_COMMAND_HEADER));
+		this.choiceFormatter.setMessage(AUDIT_COMMAND_HEADER.asHeaderMessage());
+	}
+
+	@Override
+	public boolean isAsynchronousCommand() {
+		return false;
+	}
+
+	@Override
+	public boolean isAuthorised(Permissible permissible) {
+		return permissible.hasPermission(PERMISSION_ALL) || permissible.hasPermission(PERMISSION_OTHERS) || permissible.hasPermission(PERMISSION_SELF);
 	}
 
 	@Override
@@ -69,7 +77,7 @@ public final class AuditCommand extends AbstractCommand {
 		String playerName = (this.playerName.getString() == null) ? getContext().getCommandSender().getName() : this.playerName.getString();
 		List<String> messages = new ArrayList<String>();
 		if (!hasPermission(getContext().getCommandSender(), playerName)) {
-			messages.add(getLocalisation().formatAsErrorMessage(COMMAND_NO_PERMISSION));
+			messages.add(BukkitUtilities.INVOKER_NO_PERMISSION.asErrorMessage());
 		} else {
 			AuditSummary auditSummary = null;
 			if (all.isSet()) {
@@ -84,7 +92,7 @@ public final class AuditCommand extends AbstractCommand {
 				messages.add(choiceFormatter.getMessage());
 				messages.addAll(auditSummary.getMessages());
 			} else {
-				messages.add(getLocalisation().formatAsInfoMessage(PLAYER_HAS_MADE_NO_BANS, playerName));
+				messages.add(PLAYER_NEVER_BEEN_BANNED.asInfoMessage(playerName));
 			}
 		}
 		getContext().getCommandSender().sendMessage(messages.toArray(new String[messages.size()]));
@@ -93,16 +101,6 @@ public final class AuditCommand extends AbstractCommand {
 	private boolean hasPermission(final CommandSender sender, String targetName) {
 		final boolean isSenderCheckingSelf = targetName.equalsIgnoreCase(sender.getName());
 		return this.all.isSet() && sender.hasPermission(PERMISSION_ALL) || (sender.hasPermission(PERMISSION_SELF) && isSenderCheckingSelf || sender.hasPermission(PERMISSION_OTHERS) && !isSenderCheckingSelf);
-	}
-
-	@Override
-	public boolean isAuthorised(Permissible permissible) {
-		return permissible.hasPermission(PERMISSION_ALL) || permissible.hasPermission(PERMISSION_OTHERS) || permissible.hasPermission(PERMISSION_SELF);
-	}
-
-	@Override
-	public boolean isAsynchronousCommand() {
-		return false;
 	}
 
 	public final class AuditSummary {
@@ -119,6 +117,66 @@ public final class AuditCommand extends AbstractCommand {
 			this.bans = bans;
 			this.total = total;
 			this.update();
+		}
+
+		public int getExpiredBanCount() {
+			return expiredBans;
+		}
+
+		public float getExpiredBanCountPercentage() {
+			return (float) expiredBans / this.bans.size();
+		}
+
+		public List<String> getMessages() {
+			List<String> messages = new ArrayList<String>();
+			messages.add(AUDIT_TYPE_SUMMARY.asHeaderMessage());
+			messages.add(AUDIT_PERMANENT_BANS_PERCENTAGE.asInfoMessage(getPermanentBanCount(), getPardonedBanCountPercentage()));
+			messages.add(AUDIT_TEMPORARY_BANS_PERCENTAGE.asInfoMessage(getTemporaryBanCount(), getTemporaryBanCountPercentage()));
+			messages.add(AUDIT_STATUS_SUMMARY.asHeaderMessage());
+			messages.add(AUDIT_ACTIVE_BANS_PERCENTAGE.asInfoMessage(getNormalBanCount(), getNormalBanCountPercentage()));
+			messages.add(AUDIT_EXPIRED_BANS_PERCENTAGE.asInfoMessage(getExpiredBanCount(), getExpiredBanCountPercentage()));
+			messages.add(AUDIT_PARDONED_BANS_PERCENTAGE.asInfoMessage(getPardonedBanCount(), getPardonedBanCountPercentage()));
+			return messages;
+		}
+
+		public int getNormalBanCount() {
+			return normalBans;
+		}
+
+		public float getNormalBanCountPercentage() {
+			return (float) normalBans / this.bans.size();
+		}
+
+		public int getPardonedBanCount() {
+			return pardonedBans;
+		}
+
+		public float getPardonedBanCountPercentage() {
+			return (float) pardonedBans / this.bans.size();
+		}
+
+		public int getPermanentBanCount() {
+			return permanentBans;
+		}
+
+		public float getPermanentBanCountPercentage() {
+			return (float) permanentBans / this.bans.size();
+		}
+
+		public int getTemporaryBanCount() {
+			return temporaryBans;
+		}
+
+		public float getTemporaryBanCountPercentage() {
+			return (float) temporaryBans / this.bans.size();
+		}
+
+		public int getTotalBanCount() {
+			return this.bans.size();
+		}
+
+		public float getTotalBanCountPercentage() {
+			return (float) this.bans.size() / total;
 		}
 
 		private void update() {
@@ -143,66 +201,6 @@ public final class AuditCommand extends AbstractCommand {
 						break;
 				}
 			}
-		}
-
-		public List<String> getMessages() {
-			List<String> messages = new ArrayList<String>();
-			messages.add(getLocalisation().formatAsHeaderMessage(BanHammerLocalisation.AUDIT_TYPE_SUMMARY));
-			messages.add(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.AUDIT_PERMANENT_BANS_PERCENTAGE, getPermanentBanCount(), getPardonedBanCountPercentage()));
-			messages.add(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.AUDIT_TEMPORARY_BANS_PERCENTAGE, getTemporaryBanCount(), getTemporaryBanCountPercentage()));
-			messages.add(getLocalisation().formatAsHeaderMessage(BanHammerLocalisation.AUDIT_STATUS_SUMMARY));
-			messages.add(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.AUDIT_ACTIVE_BANS_PERCENTAGE, getNormalBanCount(), getNormalBanCountPercentage()));
-			messages.add(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.AUDIT_EXPIRED_BANS_PERCENTAGE, getExpiredBanCount(), getExpiredBanCountPercentage()));
-			messages.add(getLocalisation().formatAsInfoMessage(BanHammerLocalisation.AUDIT_PARDONED_BANS_PERCENTAGE, getPardonedBanCount(), getPardonedBanCountPercentage()));
-			return messages;
-		}
-
-		public float getTemporaryBanCountPercentage() {
-			return (float) temporaryBans / this.bans.size();
-		}
-
-		public int getTemporaryBanCount() {
-			return temporaryBans;
-		}
-
-		public int getPermanentBanCount() {
-			return permanentBans;
-		}
-
-		public float getPardonedBanCountPercentage() {
-			return (float) pardonedBans / this.bans.size();
-		}
-
-		public int getPardonedBanCount() {
-			return pardonedBans;
-		}
-
-		public float getNormalBanCountPercentage() {
-			return (float) normalBans / this.bans.size();
-		}
-
-		public int getNormalBanCount() {
-			return normalBans;
-		}
-
-		public float getExpiredBanCountPercentage() {
-			return (float) expiredBans / this.bans.size();
-		}
-
-		public int getExpiredBanCount() {
-			return expiredBans;
-		}
-
-		public float getPermanentBanCountPercentage() {
-			return (float) permanentBans / this.bans.size();
-		}
-
-		public int getTotalBanCount() {
-			return this.bans.size();
-		}
-
-		public float getTotalBanCountPercentage() {
-			return (float) this.bans.size() / total;
 		}
 
 	}
