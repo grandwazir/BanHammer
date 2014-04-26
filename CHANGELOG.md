@@ -1,5 +1,6 @@
 # Changelog for BanHammer (v2.3.2-SNAPSHOT)
 
+2014-04-26 15:01:11 +0100    fix audit permissions (James Richardson)  
 2014-04-26 14:45:57 +0100    audit -all is not available to everyone now (James Richardson)  
 2014-04-26 14:36:29 +0100    history command now correctly handles requests from players who have no ban history (James Richardson)  
 2014-04-26 14:29:09 +0100    suppress notification message if action is not silent (James Richardson)  

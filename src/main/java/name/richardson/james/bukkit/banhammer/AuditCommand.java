@@ -18,6 +18,7 @@
 package name.richardson.james.bukkit.banhammer;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
@@ -76,24 +77,28 @@ public final class AuditCommand extends AbstractCommand {
 	@Override
 	protected void execute() {
 		String playerName = (this.playerName.getString() == null) ? getContext().getCommandSender().getName() : this.playerName.getString();
+		Collection<String> playerNames = this.playerName.getStrings();
+		if (playerNames.isEmpty()) playerNames.add(playerName);
 		List<String> messages = new ArrayList<String>();
-		if (!hasPermission(getContext().getCommandSender(), playerName)) {
-			messages.add(BukkitUtilities.INVOKER_NO_PERMISSION.asErrorMessage());
-		} else {
-			AuditSummary auditSummary = null;
-			if (all.isSet()) {
-				auditSummary = new AuditSummary(banRecordManager.list(), banRecordManager.count());
-				playerName = "Everyone";
-			} else if (playerRecordManager.exists(playerName)) {
-				PlayerRecord record = playerRecordManager.find(playerName);
-				auditSummary = new AuditSummary(record.getCreatedBans(), banRecordManager.count());
-			}
-			if (auditSummary != null) {
-				choiceFormatter.setArguments(auditSummary.getTotalBanCount(), playerName, auditSummary.getTotalBanCountPercentage());
-				messages.add(choiceFormatter.getMessage());
-				messages.addAll(auditSummary.getMessages());
+		for (String player : playerNames) {
+			if (!hasPermission(getContext().getCommandSender(), player)) {
+				messages.add(BukkitUtilities.INVOKER_NO_PERMISSION.asErrorMessage());
 			} else {
-				messages.add(PLAYER_NEVER_BEEN_BANNED.asInfoMessage(playerName));
+				AuditSummary auditSummary = null;
+				if (all.isSet()) {
+					auditSummary = new AuditSummary(banRecordManager.list(), banRecordManager.count());
+					playerName = "Everyone";
+				} else if (playerRecordManager.exists(player)) {
+					PlayerRecord record = playerRecordManager.find(player);
+					auditSummary = new AuditSummary(record.getCreatedBans(), banRecordManager.count());
+				}
+				if (auditSummary != null) {
+					choiceFormatter.setArguments(auditSummary.getTotalBanCount(), player, auditSummary.getTotalBanCountPercentage());
+					messages.add(choiceFormatter.getMessage());
+					messages.addAll(auditSummary.getMessages());
+				} else {
+					messages.add(PLAYER_HAS_NEVER_MADE_ANY_BANS.asInfoMessage(player));
+				}
 			}
 		}
 		getContext().getCommandSender().sendMessage(messages.toArray(new String[messages.size()]));

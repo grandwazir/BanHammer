@@ -45,6 +45,7 @@ public enum BanHammer implements Localised, MessageFormatter {
 
 	ARGUMENT_PLAYER_ID ("argument.player.id"),
 	ARGUMENT_PLAYER_NAME ("argument.player.name"),
+	ARGUMENT_PLAYER_NAME_MULTIPLE ("argument.player.name-multiple"),
 	ARGUMENT_PLAYER_DESC ("argument.player.desc"),
 	ARGUMENT_PLAYER_ERROR ("argument.player.error"),
 	ARGUMENT_PLAYER_NAME_ERROR ("argument.player-name.error"),
@@ -107,7 +108,7 @@ public enum BanHammer implements Localised, MessageFormatter {
 
 	KICK_COMMAND_NAME ("command.kick.name"),
 	KICK_COMMAND_DESC ("command.kick.desc"),
-
+	PLAYER_HAS_NEVER_MADE_ANY_BANS ("player-has-never-made-any-bans"),
 	KICK_PLAYER_NOTIFICATION ("kickcommand.player-notification"),
 	KICK_SENDER_NOTIFICATION ("kickcommand.sender-notification"),
 	KICK_PLAYER_KICKED ("kickcommand.player-kicked-from-server"),
