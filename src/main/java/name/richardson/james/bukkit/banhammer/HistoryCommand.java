@@ -26,7 +26,6 @@ import org.bukkit.permissions.Permissible;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositionalArgument;
-import name.richardson.james.bukkit.utilities.localisation.BaseLocalisation;
 import name.richardson.james.bukkit.utilities.localisation.BukkitUtilities;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
