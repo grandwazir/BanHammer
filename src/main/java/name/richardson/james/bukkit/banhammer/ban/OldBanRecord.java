@@ -109,7 +109,7 @@ public class OldBanRecord implements BanRecord {
 	}
 
 	@Override
-	public BanRecordFormatter getFormatter() {
+	public name.richardson.james.bukkit.banhammer.ban.BanRecordFormatter getFormatter() {
 		return new BanRecordFormatter(this);
 	}
 
@@ -247,7 +247,8 @@ public class OldBanRecord implements BanRecord {
 		"} ";
 	}
 
-	private boolean hasExpired() {
+	@Override
+	public boolean hasExpired() {
 		if (this.getType() == Type.TEMPORARY) {
 			return ((this.expiresAt.getTime() - System.currentTimeMillis()) < 0);
 		} else {
@@ -255,7 +256,7 @@ public class OldBanRecord implements BanRecord {
 		}
 	}
 
-	public static class BanRecordFormatter {
+	public static class BanRecordFormatter implements name.richardson.james.bukkit.banhammer.ban.BanRecordFormatter {
 
 		private static final DateFormat DATE_FORMAT = new SimpleDateFormat("d MMM yyyy HH:mm (z)");
 		private final BanRecord ban;
@@ -276,16 +277,19 @@ public class OldBanRecord implements BanRecord {
 			return BAN_WAS_PARDONED.asInfoMessage();
 		}
 
+		@Override
 		public String getExpiresAt() {
 			final long time = ban.getExpiresAt().getTime();
 			return EXPIRES_AT.asInfoMessage(timeFormatter.getHumanReadableDuration(time));
 		}
 
+		@Override
 		public String getHeader() {
 			final String date = DATE_FORMAT.format(ban.getCreatedAt());
 			return BAN_SUMMARY.asHeaderMessage(ban.getPlayer().getName(), ban.getCreator().getName(), date);
 		}
 
+		@Override
 		public String getLength() {
 			if (ban.getType() == Type.PERMANENT) {
 				return LENGTH.asInfoMessage(PERMANENT.toString());
@@ -295,10 +299,12 @@ public class OldBanRecord implements BanRecord {
 			}
 		}
 
+		@Override
 		public Collection<String> getMessages() {
 			return Collections.unmodifiableCollection(messages);
 		}
 
+		@Override
 		public String getReason() {
 			return REASON.asInfoMessage(ban.getReason());
 		}

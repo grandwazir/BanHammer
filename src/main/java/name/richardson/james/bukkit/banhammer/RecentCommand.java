@@ -29,8 +29,8 @@ import name.richardson.james.bukkit.utilities.command.argument.BanCountOptionArg
 import name.richardson.james.bukkit.utilities.command.argument.IntegerMarshaller;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.BanRecordFormatter;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
-import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
 
@@ -69,7 +69,7 @@ public class RecentCommand extends AbstractCommand {
 			// reverse the list so the most recent ban is at the bottom of the list
 			// this makes sense since the console scrolls down.
 			for (BanRecord ban : Lists.reverse(bans)) {
-				OldBanRecord.BanRecordFormatter formatter = ban.getFormatter();
+				BanRecordFormatter formatter = ban.getFormatter();
 				messages.addAll(formatter.getMessages());
 			}
 		}

@@ -52,7 +52,7 @@ public interface BanRecord {
 
 	Timestamp getExpiresAt();
 
-	OldBanRecord.BanRecordFormatter getFormatter();
+	BanRecordFormatter getFormatter();
 
 	int getId();
 
@@ -63,6 +63,8 @@ public interface BanRecord {
 	State getState();
 
 	Type getType();
+
+	boolean hasExpired();
 
 	void setCreatedAt(Timestamp time);
 
