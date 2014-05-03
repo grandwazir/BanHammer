@@ -32,11 +32,10 @@ public class PlayerRecordManager {
 	}
 
 	public PlayerRecord create(String playerName) {
-		OldPlayerRecord record = this.find(playerName);
+		PlayerRecord record = this.find(playerName);
 		if (record != null) return record;
 		logger.log(Level.FINER, "Creating PlayerRecord for " + playerName);
 		record = new OldPlayerRecord();
-		record.setName(playerName);
 		this.save(record);
 		return this.find(playerName);
 	}
@@ -55,7 +54,7 @@ public class PlayerRecordManager {
 		return find(playerName) != null;
 	}
 
-	public OldPlayerRecord find(String playerName) {
+	public PlayerRecord find(String playerName) {
 		logger.log(Level.FINER, "Finding PlayerRecord for " + playerName);
 		try {
 			return database.find(OldPlayerRecord.class).where().ieq("name", playerName).findUnique();
