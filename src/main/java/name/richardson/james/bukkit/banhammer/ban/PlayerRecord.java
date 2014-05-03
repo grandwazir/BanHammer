@@ -4,6 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.List;
+import java.util.UUID;
 
 public interface PlayerRecord {
 
@@ -26,5 +27,9 @@ public interface PlayerRecord {
 	public void setCreatedBans(List<BanRecord> records);
 
 	public void setId(int id);
+
+	public UUID getUUID();
+
+	public void setUUID(UUID uuid);
 
 }

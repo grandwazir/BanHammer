@@ -20,6 +20,7 @@ package name.richardson.james.bukkit.banhammer.ban;
 import javax.persistence.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import com.avaje.ebean.validation.NotNull;
 
@@ -53,7 +54,7 @@ public class OldPlayerRecord implements PlayerRecord {
 	@Override
 	@OneToMany(targetEntity = OldBanRecord.class, fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
 	public List<BanRecord> getBans() {
-		return (this.bans == null) ? new LinkedList<OldBanRecord>() : this.bans;
+		return (this.bans == null) ? new LinkedList<BanRecord>() : this.bans;
 	}
 
 	@Override
@@ -64,7 +65,7 @@ public class OldPlayerRecord implements PlayerRecord {
 	@Override
 	@OneToMany(targetEntity = OldBanRecord.class, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
 	public List<BanRecord> getCreatedBans() {
-		return (this.createdBans == null) ? new LinkedList<OldBanRecord>() : this.createdBans;
+		return (this.createdBans == null) ? new LinkedList<BanRecord>() : this.createdBans;
 	}
 
 	@Override
@@ -80,6 +81,16 @@ public class OldPlayerRecord implements PlayerRecord {
 	@Override
 	public void setId(final int id) {
 		this.id = id;
+	}
+
+	@Override
+	public UUID getUUID() {
+		return null;
+	}
+
+	@Override
+	public void setUUID(final UUID uuid) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

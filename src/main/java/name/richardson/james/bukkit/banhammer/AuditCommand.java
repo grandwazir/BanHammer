@@ -110,7 +110,7 @@ public final class AuditCommand extends AbstractCommand {
 
 	public final class AuditSummary {
 
-		private final List<BanRecord> bans;
+		private final List<? extends BanRecord> bans;
 		private int expiredBans;
 		private int normalBans;
 		private int pardonedBans;
@@ -118,7 +118,7 @@ public final class AuditCommand extends AbstractCommand {
 		private int temporaryBans;
 		private int total;
 
-		private AuditSummary(List<BanRecord> bans, int total) {
+		private AuditSummary(List<? extends BanRecord> bans, int total) {
 			this.bans = bans;
 			this.total = total;
 			this.update();

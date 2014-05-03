@@ -20,8 +20,11 @@ package name.richardson.james.bukkit.banhammer.ban;
 import javax.persistence.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import com.avaje.ebean.validation.NotNull;
+
+import name.richardson.james.bukkit.banhammer.ban.event.NameFetcher;
 
 @Entity()
 @Table(name = "banhammer_players")
@@ -39,6 +42,8 @@ public class NewPlayerRecord implements PlayerRecord {
 	/** The name. */
 	@NotNull
 	private String name;
+	@NotNull
+	private UUID uuid;
 
 	@Override
 	public BanRecord getActiveBan() {
@@ -83,12 +88,27 @@ public class NewPlayerRecord implements PlayerRecord {
 	}
 
 	@Override
+	public UUID getUUID() {
+		return this.uuid;
+	}
+
+	@Override
+	public void setUUID(final UUID uuid) {
+		this.uuid = uuid;
+	}
+
+	@Override
 	public String getName() {
-		return this.name;
+		try {
+			return NameFetcher.getNameOf(getUUID());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public void setName(final String name) {
-		this.name = name;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
