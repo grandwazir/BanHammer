@@ -19,7 +19,6 @@ package name.richardson.james.bukkit.banhammer;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.bukkit.permissions.Permissible;
 
@@ -27,7 +26,7 @@ import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositionalArgument;
 
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
@@ -66,7 +65,7 @@ public class CheckCommand extends AbstractCommand {
 		for (String player : players) {
 			final PlayerRecord playerRecord = playerRecordManager.find(player);
 			if (playerRecord != null && playerRecord.isBanned()) {
-				BanRecord.BanRecordFormatter formatter = playerRecord.getActiveBan().getFormatter();
+				OldBanRecord.BanRecordFormatter formatter = playerRecord.getActiveBan().getFormatter();
 				messages.addAll(formatter.getMessages());
 			} else {
 				String message = PLAYER_NOT_BANNED.asInfoMessage(player);

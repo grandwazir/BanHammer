@@ -13,6 +13,8 @@ import org.junit.Test;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
+import name.richardson.james.bukkit.banhammer.ban.OldPlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 
 import static org.mockito.Matchers.anyString;
@@ -59,16 +61,16 @@ public class PlayerNotifierTest extends TestCase {
 	}
 
 	private BanRecord getBanRecord() {
-		BanRecord banRecord = mock(BanRecord.class);
-		PlayerRecord playerRecord = mock(PlayerRecord.class);
+		BanRecord banRecord = mock(OldBanRecord.class);
+		PlayerRecord playerRecord = mock(OldPlayerRecord.class);
 		when(playerRecord.getName()).thenReturn("frank");
-		PlayerRecord creatorRecord = mock(PlayerRecord.class);
+		PlayerRecord creatorRecord = mock(OldPlayerRecord.class);
 		when(creatorRecord.getName()).thenReturn("frank");
 		when(banRecord.getCreator()).thenReturn(creatorRecord);
 		when(banRecord.getPlayer()).thenReturn(playerRecord);
-		when(banRecord.getType()).thenReturn(BanRecord.Type.PERMANENT);
+		when(banRecord.getType()).thenReturn(OldBanRecord.Type.PERMANENT);
 		when(banRecord.getCreatedAt()).thenReturn(new Timestamp(0));
-		BanRecord.BanRecordFormatter formatter = mock(BanRecord.BanRecordFormatter.class);
+		OldBanRecord.BanRecordFormatter formatter = mock(OldBanRecord.BanRecordFormatter.class);
 		when(banRecord.getFormatter()).thenReturn(formatter);
 		return banRecord;
 	}

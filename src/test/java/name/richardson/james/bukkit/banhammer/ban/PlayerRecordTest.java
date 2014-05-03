@@ -11,7 +11,7 @@ import static org.mockito.Mockito.*;
 
 public class PlayerRecordTest extends TestCase {
 
-	private PlayerRecord record;
+	private OldPlayerRecord record;
 
 	@Test
 	public void testIsBannedDefault()
@@ -22,8 +22,8 @@ public class PlayerRecordTest extends TestCase {
 	@Test
 	public void testIsBannedFalse()
 	throws Exception {
-		BanRecord ban = mock(BanRecord.class);
-		when(ban.getState()).thenReturn(BanRecord.State.EXPIRED);
+		BanRecord ban = mock(OldBanRecord.class);
+		when(ban.getState()).thenReturn(OldBanRecord.State.EXPIRED);
 		record.setBans(Arrays.asList(ban));
 		Assert.assertFalse("Player should not be banned!", record.isBanned());
 		verify(ban, atLeastOnce()).getState();
@@ -32,8 +32,8 @@ public class PlayerRecordTest extends TestCase {
 	@Test
 	public void testIsBannedTrue()
 	throws Exception {
-		BanRecord ban = mock(BanRecord.class);
-		when(ban.getState()).thenReturn(BanRecord.State.NORMAL);
+		BanRecord ban = mock(OldBanRecord.class);
+		when(ban.getState()).thenReturn(OldBanRecord.State.NORMAL);
 		record.setBans(Arrays.asList(ban));
 		Assert.assertTrue("Player should be banned!", record.isBanned());
 		verify(ban, atLeastOnce()).getState();
@@ -59,7 +59,7 @@ public class PlayerRecordTest extends TestCase {
 	@Test
 	public void testSetCreatedBans()
 	throws Exception {
-		BanRecord ban = mock(BanRecord.class);
+		BanRecord ban = mock(OldBanRecord.class);
 		record.setCreatedBans(Arrays.asList(ban));
 		Assert.assertSame("Set bans are not consistent!", ban, record.getCreatedBans().get(0));
 	}
@@ -67,7 +67,7 @@ public class PlayerRecordTest extends TestCase {
 	@Test
 	public void testSetBans()
 	throws Exception {
-		BanRecord ban = mock(BanRecord.class);
+		BanRecord ban = mock(OldBanRecord.class);
 		record.setBans(Arrays.asList(ban));
 		Assert.assertSame("Set bans are not consistent!", ban, record.getBans().get(0));
 	}
@@ -75,10 +75,10 @@ public class PlayerRecordTest extends TestCase {
 	@Test
 	public void testGetActiveBan()
 	throws Exception {
-		BanRecord activeBan = mock(BanRecord.class);
-		when(activeBan.getState()).thenReturn(BanRecord.State.NORMAL);
-		BanRecord inactiveBan = mock(BanRecord.class);
-		when(inactiveBan.getState()).thenReturn(BanRecord.State.PARDONED);
+		BanRecord activeBan = mock(OldBanRecord.class);
+		when(activeBan.getState()).thenReturn(OldBanRecord.State.NORMAL);
+		BanRecord inactiveBan = mock(OldBanRecord.class);
+		when(inactiveBan.getState()).thenReturn(OldBanRecord.State.PARDONED);
 		record.setBans(Arrays.asList(activeBan, inactiveBan));
 		Assert.assertSame("Ban returned is not the active ban!", activeBan, record.getActiveBan());
 	}
@@ -86,13 +86,13 @@ public class PlayerRecordTest extends TestCase {
 	@Test
 	public void testToString()
 	throws Exception {
-		Assert.assertTrue("toString is not overriden.", record.toString().contains(PlayerRecord.class.getSimpleName()));
+		Assert.assertTrue("toString is not overriden.", record.toString().contains(OldPlayerRecord.class.getSimpleName()));
 	}
 
 
 	@Before
 	public void setUp()
 	throws Exception {
-		record = new PlayerRecord();
+		record = new OldPlayerRecord();
 	}
 }

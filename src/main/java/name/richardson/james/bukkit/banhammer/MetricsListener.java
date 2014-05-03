@@ -30,6 +30,7 @@ import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
+import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerBannedEvent;
 import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
 
@@ -95,7 +96,7 @@ public class MetricsListener extends AbstractListener {
 
 	private void setInitialValues() {
 		for (BanRecord record : banRecordManager.list()) {
-			if (record.getState() == BanRecord.State.PARDONED) {
+			if (record.getState() == OldBanRecord.State.PARDONED) {
 			 	this.totalPardonedBans++;
 				continue;
 			}

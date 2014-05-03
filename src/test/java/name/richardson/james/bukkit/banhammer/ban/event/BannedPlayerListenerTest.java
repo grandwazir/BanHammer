@@ -14,9 +14,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
+import name.richardson.james.bukkit.banhammer.ban.*;
 
 import static org.mockito.Mockito.*;
 
@@ -50,7 +48,7 @@ public class BannedPlayerListenerTest extends TestCase {
 	@Test
 	public void testPlayerLoginAllowed()
 	throws Exception {
-		PlayerRecord playerRecord = mock(PlayerRecord.class);
+		PlayerRecord playerRecord = mock(OldPlayerRecord.class);
 		when(playerRecord.isBanned()).thenReturn(false);
 		when(playerRecordManager.exists("frank")).thenReturn(true);
 		when(playerRecordManager.find("frank")).thenReturn(playerRecord);
@@ -103,8 +101,8 @@ public class BannedPlayerListenerTest extends TestCase {
 	}
 
 	private BanRecord getExampleBanRecord() {
-		BanRecord banRecord = mock(BanRecord.class);
-		when(banRecord.getType()).thenReturn(BanRecord.Type.PERMANENT);
+		BanRecord banRecord = mock(OldBanRecord.class);
+		when(banRecord.getType()).thenReturn(OldBanRecord.Type.PERMANENT);
 		when(banRecord.getCreatedAt()).thenReturn(new Timestamp(System.currentTimeMillis()));
 		PlayerRecord playerRecord = getExamplePlayerRecord();
 		when(banRecord.getCreator()).thenReturn(playerRecord);
@@ -113,7 +111,7 @@ public class BannedPlayerListenerTest extends TestCase {
 	}
 
 	private PlayerRecord getExamplePlayerRecord() {
-		PlayerRecord playerRecord = mock(PlayerRecord.class);
+		PlayerRecord playerRecord = mock(OldPlayerRecord.class);
 		when(playerRecord.getName()).thenReturn("frank");
 		return playerRecord;
 	}

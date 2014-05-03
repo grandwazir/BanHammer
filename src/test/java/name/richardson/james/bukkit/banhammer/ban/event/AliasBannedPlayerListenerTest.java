@@ -9,9 +9,7 @@ import org.junit.Test;
 
 import name.richardson.james.bukkit.alias.persistence.PlayerNameRecord;
 import name.richardson.james.bukkit.alias.persistence.PlayerNameRecordManager;
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
+import name.richardson.james.bukkit.banhammer.ban.*;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
@@ -28,14 +26,14 @@ public class AliasBannedPlayerListenerTest extends TestCase {
 		PluginManager pluginManager = mock(PluginManager.class);
 		PlayerRecordManager playerRecordManager = mock(PlayerRecordManager.class, RETURNS_MOCKS);
 		playerNameRecordManager = mock(PlayerNameRecordManager.class);
-		PlayerRecord playerRecord = mock(PlayerRecord.class, RETURNS_MOCKS);
+		PlayerRecord playerRecord = mock(OldPlayerRecord.class, RETURNS_MOCKS);
 		listener = new AliasBannedPlayerListener(plugin, pluginManager, playerRecordManager, playerNameRecordManager);
 	}
 
 	@Test
 	public void testOnPlayerPardoned()
 	throws Exception {
-		BanRecord banRecord = mock(BanRecord.class, RETURNS_DEEP_STUBS);
+		BanRecord banRecord = mock(OldBanRecord.class, RETURNS_DEEP_STUBS);
 		when(banRecord.getPlayer().getName()).thenReturn("frank");
 		when(banRecord.getReason()).thenReturn("Alias of joe");
 		PlayerNameRecord playerNameRecord = mock(PlayerNameRecord.class);

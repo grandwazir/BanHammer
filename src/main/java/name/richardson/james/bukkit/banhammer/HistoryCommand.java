@@ -26,10 +26,10 @@ import org.bukkit.permissions.Permissible;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositionalArgument;
-import name.richardson.james.bukkit.utilities.localisation.BaseLocalisation;
 import name.richardson.james.bukkit.utilities.localisation.BukkitUtilities;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
@@ -73,7 +73,7 @@ public class HistoryCommand extends AbstractCommand {
 			PlayerRecord record = playerRecordManager.find(playerName);
 			if (record != null && !record.getBans().isEmpty()) {
 				for (BanRecord ban : record.getBans()) {
-					BanRecord.BanRecordFormatter formatter = ban.getFormatter();
+					OldBanRecord.BanRecordFormatter formatter = ban.getFormatter();
 					messages.addAll(formatter.getMessages());
 				}
 			} else {

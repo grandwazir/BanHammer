@@ -1,10 +1,8 @@
 package name.richardson.james.bukkit.banhammer.ban;
 
 import java.sql.Timestamp;
-import java.util.Arrays;
 
 import com.avaje.ebean.EbeanServer;
-import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +40,7 @@ public class BannedPlayerBuilderTest extends TestCase {
 	@Test
 	public void testSave() {
 		when(manager.getDatabase()).thenReturn(database);
-		PlayerRecord playerRecord = mock(PlayerRecord.class);
+		PlayerRecord playerRecord = mock(OldPlayerRecord.class);
 		when(manager.create("frank")).thenReturn(playerRecord);
 		builder.setPlayer("frank");
 		builder.save();
