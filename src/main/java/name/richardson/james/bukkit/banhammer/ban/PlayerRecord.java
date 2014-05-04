@@ -1,13 +1,19 @@
 package name.richardson.james.bukkit.banhammer.ban;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.UUID;
+import javax.persistence.CascadeType;
+import javax.persistence.OneToMany;
+import java.util.*;
 
 import com.avaje.ebean.EbeanServer;
 import org.apache.commons.lang.Validate;
 
 public class PlayerRecord extends Record {
+
+	@OneToMany(mappedBy = "player", targetEntity = BanRecord.class, cascade = { CascadeType.REMOVE })
+	private List<BanRecord> bans;
+
+	@OneToMany(mappedBy = "creator", targetEntity = BanRecord.class)
+	private List<BanRecord> createdBans;
 
 	private UUID uuid;
 
@@ -44,16 +50,6 @@ public class PlayerRecord extends Record {
 		return create(database, uuid);
 	}
 
-	private static UUID getUUIDOf(final String playerName) {
-		UUID uuid = null;
-		try {
-			uuid = UUIDFetcher.getUUIDOf(playerName);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return uuid;
-	}
-
 	/**
 	 * Find a PlayerRecord by providing a UUID.
 	 *
@@ -79,6 +75,16 @@ public class PlayerRecord extends Record {
 		return find(database, uuid);
 	}
 
+	private static UUID getUUIDOf(final String playerName) {
+		UUID uuid = null;
+		try {
+			uuid = UUIDFetcher.getUUIDOf(playerName);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return uuid;
+	}
+
 	/**
 	 * Save a PlayerRecord
 	 *
@@ -102,8 +108,24 @@ public class PlayerRecord extends Record {
 		return database.save(records);
 	}
 
+	public List<BanRecord> getBans() {
+		return (bans == null) ? Collections.<BanRecord>emptyList() : bans;
+	}
+
+	public List<BanRecord> getCreatedBans() {
+		return (createdBans == null) ? Collections.<BanRecord>emptyList() : createdBans;
+	}
+
 	public UUID getUuid() {
 		return uuid;
+	}
+
+	public void setBans(final List<BanRecord> bans) {
+		this.bans = bans;
+	}
+
+	public void setCreatedBans(final List<BanRecord> createdBans) {
+		this.createdBans = createdBans;
 	}
 
 	public void setUuid(final UUID uuid) {
