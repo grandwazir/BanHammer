@@ -60,7 +60,7 @@ public class OldBanRecordTest extends TestCase {
 	@Test
 	public void testSetPlayer()
 	throws Exception {
-		PlayerRecord playerRecord = new PlayerRecord();
+		OldPlayerRecord playerRecord = new OldPlayerRecord();
 		record.setPlayer(playerRecord);
 		Assert.assertEquals("Player is inconsistent!", playerRecord, record.getPlayer());
 	}
@@ -84,7 +84,7 @@ public class OldBanRecordTest extends TestCase {
 	@Test
 	public void testSetCreator()
 	throws Exception {
-		PlayerRecord playerRecord = new PlayerRecord();
+		OldPlayerRecord playerRecord = new OldPlayerRecord();
 		record.setCreator(playerRecord);
 		Assert.assertEquals("Creator is inconsistent!", playerRecord, record.getCreator());
 	}

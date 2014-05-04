@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.ban.OldPlayerRecord;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
@@ -60,9 +60,9 @@ public class PlayerNotifierTest extends TestCase {
 
 	private OldBanRecord getBanRecord() {
 		OldBanRecord banRecord = mock(OldBanRecord.class);
-		PlayerRecord playerRecord = mock(PlayerRecord.class);
+		OldPlayerRecord playerRecord = mock(OldPlayerRecord.class);
 		when(playerRecord.getName()).thenReturn("frank");
-		PlayerRecord creatorRecord = mock(PlayerRecord.class);
+		OldPlayerRecord creatorRecord = mock(OldPlayerRecord.class);
 		when(creatorRecord.getName()).thenReturn("frank");
 		when(banRecord.getCreator()).thenReturn(creatorRecord);
 		when(banRecord.getPlayer()).thenReturn(playerRecord);

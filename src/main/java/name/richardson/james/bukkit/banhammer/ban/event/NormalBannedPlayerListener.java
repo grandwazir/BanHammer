@@ -18,7 +18,7 @@ import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 import name.richardson.james.bukkit.utilities.logging.PluginLoggerFactory;
 
 import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.ban.OldPlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.LISTENER_PLAYER_BANNED_PERMANENTLY;
@@ -88,7 +88,7 @@ public final class NormalBannedPlayerListener extends AbstractListener {
 	private boolean isPlayerBanned(String playerName) {
 		logger.log(Level.FINER, "Checking if {0} is banned.", playerName);
 		if (!this.playerRecordManager.exists(playerName)) return false;
-		PlayerRecord record = this.playerRecordManager.find(playerName);
+		OldPlayerRecord record = this.playerRecordManager.find(playerName);
 		return record.isBanned();
 	}
 

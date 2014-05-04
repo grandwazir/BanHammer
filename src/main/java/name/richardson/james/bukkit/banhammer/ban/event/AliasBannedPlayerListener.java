@@ -15,7 +15,7 @@ import name.richardson.james.bukkit.utilities.logging.PluginLoggerFactory;
 
 import name.richardson.james.bukkit.alias.persistence.PlayerNameRecord;
 import name.richardson.james.bukkit.alias.persistence.PlayerNameRecordManager;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.ban.OldPlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.ALIAS_BAN_REASON;
@@ -39,10 +39,10 @@ public final class AliasBannedPlayerListener extends AbstractListener {
 		Set<String> aliases = playerNameRecord.getAliases();
 		for (String alias : aliases) {
 			if (!this.playerRecordManager.exists(alias)) continue;
-			PlayerRecord record = this.playerRecordManager.find(alias);
+			OldPlayerRecord record = this.playerRecordManager.find(alias);
 			if (record.isBanned()) {
 				logger.log(Level.FINER, "Found an alias for {0}.", alias);
-				PlayerRecord playerRecord = this.playerRecordManager.find(alias);
+				OldPlayerRecord playerRecord = this.playerRecordManager.find(alias);
 				String reason = ALIAS_BAN_REASON.asMessage(alias);
 				PlayerRecordManager.BannedPlayerBuilder builder = playerRecordManager.getBannedPlayerBuilder();
 				builder.setPlayer(playerName);

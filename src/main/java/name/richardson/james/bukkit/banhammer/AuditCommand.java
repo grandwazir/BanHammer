@@ -32,7 +32,7 @@ import name.richardson.james.bukkit.utilities.localisation.BukkitUtilities;
 
 import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.ban.OldPlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
 
@@ -87,7 +87,7 @@ public final class AuditCommand extends AbstractCommand {
 					auditSummary = new AuditSummary(banRecordManager.list(), banRecordManager.count());
 					playerName = "Everyone";
 				} else if (playerRecordManager.exists(player)) {
-					PlayerRecord record = playerRecordManager.find(player);
+					OldPlayerRecord record = playerRecordManager.find(player);
 					auditSummary = new AuditSummary(record.getCreatedBans(), banRecordManager.count());
 				}
 				if (auditSummary != null) {

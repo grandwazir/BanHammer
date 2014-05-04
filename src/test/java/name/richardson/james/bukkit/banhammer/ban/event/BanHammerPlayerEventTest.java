@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.ban.OldPlayerRecord;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -44,7 +44,7 @@ public class BanHammerPlayerEventTest extends TestCase {
 	public void setUp()
 	throws Exception {
 		OldBanRecord banRecord = mock(OldBanRecord.class);
-		PlayerRecord playerRecord = mock(PlayerRecord.class);
+		OldPlayerRecord playerRecord = mock(OldPlayerRecord.class);
 		when(banRecord.getPlayer()).thenReturn(playerRecord);
 		when(playerRecord.getName()).thenReturn("frank");
 		event = new BanHammerPlayerBannedEvent(banRecord, true);

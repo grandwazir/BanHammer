@@ -23,7 +23,7 @@ import org.bukkit.permissions.Permissible;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.ban.OldPlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
 
@@ -59,7 +59,7 @@ public class ExportCommand extends AbstractCommand {
 
 	@Override
 	protected void execute() {
-		for (PlayerRecord playerRecord : playerRecordManager.list("", PlayerRecordManager.PlayerStatus.BANNED)) {
+		for (OldPlayerRecord playerRecord : playerRecordManager.list("", PlayerRecordManager.PlayerStatus.BANNED)) {
 			this.server.getOfflinePlayer(playerRecord.getName()).setBanned(true);
 		}
 		this.choiceFormatter.setArguments(playerRecordManager.count());

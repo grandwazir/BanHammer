@@ -15,7 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.ban.OldPlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
 import static org.mockito.Mockito.*;
@@ -50,7 +50,7 @@ public class BannedPlayerListenerTest extends TestCase {
 	@Test
 	public void testPlayerLoginAllowed()
 	throws Exception {
-		PlayerRecord playerRecord = mock(PlayerRecord.class);
+		OldPlayerRecord playerRecord = mock(OldPlayerRecord.class);
 		when(playerRecord.isBanned()).thenReturn(false);
 		when(playerRecordManager.exists("frank")).thenReturn(true);
 		when(playerRecordManager.find("frank")).thenReturn(playerRecord);
@@ -71,7 +71,7 @@ public class BannedPlayerListenerTest extends TestCase {
 	public void testPlayerLoginDenied()
 	throws Exception {
 		Player player = mock(Player.class);
-		PlayerRecord playerRecord = getExamplePlayerRecord();
+		OldPlayerRecord playerRecord = getExamplePlayerRecord();
 		when(playerRecord.isBanned()).thenReturn(true);
 		OldBanRecord banRecord = getExampleBanRecord();
 		when(playerRecord.getActiveBan()).thenReturn(banRecord);
@@ -106,14 +106,14 @@ public class BannedPlayerListenerTest extends TestCase {
 		OldBanRecord banRecord = mock(OldBanRecord.class);
 		when(banRecord.getType()).thenReturn(OldBanRecord.Type.PERMANENT);
 		when(banRecord.getCreatedAt()).thenReturn(new Timestamp(System.currentTimeMillis()));
-		PlayerRecord playerRecord = getExamplePlayerRecord();
+		OldPlayerRecord playerRecord = getExamplePlayerRecord();
 		when(banRecord.getCreator()).thenReturn(playerRecord);
 		when(banRecord.getPlayer()).thenReturn(playerRecord);
 		return banRecord;
 	}
 
-	private PlayerRecord getExamplePlayerRecord() {
-		PlayerRecord playerRecord = mock(PlayerRecord.class);
+	private OldPlayerRecord getExamplePlayerRecord() {
+		OldPlayerRecord playerRecord = mock(OldPlayerRecord.class);
 		when(playerRecord.getName()).thenReturn("frank");
 		return playerRecord;
 	}

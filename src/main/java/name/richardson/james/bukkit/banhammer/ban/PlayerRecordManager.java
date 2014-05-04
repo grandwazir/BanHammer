@@ -28,40 +28,40 @@ public class PlayerRecordManager {
 	}
 
 	public int count() {
-		return this.database.find(PlayerRecord.class).findRowCount();
+		return this.database.find(OldPlayerRecord.class).findRowCount();
 	}
 
-	public PlayerRecord create(String playerName) {
-		PlayerRecord record = this.find(playerName);
+	public OldPlayerRecord create(String playerName) {
+		OldPlayerRecord record = this.find(playerName);
 		if (record != null) return record;
-		logger.log(Level.FINER, "Creating PlayerRecord for " + playerName);
-		record = new PlayerRecord();
+		logger.log(Level.FINER, "Creating OldPlayerRecord for " + playerName);
+		record = new OldPlayerRecord();
 		record.setName(playerName);
 		this.save(record);
 		return this.find(playerName);
 	}
 
-	public void delete(PlayerRecord record) {
+	public void delete(OldPlayerRecord record) {
 		this.delete(Arrays.asList(record));
 	}
 
-	public void delete(List<PlayerRecord> records) {
+	public void delete(List<OldPlayerRecord> records) {
 		logger.log(Level.FINER, "Deleting PlayerRecords: " + records);
 		this.database.delete(records);
 	}
 
 	public boolean exists(String playerName) {
-		logger.log(Level.FINER, "Checking to see if PlayerRecord exists for " + playerName);
+		logger.log(Level.FINER, "Checking to see if OldPlayerRecord exists for " + playerName);
 		return find(playerName) != null;
 	}
 
-	public PlayerRecord find(String playerName) {
-		logger.log(Level.FINER, "Finding PlayerRecord for " + playerName);
+	public OldPlayerRecord find(String playerName) {
+		logger.log(Level.FINER, "Finding OldPlayerRecord for " + playerName);
 		try {
-			return database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
+			return database.find(OldPlayerRecord.class).where().ieq("name", playerName).findUnique();
 		} catch (PersistenceException e) {
 			this.removeDuplicates(playerName);
-			return database.find(PlayerRecord.class).where().ieq("name", playerName).findUnique();
+			return database.find(OldPlayerRecord.class).where().ieq("name", playerName).findUnique();
 		}
 	}
 
@@ -69,42 +69,42 @@ public class PlayerRecordManager {
 		return new BannedPlayerBuilder();
 	}
 
-	public List<PlayerRecord> list(String playerName, PlayerStatus status) {
+	public List<OldPlayerRecord> list(String playerName, PlayerStatus status) {
 		switch (status) {
 			case BANNED: {
-				List<PlayerRecord> records = database.find(PlayerRecord.class).where().istartsWith("name", playerName).findList();
-				ListIterator<PlayerRecord> i = records.listIterator();
+				List<OldPlayerRecord> records = database.find(OldPlayerRecord.class).where().istartsWith("name", playerName).findList();
+				ListIterator<OldPlayerRecord> i = records.listIterator();
 				while (i.hasNext()) {
-					PlayerRecord record = i.next();
+					OldPlayerRecord record = i.next();
 					if (record.isBanned()) continue;
 					i.remove();
 				}
 				return records;
 			} case CREATOR: {
-				List<PlayerRecord> records = database.find(PlayerRecord.class).where().istartsWith("name", playerName).findList();
-				ListIterator<PlayerRecord> i = records.listIterator();
+				List<OldPlayerRecord> records = database.find(OldPlayerRecord.class).where().istartsWith("name", playerName).findList();
+				ListIterator<OldPlayerRecord> i = records.listIterator();
 				while (i.hasNext()) {
-					PlayerRecord record = i.next();
+					OldPlayerRecord record = i.next();
 					if (record.getCreatedBans().size() > 0) continue;
 					i.remove();
 				}
 				return records;
 			} default: {
-				return database.find(PlayerRecord.class).where().istartsWith("name", playerName).findList();
+				return database.find(OldPlayerRecord.class).where().istartsWith("name", playerName).findList();
 			}
 		}
 	}
 
-	public List<PlayerRecord> list() {
+	public List<OldPlayerRecord> list() {
 		logger.log(Level.FINER, "Returning list containing all PlayerRecords.");
-		return database.find(PlayerRecord.class).findList();
+		return database.find(OldPlayerRecord.class).findList();
 	}
 
-	public void save(PlayerRecord record) {
+	public void save(OldPlayerRecord record) {
 		this.save(Arrays.asList(record));
 	}
 
-	public void save(List<PlayerRecord> records) {
+	public void save(List<OldPlayerRecord> records) {
 		logger.log(Level.FINER, "Saving PlayerRecords: " + records);
 		this.database.save(records);
 	}
@@ -124,8 +124,8 @@ public class PlayerRecordManager {
 	 */
 	private void removeDuplicates(String playerName) {
 		logger.log(Level.WARNING, "duplicate-record-found");
-		final List<PlayerRecord> records = database.find(PlayerRecord.class).where().ieq("name", playerName).findList();
-		for (final PlayerRecord record : records) {
+		final List<OldPlayerRecord> records = database.find(OldPlayerRecord.class).where().ieq("name", playerName).findList();
+		for (final OldPlayerRecord record : records) {
 			if ((record.getCreatedBans().size() == 0) && (record.getBans().size() == 0)) {
 				this.delete(record);
 			}

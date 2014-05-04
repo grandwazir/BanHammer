@@ -29,7 +29,7 @@ import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositio
 
 import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.ban.OldPlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
@@ -69,7 +69,7 @@ public class UndoCommand extends AbstractCommand {
 		Collection<String> messages = new ArrayList<String>();
 		Collection<String> players = this.players.getStrings();
 		for (String playerName : players) {
-			PlayerRecord record = playerRecordManager.find(playerName);
+			OldPlayerRecord record = playerRecordManager.find(playerName);
 			OldBanRecord ban = (record == null || record.getActiveBan() == null) ? null : record.getActiveBan();
 			if (record == null) {
 				messages.add(PLAYER_NEVER_BEEN_BANNED.asWarningMessage(playerName));

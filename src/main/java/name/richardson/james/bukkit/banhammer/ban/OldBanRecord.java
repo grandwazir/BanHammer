@@ -84,9 +84,9 @@ public class OldBanRecord {
 	/**
 	 * The creator.
 	 */
-	@ManyToOne(targetEntity = PlayerRecord.class, fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
+	@ManyToOne(targetEntity = OldPlayerRecord.class, fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
 	@PrimaryKeyJoinColumn(name = "creatorId", referencedColumnName = "id")
-	private PlayerRecord creator;
+	private OldPlayerRecord creator;
 	/**
 	 * The expires at.
 	 */
@@ -100,9 +100,9 @@ public class OldBanRecord {
 	/**
 	 * The player.
 	 */
-	@ManyToOne(targetEntity = PlayerRecord.class, fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
+	@ManyToOne(targetEntity = OldPlayerRecord.class, fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
 	@PrimaryKeyJoinColumn(name = "playerId", referencedColumnName = "id")
-	private PlayerRecord player;
+	private OldPlayerRecord player;
 	/**
 	 * The reason.
 	 */
@@ -128,8 +128,8 @@ public class OldBanRecord {
 	 *
 	 * @return the creator
 	 */
-	@ManyToOne(targetEntity = PlayerRecord.class)
-	public PlayerRecord getCreator() {
+	@ManyToOne(targetEntity = OldPlayerRecord.class)
+	public OldPlayerRecord getCreator() {
 		return this.creator;
 	}
 
@@ -160,7 +160,7 @@ public class OldBanRecord {
 	 *
 	 * @return the player
 	 */
-	public PlayerRecord getPlayer() {
+	public OldPlayerRecord getPlayer() {
 		return this.player;
 	}
 
@@ -206,7 +206,7 @@ public class OldBanRecord {
 	 *
 	 * @param creator the new creator
 	 */
-	public void setCreator(final PlayerRecord creator) {
+	public void setCreator(final OldPlayerRecord creator) {
 		this.creator = creator;
 	}
 
@@ -233,7 +233,7 @@ public class OldBanRecord {
 	 *
 	 * @param player the new player
 	 */
-	public void setPlayer(final PlayerRecord player) {
+	public void setPlayer(final OldPlayerRecord player) {
 		this.player = player;
 	}
 
