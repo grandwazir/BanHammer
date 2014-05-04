@@ -6,6 +6,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.UUID;
 
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.validation.NotNull;
@@ -96,6 +97,15 @@ public class BanRecord extends Record {
 
 	private boolean hasExpired() {
 		return this.getType() == Type.TEMPORARY && ((this.expiresAt.getTime() - System.currentTimeMillis()) < 0);
+	}
+
+	private static class Builder {
+
+
+		public Builder(String playerName, UUID creatorUUID, String reason) {
+
+		}
+
 	}
 
 
