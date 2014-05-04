@@ -8,6 +8,8 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import com.avaje.ebean.EbeanServer;
 import org.apache.commons.lang.Validate;
 
+import name.richardson.james.bukkit.banhammer.utilities.UUIDFetcher;
+
 public class PlayerRecord extends Record {
 
 	private static final Map<String, UUID> UUIDS = new ConcurrentSkipListMap<String, UUID>(String.CASE_INSENSITIVE_ORDER);

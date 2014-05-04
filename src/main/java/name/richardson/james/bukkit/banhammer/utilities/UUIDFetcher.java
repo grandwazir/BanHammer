@@ -1,4 +1,4 @@
-package name.richardson.james.bukkit.banhammer.ban;
+package name.richardson.james.bukkit.banhammer.utilities;
 
 import java.io.InputStreamReader;
 import java.io.OutputStream;
