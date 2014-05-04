@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 import com.avaje.ebean.EbeanServer;
+import com.avaje.ebean.validation.NotNull;
 import org.apache.commons.lang.Validate;
 
 import name.richardson.james.bukkit.banhammer.utilities.NameFetcher;
@@ -20,6 +21,9 @@ public class PlayerRecord extends Record {
 
 	@OneToMany(mappedBy = "creator", targetEntity = BanRecord.class)
 	private List<BanRecord> createdBans;
+
+	@NotNull
+	private String lastKnownName;
 
 	private UUID uuid;
 
@@ -70,27 +74,12 @@ public class PlayerRecord extends Record {
 	/**
 	 * Find a PlayerRecord by providing the name of a player.
 	 *
-	 * This method is potentially blocking.
-	 *
 	 * @param database the database to use.
 	 * @param playerName the name to search for.
 	 * @return a record or null if no record exists.
 	 */
 	public static PlayerRecord find(EbeanServer database, String playerName) {
-		UUID uuid = getUUIDOf(playerName);
-		return find(database, uuid);
-	}
-
-	private static UUID getUUIDOf(final String playerName) {
-		if (!UUIDS.containsKey(playerName)) {
-			try {
-				UUID uuid = UUIDFetcher.getUUIDOf(playerName);
-				UUIDS.put(playerName, uuid);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return UUIDS.get(playerName);
+		return database.find(PlayerRecord.class).where().eq("lastKnownName", playerName).findUnique();
 	}
 
 	private static String getNameOf(final UUID uuid) {
@@ -110,6 +99,18 @@ public class PlayerRecord extends Record {
 			}
 		}
 		return playerName;
+	}
+
+	private static UUID getUUIDOf(final String playerName) {
+		if (!UUIDS.containsKey(playerName)) {
+			try {
+				UUID uuid = UUIDFetcher.getUUIDOf(playerName);
+				UUIDS.put(playerName, uuid);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return UUIDS.get(playerName);
 	}
 
 	/**
@@ -143,6 +144,14 @@ public class PlayerRecord extends Record {
 		return (createdBans == null) ? Collections.<BanRecord>emptyList() : createdBans;
 	}
 
+	public String getLastKnownName() {
+		return lastKnownName;
+	}
+
+	public String getCurrentName() {
+		return PlayerRecord.getNameOf(uuid);
+	}
+
 	public UUID getUuid() {
 		return uuid;
 	}
@@ -155,12 +164,12 @@ public class PlayerRecord extends Record {
 		this.createdBans = createdBans;
 	}
 
-	public void setUuid(final UUID uuid) {
-		this.uuid = uuid;
+	public void setLastKnownName(final String lastKnownName) {
+		this.lastKnownName = lastKnownName;
 	}
 
-	public String getName() {
-		return PlayerRecord.getNameOf(uuid);
+	public void setUuid(final UUID uuid) {
+		this.uuid = uuid;
 	}
 
 }

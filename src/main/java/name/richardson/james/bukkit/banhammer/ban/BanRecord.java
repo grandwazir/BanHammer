@@ -1,9 +1,11 @@
 package name.richardson.james.bukkit.banhammer.ban;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.List;
 
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.validation.NotNull;
