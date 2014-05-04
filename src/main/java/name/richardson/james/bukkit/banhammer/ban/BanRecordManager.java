@@ -29,15 +29,15 @@ public class BanRecordManager {
 		return true;
 	}
 
-	public List<? extends BanRecord> list() {
-		return this.database.find(OldBanRecord.class).findList();
+	public List<BanRecord> list() {
+		return this.database.find(BanRecord.class).findList();
 	}
 
-	public List<? extends BanRecord> list(int limit) {
-		return this.database.find(OldBanRecord.class).setMaxRows(limit).orderBy().desc("createdAt").findList();
+	public List<BanRecord> list(int limit) {
+		return this.database.find(BanRecord.class).setMaxRows(limit).orderBy().desc("createdAt").findList();
 	}
 
 	public int count() {
-		return this.database.find(OldBanRecord.class).findRowCount();
+		return this.database.find(BanRecord.class).findRowCount();
 	}
 }

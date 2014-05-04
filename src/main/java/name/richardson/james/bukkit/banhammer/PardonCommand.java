@@ -32,7 +32,6 @@ import name.richardson.james.bukkit.utilities.command.argument.SilentSwitchArgum
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
-import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
 
@@ -81,7 +80,7 @@ public class PardonCommand extends AbstractCommand {
 			if (record == null) {
 				messages.add(PLAYER_NOT_BANNED.asInfoMessage(playerName));
 			} else if (hasPermission(sender, record.getCreator().getName())) {
-				record.setState(OldBanRecord.State.PARDONED);
+				record.setState(BanRecord.State.PARDONED);
 				banRecordManager.save(record);
 				if (silent) messages.add(PARDON_PLAYER.asInfoMessage(playerName));
 				BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(record, sender, silent);
