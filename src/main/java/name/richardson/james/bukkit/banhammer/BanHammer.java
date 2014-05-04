@@ -37,6 +37,7 @@ import name.richardson.james.bukkit.utilities.persistence.configuration.Database
 import name.richardson.james.bukkit.utilities.persistence.configuration.SimpleDatabaseConfiguration;
 import name.richardson.james.bukkit.utilities.persistence.database.DatabaseLoader;
 import name.richardson.james.bukkit.utilities.persistence.database.DatabaseLoaderFactory;
+import name.richardson.james.bukkit.utilities.persistence.database.DatabaseMigrator;
 import name.richardson.james.bukkit.utilities.updater.BukkitDevPluginUpdater;
 import name.richardson.james.bukkit.utilities.updater.PluginUpdater;
 
@@ -79,8 +80,8 @@ public final class BanHammer extends JavaPlugin {
 	@Override
 	public List<Class<?>> getDatabaseClasses() {
 		final List<Class<?>> classes = new LinkedList<Class<?>>();
-		classes.add(OldBanRecord.class);
-		classes.add(OldPlayerRecord.class);
+		classes.add(NewBanRecord.class);
+		classes.add(NewBanRecord.class);
 		return classes;
 	}
 
@@ -141,16 +142,26 @@ public final class BanHammer extends JavaPlugin {
 
 	private void loadDatabase()
 	throws IOException {
-		ServerConfig serverConfig = new ServerConfig();
-		getServer().configureDbConfig(serverConfig);
-		serverConfig.setClasses(Arrays.asList(OldBanRecord.class, OldPlayerRecord.class));
-		serverConfig.setName(this.getName());
+		// Load old database
+		ServerConfig oldServerConfig = new ServerConfig();
+		getServer().configureDbConfig(oldServerConfig);
+		oldServerConfig.setClasses(Arrays.asList(OldBanRecord.class, OldPlayerRecord.class));
+		oldServerConfig.setName(this.getName());
+		// Load new database
+		ServerConfig newServerConfig = new ServerConfig();
+		getServer().configureDbConfig(newServerConfig);
+		newServerConfig.setClasses(Arrays.asList(NewBanRecord.class, NewPlayerRecord.class));
+		newServerConfig.setName(this.getName());
 		final File file = new File(this.getDataFolder().getPath() + File.separatorChar + DATABASE_CONFIG_NAME);
 		final InputStream defaults = this.getResource(DATABASE_CONFIG_NAME);
-		final DatabaseConfiguration configuration = new SimpleDatabaseConfiguration(file, defaults, serverConfig, this.getName());
-		final DatabaseLoader loader = DatabaseLoaderFactory.getDatabaseLoader(configuration);
-		loader.initalise();
-		this.database = loader.getEbeanServer();
+		// Old configuration and new configuration
+		final DatabaseConfiguration oldConfiguration = new SimpleDatabaseConfiguration(file, defaults, oldServerConfig, this.getName());
+		final DatabaseConfiguration newConfiguration = new SimpleDatabaseConfiguration(file, defaults, newServerConfig, this.getName());
+		final DatabaseLoader oldLoader = DatabaseLoaderFactory.getDatabaseLoader(oldConfiguration);
+		final DatabaseLoader newLoader = DatabaseLoaderFactory.getDatabaseLoader(newConfiguration);
+		final DatabaseMigrator migrator = new UUIDDatabaseMigrator(oldLoader, newLoader);
+		migrator.initalise();
+		this.database = migrator.getNewDatabaseLoader().getEbeanServer();
 	}
 
 	private void loadManagers() {

@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,6 +32,7 @@ public class PlayerRecordManager {
 		return this.database.find(OldPlayerRecord.class).findRowCount();
 	}
 
+	@Deprecated
 	public PlayerRecord create(String playerName) {
 		PlayerRecord record = this.find(playerName);
 		if (record != null) return record;
@@ -38,6 +40,25 @@ public class PlayerRecordManager {
 		record = new OldPlayerRecord();
 		this.save(record);
 		return this.find(playerName);
+	}
+
+	public PlayerRecord create(UUID uuid) {
+		PlayerRecord record = this.find(uuid);
+		if (record != null) return record;
+		logger.log(Level.FINER, "Creating PlayerRecord for " + uuid.toString());
+		record = new NewPlayerRecord();
+		record.setUUID(uuid);
+		this.save(record);
+		return this.find(uuid);
+	}
+
+	private PlayerRecord find(final UUID uuid) {
+		logger.log(Level.FINER, "Finding PlayerRecord for " + uuid.toString());
+		try {
+			return database.find(NewPlayerRecord.class).where().ieq("uuid", uuid.toString()).findUnique();
+		} catch (PersistenceException e) {
+			return database.find(NewPlayerRecord.class).where().ieq("name", uuid.toString()).findUnique();
+		}
 	}
 
 	public void delete(PlayerRecord record) {
@@ -150,8 +171,14 @@ public class PlayerRecordManager {
 			return manager.save(record);
 		}
 
+		@Deprecated
 		public BannedPlayerBuilder setCreator(String playerName) {
 			this.record.setCreator(create(playerName));
+			return this;
+		}
+
+		public BannedPlayerBuilder setCreator(UUID uuid) {
+			this.record.setCreator(create(uuid));
 			return this;
 		}
 
@@ -162,6 +189,11 @@ public class PlayerRecordManager {
 			return this;
 		}
 
+		public BannedPlayerBuilder setCreatedAt(Timestamp timestamp) {
+			this.record.setCreatedAt(timestamp);
+			return this;
+		}
+
 		public BannedPlayerBuilder setExpiryTime(long time) {
 			long now = System.currentTimeMillis();
 			this.record.setCreatedAt(new Timestamp(now));
@@ -169,8 +201,14 @@ public class PlayerRecordManager {
 			return this;
 		}
 
+		@Deprecated
 		public BannedPlayerBuilder setPlayer(String playerName) {
 			this.record.setPlayer(create(playerName));
+			return this;
+		}
+
+		public BannedPlayerBuilder setPlayer(UUID uuid) {
+			this.record.setPlayer(create(uuid));
 			return this;
 		}
 
