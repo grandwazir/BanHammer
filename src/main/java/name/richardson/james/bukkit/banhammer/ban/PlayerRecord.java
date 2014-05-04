@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import com.avaje.ebean.EbeanServer;
 import org.apache.commons.lang.Validate;
 
+import name.richardson.james.bukkit.banhammer.utilities.NameFetcher;
 import name.richardson.james.bukkit.banhammer.utilities.UUIDFetcher;
 
 public class PlayerRecord extends Record {
@@ -92,6 +93,25 @@ public class PlayerRecord extends Record {
 		return UUIDS.get(playerName);
 	}
 
+	private static String getNameOf(final UUID uuid) {
+		if (!UUIDS.containsValue(uuid)) {
+			try {
+				String playerName = NameFetcher.getNameOf(uuid);
+				UUIDS.put(playerName, uuid);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		String playerName = null;
+		for (Map.Entry<String, UUID> entry : UUIDS.entrySet()) {
+			if (entry.getValue() == uuid) {
+				playerName = entry.getKey();
+				break;
+			}
+		}
+		return playerName;
+	}
+
 	/**
 	 * Save a PlayerRecord
 	 *
@@ -137,6 +157,10 @@ public class PlayerRecord extends Record {
 
 	public void setUuid(final UUID uuid) {
 		this.uuid = uuid;
+	}
+
+	public String getName() {
+		return PlayerRecord.getNameOf(uuid);
 	}
 
 }
