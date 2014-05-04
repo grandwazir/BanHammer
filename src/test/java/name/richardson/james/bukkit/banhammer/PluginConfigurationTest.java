@@ -10,8 +10,6 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import name.richardson.james.bukkit.banhammer.commands.PluginConfiguration;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
