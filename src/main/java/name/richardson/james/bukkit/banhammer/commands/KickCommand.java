@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License along with
  * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.bukkit.banhammer;
+package name.richardson.james.bukkit.banhammer.commands;
 
 import java.util.Set;
 
@@ -25,6 +25,8 @@ import org.bukkit.permissions.Permissible;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.argument.*;
+
+import name.richardson.james.bukkit.banhammer.BanHammer;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
 

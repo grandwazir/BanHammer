@@ -2,8 +2,6 @@ package name.richardson.james.bukkit.banhammer;
 
 import java.io.InputStream;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -11,6 +9,8 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+
+import name.richardson.james.bukkit.banhammer.commands.PluginConfiguration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

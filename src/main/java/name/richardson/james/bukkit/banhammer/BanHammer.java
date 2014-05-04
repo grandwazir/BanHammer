@@ -49,6 +49,7 @@ import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.event.AliasBannedPlayerListener;
 import name.richardson.james.bukkit.banhammer.ban.event.NormalBannedPlayerListener;
 import name.richardson.james.bukkit.banhammer.ban.event.PlayerNotifier;
+import name.richardson.james.bukkit.banhammer.commands.*;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.PLUGIN_UNABLE_TO_HOOK_ALIAS;
 
