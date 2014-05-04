@@ -40,8 +40,18 @@ public class PlayerRecord extends Record {
 	 * @return a PlayerRecord for this player.
 	 */
 	public static PlayerRecord create(EbeanServer database, String playerName) {
-		// TODO: Requires implementation of UUIDFetcher.
-		return null;
+		UUID uuid = getUUIDOf(playerName);
+		return create(database, uuid);
+	}
+
+	private static UUID getUUIDOf(final String playerName) {
+		UUID uuid = null;
+		try {
+			uuid = UUIDFetcher.getUUIDOf(playerName);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return uuid;
 	}
 
 	/**
@@ -65,8 +75,8 @@ public class PlayerRecord extends Record {
 	 * @return a record or null if no record exists.
 	 */
 	public static PlayerRecord find(EbeanServer database, String playerName) {
-		// TODO: Requires implementation of UUIDFetcher.
-		return null;
+		UUID uuid = getUUIDOf(playerName);
+		return find(database, uuid);
 	}
 
 	/**
@@ -85,7 +95,7 @@ public class PlayerRecord extends Record {
 	 * Save a collection of PlayerRecords
 	 *
 	 * @param database the database to use.
-	 * @param record the records to save.
+	 * @param records the records to save.
 	 * @return the number of records saved successfully.
 	 */
 	public static int save(EbeanServer database, Collection<PlayerRecord> records) {
