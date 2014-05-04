@@ -3,11 +3,14 @@ package name.richardson.james.bukkit.banhammer.ban;
 import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import com.avaje.ebean.EbeanServer;
 import org.apache.commons.lang.Validate;
 
 public class PlayerRecord extends Record {
+
+	private static final Map<String, UUID> UUIDS = new ConcurrentSkipListMap<String, UUID>(String.CASE_INSENSITIVE_ORDER);
 
 	@OneToMany(mappedBy = "player", targetEntity = BanRecord.class, cascade = { CascadeType.REMOVE })
 	private List<BanRecord> bans;
@@ -76,13 +79,15 @@ public class PlayerRecord extends Record {
 	}
 
 	private static UUID getUUIDOf(final String playerName) {
-		UUID uuid = null;
-		try {
-			uuid = UUIDFetcher.getUUIDOf(playerName);
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (!UUIDS.containsKey(playerName)) {
+			try {
+				UUID uuid = UUIDFetcher.getUUIDOf(playerName);
+				UUIDS.put(playerName, uuid);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
-		return uuid;
+		return UUIDS.get(playerName);
 	}
 
 	/**
