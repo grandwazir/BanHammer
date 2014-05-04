@@ -56,4 +56,8 @@ public class BanRecordBuilder {
 		if (time != 0) this.record.setExpiresAt(new Timestamp(now + time));
 	}
 
+	public void save() {
+		this.database.save(record);
+	}
+
 }
