@@ -20,7 +20,7 @@ package name.richardson.james.bukkit.banhammer.ban.event;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.HandlerList;
 
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 
 /**
  * This event is fired every time a player is pardoned through BanHammer.
@@ -34,7 +34,7 @@ public class BanHammerPlayerPardonedEvent extends BanHammerPlayerEvent {
 		return BanHammerPlayerPardonedEvent.handlers;
 	}
 
-	public BanHammerPlayerPardonedEvent(final BanRecord record, CommandSender sender,  final boolean silent) {
+	public BanHammerPlayerPardonedEvent(final OldBanRecord record, CommandSender sender,  final boolean silent) {
 		super(record, silent);
 		this.sender = sender;
 	}

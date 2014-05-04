@@ -7,24 +7,24 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 
-public class BanRecordTest extends TestCase {
+public class OldBanRecordTest extends TestCase {
 
-	private BanRecord record;
+	private OldBanRecord record;
 
 	@Test
 	public void testToString()
 	throws Exception {
-		Assert.assertTrue("to String is not overriden.", record.toString().contains(BanRecord.class.getSimpleName()));
+		Assert.assertTrue("to String is not overriden.", record.toString().contains(OldBanRecord.class.getSimpleName()));
 	}
 
 	@Test
 	public void testBanHasExpired() {
-		record.setState(BanRecord.State.NORMAL);
+		record.setState(OldBanRecord.State.NORMAL);
 		record.setExpiresAt(new Timestamp(System.currentTimeMillis() - 10000));
-		Assert.assertEquals("Ban should have expired by now.", BanRecord.State.EXPIRED, record.getState());
+		Assert.assertEquals("Ban should have expired by now.", OldBanRecord.State.EXPIRED, record.getState());
 		record.setExpiresAt(new Timestamp(System.currentTimeMillis() + 10000));
-		record.setState(BanRecord.State.NORMAL);
-		Assert.assertEquals("Ban should not have expired.", BanRecord.State.NORMAL, record.getState());
+		record.setState(OldBanRecord.State.NORMAL);
+		Assert.assertEquals("Ban should not have expired.", OldBanRecord.State.NORMAL, record.getState());
 		System.out.print(record.toString());
 	}
 
@@ -32,19 +32,19 @@ public class BanRecordTest extends TestCase {
 	public void testGetTemporaryType()
 	throws Exception {
 		record.setExpiresAt(new Timestamp(System.currentTimeMillis()));
-		Assert.assertEquals("When the expiry time greater than 0, the ban should be temporary.", BanRecord.Type.TEMPORARY, record.getType());
+		Assert.assertEquals("When the expiry time greater than 0, the ban should be temporary.", OldBanRecord.Type.TEMPORARY, record.getType());
 	}
 
 	@Test
 	public void testGetPermanentType()
 	throws Exception {
-		Assert.assertEquals("When the expiry time is null, the ban should be permanent.", BanRecord.Type.PERMANENT, record.getType());
+		Assert.assertEquals("When the expiry time is null, the ban should be permanent.", OldBanRecord.Type.PERMANENT, record.getType());
 	}
 
 	@Test
 	public void testSetState()
 	throws Exception {
-		BanRecord.State state = BanRecord.State.PARDONED;
+		OldBanRecord.State state = OldBanRecord.State.PARDONED;
 		record.setState(state);
 		Assert.assertEquals("State is inconsistent!", state, record.getState());
 	}
@@ -100,7 +100,7 @@ public class BanRecordTest extends TestCase {
 	@Before
 	public void setUp()
 	throws Exception {
-		record = new BanRecord();
+		record = new OldBanRecord();
 	}
 
 }

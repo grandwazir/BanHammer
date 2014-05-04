@@ -22,8 +22,8 @@ public class PlayerRecordTest extends TestCase {
 	@Test
 	public void testIsBannedFalse()
 	throws Exception {
-		BanRecord ban = mock(BanRecord.class);
-		when(ban.getState()).thenReturn(BanRecord.State.EXPIRED);
+		OldBanRecord ban = mock(OldBanRecord.class);
+		when(ban.getState()).thenReturn(OldBanRecord.State.EXPIRED);
 		record.setBans(Arrays.asList(ban));
 		Assert.assertFalse("Player should not be banned!", record.isBanned());
 		verify(ban, atLeastOnce()).getState();
@@ -32,8 +32,8 @@ public class PlayerRecordTest extends TestCase {
 	@Test
 	public void testIsBannedTrue()
 	throws Exception {
-		BanRecord ban = mock(BanRecord.class);
-		when(ban.getState()).thenReturn(BanRecord.State.NORMAL);
+		OldBanRecord ban = mock(OldBanRecord.class);
+		when(ban.getState()).thenReturn(OldBanRecord.State.NORMAL);
 		record.setBans(Arrays.asList(ban));
 		Assert.assertTrue("Player should be banned!", record.isBanned());
 		verify(ban, atLeastOnce()).getState();
@@ -59,7 +59,7 @@ public class PlayerRecordTest extends TestCase {
 	@Test
 	public void testSetCreatedBans()
 	throws Exception {
-		BanRecord ban = mock(BanRecord.class);
+		OldBanRecord ban = mock(OldBanRecord.class);
 		record.setCreatedBans(Arrays.asList(ban));
 		Assert.assertSame("Set bans are not consistent!", ban, record.getCreatedBans().get(0));
 	}
@@ -67,7 +67,7 @@ public class PlayerRecordTest extends TestCase {
 	@Test
 	public void testSetBans()
 	throws Exception {
-		BanRecord ban = mock(BanRecord.class);
+		OldBanRecord ban = mock(OldBanRecord.class);
 		record.setBans(Arrays.asList(ban));
 		Assert.assertSame("Set bans are not consistent!", ban, record.getBans().get(0));
 	}
@@ -75,10 +75,10 @@ public class PlayerRecordTest extends TestCase {
 	@Test
 	public void testGetActiveBan()
 	throws Exception {
-		BanRecord activeBan = mock(BanRecord.class);
-		when(activeBan.getState()).thenReturn(BanRecord.State.NORMAL);
-		BanRecord inactiveBan = mock(BanRecord.class);
-		when(inactiveBan.getState()).thenReturn(BanRecord.State.PARDONED);
+		OldBanRecord activeBan = mock(OldBanRecord.class);
+		when(activeBan.getState()).thenReturn(OldBanRecord.State.NORMAL);
+		OldBanRecord inactiveBan = mock(OldBanRecord.class);
+		when(inactiveBan.getState()).thenReturn(OldBanRecord.State.PARDONED);
 		record.setBans(Arrays.asList(activeBan, inactiveBan));
 		Assert.assertSame("Ban returned is not the active ban!", activeBan, record.getActiveBan());
 	}

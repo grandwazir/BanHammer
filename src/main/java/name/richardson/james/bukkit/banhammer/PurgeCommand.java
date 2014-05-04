@@ -28,7 +28,7 @@ import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositionalArgument;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
@@ -69,14 +69,14 @@ public class PurgeCommand extends AbstractCommand {
 	@Override
 	protected void execute() {
 		Collection<String> players = this.players.getStrings();
-		Collection<BanRecord> records = new ArrayList<BanRecord>();
+		Collection<OldBanRecord> records = new ArrayList<OldBanRecord>();
 		final CommandSender sender = getContext().getCommandSender();
 		boolean own = sender.hasPermission(PERMISSION_OWN);
 		boolean others = sender.hasPermission(PERMISSION_OTHERS);
 		for (String playerName : players) {
 			PlayerRecord record = playerRecordManager.find(playerName);
 			if (record != null) {
-				for (BanRecord ban : record.getBans()) {
+				for (OldBanRecord ban : record.getBans()) {
 					boolean banCreatedBySender = ban.getCreator().getName().equalsIgnoreCase(sender.getName());
 					if (banCreatedBySender && !own) continue;
 					if (!banCreatedBySender && !others) continue;

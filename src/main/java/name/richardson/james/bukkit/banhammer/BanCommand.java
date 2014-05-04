@@ -27,7 +27,7 @@ import org.bukkit.plugin.PluginManager;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.argument.*;
 
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerBannedEvent;
 
@@ -67,7 +67,7 @@ public class BanCommand extends AbstractCommand {
 	public void execute() {
 		CommandSender sender = getContext().getCommandSender();
 		List<String> messages = new ArrayList<String>();
-		List<BanRecord> records = new ArrayList<BanRecord>();
+		List<OldBanRecord> records = new ArrayList<OldBanRecord>();
 		Collection<String> players = player.getStrings();
 		boolean silent = this.silent.isSet();
 		long time = this.time.getDuration();

@@ -17,7 +17,7 @@ import name.richardson.james.bukkit.utilities.formatters.time.TimeFormatter;
 import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 import name.richardson.james.bukkit.utilities.logging.PluginLoggerFactory;
 
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
@@ -54,7 +54,7 @@ public final class NormalBannedPlayerListener extends AbstractListener {
 		logger.log(Level.FINER, "Received " + event.getEventName());
 		final String playerName = event.getPlayer().getName();
 		if (this.isPlayerBanned(playerName)) {
-			final BanRecord record = this.playerRecordManager.find(playerName).getActiveBan();
+			final OldBanRecord record = this.playerRecordManager.find(playerName).getActiveBan();
 			final String message = this.getKickMessage(record);
 			event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message);
 		}
@@ -67,13 +67,13 @@ public final class NormalBannedPlayerListener extends AbstractListener {
 		logger.log(Level.FINER, "Received " + event.getEventName());
 		final String playerName = event.getName();
 		if (this.isPlayerBanned(playerName)) {
-			final BanRecord record = this.playerRecordManager.find(playerName).getActiveBan();
+			final OldBanRecord record = this.playerRecordManager.find(playerName).getActiveBan();
 			final String message = this.getKickMessage(record);
 			event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, message);
 		}
 	}
 
-	private String getKickMessage(BanRecord record) {
+	private String getKickMessage(OldBanRecord record) {
 		switch (record.getType()) {
 			case TEMPORARY: {
 				String time = timeFormatter.getHumanReadableDuration(record.getExpiresAt().getTime());

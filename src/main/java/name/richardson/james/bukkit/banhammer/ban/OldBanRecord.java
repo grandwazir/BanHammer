@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (c) 2012 James Richardson.
  *
- * BanRecord.java is part of BanHammer.
+ * OldBanRecord.java is part of BanHammer.
  *
  * BanHammer is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -36,10 +36,10 @@ import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanH
 
 @Entity()
 @Table(name = "banhammer_bans")
-public class BanRecord {
+public class OldBanRecord {
 
 	/**
-	 * The valid states of a BanRecord
+	 * The valid states of a OldBanRecord
 	 */
 	public enum State {
 
@@ -60,7 +60,7 @@ public class BanRecord {
 	}
 
 	/**
-	 * The valid types of a BanRecord
+	 * The valid types of a OldBanRecord
 	 */
 	public enum Type {
 
@@ -188,8 +188,8 @@ public class BanRecord {
 	 *
 	 * @return the type
 	 */
-	public BanRecord.Type getType() {
-		return (this.expiresAt == null) ? BanRecord.Type.PERMANENT : BanRecord.Type.TEMPORARY;
+	public OldBanRecord.Type getType() {
+		return (this.expiresAt == null) ? OldBanRecord.Type.PERMANENT : OldBanRecord.Type.TEMPORARY;
 	}
 
 	/**
@@ -257,7 +257,7 @@ public class BanRecord {
 
 	@Override
 	public String toString() {
-		return "BanRecord{" +
+		return "OldBanRecord{" +
 		"createdAt=" + createdAt +
 		", creator=" + creator +
 		", expiresAt=" + expiresAt +
@@ -279,12 +279,12 @@ public class BanRecord {
 	public static class BanRecordFormatter {
 
 		private static final DateFormat DATE_FORMAT = new SimpleDateFormat("d MMM yyyy HH:mm (z)");
-		private final BanRecord ban;
+		private final OldBanRecord ban;
 		private final TimeFormatter durationFormatter = new PreciseDurationTimeFormatter();
 		private final List<String> messages = new ArrayList<String>();
 		private final TimeFormatter timeFormatter = new ApproximateTimeFormatter();
 
-		private BanRecordFormatter(BanRecord ban) {
+		private BanRecordFormatter(OldBanRecord ban) {
 			this.ban = ban;
 			messages.add(getHeader());
 			messages.add(getReason());

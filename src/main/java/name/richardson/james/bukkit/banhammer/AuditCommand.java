@@ -30,7 +30,7 @@ import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositio
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 import name.richardson.james.bukkit.utilities.localisation.BukkitUtilities;
 
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
@@ -110,7 +110,7 @@ public final class AuditCommand extends AbstractCommand {
 
 	public final class AuditSummary {
 
-		private final List<BanRecord> bans;
+		private final List<OldBanRecord> bans;
 		private int expiredBans;
 		private int normalBans;
 		private int pardonedBans;
@@ -118,7 +118,7 @@ public final class AuditCommand extends AbstractCommand {
 		private int temporaryBans;
 		private int total;
 
-		private AuditSummary(List<BanRecord> bans, int total) {
+		private AuditSummary(List<OldBanRecord> bans, int total) {
 			this.bans = bans;
 			this.total = total;
 			this.update();
@@ -185,7 +185,7 @@ public final class AuditCommand extends AbstractCommand {
 		}
 
 		private void update() {
-			for (BanRecord record : bans) {
+			for (OldBanRecord record : bans) {
 				switch (record.getType()) {
 					case PERMANENT:
 						permanentBans++;

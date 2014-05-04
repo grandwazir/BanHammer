@@ -30,7 +30,7 @@ import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositionalArgument;
 import name.richardson.james.bukkit.utilities.command.argument.SilentSwitchArgument;
 
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
@@ -76,11 +76,11 @@ public class PardonCommand extends AbstractCommand {
 		final Collection<String> players = this.players.getStrings();
 		final CommandSender sender = getContext().getCommandSender();
 		for (String playerName : players) {
-			BanRecord record = (playerRecordManager.exists(playerName)) ? playerRecordManager.find(playerName).getActiveBan() : null;
+			OldBanRecord record = (playerRecordManager.exists(playerName)) ? playerRecordManager.find(playerName).getActiveBan() : null;
 			if (record == null) {
 				messages.add(PLAYER_NOT_BANNED.asInfoMessage(playerName));
 			} else if (hasPermission(sender, record.getCreator().getName())) {
-				record.setState(BanRecord.State.PARDONED);
+				record.setState(OldBanRecord.State.PARDONED);
 				banRecordManager.save(record);
 				if (silent) messages.add(PARDON_PLAYER.asInfoMessage(playerName));
 				BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(record, sender, silent);

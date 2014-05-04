@@ -27,7 +27,7 @@ import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositionalArgument;
 
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
@@ -70,7 +70,7 @@ public class UndoCommand extends AbstractCommand {
 		Collection<String> players = this.players.getStrings();
 		for (String playerName : players) {
 			PlayerRecord record = playerRecordManager.find(playerName);
-			BanRecord ban = (record == null || record.getActiveBan() == null) ? null : record.getActiveBan();
+			OldBanRecord ban = (record == null || record.getActiveBan() == null) ? null : record.getActiveBan();
 			if (record == null) {
 				messages.add(PLAYER_NEVER_BEEN_BANNED.asWarningMessage(playerName));
 			} else if (ban == null) {
@@ -87,12 +87,12 @@ public class UndoCommand extends AbstractCommand {
 		getContext().getCommandSender().sendMessage(messages.toArray(new String[messages.size()]));
 	}
 
-	private boolean hasPermission(CommandSender sender, final BanRecord ban) {
+	private boolean hasPermission(CommandSender sender, final OldBanRecord ban) {
 		final boolean isSenderTargetingSelf = (ban.getCreator().getName().equalsIgnoreCase(sender.getName()));
 		return sender.hasPermission(PERMISSION_OWN) && isSenderTargetingSelf || sender.hasPermission(PERMISSION_OTHERS) && !isSenderTargetingSelf;
 	}
 
-	private boolean withinTimeLimit(CommandSender sender, final BanRecord ban) {
+	private boolean withinTimeLimit(CommandSender sender, final OldBanRecord ban) {
 		return sender.hasPermission(PERMISSION_UNRESTRICTED) || (System.currentTimeMillis() - ban.getCreatedAt().getTime()) <= this.undoTime;
 	}
 

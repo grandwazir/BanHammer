@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import name.richardson.james.bukkit.alias.persistence.PlayerNameRecord;
 import name.richardson.james.bukkit.alias.persistence.PlayerNameRecordManager;
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
@@ -35,7 +35,7 @@ public class AliasBannedPlayerListenerTest extends TestCase {
 	@Test
 	public void testOnPlayerPardoned()
 	throws Exception {
-		BanRecord banRecord = mock(BanRecord.class, RETURNS_DEEP_STUBS);
+		OldBanRecord banRecord = mock(OldBanRecord.class, RETURNS_DEEP_STUBS);
 		when(banRecord.getPlayer().getName()).thenReturn("frank");
 		when(banRecord.getReason()).thenReturn("Alias of joe");
 		PlayerNameRecord playerNameRecord = mock(PlayerNameRecord.class);

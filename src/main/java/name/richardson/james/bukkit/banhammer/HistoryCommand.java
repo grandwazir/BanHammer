@@ -29,7 +29,7 @@ import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositio
 import name.richardson.james.bukkit.utilities.localisation.BaseLocalisation;
 import name.richardson.james.bukkit.utilities.localisation.BukkitUtilities;
 
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
@@ -72,8 +72,8 @@ public class HistoryCommand extends AbstractCommand {
 		} else {
 			PlayerRecord record = playerRecordManager.find(playerName);
 			if (record != null && !record.getBans().isEmpty()) {
-				for (BanRecord ban : record.getBans()) {
-					BanRecord.BanRecordFormatter formatter = ban.getFormatter();
+				for (OldBanRecord ban : record.getBans()) {
+					OldBanRecord.BanRecordFormatter formatter = ban.getFormatter();
 					messages.addAll(formatter.getMessages());
 				}
 			} else {

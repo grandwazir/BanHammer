@@ -42,7 +42,7 @@ import name.richardson.james.bukkit.utilities.updater.PluginUpdater;
 
 import name.richardson.james.bukkit.alias.Alias;
 import name.richardson.james.bukkit.alias.persistence.PlayerNameRecordManager;
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
@@ -82,7 +82,7 @@ public final class BanHammer extends JavaPlugin {
 	@Override
 	public List<Class<?>> getDatabaseClasses() {
 		final List<Class<?>> classes = new LinkedList<Class<?>>();
-		classes.add(BanRecord.class);
+		classes.add(OldBanRecord.class);
 		classes.add(PlayerRecord.class);
 		return classes;
 	}
@@ -146,7 +146,7 @@ public final class BanHammer extends JavaPlugin {
 	throws IOException {
 		ServerConfig serverConfig = new ServerConfig();
 		getServer().configureDbConfig(serverConfig);
-		serverConfig.setClasses(Arrays.asList(BanRecord.class, PlayerRecord.class));
+		serverConfig.setClasses(Arrays.asList(OldBanRecord.class, PlayerRecord.class));
 		serverConfig.setName(this.getName());
 		final File file = new File(this.getDataFolder().getPath() + File.separatorChar + DATABASE_CONFIG_NAME);
 		final InputStream defaults = this.getResource(DATABASE_CONFIG_NAME);

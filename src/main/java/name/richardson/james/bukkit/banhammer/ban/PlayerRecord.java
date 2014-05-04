@@ -28,11 +28,11 @@ import com.avaje.ebean.validation.NotNull;
 public class PlayerRecord {
 
 	/** The bans. */
-	@OneToMany(mappedBy = "player", targetEntity = BanRecord.class, cascade = { CascadeType.REMOVE })
-	private List<BanRecord> bans;
+	@OneToMany(mappedBy = "player", targetEntity = OldBanRecord.class, cascade = { CascadeType.REMOVE })
+	private List<OldBanRecord> bans;
 	/** The created bans. */
-	@OneToMany(mappedBy = "creator", targetEntity = BanRecord.class)
-	private List<BanRecord> createdBans;
+	@OneToMany(mappedBy = "creator", targetEntity = OldBanRecord.class)
+	private List<OldBanRecord> createdBans;
 	/** The id. */
 	@Id
 	private int id;
@@ -40,30 +40,30 @@ public class PlayerRecord {
 	@NotNull
 	private String name;
 
-	public BanRecord getActiveBan() {
-		for (final BanRecord ban : this.getBans()) {
-			if (ban.getState() == BanRecord.State.NORMAL) {
+	public OldBanRecord getActiveBan() {
+		for (final OldBanRecord ban : this.getBans()) {
+			if (ban.getState() == OldBanRecord.State.NORMAL) {
 				return ban;
 			}
 		}
 		return null;
 	}
 
-	@OneToMany(targetEntity = BanRecord.class, fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-	public List<BanRecord> getBans() {
-		return (this.bans == null) ? new LinkedList<BanRecord>() : this.bans;
+	@OneToMany(targetEntity = OldBanRecord.class, fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+	public List<OldBanRecord> getBans() {
+		return (this.bans == null) ? new LinkedList<OldBanRecord>() : this.bans;
 	}
 
-	public void setBans(final List<BanRecord> records) {
+	public void setBans(final List<OldBanRecord> records) {
 		this.bans = records;
 	}
 
-	@OneToMany(targetEntity = BanRecord.class, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-	public List<BanRecord> getCreatedBans() {
-		return (this.createdBans == null) ? new LinkedList<BanRecord>() : this.createdBans;
+	@OneToMany(targetEntity = OldBanRecord.class, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+	public List<OldBanRecord> getCreatedBans() {
+		return (this.createdBans == null) ? new LinkedList<OldBanRecord>() : this.createdBans;
 	}
 
-	public void setCreatedBans(final List<BanRecord> records) {
+	public void setCreatedBans(final List<OldBanRecord> records) {
 		this.createdBans = records;
 	}
 
@@ -84,8 +84,8 @@ public class PlayerRecord {
 	}
 
 	public boolean isBanned() {
-		for (final BanRecord ban : this.getBans()) {
-			if (ban.getState() == BanRecord.State.NORMAL) {
+		for (final OldBanRecord ban : this.getBans()) {
+			if (ban.getState() == OldBanRecord.State.NORMAL) {
 				return true;
 			}
 		}

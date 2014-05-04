@@ -15,29 +15,29 @@ public class BanRecordManager {
 		this.database = database;
 	}
 
-	public void delete(BanRecord ban) {
+	public void delete(OldBanRecord ban) {
 		this.delete(Arrays.asList(ban));
 	}
 
-	public int delete(Collection<BanRecord> bans) {
+	public int delete(Collection<OldBanRecord> bans) {
 		return this.database.delete(bans);
 	}
 
-	public boolean save(BanRecord record) {
+	public boolean save(OldBanRecord record) {
 		if (record.getPlayer().isBanned()) return false;
 		this.database.save(record);
 		return true;
 	}
 
-	public List<BanRecord> list() {
-		return this.database.find(BanRecord.class).findList();
+	public List<OldBanRecord> list() {
+		return this.database.find(OldBanRecord.class).findList();
 	}
 
-	public List<BanRecord> list(int limit) {
-		return this.database.find(BanRecord.class).setMaxRows(limit).orderBy().desc("createdAt").findList();
+	public List<OldBanRecord> list(int limit) {
+		return this.database.find(OldBanRecord.class).setMaxRows(limit).orderBy().desc("createdAt").findList();
 	}
 
 	public int count() {
-		return this.database.find(BanRecord.class).findRowCount();
+		return this.database.find(OldBanRecord.class).findRowCount();
 	}
 }

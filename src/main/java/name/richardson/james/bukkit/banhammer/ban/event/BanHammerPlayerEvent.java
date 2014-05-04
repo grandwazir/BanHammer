@@ -20,7 +20,7 @@ package name.richardson.james.bukkit.banhammer.ban.event;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 
 /**
  * A abstract event from which all other BanHammer events inherit.
@@ -39,7 +39,7 @@ public abstract class BanHammerPlayerEvent extends Event {
 	/**
 	 * The ban record.
 	 */
-	private final BanRecord record;
+	private final OldBanRecord record;
 	/**
 	 * If this event is silent.
 	 */
@@ -48,10 +48,10 @@ public abstract class BanHammerPlayerEvent extends Event {
 	/**
 	 * Instantiates a new BanHammer player event.
 	 *
-	 * @param record the BanRecord associated with this event
+	 * @param record the OldBanRecord associated with this event
 	 * @param silent if this event should be silent to players
 	 */
-	public BanHammerPlayerEvent(final BanRecord record, final boolean silent) {
+	public BanHammerPlayerEvent(final OldBanRecord record, final boolean silent) {
 		this.record = record;
 		this.playerName = record.getPlayer().getName();
 		this.silent = silent;
@@ -66,7 +66,7 @@ public abstract class BanHammerPlayerEvent extends Event {
 		return this.playerName;
 	}
 
-	public BanRecord getRecord() {
+	public OldBanRecord getRecord() {
 		return this.record;
 	}
 

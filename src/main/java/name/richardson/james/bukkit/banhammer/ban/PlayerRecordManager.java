@@ -134,15 +134,15 @@ public class PlayerRecordManager {
 
 	public class BannedPlayerBuilder {
 
-		private final BanRecord record;
+		private final OldBanRecord record;
 
 		private BannedPlayerBuilder() {
-			this.record = new BanRecord();
-			this.record.setState(BanRecord.State.NORMAL);
+			this.record = new OldBanRecord();
+			this.record.setState(OldBanRecord.State.NORMAL);
 			this.setExpiryTime(0);
 		}
 
-		public BanRecord getRecord() {
+		public OldBanRecord getRecord() {
 			return record;
 		}
 

@@ -14,7 +14,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
@@ -73,7 +73,7 @@ public class BannedPlayerListenerTest extends TestCase {
 		Player player = mock(Player.class);
 		PlayerRecord playerRecord = getExamplePlayerRecord();
 		when(playerRecord.isBanned()).thenReturn(true);
-		BanRecord banRecord = getExampleBanRecord();
+		OldBanRecord banRecord = getExampleBanRecord();
 		when(playerRecord.getActiveBan()).thenReturn(banRecord);
 		when(playerRecordManager.exists(anyString())).thenReturn(true);
 		when(playerRecordManager.find(anyString())).thenReturn(playerRecord);
@@ -102,9 +102,9 @@ public class BannedPlayerListenerTest extends TestCase {
 		Assert.assertEquals("Player should be allowed to login!", asyncPlayerPreLoginEvent.getLoginResult(), AsyncPlayerPreLoginEvent.Result.ALLOWED);
 	}
 
-	private BanRecord getExampleBanRecord() {
-		BanRecord banRecord = mock(BanRecord.class);
-		when(banRecord.getType()).thenReturn(BanRecord.Type.PERMANENT);
+	private OldBanRecord getExampleBanRecord() {
+		OldBanRecord banRecord = mock(OldBanRecord.class);
+		when(banRecord.getType()).thenReturn(OldBanRecord.Type.PERMANENT);
 		when(banRecord.getCreatedAt()).thenReturn(new Timestamp(System.currentTimeMillis()));
 		PlayerRecord playerRecord = getExamplePlayerRecord();
 		when(banRecord.getCreator()).thenReturn(playerRecord);
