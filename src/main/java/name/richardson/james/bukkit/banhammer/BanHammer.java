@@ -169,7 +169,7 @@ public final class BanHammer extends JavaPlugin {
 		command = new BanCommand(this.getServer(), this.getServer().getPluginManager(), getPlayerRecordManager(), configuration.getBanLimits(), configuration.getImmunePlayers());
 		commands.add(command);
 		getCommand("ban").setExecutor(new FallthroughCommandInvoker(this, this.getServer().getScheduler(), command));
-		command = new CheckCommand(getPlayerRecordManager());
+		command = new CheckCommand(getDatabase(), getServer());
 		commands.add(command);
 		command = new HistoryCommand(getPlayerRecordManager());
 		commands.add(command);

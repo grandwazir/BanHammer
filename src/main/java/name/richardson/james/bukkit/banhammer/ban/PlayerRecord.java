@@ -14,6 +14,12 @@ import name.richardson.james.bukkit.banhammer.utilities.UUIDFetcher;
 
 public class PlayerRecord extends Record {
 
+	public enum PlayerStatus {
+		ANY,
+		BANNED,
+		CREATOR
+	}
+
 	private static final Map<String, UUID> UUIDS = new ConcurrentSkipListMap<String, UUID>(String.CASE_INSENSITIVE_ORDER);
 
 	@OneToMany(mappedBy = "player", targetEntity = BanRecord.class, cascade = { CascadeType.REMOVE })
@@ -39,11 +45,50 @@ public class PlayerRecord extends Record {
 		if (record == null) {
 			record = new PlayerRecord();
 			record.setUuid(uuid);
+			String playerName = NameFetcher.getNameOf(uuid);
+			record.setLastKnownName(playerName);
 			database.save(record);
 			record = PlayerRecord.find(database, uuid);
 		}
 		Validate.notNull(record);
 		return record;
+	}
+
+	/**
+	 * Find PlayerRecords that start with the name provided and match a specified status.
+	 *
+	 * The search is case insensitive.
+	 *
+	 * @param database the database to use.
+	 * @param playerName the name to search for.
+	 * @param playerStatus that status to match.
+	 * @return an Iterable of PlayerRecords that match.
+	 */
+	public static Iterable<PlayerRecord> find(final EbeanServer database, final String playerName, final PlayerStatus playerStatus) {
+		List<PlayerRecord> records = database.find(PlayerRecord.class).where().istartsWith("lastKnownName", playerName).findList();
+		final ListIterator<PlayerRecord> iterator = records.listIterator();
+		switch (playerStatus) {
+			case BANNED:
+				while (iterator.hasNext()) {
+					final PlayerRecord element = iterator.next();
+					if (!element.isBanned()) {
+						records.remove(element);
+					}
+				}
+			case CREATOR:
+				while (iterator.hasNext()) {
+					final PlayerRecord element = iterator.next();
+					if (element.getCreatedBans().isEmpty()) {
+						records.remove(element);
+					}
+				}
+		}
+		return records;
+	}
+
+	public void updateName() {
+		String playerName = NameFetcher.getNameOf(uuid);
+		setLastKnownName(playerName);
 	}
 
 	/**
@@ -170,6 +215,20 @@ public class PlayerRecord extends Record {
 
 	public void setUuid(final UUID uuid) {
 		this.uuid = uuid;
+	}
+
+	public BanRecord getActiveBan() {
+		for (BanRecord record : this.getBans()) {
+			if (record.getState() == BanRecord.State.NORMAL) return record;
+		}
+		return null;
+	}
+
+	public boolean isBanned() {
+		for (BanRecord record : this.getBans()) {
+			if (record.getState() == BanRecord.State.NORMAL) return true;
+		}
+		return false;
 	}
 
 }

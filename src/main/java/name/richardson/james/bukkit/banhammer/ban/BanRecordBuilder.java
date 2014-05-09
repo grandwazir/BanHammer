@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import com.avaje.ebean.EbeanServer;
 
-public class BanRecordBuilder {
+public final class BanRecordBuilder {
 
 	private final EbeanServer database;
 	private final BanRecord record = new BanRecord();
@@ -29,19 +29,13 @@ public class BanRecordBuilder {
 		this.setCreator(creatorUUID);
 	}
 
+	public void save() {
+		this.database.save(record);
+	}
+
 	public void setCreator(UUID creatorUUID) {
 		final PlayerRecord record = PlayerRecord.create(database, creatorUUID);
 		this.record.setCreator(record);
-	}
-
-	public void setPlayer(String playerName) {
-		final PlayerRecord record = PlayerRecord.create(database, playerName);
-		this.record.setPlayer(record);
-	}
-
-	public void setPlayer(UUID playerUUID) {
-		final PlayerRecord record = PlayerRecord.create(database, playerUUID);
-		this.record.setPlayer(record);
 	}
 
 	public void setExpiresAt(Timestamp timestamp) {
@@ -56,8 +50,20 @@ public class BanRecordBuilder {
 		if (time != 0) this.record.setExpiresAt(new Timestamp(now + time));
 	}
 
-	public void save() {
-		this.database.save(record);
+	public void setPlayer(UUID playerUUID) {
+		PlayerRecord record = PlayerRecord.create(database, playerUUID);
+		record.updateName();
+		this.record.setPlayer(record);
+	}
+
+	public void setPlayer(String playerName) {
+		PlayerRecord record = PlayerRecord.create(database, playerName);
+		record.setLastKnownName(playerName);
+		this.record.setPlayer(record);
+	}
+
+	protected BanRecord getRecord() {
+		return record;
 	}
 
 }

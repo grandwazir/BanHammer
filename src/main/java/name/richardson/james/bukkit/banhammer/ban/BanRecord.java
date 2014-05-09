@@ -99,14 +99,8 @@ public class BanRecord extends Record {
 		return this.getType() == Type.TEMPORARY && ((this.expiresAt.getTime() - System.currentTimeMillis()) < 0);
 	}
 
-	private static class Builder {
-
-
-		public Builder(String playerName, UUID creatorUUID, String reason) {
-
-		}
-
+	public BanRecordFormatter getFormatter() {
+		return new BanRecordFormatter(this);
 	}
-
 
 }

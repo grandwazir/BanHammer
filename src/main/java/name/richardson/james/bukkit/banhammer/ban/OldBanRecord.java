@@ -142,10 +142,6 @@ public class OldBanRecord {
 		return this.expiresAt;
 	}
 
-	public BanRecordFormatter getFormatter() {
-		return new BanRecordFormatter(this);
-	}
-
 	/**
 	 * Gets the id.
 	 *
@@ -276,53 +272,4 @@ public class OldBanRecord {
 		}
 	}
 
-	public static class BanRecordFormatter {
-
-		private static final DateFormat DATE_FORMAT = new SimpleDateFormat("d MMM yyyy HH:mm (z)");
-		private final OldBanRecord ban;
-		private final TimeFormatter durationFormatter = new PreciseDurationTimeFormatter();
-		private final List<String> messages = new ArrayList<String>();
-		private final TimeFormatter timeFormatter = new ApproximateTimeFormatter();
-
-		private BanRecordFormatter(OldBanRecord ban) {
-			this.ban = ban;
-			messages.add(getHeader());
-			messages.add(getReason());
-			messages.add(getLength());
-			if (ban.getType() != Type.PERMANENT && ban.getState() != State.PARDONED) messages.add(getExpiresAt());
-			if (ban.getState() == State.PARDONED) messages.add(getPardoned());
-		}
-
-		private String getPardoned() {
-			return BAN_WAS_PARDONED.asInfoMessage();
-		}
-
-		public String getExpiresAt() {
-			final long time = ban.getExpiresAt().getTime();
-			return EXPIRES_AT.asInfoMessage(timeFormatter.getHumanReadableDuration(time));
-		}
-
-		public String getHeader() {
-			final String date = DATE_FORMAT.format(ban.getCreatedAt());
-			return BAN_SUMMARY.asHeaderMessage(ban.getPlayer().getName(), ban.getCreator().getName(), date);
-		}
-
-		public String getLength() {
-			if (ban.getType() == Type.PERMANENT) {
-				return LENGTH.asInfoMessage(PERMANENT.toString());
-			} else {
-				final long length = ban.getExpiresAt().getTime() - ban.getCreatedAt().getTime();
-				return LENGTH.asInfoMessage(durationFormatter.getHumanReadableDuration(length));
-			}
-		}
-
-		public Collection<String> getMessages() {
-			return Collections.unmodifiableCollection(messages);
-		}
-
-		public String getReason() {
-			return REASON.asInfoMessage(ban.getReason());
-		}
-
-	}
 }

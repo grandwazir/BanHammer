@@ -20,15 +20,16 @@ package name.richardson.james.bukkit.banhammer.commands;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.bukkit.Server;
 import org.bukkit.permissions.Permissible;
+
+import com.avaje.ebean.EbeanServer;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositionalArgument;
 
-import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
-import name.richardson.james.bukkit.banhammer.ban.OldPlayerRecord;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
+import name.richardson.james.bukkit.banhammer.ban.*;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.CHECK_COMMAND_DESC;
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.CHECK_COMMAND_NAME;
@@ -38,13 +39,13 @@ public class CheckCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.check";
 
+	private final EbeanServer database;
 	private final Argument player;
-	private final PlayerRecordManager playerRecordManager;
 
-	public CheckCommand(PlayerRecordManager playerRecordManager) {
+	public CheckCommand(EbeanServer database) {
 		super(CHECK_COMMAND_NAME, CHECK_COMMAND_DESC);
-		this.playerRecordManager = playerRecordManager;
-		this.player = PlayerNamePositionalArgument.getInstance(playerRecordManager, 0, true, PlayerRecordManager.PlayerStatus.BANNED);
+		this.database = database;
+		this.player = PlayerNamePositionalArgument.getInstance(database, 0, true, PlayerRecord.PlayerStatus.BANNED);
 		addArgument(player);
 	}
 
@@ -63,10 +64,10 @@ public class CheckCommand extends AbstractCommand {
 		Collection<String> players = player.getStrings();
 		Collection<String> messages = new ArrayList<String>();
 		for (String player : players) {
-			final OldPlayerRecord playerRecord = playerRecordManager.find(player);
+			PlayerRecord playerRecord = PlayerRecord.find(database, player);
 			if (playerRecord != null && playerRecord.isBanned()) {
-				OldBanRecord.BanRecordFormatter formatter = playerRecord.getActiveBan().getFormatter();
-				messages.addAll(formatter.getMessages());
+				BanRecord ban = playerRecord.getActiveBan();
+				messages.addAll(ban.getFormatter().getMessages());
 			} else {
 				String message = PLAYER_NOT_BANNED.asInfoMessage(player);
 				messages.add(message);
