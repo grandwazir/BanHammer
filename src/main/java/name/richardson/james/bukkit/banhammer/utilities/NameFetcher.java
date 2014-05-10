@@ -10,7 +10,11 @@ import com.google.common.collect.ImmutableList;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
+
 public class NameFetcher implements Callable<Map<UUID, String>> {
+
+	private static final Map<UUID, String> CACHE = Collections.synchronizedMap(new WeakHashMap<UUID, String>());
 	private static final String PROFILE_URL = "https://sessionserver.mojang.com/session/minecraft/profile/";
 	private final JSONParser jsonParser = new JSONParser();
 	private final List<UUID> uuids;
@@ -36,18 +40,20 @@ public class NameFetcher implements Callable<Map<UUID, String>> {
 			}
 			uuidStringMap.put(uuid, name);
 		}
+		CACHE.putAll(uuidStringMap);
 		return uuidStringMap;
 	}
 
 	public static String getNameOf(UUID uuid) {
-		final NameFetcher nameFetcher = new NameFetcher(Arrays.asList(uuid));
-		Map<UUID, String> names = new HashMap<UUID, String>();
-		try {
-			names.putAll(nameFetcher.call());
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (!CACHE.containsKey(uuid)) {
+			final NameFetcher nameFetcher = new NameFetcher(Arrays.asList(uuid));
+			try {
+				CACHE.putAll(nameFetcher.call());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
-		return names.get(uuid);
+		return CACHE.get(uuid);
 	}
 
 }
