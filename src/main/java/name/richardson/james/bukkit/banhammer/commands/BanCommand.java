@@ -72,6 +72,7 @@ public class BanCommand extends AbstractCommand {
 		final CommandSender commandSender = getContext().getCommandSender();
 		final Collection<String> messages = new ArrayList<String>();
 		final Collection<String> playerNames = player.getStrings();
+		final Collection<BanRecord> records = new ArrayList<BanRecord>();
 		final boolean silent = this.silent.isSet();
 		final long time = this.time.getDuration();
 		final UUID commandSenderUUID = getCommandSenderUUID();
@@ -81,10 +82,9 @@ public class BanCommand extends AbstractCommand {
 				if (!playerRecord.isBanned()) {
 					BanRecordBuilder builder = new BanRecordBuilder(database, playerName, commandSenderUUID, reason.getString());
 					if (time > 0) builder.setExpiryTime(time);
+					records.add(builder.getRecord());
 					builder.save();
 					if (silent) messages.add(PLAYER_BANNED.asInfoMessage(player));
-					BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(builder.getRecord(), silent);
-					pluginManager.callEvent(event);
 				} else {
 					messages.add(PLAYER_IS_ALREADY_BANNED.asWarningMessage(player));
 				}
@@ -92,6 +92,8 @@ public class BanCommand extends AbstractCommand {
 				messages.add(INVOKER_NO_PERMISSION.asErrorMessage());
 			}
 		}
+		final BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(records, silent);
+		pluginManager.callEvent(event);
 		commandSender.sendMessage(messages.toArray(new String[messages.size()]));
 	}
 

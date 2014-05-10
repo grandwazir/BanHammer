@@ -42,12 +42,11 @@ import name.richardson.james.bukkit.utilities.updater.PluginUpdater;
 
 import name.richardson.james.bukkit.alias.Alias;
 import name.richardson.james.bukkit.alias.persistence.PlayerNameRecordManager;
+import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
-import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.OldPlayerRecord;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
-import name.richardson.james.bukkit.banhammer.ban.event.AliasBannedPlayerListener;
-import name.richardson.james.bukkit.banhammer.ban.event.NormalBannedPlayerListener;
+import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.ban.event.PlayerListener;
 import name.richardson.james.bukkit.banhammer.ban.event.PlayerNotifier;
 import name.richardson.james.bukkit.banhammer.commands.*;
 
@@ -63,18 +62,8 @@ public final class BanHammer extends JavaPlugin {
 
 	private final Logger logger = PluginLoggerFactory.getLogger(BanHammer.class);
 
-	private BanRecordManager banRecordManager;
 	private PluginConfiguration configuration;
 	private EbeanServer database;
-	private PlayerRecordManager playerRecordManager;
-
-	public BanRecordManager getBanRecordManager() {
-		return banRecordManager;
-	}
-
-	private void setBanRecordManager(BanRecordManager banRecordManager) {
-		this.banRecordManager = banRecordManager;
-	}
 
 	public EbeanServer getDatabase() {
 		return database;
@@ -83,17 +72,9 @@ public final class BanHammer extends JavaPlugin {
 	@Override
 	public List<Class<?>> getDatabaseClasses() {
 		final List<Class<?>> classes = new LinkedList<Class<?>>();
-		classes.add(OldBanRecord.class);
-		classes.add(OldPlayerRecord.class);
+		classes.add(BanRecord.class);
+		classes.add(PlayerRecord.class);
 		return classes;
-	}
-
-	public PlayerRecordManager getPlayerRecordManager() {
-		return playerRecordManager;
-	}
-
-	private void setPlayerRecordManager(PlayerRecordManager playerRecordManager) {
-		this.playerRecordManager = playerRecordManager;
 	}
 
 	@Override
@@ -101,10 +82,9 @@ public final class BanHammer extends JavaPlugin {
 		try {
 			this.loadConfiguration();
 			this.loadDatabase();
-			this.loadManagers();
 			this.registerCommands();
 			this.registerListeners();
-			this.setupMetrics();
+			// TODO: Reimplement this - this.setupMetrics();
 			this.updatePlugin();
 		} catch (final IOException e) {
 			e.printStackTrace();
@@ -119,20 +99,6 @@ public final class BanHammer extends JavaPlugin {
 		}
 	}
 
-	/**
-	 * Hook the alias plugin and load a handler if it exists.
-	 */
-	private void hookAlias() {
-		final Alias plugin = (Alias) this.getServer().getPluginManager().getPlugin("Alias");
-		if (plugin == null) {
-			logger.log(Level.WARNING, PLUGIN_UNABLE_TO_HOOK_ALIAS.asMessage());
-		} else {
-			logger.log(Level.FINE, "Using {0}.", plugin.getDescription().getFullName());
-			PlayerNameRecordManager playerNameRecordManager = plugin.getPlayerNameRecordManager();
-			new AliasBannedPlayerListener(this, this.getServer().getPluginManager(), this.getPlayerRecordManager(), playerNameRecordManager);
-		}
-	}
-
 	private void loadConfiguration()
 	throws IOException {
 		PrefixedLogger.setPrefix(this.getName());
@@ -140,14 +106,13 @@ public final class BanHammer extends JavaPlugin {
 		final InputStream defaults = this.getResource(CONFIG_NAME);
 		this.configuration = new PluginConfiguration(file, defaults);
 		this.logger.setLevel(configuration.getLogLevel());
-		if (configuration.isAliasEnabled()) hookAlias();
 	}
 
 	private void loadDatabase()
 	throws IOException {
 		ServerConfig serverConfig = new ServerConfig();
 		getServer().configureDbConfig(serverConfig);
-		serverConfig.setClasses(Arrays.asList(OldBanRecord.class, OldPlayerRecord.class));
+		serverConfig.setClasses(getDatabaseClasses());
 		serverConfig.setName(this.getName());
 		final File file = new File(this.getDataFolder().getPath() + File.separatorChar + DATABASE_CONFIG_NAME);
 		final InputStream defaults = this.getResource(DATABASE_CONFIG_NAME);
@@ -157,39 +122,34 @@ public final class BanHammer extends JavaPlugin {
 		this.database = loader.getEbeanServer();
 	}
 
-	private void loadManagers() {
-		this.setPlayerRecordManager(new PlayerRecordManager(this.getDatabase()));
-		this.setBanRecordManager(new BanRecordManager(this.getDatabase()));
-	}
-
 	private void registerCommands() {
 		Set<Command> commands = new HashSet<Command>();
-		AbstractCommand command = new AuditCommand(getPlayerRecordManager(), getBanRecordManager());
+		AbstractCommand command = new AuditCommand(getDatabase());
 		commands.add(command);
-		command = new BanCommand(this.getServer(), this.getServer().getPluginManager(), getPlayerRecordManager(), configuration.getBanLimits(), configuration.getImmunePlayers());
+		command = new BanCommand(this.getServer(), this.getServer().getPluginManager(), database, configuration.getBanLimits(), configuration.getImmunePlayers());
 		commands.add(command);
 		getCommand("ban").setExecutor(new FallthroughCommandInvoker(this, this.getServer().getScheduler(), command));
-		command = new CheckCommand(getDatabase(), getServer());
+		command = new CheckCommand(database);
 		commands.add(command);
-		command = new HistoryCommand(getPlayerRecordManager());
+		command = new HistoryCommand(database);
 		commands.add(command);
-		command = new ExportCommand(getPlayerRecordManager(), getServer());
+		command = new ExportCommand(database, getServer());
 		commands.add(command);
-		command = new ImportCommand(getPlayerRecordManager(), getServer());
+		command = new ImportCommand(getServer(), database);
 		commands.add(command);
 		command = new KickCommand(getServer());
 		commands.add(command);
 		getCommand("kick").setExecutor(new FallthroughCommandInvoker(this, this.getServer().getScheduler(), command));
-		command = new LimitsCommand(configuration.getBanLimits());
+		command = new LimitsCommand(this.configuration);
 		commands.add(command);
-		command = new PardonCommand(getServer().getPluginManager(), getBanRecordManager(), getPlayerRecordManager());
+		command = new PardonCommand(getServer().getPluginManager(), database);
 		commands.add(command);
 		getCommand("pardon").setExecutor(new FallthroughCommandInvoker(this, this.getServer().getScheduler(), command));
-		command = new PurgeCommand(getPlayerRecordManager(), getBanRecordManager());
+		command = new PurgeCommand(database);
 		commands.add(command);
-		command = new RecentCommand(getBanRecordManager());
+		command = new RecentCommand(database);
 		commands.add(command);
-		command = new UndoCommand(getPlayerRecordManager(), getBanRecordManager(), configuration.getUndoTime());
+		command = new UndoCommand(database, configuration.getUndoTime());
 		commands.add(command);
 		// create the invoker
 		command = new HelpCommand(commands, "bh");
@@ -200,13 +160,8 @@ public final class BanHammer extends JavaPlugin {
 	}
 
 	private void registerListeners() {
-		new NormalBannedPlayerListener(this, this.getServer().getPluginManager(), getServer(), this.getPlayerRecordManager());
+		new PlayerListener(this, this.getServer().getPluginManager(), getServer(), database);
 		new PlayerNotifier(this, this.getServer().getPluginManager(), getServer());
-	}
-
-	private void setupMetrics()
-	throws IOException {
-		new MetricsListener(this, this.getServer().getPluginManager(), getBanRecordManager());
 	}
 
 }

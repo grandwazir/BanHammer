@@ -13,7 +13,8 @@ import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 import name.richardson.james.bukkit.utilities.logging.PluginLoggerFactory;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
+import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.BanRecordFormatter;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.NOTIFY_PLAYER_BANNED;
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.NOTIFY_PLAYER_PARDONED;
@@ -30,21 +31,24 @@ public class PlayerNotifier extends AbstractListener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerBanned(final BanHammerPlayerBannedEvent event) {
-		logger.log(Level.FINER, "Received " + event.getEventName());
 		if (event.isSilent()) return;
-		OldBanRecord.BanRecordFormatter formatter = event.getRecord().getFormatter();
-		String message = NOTIFY_PLAYER_BANNED.asInfoMessage(event.getPlayerName(), event.getRecord().getCreator().getName());
-		server.broadcast(message, BanHammer.NOTIFY_PERMISSION_NAME);
-		server.broadcast(formatter.getReason(), BanHammer.NOTIFY_PERMISSION_NAME);
-		server.broadcast(formatter.getLength(), BanHammer.NOTIFY_PERMISSION_NAME);
+		for (BanRecord record : event.getRecords()) {
+			BanRecordFormatter formatter = new BanRecordFormatter(record);
+			String message = NOTIFY_PLAYER_BANNED.asInfoMessage(record.getPlayer().getLastKnownName(), record.getCreator().getLastKnownName());
+			server.broadcast(message, BanHammer.NOTIFY_PERMISSION_NAME);
+			server.broadcast(formatter.getReason(), BanHammer.NOTIFY_PERMISSION_NAME);
+			server.broadcast(formatter.getLength(), BanHammer.NOTIFY_PERMISSION_NAME);
+		}
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerPardoned(final BanHammerPlayerPardonedEvent event) {
 		logger.log(Level.FINER, "Received " + event.getEventName());
 		if (event.isSilent()) return;
-		String message = NOTIFY_PLAYER_PARDONED.asInfoMessage(event.getPlayerName(), event.getSender().getName());
-		server.broadcast(message, BanHammer.NOTIFY_PERMISSION_NAME);
+		for (BanRecord record : event.getRecords()) {
+			String message = NOTIFY_PLAYER_PARDONED.asInfoMessage(record.getPlayer().getLastKnownName(), event.getSource());
+			server.broadcast(message, BanHammer.NOTIFY_PERMISSION_NAME);
+		}
 	}
 
 }

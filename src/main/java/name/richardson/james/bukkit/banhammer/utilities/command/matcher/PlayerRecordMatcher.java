@@ -5,15 +5,11 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.bukkit.entity.Player;
-
 import com.avaje.ebean.EbeanServer;
 
 import name.richardson.james.bukkit.utilities.command.argument.suggester.Suggester;
 
-import name.richardson.james.bukkit.banhammer.ban.OldPlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
 public class PlayerRecordMatcher implements Suggester {
 

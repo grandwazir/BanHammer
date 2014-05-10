@@ -16,13 +16,12 @@ import org.junit.Test;
 
 import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 import name.richardson.james.bukkit.banhammer.ban.OldPlayerRecord;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
 import static org.mockito.Mockito.*;
 
 public class BannedPlayerListenerTest extends TestCase {
 
-	private NormalBannedPlayerListener listener;
+	private PlayerListener listener;
 	private PlayerRecordManager playerRecordManager;
 	private Server server;
 
@@ -33,7 +32,7 @@ public class BannedPlayerListenerTest extends TestCase {
 		PluginManager pluginManager = mock(PluginManager.class);
 		server = mock(Server.class);
 		playerRecordManager = mock(PlayerRecordManager.class);
-		listener = new NormalBannedPlayerListener(plugin, pluginManager, server, playerRecordManager);
+		listener = new PlayerListener(plugin, pluginManager, server, playerRecordManager);
 	}
 
 	@Test

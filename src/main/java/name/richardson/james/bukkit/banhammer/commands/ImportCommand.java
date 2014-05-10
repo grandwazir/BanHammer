@@ -33,7 +33,6 @@ import name.richardson.james.bukkit.utilities.command.argument.ReasonPositionalA
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecordBuilder;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
