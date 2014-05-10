@@ -15,6 +15,7 @@ import org.json.simple.parser.JSONParser;
 
 public class UUIDFetcher implements Callable<Map<String, UUID>> {
 
+	private static final Map<String, UUID> CACHE = Collections.synchronizedMap(new WeakHashMap<String, UUID>());
 	private static final double PROFILES_PER_REQUEST = 100;
 	private static final String PROFILE_URL = "https://api.mojang.com/profiles/minecraft";
 	private final JSONParser jsonParser = new JSONParser();
@@ -56,9 +57,16 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
 		return UUID.fromString(id.substring(0, 8) + "-" + id.substring(8, 12) + "-" + id.substring(12, 16) + "-" + id.substring(16, 20) + "-" + id.substring(20, 32));
 	}
 
-	public static UUID getUUIDOf(String name)
-	throws Exception {
-		return new UUIDFetcher(Arrays.asList(name)).call().get(name);
+	public static UUID getUUIDOf(String name) {
+		if (!CACHE.containsKey(name)) {
+			final UUIDFetcher UUIDFetcher = new UUIDFetcher(Arrays.asList(name));
+			try {
+				CACHE.putAll(UUIDFetcher.call());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return CACHE.get(name);
 	}
 
 	public static byte[] toBytes(UUID uuid) {
@@ -96,6 +104,7 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
 				Thread.sleep(100L);
 			}
 		}
+		CACHE.putAll(uuidMap);
 		return uuidMap;
 	}
 
