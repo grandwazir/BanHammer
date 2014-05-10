@@ -65,7 +65,7 @@ public class CheckCommand extends AbstractCommand {
 			PlayerRecord playerRecord = CurrentPlayerRecord.find(database, playerName);
 			if (playerRecord != null && playerRecord.isBanned()) {
 				BanRecord ban = playerRecord.getActiveBan();
-				BanRecordFormatter formatter = new BanRecordFormatter(ban);
+				BanRecordFormatter formatter = new SimpleBanRecordFormatter(ban);
 				messages.addAll(formatter.getMessages());
 			} else {
 				String message = PLAYER_NOT_BANNED.asInfoMessage(playerName);

@@ -69,7 +69,7 @@ public class HistoryCommand extends AbstractCommand {
 			if (record != null && !record.getBans().isEmpty()) {
 				final List<BanRecord> bans = record.getBans();
 				for (BanRecord ban : bans) {
-					BanRecordFormatter formatter = new BanRecordFormatter(ban);
+					BanRecordFormatter formatter = new SimpleBanRecordFormatter(ban);
 					messages.addAll(formatter.getMessages());
 				}
 			} else {

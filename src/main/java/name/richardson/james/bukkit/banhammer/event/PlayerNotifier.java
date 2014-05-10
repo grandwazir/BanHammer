@@ -14,8 +14,8 @@ import name.richardson.james.bukkit.utilities.logging.PluginLoggerFactory;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.record.BanRecord;
-import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
 import name.richardson.james.bukkit.banhammer.record.BanRecordFormatter;
+import name.richardson.james.bukkit.banhammer.record.SimpleBanRecordFormatter;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.NOTIFY_PLAYER_BANNED;
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.NOTIFY_PLAYER_PARDONED;
@@ -34,7 +34,7 @@ public class PlayerNotifier extends AbstractListener {
 	public void onPlayerBanned(final BanHammerPlayerBannedEvent event) {
 		if (event.isSilent()) return;
 		for (BanRecord record : event.getRecords()) {
-			BanRecordFormatter formatter = new BanRecordFormatter(record);
+			BanRecordFormatter formatter = new SimpleBanRecordFormatter(record);
 			String message = NOTIFY_PLAYER_BANNED.asInfoMessage(record.getPlayer().getLastKnownName(), record.getCreator().getLastKnownName());
 			server.broadcast(message, BanHammer.NOTIFY_PERMISSION_NAME);
 			server.broadcast(formatter.getReason(), BanHammer.NOTIFY_PERMISSION_NAME);

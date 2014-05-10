@@ -32,6 +32,7 @@ import name.richardson.james.bukkit.utilities.command.argument.IntegerMarshaller
 import name.richardson.james.bukkit.banhammer.record.BanRecord;
 import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
 import name.richardson.james.bukkit.banhammer.record.BanRecordFormatter;
+import name.richardson.james.bukkit.banhammer.record.SimpleBanRecordFormatter;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
 
@@ -68,7 +69,7 @@ public class RecentCommand extends AbstractCommand {
 			messages.add(RECENT_NO_BANS.asInfoMessage());
 		} else {
 			for (BanRecord ban : Lists.reverse(bans)) {
-				BanRecordFormatter formatter = new BanRecordFormatter(ban);
+				BanRecordFormatter formatter = new SimpleBanRecordFormatter(ban);
 				messages.addAll(formatter.getMessages());
 			}
 		}

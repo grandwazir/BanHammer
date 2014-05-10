@@ -162,7 +162,7 @@ public class CurrentBanRecord extends SimpleRecord implements BanRecord {
 	}
 
 	public BanRecordFormatter getFormatter() {
-		return new BanRecordFormatter(this);
+		return new SimpleBanRecordFormatter(this);
 	}
 
 }
