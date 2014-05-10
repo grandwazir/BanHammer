@@ -21,7 +21,7 @@ public class CurrentPlayerRecord extends SimpleRecord implements PlayerRecord {
 	@OneToMany(mappedBy = "creator", targetEntity = CurrentBanRecord.class)
 	private List<CurrentBanRecord> createdBans;
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue
 	@NotNull
 	private long id;
 	@NotNull

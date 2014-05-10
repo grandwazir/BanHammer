@@ -17,7 +17,7 @@ public class CurrentBanRecord extends SimpleRecord implements BanRecord {
 	private Timestamp expiresAt;
 	@Id
 	@NotNull
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue
 	private long id;
 	@ManyToOne(targetEntity = CurrentPlayerRecord.class, fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
 	@PrimaryKeyJoinColumn(name = "playerId", referencedColumnName = "id")
