@@ -18,7 +18,7 @@ import name.richardson.james.bukkit.alias.persistence.PlayerNameRecordManager;
 import name.richardson.james.bukkit.banhammer.ban.OldPlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.ALIAS_BAN_REASON;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.ALIAS_BAN_REASON;
 
 public final class AliasBannedPlayerListener extends AbstractListener {
 

@@ -8,10 +8,9 @@ import name.richardson.james.bukkit.utilities.command.argument.suggester.OnlineP
 import name.richardson.james.bukkit.utilities.command.argument.suggester.Suggester;
 
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.utilities.command.matcher.PlayerRecordMatcher;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
 
 public class PlayerNamePositionalArgument {
 

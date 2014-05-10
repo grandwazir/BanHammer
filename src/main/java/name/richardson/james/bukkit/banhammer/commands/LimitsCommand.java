@@ -31,37 +31,28 @@ import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 import name.richardson.james.bukkit.utilities.formatters.time.PreciseDurationTimeFormatter;
 import name.richardson.james.bukkit.utilities.formatters.time.TimeFormatter;
 
+import name.richardson.james.bukkit.banhammer.PluginConfiguration;
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanLimitChoiceFormatter;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
 
 public class LimitsCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.limits";
-
 	private final ChoiceFormatter choiceFormatter = new BanLimitChoiceFormatter();
 	private final Map<String, Long> limits;
 	private final TimeFormatter timeFormatter = new PreciseDurationTimeFormatter();
 
-	public LimitsCommand(Map<String, Long> limits) {
+	public LimitsCommand(PluginConfiguration configuration) {
 		super(LIMIT_COMMAND_NAME, LIMIT_COMMAND_DESC);
-		this.limits = limits;
+		this.limits = configuration.getBanLimits();
 		this.choiceFormatter.setArguments(limits.size());
 		this.choiceFormatter.setMessage(LIMIT_SUMMARY.asHeaderMessage());
 	}
 
 	@Override
-	protected void execute() {
-		List<String> messages = new ArrayList<String>(limits.size());
-		final CommandSender commandSender = getContext().getCommandSender();
-		for (final Entry<String, Long> limit : this.limits.entrySet()) {
-			ChatColor colour = ChatColor.RED;
-			if (commandSender.hasPermission(BanCommand.PERMISSION_ALL + "." + limit.getKey())) colour = ChatColor.GREEN;
-			String time = timeFormatter.getHumanReadableDuration(limit.getValue());
-			messages.add(colour + LIMIT_ENTRY.asMessage(limit.getKey(), time));
-		}
-		commandSender.sendMessage(choiceFormatter.getMessage());
-		commandSender.sendMessage(messages.toArray(new String[messages.size()]));
+	public boolean isAsynchronousCommand() {
+		return false;
 	}
 
 	@Override
@@ -70,8 +61,17 @@ public class LimitsCommand extends AbstractCommand {
 	}
 
 	@Override
-	public boolean isAsynchronousCommand() {
-		return false;
+	protected void execute() {
+		final List<String> messages = new ArrayList<String>(limits.size());
+		final CommandSender commandSender = getContext().getCommandSender();
+		messages.add(choiceFormatter.getMessage());
+		for (final Entry<String, Long> limit : this.limits.entrySet()) {
+			final String time = timeFormatter.getHumanReadableDuration(limit.getValue());
+			ChatColor colour = ChatColor.RED;
+			if (commandSender.hasPermission(BanCommand.PERMISSION_ALL + "." + limit.getKey())) colour = ChatColor.GREEN;
+			messages.add(colour + LIMIT_ENTRY.asMessage(limit.getKey(), time));
+		}
+		commandSender.sendMessage(messages.toArray(new String[messages.size()]));
 	}
 
 }

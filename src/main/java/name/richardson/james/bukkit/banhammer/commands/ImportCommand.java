@@ -17,32 +17,39 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.commands;
 
+import java.util.UUID;
+
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
+
+import com.avaje.ebean.EbeanServer;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.ReasonPositionalArgument;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 
+import name.richardson.james.bukkit.banhammer.ban.BanRecordBuilder;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
 
 public class ImportCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.import";
 	private final ChoiceFormatter choiceFormatter;
-	private final PlayerRecordManager playerRecordManager;
 	private final Argument reason;
 	private final Server server;
+	private final EbeanServer database;
 
-	public ImportCommand(PlayerRecordManager playerRecordManager, Server server) {
+	public ImportCommand(Server server, EbeanServer database) {
 		super(IMPORT_COMMAND_NAME, IMPORT_COMMAND_DESC);
-		this.playerRecordManager = playerRecordManager;
 		this.server = server;
+		this.database = database;
 		this.reason = ReasonPositionalArgument.getInstance(0, false);
 		this.choiceFormatter = new BanCountChoiceFormatter();
 		this.choiceFormatter.setMessage(IMPORT_SUMMARY.asInfoMessage());
@@ -58,19 +65,25 @@ public class ImportCommand extends AbstractCommand {
 		return permissible.hasPermission(PERMISSION_ALL);
 	}
 
-	@Override
+	private UUID getCommandSenderUUID() {
+		if (getContext().getCommandSender() instanceof Player) {
+			return ((Player) getContext().getCommandSender()).getUniqueId();
+		} else {
+			return null;
+		}
+	}
+
+	@Override @SuppressWarnings("deprecation")
 	protected void execute() {
-		String reason = (this.reason.getString() == null) ? IMPORT_DEFAULT_REASON.asMessage() : this.reason.getString();
-		final String senderName = getContext().getCommandSender().getName();
+		final String reason = (this.reason.getString() == null) ? IMPORT_DEFAULT_REASON.asMessage() : this.reason.getString();
+		final CommandSender commandSender = getContext().getCommandSender();
+		final UUID commandSenderUUID = getCommandSenderUUID();
 		for (OfflinePlayer player : this.server.getBannedPlayers()) {
-			PlayerRecordManager.BannedPlayerBuilder builder = playerRecordManager.getBannedPlayerBuilder();
-			builder.setPlayer(player.getName());
-			builder.setCreator(senderName);
-			builder.setReason(reason);
+			BanRecordBuilder builder = new BanRecordBuilder(database, player.getName(), commandSenderUUID, reason);
 			builder.save();
 			player.setBanned(false);
 		}
 		choiceFormatter.setArguments(this.server.getBannedPlayers().size());
-		getContext().getCommandSender().sendMessage(choiceFormatter.getMessage());
+		commandSender.sendMessage(choiceFormatter.getMessage());
 	}
 }

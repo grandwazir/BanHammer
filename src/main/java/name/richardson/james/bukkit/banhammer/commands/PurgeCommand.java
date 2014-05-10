@@ -19,40 +19,41 @@ package name.richardson.james.bukkit.banhammer.commands;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
+
+import com.avaje.ebean.EbeanServer;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositionalArgument;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 
-import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
-import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
-import name.richardson.james.bukkit.banhammer.ban.OldPlayerRecord;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
+import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
 
 public class PurgeCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.purge";
 	public static final String PERMISSION_OWN = "banhammer.purge.own";
 	public static final String PERMISSION_OTHERS = "banhammer.purge.others";
-	private final BanRecordManager banRecordManager;
 	private final ChoiceFormatter choiceFormatter;
-	private final PlayerRecordManager playerRecordManager;
+	private final EbeanServer database;
 	private final Argument players;
 
-	public PurgeCommand(PlayerRecordManager playerRecordManager, BanRecordManager banRecordManager) {
+	public PurgeCommand(EbeanServer database) {
 		super(PURGE_COMMAND_NAME, PURGE_COMMAND_DESC);
-		this.playerRecordManager = playerRecordManager;
-		this.banRecordManager = banRecordManager;
+		this.database = database;
 		this.choiceFormatter = new BanCountChoiceFormatter();
 		this.choiceFormatter.setMessage(PURGE_SUMMARY.asInfoMessage());
-		this.players = PlayerNamePositionalArgument.getInstance(playerRecordManager, 0, true, PlayerRecordManager.PlayerStatus.ANY);
+		this.players = PlayerNamePositionalArgument.getInstance(database, 0, true, PlayerRecord.PlayerStatus.ANY);
 		addArgument(players);
 	}
 
@@ -68,26 +69,36 @@ public class PurgeCommand extends AbstractCommand {
 
 	@Override
 	protected void execute() {
-		Collection<String> players = this.players.getStrings();
-		Collection<OldBanRecord> records = new ArrayList<OldBanRecord>();
+		final Collection<String> playerNames = this.players.getStrings();
+		final Collection<BanRecord> records = new ArrayList<BanRecord>();
 		final CommandSender sender = getContext().getCommandSender();
+		final List<String> messages = new ArrayList<String>();
 		boolean own = sender.hasPermission(PERMISSION_OWN);
 		boolean others = sender.hasPermission(PERMISSION_OTHERS);
-		for (String playerName : players) {
-			OldPlayerRecord record = playerRecordManager.find(playerName);
+		for (String playerName : playerNames) {
+			PlayerRecord record = PlayerRecord.find(database, playerName);
 			if (record != null) {
-				for (OldBanRecord ban : record.getBans()) {
-					boolean banCreatedBySender = ban.getCreator().getName().equalsIgnoreCase(sender.getName());
+				for (BanRecord ban : record.getBans()) {
+					final boolean banCreatedBySender = (ban.getCreator().getUuid().compareTo(getCommandSenderUUID()) == 0);
 					if (banCreatedBySender && !own) continue;
 					if (!banCreatedBySender && !others) continue;
 					records.add(ban);
 				}
 			} else {
-				sender.sendMessage(PLAYER_NEVER_BEEN_BANNED.asInfoMessage(playerName));
+				messages.add(PLAYER_NEVER_BEEN_BANNED.asInfoMessage(playerName));
 			}
 			this.choiceFormatter.setArguments(records.size(), playerName);
-			banRecordManager.delete(records);
-			sender.sendMessage(choiceFormatter.getMessage());
+			messages.add(0, choiceFormatter.getMessage());
+			BanRecord.delete(database, records);
+			sender.sendMessage(messages.toArray(new String[messages.size()]));
+		}
+	}
+
+	private UUID getCommandSenderUUID() {
+		if (getContext().getCommandSender() instanceof Player) {
+			return ((Player) getContext().getCommandSender()).getUniqueId();
+		} else {
+			return null;
 		}
 	}
 

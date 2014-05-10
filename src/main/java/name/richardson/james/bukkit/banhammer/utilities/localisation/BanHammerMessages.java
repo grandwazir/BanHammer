@@ -25,7 +25,7 @@ import name.richardson.james.bukkit.utilities.formatters.DefaultMessageFormatter
 import name.richardson.james.bukkit.utilities.formatters.MessageFormatter;
 import name.richardson.james.bukkit.utilities.localisation.Localised;
 
-public enum BanHammer implements Localised, MessageFormatter {
+public enum BanHammerMessages implements Localised, MessageFormatter {
 
 	ARGUMENT_ALL_ID ("argument.all.id"),
 	ARGUMENT_ALL_NAME ("argument.all.name"),
@@ -55,6 +55,7 @@ public enum BanHammer implements Localised, MessageFormatter {
 	ARGUMENT_REASON_DESC ("argument.reason.desc"),
 	ARGUMENT_REASON_ERROR ("argument.reason.error"),
 
+	AUDIT_ALL_NAME ("auditcommand.all-name"),
 	AUDIT_COMMAND_HEADER ("auditcommand.header"),
 	AUDIT_COMMAND_NAME ("command.audit.name"),
 	AUDIT_COMMAND_DESC ("command.audit.desc"),
@@ -155,7 +156,7 @@ public enum BanHammer implements Localised, MessageFormatter {
 	private static final MessageFormatter FORMATTER = new DefaultMessageFormatter();
 	private final String key;
 
-	BanHammer(final String key) {
+	BanHammerMessages(final String key) {
 		this.key = key;
 	}
 

@@ -22,27 +22,30 @@ import java.util.List;
 
 import org.bukkit.permissions.Permissible;
 
+import com.avaje.ebean.EbeanServer;
 import com.google.common.collect.Lists;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.argument.BanCountOptionArgument;
 import name.richardson.james.bukkit.utilities.command.argument.IntegerMarshaller;
 
+import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.BanRecordFormatter;
 import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
 
 public class RecentCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.recent";
 	private static final int DEFAULT_LIMIT = 5;
-	private final BanRecordManager banRecordManager;
+	private final EbeanServer database;
 	private IntegerMarshaller count;
 
-	public RecentCommand(BanRecordManager banRecordManager) {
+	public RecentCommand(EbeanServer database) {
 		super(RECENT_COMMAND_NAME, RECENT_COMMAND_DESC);
-		this.banRecordManager = banRecordManager;
+		this.database = database;
 		this.count = BanCountOptionArgument.getInstance(DEFAULT_LIMIT);
 		addArgument(count);
 	}
@@ -60,15 +63,13 @@ public class RecentCommand extends AbstractCommand {
 	@Override
 	protected void execute() {
 		int count = this.count.getInteger();
-		List<OldBanRecord> bans = banRecordManager.list(count);
-		List<String> messages = new ArrayList<String>();
+		final List<BanRecord> bans = BanRecord.list(database, count);
+		final List<String> messages = new ArrayList<String>();
 		if (bans.isEmpty()) {
 			messages.add(RECENT_NO_BANS.asInfoMessage());
 		} else {
-			// reverse the list so the most recent ban is at the bottom of the list
-			// this makes sense since the console scrolls down.
-			for (OldBanRecord ban : Lists.reverse(bans)) {
-				OldBanRecord.BanRecordFormatter formatter = ban.getFormatter();
+			for (BanRecord ban : Lists.reverse(bans)) {
+				BanRecordFormatter formatter = new BanRecordFormatter(ban);
 				messages.addAll(formatter.getMessages());
 			}
 		}

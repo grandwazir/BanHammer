@@ -64,9 +64,9 @@ public class PlayerRecord extends Record {
 	 * @param playerStatus that status to match.
 	 * @return an Iterable of PlayerRecords that match.
 	 */
-	public static Iterable<PlayerRecord> find(final EbeanServer database, final String playerName, final PlayerStatus playerStatus) {
-		List<PlayerRecord> records = database.find(PlayerRecord.class).where().istartsWith("lastKnownName", playerName).findList();
-		final ListIterator<PlayerRecord> iterator = records.listIterator();
+	public static Set<PlayerRecord> find(final EbeanServer database, final String playerName, final PlayerStatus playerStatus) {
+		Set<PlayerRecord> records = database.find(PlayerRecord.class).where().istartsWith("lastKnownName", playerName).findSet();
+		final Iterator<PlayerRecord> iterator = records.iterator();
 		switch (playerStatus) {
 			case BANNED:
 				while (iterator.hasNext()) {

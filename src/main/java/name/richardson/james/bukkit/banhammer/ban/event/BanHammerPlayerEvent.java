@@ -17,9 +17,12 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.ban.event;
 
+import java.util.*;
+
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 
 /**
@@ -32,14 +35,15 @@ public abstract class BanHammerPlayerEvent extends Event {
 	 */
 	private static final HandlerList handlers = new HandlerList();
 
-	/**
-	 * The player name.
-	 */
-	private final String playerName;
+	public Set<BanRecord> getRecords() {
+		return Collections.unmodifiableSet(records);
+	}
+
 	/**
 	 * The ban record.
 	 */
-	private final OldBanRecord record;
+	private final Set<BanRecord> records = new HashSet<BanRecord>();
+
 	/**
 	 * If this event is silent.
 	 */
@@ -48,26 +52,17 @@ public abstract class BanHammerPlayerEvent extends Event {
 	/**
 	 * Instantiates a new BanHammer player event.
 	 *
-	 * @param record the OldBanRecord associated with this event
+	 * @param records the BanRecord associated with this event
 	 * @param silent if this event should be silent to players
 	 */
-	public BanHammerPlayerEvent(final OldBanRecord record, final boolean silent) {
-		this.record = record;
-		this.playerName = record.getPlayer().getName();
+	public BanHammerPlayerEvent(final Collection<BanRecord> records, final boolean silent) {
+		this.records.addAll(records);
 		this.silent = silent;
 	}
 
 	@Override
 	public HandlerList getHandlers() {
 		return BanHammerPlayerEvent.handlers;
-	}
-
-	public String getPlayerName() {
-		return this.playerName;
-	}
-
-	public OldBanRecord getRecord() {
-		return this.record;
 	}
 
 	/**

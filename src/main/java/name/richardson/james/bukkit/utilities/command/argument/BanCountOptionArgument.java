@@ -1,6 +1,6 @@
 package name.richardson.james.bukkit.utilities.command.argument;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
 
 public class BanCountOptionArgument {
 

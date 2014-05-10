@@ -17,39 +17,36 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.commands;
 
+import java.util.Collection;
+
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
+import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permissible;
+
+import com.avaje.ebean.EbeanServer;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 
-import name.richardson.james.bukkit.banhammer.ban.OldPlayerRecord;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
+import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.EXPORT_COMMAND_NAME;
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.EXPORT_COMMAND_DESC;
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.EXPORT_SUMMARY;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
 
 public class ExportCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.export";
-
 	private final ChoiceFormatter choiceFormatter;
-	private final PlayerRecordManager playerRecordManager;
+	private final EbeanServer database;
 	private final Server server;
 
-	public ExportCommand(PlayerRecordManager playerRecordManager, Server server) {
+	public ExportCommand(EbeanServer database, Server server) {
 		super(EXPORT_COMMAND_NAME, EXPORT_COMMAND_DESC);
-		this.playerRecordManager = playerRecordManager;
+		this.database = database;
 		this.server = server;
 		this.choiceFormatter = new BanCountChoiceFormatter();
 		this.choiceFormatter.setMessage(EXPORT_SUMMARY.asInfoMessage());
-	}
-
-	@Override
-	public boolean isAuthorised(Permissible permissible) {
-		return permissible.hasPermission(PERMISSION_ALL);
 	}
 
 	@Override
@@ -58,12 +55,22 @@ public class ExportCommand extends AbstractCommand {
 	}
 
 	@Override
+	public boolean isAuthorised(Permissible permissible) {
+		return permissible.hasPermission(PERMISSION_ALL);
+	}
+
+	// It is safe to ignore the deprecation warning.
+	// The Bukkit Project uses deprecation annotations in a non-standard way
+	@Override @SuppressWarnings("deprecation")
 	protected void execute() {
-		for (OldPlayerRecord playerRecord : playerRecordManager.list("", PlayerRecordManager.PlayerStatus.BANNED)) {
-			this.server.getOfflinePlayer(playerRecord.getName()).setBanned(true);
+		final CommandSender commandSender = getContext().getCommandSender();
+		final Collection<PlayerRecord> players = PlayerRecord.find(database, "", PlayerRecord.PlayerStatus.BANNED);
+		for (PlayerRecord record : players) {
+			OfflinePlayer player = this.server.getOfflinePlayer(record.getLastKnownName());
+			player.setBanned(true);
 		}
-		this.choiceFormatter.setArguments(playerRecordManager.count());
-		getContext().getCommandSender().sendMessage(choiceFormatter.getMessage());
+		this.choiceFormatter.setArguments(players.size());
+		commandSender.sendMessage(choiceFormatter.getMessage());
 	}
 
 }

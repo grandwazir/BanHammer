@@ -20,41 +20,41 @@ package name.richardson.james.bukkit.banhammer.commands;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.PluginManager;
+
+import com.avaje.ebean.EbeanServer;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositionalArgument;
 import name.richardson.james.bukkit.utilities.command.argument.SilentSwitchArgument;
 
-import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
-import name.richardson.james.bukkit.banhammer.ban.BanRecordManager;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
+import name.richardson.james.bukkit.banhammer.ban.*;
 import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
 
 public class PardonCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.pardon";
 	public static final String PERMISSION_OWN = "banhammer.pardon.own";
 	public static final String PERMISSION_OTHERS = "banhammer.pardon.others";
-	private final BanRecordManager banRecordManager;
-	private final PlayerRecordManager playerRecordManager;
 	private final Argument players;
 	private final PluginManager pluginManager;
+	private final EbeanServer database;
 	private final SilentSwitchArgument silent;
 
-	public PardonCommand(PluginManager pluginManager, BanRecordManager banRecordManager, PlayerRecordManager playerRecordManager) {
+	public PardonCommand(PluginManager pluginManager, EbeanServer database) {
 		super(PARDON_COMMAND_NAME, PARDON_COMMAND_DESC);
 		this.pluginManager = pluginManager;
-		this.banRecordManager = banRecordManager;
-		this.playerRecordManager = playerRecordManager;
+		this.database = database;
 		this.silent = SilentSwitchArgument.getInstance();
-		this.players = PlayerNamePositionalArgument.getInstance(playerRecordManager, 0, true, PlayerRecordManager.PlayerStatus.BANNED);
+		this.players = PlayerNamePositionalArgument.getInstance(database, 0, true, PlayerRecord.PlayerStatus.BANNED);
 		addArgument(silent);
 		addArgument(players);
 	}
@@ -75,26 +75,38 @@ public class PardonCommand extends AbstractCommand {
 		final List<String> messages = new ArrayList<String>();
 		final Collection<String> players = this.players.getStrings();
 		final CommandSender sender = getContext().getCommandSender();
+		final Collection<BanRecord> bans = new ArrayList<BanRecord>();
 		for (String playerName : players) {
-			OldBanRecord record = (playerRecordManager.exists(playerName)) ? playerRecordManager.find(playerName).getActiveBan() : null;
-			if (record == null) {
-				messages.add(PLAYER_NOT_BANNED.asInfoMessage(playerName));
-			} else if (hasPermission(sender, record.getCreator().getName())) {
-				record.setState(OldBanRecord.State.PARDONED);
-				banRecordManager.save(record);
-				if (silent) messages.add(PARDON_PLAYER.asInfoMessage(playerName));
-				BanHammerPlayerPardonedEvent event = new BanHammerPlayerPardonedEvent(record, sender, silent);
-				pluginManager.callEvent(event);
+			final PlayerRecord playerRecord = PlayerRecord.find(database, playerName);
+			final BanRecord ban = playerRecord.getActiveBan();
+			if (ban != null) {
+				if (hasPermission(sender, ban.getCreator().getUuid())) {
+					ban.setState(BanRecord.State.PARDONED);
+					bans.add(ban);
+					if (silent) messages.add(PARDON_PLAYER.asInfoMessage(playerName));
+				} else {
+					messages.add(PARDON_UNABLE_TO_TARGET_PLAYER.asErrorMessage(playerName));
+				}
 			} else {
-				messages.add(PARDON_UNABLE_TO_TARGET_PLAYER.asErrorMessage(playerName));
+				messages.add(PLAYER_NOT_BANNED.asInfoMessage(playerName));
 			}
 		}
+		BanRecord.save(database, bans);
+		new BanHammerPlayerPardonedEvent(bans, silent);
 		sender.sendMessage(messages.toArray(new String[messages.size()]));
 	}
 
-	private boolean hasPermission(CommandSender sender, String creatorName) {
-		final boolean isSenderTargetingSelf = (creatorName.equalsIgnoreCase(sender.getName()));
+	private boolean hasPermission(CommandSender sender, UUID playerUUID) {
+		final boolean isSenderTargetingSelf = (getCommandSenderUUID().compareTo(playerUUID) == 0);
 		return sender.hasPermission(PERMISSION_OWN) && isSenderTargetingSelf || sender.hasPermission(PERMISSION_OTHERS) && !isSenderTargetingSelf;
+	}
+
+	private UUID getCommandSenderUUID() {
+		if (getContext().getCommandSender() instanceof Player) {
+			return ((Player) getContext().getCommandSender()).getUniqueId();
+		} else {
+			return null;
+		}
 	}
 
 }

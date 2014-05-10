@@ -19,20 +19,8 @@ package name.richardson.james.bukkit.banhammer.ban;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 import com.avaje.ebean.validation.NotNull;
-
-import name.richardson.james.bukkit.utilities.formatters.time.ApproximateTimeFormatter;
-import name.richardson.james.bukkit.utilities.formatters.time.PreciseDurationTimeFormatter;
-import name.richardson.james.bukkit.utilities.formatters.time.TimeFormatter;
-
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
 
 @Entity()
 @Table(name = "banhammer_bans")

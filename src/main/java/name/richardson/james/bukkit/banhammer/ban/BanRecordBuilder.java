@@ -62,7 +62,7 @@ public final class BanRecordBuilder {
 		this.record.setPlayer(record);
 	}
 
-	protected BanRecord getRecord() {
+	public BanRecord getRecord() {
 		return record;
 	}
 

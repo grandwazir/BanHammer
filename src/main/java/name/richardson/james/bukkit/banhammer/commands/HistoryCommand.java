@@ -23,29 +23,31 @@ import java.util.List;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permissible;
 
+import com.avaje.ebean.EbeanServer;
+
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositionalArgument;
 import name.richardson.james.bukkit.utilities.localisation.BukkitUtilities;
 
-import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
-import name.richardson.james.bukkit.banhammer.ban.OldPlayerRecord;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
+import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.BanRecordFormatter;
+import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
 
 public class HistoryCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.history";
 	public static final String PERMISSION_OWN = "banhammer.history.own";
 	public static final String PERMISSION_OTHERS = "banhammer.history.others";
+	private final EbeanServer database;
 	private final Argument playerName;
-	private final PlayerRecordManager playerRecordManager;
 
-	public HistoryCommand(PlayerRecordManager playerRecordManager) {
+	public HistoryCommand(EbeanServer database) {
 		super(HISTORY_COMMAND_NAME, HISTORY_COMMAND_DESC);
-		this.playerRecordManager = playerRecordManager;
-		this.playerName = PlayerNamePositionalArgument.getInstance(playerRecordManager, 0, false, PlayerRecordManager.PlayerStatus.ANY);
+		this.database = database;
+		this.playerName = PlayerNamePositionalArgument.getInstance(database, 0, false, PlayerRecord.PlayerStatus.ANY);
 		addArgument(playerName);
 	}
 
@@ -64,18 +66,19 @@ public class HistoryCommand extends AbstractCommand {
 		final CommandSender sender = getContext().getCommandSender();
 		final String playerName = (this.playerName.getString() == null) ? sender.getName() : this.playerName.getString();
 		final List<String> messages = new ArrayList<String>();
-		if (!hasPermission(sender, playerName)) {
-			messages.add(BukkitUtilities.INVOKER_NO_PERMISSION.asErrorMessage());
-		} else {
-			OldPlayerRecord record = playerRecordManager.find(playerName);
+		if (hasPermission(sender, playerName)) {
+			PlayerRecord record = PlayerRecord.find(database, playerName);
 			if (record != null && !record.getBans().isEmpty()) {
-				for (OldBanRecord ban : record.getBans()) {
-					OldBanRecord.BanRecordFormatter formatter = ban.getFormatter();
+				final List<BanRecord> bans = record.getBans();
+				for (BanRecord ban : bans) {
+					BanRecordFormatter formatter = new BanRecordFormatter(ban);
 					messages.addAll(formatter.getMessages());
 				}
 			} else {
 				messages.add(PLAYER_NEVER_BEEN_BANNED.asInfoMessage(playerName));
 			}
+		} else {
+			messages.add(BukkitUtilities.INVOKER_NO_PERMISSION.asErrorMessage());
 		}
 		sender.sendMessage(messages.toArray(new String[messages.size()]));
 	}

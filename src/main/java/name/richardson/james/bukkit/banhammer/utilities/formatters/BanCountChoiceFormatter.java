@@ -1,7 +1,7 @@
 package name.richardson.james.bukkit.banhammer.utilities.formatters;
 
 import name.richardson.james.bukkit.utilities.formatters.AbstractChoiceFormatter;
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
 
 public class BanCountChoiceFormatter extends AbstractChoiceFormatter {
 

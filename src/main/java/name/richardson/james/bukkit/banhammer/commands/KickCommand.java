@@ -17,9 +17,12 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.commands;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Set;
 
 import org.bukkit.Server;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 
@@ -28,7 +31,7 @@ import name.richardson.james.bukkit.utilities.command.argument.*;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
 
 public class KickCommand extends AbstractCommand {
 
@@ -52,18 +55,25 @@ public class KickCommand extends AbstractCommand {
 
 	@Override
 	protected void execute() {
-		String reason = (this.reason.getString() == null) ? KICK_DEFAULT_REASON.asMessage() : this.reason.getString();
-		boolean silent = this.silent.isSet();
-		Set<Player> players = this.player.getPlayers();
+		final String reason = (this.reason.getString() == null) ? KICK_DEFAULT_REASON.asMessage() : this.reason.getString();
+		final boolean silent = this.silent.isSet();
+		final Set<Player> players = this.player.getPlayers();
+		final String senderName = getContext().getCommandSender().getName();
+		final Collection<String> messages = new ArrayList<String>();
 		for (Player player : players) {
-			final String senderName = getContext().getCommandSender().getName();
 			if (silent) {
-				getContext().getCommandSender().sendMessage(KICK_SENDER_NOTIFICATION.asInfoMessage(player.getName()));
+				messages.add(KICK_SENDER_NOTIFICATION.asInfoMessage(player.getName()));
 			} else {
-			 	server.broadcast(KICK_PLAYER_KICKED.asErrorMessage(player.getName(), senderName), BanHammer.NOTIFY_PERMISSION_NAME);
-				server.broadcast(REASON.asWarningMessage(reason), BanHammer.NOTIFY_PERMISSION_NAME);
+				messages.add(KICK_PLAYER_KICKED.asErrorMessage(player.getName(), senderName));
+				messages.add(REASON.asWarningMessage(reason));
 			}
 			player.kickPlayer(KICK_PLAYER_NOTIFICATION.asErrorMessage(reason, senderName));
+		}
+	}
+
+	private void broadcastMessages(Collection<String> messages) {
+		for (String message : messages) {
+			server.broadcast(message, BanHammer.NOTIFY_PERMISSION_NAME);
 		}
 	}
 

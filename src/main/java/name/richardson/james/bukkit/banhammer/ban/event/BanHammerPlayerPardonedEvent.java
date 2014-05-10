@@ -17,9 +17,12 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.ban.event;
 
+import java.util.Collection;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.HandlerList;
 
+import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 
 /**
@@ -28,24 +31,24 @@ import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 public class BanHammerPlayerPardonedEvent extends BanHammerPlayerEvent {
 
 	private static final HandlerList handlers = new HandlerList();
-	private final CommandSender sender;
+
+	/**
+	 * Instantiates a new BanHammer player event.
+	 *
+	 * @param records the BanRecord associated with this event
+	 * @param silent if this event should be silent to players
+	 */
+	public BanHammerPlayerPardonedEvent(final Collection<BanRecord> records, final boolean silent) {
+		super(records, silent);
+	}
 
 	public static HandlerList getHandlerList() {
 		return BanHammerPlayerPardonedEvent.handlers;
 	}
 
-	public BanHammerPlayerPardonedEvent(final OldBanRecord record, CommandSender sender,  final boolean silent) {
-		super(record, silent);
-		this.sender = sender;
-	}
-
 	@Override
 	public HandlerList getHandlers() {
 		return BanHammerPlayerPardonedEvent.handlers;
-	}
-
-	public CommandSender getSender() {
-		return sender;
 	}
 
 }

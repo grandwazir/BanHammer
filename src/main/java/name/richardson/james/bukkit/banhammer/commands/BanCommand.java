@@ -21,35 +21,39 @@ import java.util.*;
 
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.PluginManager;
+
+import com.avaje.ebean.EbeanServer;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.argument.*;
 
-import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
+import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.BanRecordBuilder;
+import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerBannedEvent;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
 import static name.richardson.james.bukkit.utilities.localisation.BukkitUtilities.INVOKER_NO_PERMISSION;
 
 public class BanCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.ban";
 	public static final String PERMISSION_PERMANENT = "banhammer.ban.permanent";
+	private final EbeanServer database;
 	private final Set<String> immunePlayers;
 	private final Map<String, Long> limits;
 	private final Argument player;
-	private final PlayerRecordManager playerRecordManager;
 	private final PluginManager pluginManager;
 	private final Argument reason;
 	private final SilentSwitchArgument silent;
 	private final TimeMarshaller time;
 
-	public BanCommand(Server server, PluginManager pluginManager, PlayerRecordManager playerRecordManager, Map<String, Long> limits, Set<String> immunePlayers) {
+	public BanCommand(Server server, PluginManager pluginManager, EbeanServer database, Map<String, Long> limits, Set<String> immunePlayers) {
 		super(BANCOMMAND_NAME, BANCOMMAND_DESC);
-		this.playerRecordManager = playerRecordManager;
+		this.database = database;
 		this.limits = limits;
 		this.immunePlayers = immunePlayers;
 		this.pluginManager = pluginManager;
@@ -65,30 +69,30 @@ public class BanCommand extends AbstractCommand {
 
 	@Override
 	public void execute() {
-		CommandSender sender = getContext().getCommandSender();
-		List<String> messages = new ArrayList<String>();
-		List<OldBanRecord> records = new ArrayList<OldBanRecord>();
-		Collection<String> players = player.getStrings();
-		boolean silent = this.silent.isSet();
-		long time = this.time.getDuration();
-		for (String player : players) {
-			if (!hasPermission(sender, player)) {
-				messages.add(INVOKER_NO_PERMISSION.asErrorMessage());
-			} else if (playerRecordManager.exists(player) && playerRecordManager.find(player).getActiveBan() != null) {
-				messages.add(PLAYER_IS_ALREADY_BANNED.asWarningMessage(player));
+		final CommandSender commandSender = getContext().getCommandSender();
+		final Collection<String> messages = new ArrayList<String>();
+		final Collection<String> playerNames = player.getStrings();
+		final boolean silent = this.silent.isSet();
+		final long time = this.time.getDuration();
+		final UUID commandSenderUUID = getCommandSenderUUID();
+		for (String playerName : playerNames) {
+			PlayerRecord playerRecord = PlayerRecord.create(database, playerName);
+			if (hasPermission(commandSender, playerName)) {
+				if (!playerRecord.isBanned()) {
+					BanRecordBuilder builder = new BanRecordBuilder(database, playerName, commandSenderUUID, reason.getString());
+					if (time > 0) builder.setExpiryTime(time);
+					builder.save();
+					if (silent) messages.add(PLAYER_BANNED.asInfoMessage(player));
+					BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(builder.getRecord(), silent);
+					pluginManager.callEvent(event);
+				} else {
+					messages.add(PLAYER_IS_ALREADY_BANNED.asWarningMessage(player));
+				}
 			} else {
-				PlayerRecordManager.BannedPlayerBuilder bannedPlayerBuilder = playerRecordManager.getBannedPlayerBuilder();
-				bannedPlayerBuilder.setPlayer(player);
-				bannedPlayerBuilder.setCreator(sender.getName());
-				bannedPlayerBuilder.setReason(reason.getString());
-				if (time > 0) bannedPlayerBuilder.setExpiryTime(time);
-				bannedPlayerBuilder.save();
-				if (silent) messages.add(PLAYER_BANNED.asInfoMessage(player));
-				BanHammerPlayerBannedEvent event = new BanHammerPlayerBannedEvent(bannedPlayerBuilder.getRecord(), silent);
-				pluginManager.callEvent(event);
+				messages.add(INVOKER_NO_PERMISSION.asErrorMessage());
 			}
 		}
-		sender.sendMessage(messages.toArray(new String[messages.size()]));
+		commandSender.sendMessage(messages.toArray(new String[messages.size()]));
 	}
 
 	@Override
@@ -105,6 +109,14 @@ public class BanCommand extends AbstractCommand {
 			if (permissible.hasPermission(node)) return true;
 		}
 		return false;
+	}
+
+	private UUID getCommandSenderUUID() {
+		if (getContext().getCommandSender() instanceof Player) {
+			return ((Player) getContext().getCommandSender()).getUniqueId();
+		} else {
+			return null;
+		}
 	}
 
 	private boolean hasPermission(final CommandSender sender, String playerName) {

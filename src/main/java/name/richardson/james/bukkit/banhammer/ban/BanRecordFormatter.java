@@ -11,7 +11,7 @@ import name.richardson.james.bukkit.utilities.formatters.time.ApproximateTimeFor
 import name.richardson.james.bukkit.utilities.formatters.time.PreciseDurationTimeFormatter;
 import name.richardson.james.bukkit.utilities.formatters.time.TimeFormatter;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.*;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
 
 public class BanRecordFormatter {
 

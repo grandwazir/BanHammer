@@ -20,7 +20,7 @@ package name.richardson.james.bukkit.banhammer.commands;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.bukkit.Server;
+import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permissible;
 
 import com.avaje.ebean.EbeanServer;
@@ -29,16 +29,14 @@ import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositionalArgument;
 
-import name.richardson.james.bukkit.banhammer.ban.*;
+import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.CHECK_COMMAND_DESC;
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.CHECK_COMMAND_NAME;
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.PLAYER_NOT_BANNED;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
 
 public class CheckCommand extends AbstractCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.check";
-
 	private final EbeanServer database;
 	private final Argument player;
 
@@ -50,30 +48,31 @@ public class CheckCommand extends AbstractCommand {
 	}
 
 	@Override
-	public boolean isAuthorised(Permissible permissible) {
-		return permissible.hasPermission(PERMISSION_ALL);
-	}
-
-	@Override
 	public boolean isAsynchronousCommand() {
 		return true;
 	}
 
 	@Override
+	public boolean isAuthorised(Permissible permissible) {
+		return permissible.hasPermission(PERMISSION_ALL);
+	}
+
+	@Override
 	protected void execute() {
-		Collection<String> players = player.getStrings();
-		Collection<String> messages = new ArrayList<String>();
-		for (String player : players) {
-			PlayerRecord playerRecord = PlayerRecord.find(database, player);
+		final CommandSender commandSender = getContext().getCommandSender();
+		final Collection<String> playerNames = player.getStrings();
+		final Collection<String> messages = new ArrayList<String>();
+		for (String playerName : playerNames) {
+			PlayerRecord playerRecord = PlayerRecord.find(database, playerName);
 			if (playerRecord != null && playerRecord.isBanned()) {
 				BanRecord ban = playerRecord.getActiveBan();
 				messages.addAll(ban.getFormatter().getMessages());
 			} else {
-				String message = PLAYER_NOT_BANNED.asInfoMessage(player);
+				String message = PLAYER_NOT_BANNED.asInfoMessage(playerName);
 				messages.add(message);
 			}
 		}
-		getContext().getCommandSender().sendMessage(messages.toArray(new String[messages.size()]));
+		commandSender.sendMessage(messages.toArray(new String[messages.size()]));
 	}
 
 }

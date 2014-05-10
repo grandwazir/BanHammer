@@ -5,8 +5,7 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.UUID;
+import java.util.*;
 
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.validation.NotNull;
@@ -51,6 +50,18 @@ public class BanRecord extends Record {
 		return database.find(BanRecord.class).where().eq("state", state.ordinal()).findList();
 	}
 
+	public static int count(EbeanServer database) {
+		return database.find(BanRecord.class).findRowCount();
+	}
+
+	public static List<BanRecord> list(EbeanServer database) {
+		return database.find(BanRecord.class).findList();
+	}
+
+	public static List<BanRecord> list(EbeanServer database, int count) {
+		return database.find(BanRecord.class).setMaxRows(count).findList();
+	}
+
 	public PlayerRecord getCreator() {
 		return creator;
 	}
@@ -74,6 +85,53 @@ public class BanRecord extends Record {
 	public Type getType() {
 		return (this.expiresAt == null) ? Type.PERMANENT : Type.TEMPORARY;
 	}
+
+	/**
+	 * Save a BanRecord
+	 *
+	 * @param database the database to use.
+	 * @param record the record to save.
+	 * @return true if the record was saved, false otherwise.
+	 */
+	public static boolean save(EbeanServer database, BanRecord record) {
+		int count = database.save(Arrays.asList(record));
+		return count != 0;
+	}
+
+	/**
+	 * Save a collection of BanRecord
+	 *
+	 * @param database the database to use.
+	 * @param records the records to save.
+	 * @return the number of records saved successfully.
+	 */
+	public static int save(EbeanServer database, Collection<BanRecord> records) {
+		return database.save(records);
+	}
+
+	/**
+	 * Delete a BanRecord
+	 *
+	 * @param database the database to use.
+	 * @param record the record to save.
+	 * @return true if the record was deleted, false otherwise.
+	 */
+	public static boolean delete(EbeanServer database, BanRecord record) {
+		int count = database.delete(Arrays.asList(record));
+		return count != 0;
+	}
+
+	/**
+	 * Delete a collection of BanRecord
+	 *
+	 * @param database the database to use.
+	 * @param records the records to save.
+	 * @return the number of records deleted successfully.
+	 */
+	public static int delete(EbeanServer database, Collection<BanRecord> records) {
+		return database.delete(records);
+	}
+
 
 	public void setCreator(final PlayerRecord creator) {
 		this.creator = creator;

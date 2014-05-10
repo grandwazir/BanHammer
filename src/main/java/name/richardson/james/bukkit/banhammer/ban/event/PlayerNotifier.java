@@ -15,8 +15,8 @@ import name.richardson.james.bukkit.utilities.logging.PluginLoggerFactory;
 import name.richardson.james.bukkit.banhammer.BanHammer;
 import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.NOTIFY_PLAYER_BANNED;
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.NOTIFY_PLAYER_PARDONED;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.NOTIFY_PLAYER_BANNED;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.NOTIFY_PLAYER_PARDONED;
 
 public class PlayerNotifier extends AbstractListener {
 

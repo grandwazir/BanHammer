@@ -21,8 +21,8 @@ import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
 import name.richardson.james.bukkit.banhammer.ban.OldPlayerRecord;
 import name.richardson.james.bukkit.banhammer.ban.PlayerRecordManager;
 
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.LISTENER_PLAYER_BANNED_PERMANENTLY;
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammer.LISTENER_PLAYER_BANNED_TEMPORARILY;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.LISTENER_PLAYER_BANNED_PERMANENTLY;
+import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.LISTENER_PLAYER_BANNED_TEMPORARILY;
 
 
 public final class NormalBannedPlayerListener extends AbstractListener {
