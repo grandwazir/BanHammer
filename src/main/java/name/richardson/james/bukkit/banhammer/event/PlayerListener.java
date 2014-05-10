@@ -14,7 +14,8 @@ import name.richardson.james.bukkit.utilities.formatters.time.ApproximateTimeFor
 import name.richardson.james.bukkit.utilities.formatters.time.TimeFormatter;
 import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 
-import name.richardson.james.bukkit.banhammer.record.BanRecord;
+import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
+import name.richardson.james.bukkit.banhammer.record.CurrentPlayerRecord;
 import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.LISTENER_PLAYER_BANNED_PERMANENTLY;
@@ -35,7 +36,7 @@ public final class PlayerListener extends AbstractListener {
 		this.database = database;
 	}
 
-	protected static String getKickMessage(BanRecord record) {
+	protected static String getKickMessage(CurrentBanRecord record) {
 		switch (record.getType()) {
 			case TEMPORARY: {
 				String time = TIME_FORMATTER.getHumanReadableDuration(record.getExpiresAt().getTime());
@@ -58,16 +59,16 @@ public final class PlayerListener extends AbstractListener {
 		final Player player = event.getPlayer();
 		if (!server.getOnlineMode()) return;
 		if (event.getResult() == PlayerLoginEvent.Result.KICK_BANNED) return;
-		PlayerRecord playerRecord = PlayerRecord.find(database, player.getUniqueId());
+		PlayerRecord playerRecord = CurrentPlayerRecord.find(database, player.getUniqueId());
 		if (playerRecord != null) {
 			if (playerRecord.isBanned()) {
-				final BanRecord ban = playerRecord.getActiveBan();
+				final CurrentBanRecord ban = playerRecord.getActiveBan();
 				final String message = getKickMessage(ban);
 				event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message);
 			}
 			if (playerRecord.getLastKnownName().equalsIgnoreCase(player.getName())) {
 				playerRecord.setLastKnownName(player.getName());
-				PlayerRecord.save(database, playerRecord);
+				CurrentPlayerRecord.save(database, playerRecord);
 			}
 		}
 	}

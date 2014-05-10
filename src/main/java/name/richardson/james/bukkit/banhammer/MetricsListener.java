@@ -30,6 +30,7 @@ import org.mcstats.Metrics;
 import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 
 import name.richardson.james.bukkit.banhammer.record.BanRecord;
+import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
 import name.richardson.james.bukkit.banhammer.event.BanHammerPlayerBannedEvent;
 import name.richardson.james.bukkit.banhammer.event.BanHammerPlayerPardonedEvent;
 
@@ -67,7 +68,7 @@ public class MetricsListener extends AbstractListener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerBanned(final BanHammerPlayerBannedEvent event) {
-		for (BanRecord record : event.getRecords()) {
+		for (CurrentBanRecord record : event.getRecords()) {
 			switch (record.getType()) {
 				case PERMANENT:
 					this.permenantBans++;
@@ -83,7 +84,7 @@ public class MetricsListener extends AbstractListener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerPardoned(final BanHammerPlayerPardonedEvent event) {
-		for (BanRecord record : event.getRecords()) {
+		for (CurrentBanRecord record : event.getRecords()) {
 			this.pardonedBans++;
 			this.totalPardonedBans++;
 			switch (record.getType()) {
@@ -98,7 +99,7 @@ public class MetricsListener extends AbstractListener {
 	}
 
 	private void setInitialValues() {
-		for (BanRecord record : BanRecord.list(database)) {
+		for (CurrentBanRecord record : CurrentBanRecord.list(database)) {
 			if (record.getState() == BanRecord.State.PARDONED) {
 			 	this.totalPardonedBans++;
 				continue;

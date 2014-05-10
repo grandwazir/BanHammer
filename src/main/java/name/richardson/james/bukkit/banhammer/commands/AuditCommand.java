@@ -34,7 +34,8 @@ import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositio
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 import name.richardson.james.bukkit.utilities.localisation.BukkitUtilities;
 
-import name.richardson.james.bukkit.banhammer.record.BanRecord;
+import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
+import name.richardson.james.bukkit.banhammer.record.CurrentPlayerRecord;
 import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
 import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages;
@@ -80,7 +81,7 @@ public final class AuditCommand extends AbstractCommand {
 		if (all.isSet()) {
 			if (hasPermission(commandSender, null)) {
 				final String playerName = BanHammerMessages.AUDIT_ALL_NAME.asMessage();
-				final Collection<BanRecord> bans = BanRecord.list(database);
+				final Collection<CurrentBanRecord> bans = CurrentBanRecord.list(database);
 				messages.addAll(getResponse(playerName, bans, bans.size()));
 			} else {
 				messages.add(BukkitUtilities.INVOKER_NO_PERMISSION.asErrorMessage());
@@ -91,12 +92,12 @@ public final class AuditCommand extends AbstractCommand {
 				String playerName = (this.playerName.getString() == null) ? commandSender.getName() : this.playerName.getString();
 				playerNames.add(playerName);
 			}
-			final int total = BanRecord.count(database);
+			final int total = CurrentBanRecord.count(database);
 			for (String playerName : playerNames) {
 				if (hasPermission(commandSender, playerName)) {
-					PlayerRecord record = PlayerRecord.find(database, playerName);
+					PlayerRecord record = CurrentPlayerRecord.find(database, playerName);
 					if (record != null) {
-						final List<BanRecord> bans = record.getCreatedBans();
+						final List<CurrentBanRecord> bans = record.getCreatedBans();
 						messages.addAll(getResponse(playerName, bans, total));
 					} else {
 						messages.add(PLAYER_HAS_NEVER_MADE_ANY_BANS.asInfoMessage(playerName));
@@ -109,7 +110,7 @@ public final class AuditCommand extends AbstractCommand {
 		commandSender.sendMessage(messages.toArray(new String[messages.size()]));
 	}
 
-	private Collection<String> getResponse(String playerName, Collection<BanRecord> bans, int count) {
+	private Collection<String> getResponse(String playerName, Collection<CurrentBanRecord> bans, int count) {
 		Collection<String> messages = new ArrayList<String>();
 		AuditCommandSummary summary = new AuditCommandSummary(bans, count);
 		choiceFormatter.setArguments(summary.getTotalBanCount(), playerName, summary.getTotalBanCountPercentage());

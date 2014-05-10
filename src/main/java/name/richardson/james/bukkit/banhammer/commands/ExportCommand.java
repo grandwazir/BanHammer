@@ -29,6 +29,7 @@ import com.avaje.ebean.EbeanServer;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 
+import name.richardson.james.bukkit.banhammer.record.CurrentPlayerRecord;
 import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
 
@@ -64,7 +65,7 @@ public class ExportCommand extends AbstractCommand {
 	@Override @SuppressWarnings("deprecation")
 	protected void execute() {
 		final CommandSender commandSender = getContext().getCommandSender();
-		final Collection<PlayerRecord> players = PlayerRecord.find(database, "", PlayerRecord.PlayerStatus.BANNED);
+		final Collection<PlayerRecord> players = CurrentPlayerRecord.find(database, "", PlayerRecord.PlayerStatus.BANNED);
 		for (PlayerRecord record : players) {
 			OfflinePlayer player = this.server.getOfflinePlayer(record.getLastKnownName());
 			player.setBanned(true);

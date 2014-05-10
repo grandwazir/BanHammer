@@ -33,7 +33,8 @@ import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositionalArgument;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 
-import name.richardson.james.bukkit.banhammer.record.BanRecord;
+import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
+import name.richardson.james.bukkit.banhammer.record.CurrentPlayerRecord;
 import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
 
@@ -70,15 +71,15 @@ public class PurgeCommand extends AbstractCommand {
 	@Override
 	protected void execute() {
 		final Collection<String> playerNames = this.players.getStrings();
-		final Collection<BanRecord> records = new ArrayList<BanRecord>();
+		final Collection<CurrentBanRecord> records = new ArrayList<CurrentBanRecord>();
 		final CommandSender sender = getContext().getCommandSender();
 		final List<String> messages = new ArrayList<String>();
 		boolean own = sender.hasPermission(PERMISSION_OWN);
 		boolean others = sender.hasPermission(PERMISSION_OTHERS);
 		for (String playerName : playerNames) {
-			PlayerRecord record = PlayerRecord.find(database, playerName);
+			PlayerRecord record = CurrentPlayerRecord.find(database, playerName);
 			if (record != null) {
-				for (BanRecord ban : record.getBans()) {
+				for (CurrentBanRecord ban : record.getBans()) {
 					final boolean banCreatedBySender = (ban.getCreator().getUuid().compareTo(getCommandSenderUUID()) == 0);
 					if (banCreatedBySender && !own) continue;
 					if (!banCreatedBySender && !others) continue;
@@ -89,7 +90,7 @@ public class PurgeCommand extends AbstractCommand {
 			}
 			this.choiceFormatter.setArguments(records.size(), playerName);
 			messages.add(0, choiceFormatter.getMessage());
-			BanRecord.delete(database, records);
+			CurrentBanRecord.delete(database, records);
 			sender.sendMessage(messages.toArray(new String[messages.size()]));
 		}
 	}

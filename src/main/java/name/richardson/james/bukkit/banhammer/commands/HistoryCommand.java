@@ -30,8 +30,9 @@ import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositionalArgument;
 import name.richardson.james.bukkit.utilities.localisation.BukkitUtilities;
 
-import name.richardson.james.bukkit.banhammer.record.BanRecord;
+import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
 import name.richardson.james.bukkit.banhammer.record.BanRecordFormatter;
+import name.richardson.james.bukkit.banhammer.record.CurrentPlayerRecord;
 import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
@@ -67,10 +68,10 @@ public class HistoryCommand extends AbstractCommand {
 		final String playerName = (this.playerName.getString() == null) ? sender.getName() : this.playerName.getString();
 		final List<String> messages = new ArrayList<String>();
 		if (hasPermission(sender, playerName)) {
-			PlayerRecord record = PlayerRecord.find(database, playerName);
+			PlayerRecord record = CurrentPlayerRecord.find(database, playerName);
 			if (record != null && !record.getBans().isEmpty()) {
-				final List<BanRecord> bans = record.getBans();
-				for (BanRecord ban : bans) {
+				final List<CurrentBanRecord> bans = record.getBans();
+				for (CurrentBanRecord ban : bans) {
 					BanRecordFormatter formatter = new BanRecordFormatter(ban);
 					messages.addAll(formatter.getMessages());
 				}

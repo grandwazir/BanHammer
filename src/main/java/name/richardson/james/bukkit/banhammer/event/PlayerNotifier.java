@@ -13,7 +13,7 @@ import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 import name.richardson.james.bukkit.utilities.logging.PluginLoggerFactory;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.banhammer.record.BanRecord;
+import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
 import name.richardson.james.bukkit.banhammer.record.BanRecordFormatter;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.NOTIFY_PLAYER_BANNED;
@@ -32,7 +32,7 @@ public class PlayerNotifier extends AbstractListener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerBanned(final BanHammerPlayerBannedEvent event) {
 		if (event.isSilent()) return;
-		for (BanRecord record : event.getRecords()) {
+		for (CurrentBanRecord record : event.getRecords()) {
 			BanRecordFormatter formatter = new BanRecordFormatter(record);
 			String message = NOTIFY_PLAYER_BANNED.asInfoMessage(record.getPlayer().getLastKnownName(), record.getCreator().getLastKnownName());
 			server.broadcast(message, BanHammer.NOTIFY_PERMISSION_NAME);
@@ -45,7 +45,7 @@ public class PlayerNotifier extends AbstractListener {
 	public void onPlayerPardoned(final BanHammerPlayerPardonedEvent event) {
 		logger.log(Level.FINER, "Received " + event.getEventName());
 		if (event.isSilent()) return;
-		for (BanRecord record : event.getRecords()) {
+		for (CurrentBanRecord record : event.getRecords()) {
 			String message = NOTIFY_PLAYER_PARDONED.asInfoMessage(record.getPlayer().getLastKnownName(), event.getSource());
 			server.broadcast(message, BanHammer.NOTIFY_PERMISSION_NAME);
 		}

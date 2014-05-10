@@ -1,5 +1,6 @@
 # Changelog for BanHammer (v2.4.1-SNAPSHOT)
 
+2014-05-10 15:58:16 +0100    move packages (James Richardson)  
 2014-05-10 15:10:37 +0100    finished refactoring (James Richardson)  
 2014-05-10 14:19:08 +0100    refactored commands (James Richardson)  
 2014-05-09 21:02:45 +0100    forgotton where I got to! :/ (James Richardson)  

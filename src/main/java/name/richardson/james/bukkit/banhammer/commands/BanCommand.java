@@ -30,8 +30,9 @@ import com.avaje.ebean.EbeanServer;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.argument.*;
 
-import name.richardson.james.bukkit.banhammer.record.BanRecord;
+import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
 import name.richardson.james.bukkit.banhammer.record.BanRecordBuilder;
+import name.richardson.james.bukkit.banhammer.record.CurrentPlayerRecord;
 import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.event.BanHammerPlayerBannedEvent;
 
@@ -72,12 +73,12 @@ public class BanCommand extends AbstractCommand {
 		final CommandSender commandSender = getContext().getCommandSender();
 		final Collection<String> messages = new ArrayList<String>();
 		final Collection<String> playerNames = player.getStrings();
-		final Collection<BanRecord> records = new ArrayList<BanRecord>();
+		final Collection<CurrentBanRecord> records = new ArrayList<CurrentBanRecord>();
 		final boolean silent = this.silent.isSet();
 		final long time = this.time.getDuration();
 		final UUID commandSenderUUID = getCommandSenderUUID();
 		for (String playerName : playerNames) {
-			PlayerRecord playerRecord = PlayerRecord.create(database, playerName);
+			PlayerRecord playerRecord = CurrentPlayerRecord.create(database, playerName);
 			if (hasPermission(commandSender, playerName)) {
 				if (!playerRecord.isBanned()) {
 					BanRecordBuilder builder = new BanRecordBuilder(database, playerName, commandSenderUUID, reason.getString());

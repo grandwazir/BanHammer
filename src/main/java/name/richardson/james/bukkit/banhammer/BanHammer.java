@@ -39,8 +39,8 @@ import name.richardson.james.bukkit.utilities.persistence.database.DatabaseLoade
 import name.richardson.james.bukkit.utilities.updater.BukkitDevPluginUpdater;
 import name.richardson.james.bukkit.utilities.updater.PluginUpdater;
 
-import name.richardson.james.bukkit.banhammer.record.BanRecord;
-import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
+import name.richardson.james.bukkit.banhammer.record.CurrentPlayerRecord;
 import name.richardson.james.bukkit.banhammer.event.PlayerListener;
 import name.richardson.james.bukkit.banhammer.event.PlayerNotifier;
 import name.richardson.james.bukkit.banhammer.commands.*;
@@ -65,8 +65,8 @@ public final class BanHammer extends JavaPlugin {
 	@Override
 	public List<Class<?>> getDatabaseClasses() {
 		final List<Class<?>> classes = new LinkedList<Class<?>>();
-		classes.add(BanRecord.class);
-		classes.add(PlayerRecord.class);
+		classes.add(CurrentBanRecord.class);
+		classes.add(CurrentPlayerRecord.class);
 		return classes;
 	}
 

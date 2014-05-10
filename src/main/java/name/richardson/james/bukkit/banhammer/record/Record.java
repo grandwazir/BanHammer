@@ -1,36 +1,19 @@
 package name.richardson.james.bukkit.banhammer.record;
 
-import javax.persistence.*;
 import java.sql.Timestamp;
 
-import com.avaje.ebean.validation.NotNull;
+public interface Record {
 
-@MappedSuperclass
-public abstract class Record {
+	public Timestamp getCreatedAt();
 
-	@NotNull
-	@Temporal(TemporalType.TIMESTAMP)
-	private Timestamp createdAt;
+	public long getId();
 
-	@Version
-	@Temporal(TemporalType.TIMESTAMP)
-	private Timestamp updatedAt;
+	public void setId(long id);
 
-	public Timestamp getCreatedAt() {
-		return createdAt;
-	}
+	public Timestamp getUpdatedAt();
 
+	public void setCreatedAt(Timestamp time);
 
-	public Timestamp getUpdatedAt() {
-		return updatedAt;
-	}
-
-	public void setCreatedAt(final Timestamp createdAt) {
-		this.createdAt = createdAt;
-	}
-
-	public void setUpdatedAt(final Timestamp updatedAt) {
-		this.updatedAt = updatedAt;
-	}
+	public void setUpdatedAt(Timestamp time);
 
 }

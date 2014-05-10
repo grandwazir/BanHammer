@@ -21,7 +21,7 @@ import java.util.Collection;
 
 import org.bukkit.event.HandlerList;
 
-import name.richardson.james.bukkit.banhammer.record.BanRecord;
+import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
 
 /**
  * This event is fired every time a player is banned using BanHammer.
@@ -37,7 +37,7 @@ public class BanHammerPlayerBannedEvent extends BanHammerPlayerEvent {
 	 * @param records the BanRecord associated with this event
 	 * @param silent if this event should be silent to players
 	 */
-	public BanHammerPlayerBannedEvent(final Collection<BanRecord> records, final boolean silent) {
+	public BanHammerPlayerBannedEvent(final Collection<CurrentBanRecord> records, final boolean silent) {
 		super(records, silent);
 	}
 

@@ -31,7 +31,8 @@ import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositionalArgument;
 
-import name.richardson.james.bukkit.banhammer.record.BanRecord;
+import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
+import name.richardson.james.bukkit.banhammer.record.CurrentPlayerRecord;
 import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
@@ -70,8 +71,8 @@ public class UndoCommand extends AbstractCommand {
 		final Collection<String> playerNames = this.players.getStrings();
 		final CommandSender commandSender = getContext().getCommandSender();
 		for (String playerName : playerNames) {
-			PlayerRecord playerRecord = PlayerRecord.find(database, playerName);
-			BanRecord ban = (playerRecord == null) ? null : playerRecord.getActiveBan();
+			PlayerRecord playerRecord = CurrentPlayerRecord.find(database, playerName);
+			CurrentBanRecord ban = (playerRecord == null) ? null : playerRecord.getActiveBan();
 			if (playerRecord == null) {
 				messages.add(PLAYER_NEVER_BEEN_BANNED.asWarningMessage(playerName));
 			} else if (ban == null) {
@@ -81,7 +82,7 @@ public class UndoCommand extends AbstractCommand {
 			} else if (!withinTimeLimit(commandSender, ban.getCreatedAt().getTime())) {
 				messages.add(UNDO_TIME_EXPIRED.asErrorMessage());
 			} else {
-				BanRecord.delete(database, ban);
+				CurrentBanRecord.delete(database, ban);
 				messages.add(UNDO_COMPLETE.asInfoMessage(playerName));
 			}
 		}
