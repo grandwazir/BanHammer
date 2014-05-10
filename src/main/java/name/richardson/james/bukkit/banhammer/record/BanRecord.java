@@ -2,7 +2,7 @@ package name.richardson.james.bukkit.banhammer.record;
 
 import java.sql.Timestamp;
 
-public interface BanRecord {
+public interface BanRecord extends Record {
 
 	public enum State {
 		NORMAL,

@@ -25,40 +25,27 @@ public class CurrentPlayerRecord extends SimpleRecord implements PlayerRecord {
 	private String lastKnownName;
 	private UUID uuid;
 
-	/**
-	 * Create a PlayerRecord, if necessary, by providing a UUID. If a record already exists that will be returned instead.
-	 *
-	 * @param database the database to use.
-	 * @param uuid the UUID to use.
-	 * @return a PlayerRecord for this player.
-	 */
-	public static CurrentPlayerRecord create(EbeanServer database, UUID uuid) {
-		CurrentPlayerRecord record = CurrentPlayerRecord.find(database, uuid);
-		if (record == null) {
-			record = new CurrentPlayerRecord();
-			record.setUuid(uuid);
-			String playerName = NameFetcher.getNameOf(uuid);
-			record.setLastKnownName(playerName);
-			record.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-			database.save(record);
-			record = CurrentPlayerRecord.find(database, uuid);
+	protected CurrentPlayerRecord() {}
+
+	public CurrentPlayerRecord(UUID uuid) {
+		final Timestamp now = new Timestamp(System.currentTimeMillis());
+		if (uuid != null) {
+			final String name = NameFetcher.getNameOf(uuid);
+			this.setLastKnownName(name);
+		}	else {
+			this.setLastKnownName("CONSOLE");
 		}
-		Validate.notNull(record);
-		return record;
+		this.setUuid(uuid);
+		this.setCreatedAt(now);
 	}
 
-	/**
-	 * Create a PlayerRecord, if necessary, by providing a player name. If a record already exists that will be returned instead.
-	 *
-	 * This method is potentially blocking.
-	 *
-	 * @param database the database to use.
-	 * @param playerName the name to use.
-	 * @return a PlayerRecord for this player.
-	 */
-	public static PlayerRecord create(EbeanServer database, String playerName) {
-		UUID uuid = null;
-		return create(database, uuid);
+	public CurrentPlayerRecord(String playerName) {
+		Validate.notNull(playerName);
+		final Timestamp now = new Timestamp(System.currentTimeMillis());
+		String name = NameFetcher.getNameOf(uuid);
+		this.setLastKnownName(name);
+		this.setUuid(uuid);
+		this.setCreatedAt(now);
 	}
 
 	/**
@@ -72,8 +59,8 @@ public class CurrentPlayerRecord extends SimpleRecord implements PlayerRecord {
 	 * @return an Iterable of PlayerRecords that match.
 	 */
 	public static Set<PlayerRecord> find(final EbeanServer database, final String playerName, final PlayerStatus playerStatus) {
-		Set<PlayerRecord> records = database.find(CurrentPlayerRecord.class).where().istartsWith("lastKnownName", playerName).findSet();
-		final Iterator<PlayerRecord> iterator = records.iterator();
+		Set<? extends PlayerRecord> records = database.find(CurrentPlayerRecord.class).where().istartsWith("lastKnownName", playerName).findSet();
+		final Iterator<? extends PlayerRecord> iterator = records.iterator();
 		switch (playerStatus) {
 			case BANNED:
 				while (iterator.hasNext()) {
@@ -90,7 +77,7 @@ public class CurrentPlayerRecord extends SimpleRecord implements PlayerRecord {
 					}
 				}
 		}
-		return records;
+		return new HashSet<PlayerRecord>(records);
 	}
 
 	/**
@@ -100,7 +87,7 @@ public class CurrentPlayerRecord extends SimpleRecord implements PlayerRecord {
 	 * @param uuid the UUID to search for.
 	 * @return a record or null if no record exists.
 	 */
-	public static CurrentPlayerRecord find(EbeanServer database, UUID uuid) {
+	public static PlayerRecord find(EbeanServer database, UUID uuid) {
 		return database.find(CurrentPlayerRecord.class).where().eq("uuid", uuid).findUnique();
 	}
 
@@ -113,6 +100,44 @@ public class CurrentPlayerRecord extends SimpleRecord implements PlayerRecord {
 	 */
 	public static PlayerRecord find(EbeanServer database, String playerName) {
 		return database.find(CurrentPlayerRecord.class).where().eq("lastKnownName", playerName).findUnique();
+	}
+
+	/**
+	 * Create a PlayerRecord, if necessary, by providing a player name. If a record already exists that will be returned instead.
+	 *
+	 * This method is potentially blocking.
+	 *
+	 * @param database the database to use.
+	 * @param playerName the name to use.
+	 * @return a PlayerRecord for this player.
+	 */
+	public static PlayerRecord findOrCreate(EbeanServer database, String playerName) {
+		PlayerRecord record = CurrentPlayerRecord.find(database, playerName);
+		if (record == null) {
+			record = new CurrentPlayerRecord(playerName);
+			database.save(record);
+			record = CurrentPlayerRecord.find(database, playerName);
+		}
+		Validate.notNull(record);
+		return record;
+	}
+
+	/**
+	 * Create a PlayerRecord, if necessary, by providing a UUID. If a record already exists that will be returned instead.
+	 *
+	 * @param database the database to use.
+	 * @param uuid the UUID to use.
+	 * @return a PlayerRecord for this player.
+	 */
+	public static PlayerRecord findOrCreate(EbeanServer database, UUID uuid) {
+		PlayerRecord record = CurrentPlayerRecord.find(database, uuid);
+		if (record == null) {
+			record = new CurrentPlayerRecord(uuid);
+			database.save(record);
+			record = CurrentPlayerRecord.find(database, uuid);
+		}
+		Validate.notNull(record);
+		return record;
 	}
 
 	/**
@@ -138,27 +163,27 @@ public class CurrentPlayerRecord extends SimpleRecord implements PlayerRecord {
 		return database.save(records);
 	}
 
-	@Override public CurrentBanRecord getActiveBan() {
-		for (CurrentBanRecord record : this.getBans()) {
+	@Override public BanRecord getActiveBan() {
+		for (BanRecord record : this.getBans()) {
 			if (record.getState() == BanRecord.State.NORMAL) return record;
 		}
 		return null;
 	}
 
-	@Override public List<CurrentBanRecord> getBans() {
-		return (bans == null) ? Collections.<CurrentBanRecord>emptyList() : bans;
+	@Override public List<BanRecord> getBans() {
+		List<BanRecord> bans = new ArrayList<BanRecord>();
+		if (this.bans != null) bans.addAll(bans);
+		return bans;
 	}
 
-	@Override public List<CurrentBanRecord> getCreatedBans() {
-		return (createdBans == null) ? Collections.<CurrentBanRecord>emptyList() : createdBans;
+	@Override public List<BanRecord> getCreatedBans() {
+		List<BanRecord> bans = new ArrayList<BanRecord>();
+		if (this.createdBans != null) bans.addAll(createdBans);
+		return bans;
 	}
 
 	@Override public long getId() {
 		return id;
-	}
-
-	@Override public void setId(long id) {
-		this.id = id;
 	}
 
 	@Override public String getLastKnownName() {
@@ -170,18 +195,28 @@ public class CurrentPlayerRecord extends SimpleRecord implements PlayerRecord {
 	}
 
 	@Override public boolean isBanned() {
-		for (CurrentBanRecord record : this.getBans()) {
+		for (BanRecord record : this.getBans()) {
 			if (record.getState() == BanRecord.State.NORMAL) return true;
 		}
 		return false;
 	}
 
-	@Override public void setBans(final List<CurrentBanRecord> bans) {
-		this.bans = bans;
+	@Override public void setBans(final Set<BanRecord> bans) {
+		this.bans.clear();
+		for (BanRecord ban : bans) {
+			if (ban instanceof CurrentBanRecord) this.bans.add((CurrentBanRecord) ban);
+		}
 	}
 
-	@Override public void setCreatedBans(final List<CurrentBanRecord> createdBans) {
-		this.createdBans = createdBans;
+	@Override public void setCreatedBans(final Set<BanRecord> createdBans) {
+		this.createdBans.clear();
+		for (BanRecord ban : bans) {
+			if (ban instanceof CurrentBanRecord) this.createdBans.add((CurrentBanRecord) ban);
+		}
+	}
+
+	@Override public void setId(long id) {
+		this.id = id;
 	}
 
 	@Override public void setLastKnownName(final String lastKnownName) {
@@ -190,11 +225,6 @@ public class CurrentPlayerRecord extends SimpleRecord implements PlayerRecord {
 
 	@Override public void setUuid(final UUID uuid) {
 		this.uuid = uuid;
-	}
-
-	public void updateName() {
-		String playerName = NameFetcher.getNameOf(uuid);
-		setLastKnownName(playerName);
 	}
 
 }

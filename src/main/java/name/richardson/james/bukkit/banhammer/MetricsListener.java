@@ -68,7 +68,7 @@ public class MetricsListener extends AbstractListener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerBanned(final BanHammerPlayerBannedEvent event) {
-		for (CurrentBanRecord record : event.getRecords()) {
+		for (BanRecord record : event.getRecords()) {
 			switch (record.getType()) {
 				case PERMANENT:
 					this.permenantBans++;
@@ -84,7 +84,7 @@ public class MetricsListener extends AbstractListener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerPardoned(final BanHammerPlayerPardonedEvent event) {
-		for (CurrentBanRecord record : event.getRecords()) {
+		for (BanRecord record : event.getRecords()) {
 			this.pardonedBans++;
 			this.totalPardonedBans++;
 			switch (record.getType()) {
@@ -99,7 +99,7 @@ public class MetricsListener extends AbstractListener {
 	}
 
 	private void setInitialValues() {
-		for (CurrentBanRecord record : CurrentBanRecord.list(database)) {
+		for (BanRecord record : CurrentBanRecord.list(database)) {
 			if (record.getState() == BanRecord.State.PARDONED) {
 			 	this.totalPardonedBans++;
 				continue;

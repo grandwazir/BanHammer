@@ -11,15 +11,17 @@ import com.avaje.ebean.validation.NotNull;
 @Table(name = "banhammer_bans")
 public class CurrentBanRecord extends SimpleRecord implements BanRecord {
 
-	@ManyToOne(targetEntity = OldPlayerRecord.class, fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
+	@ManyToOne(targetEntity = CurrentPlayerRecord.class, fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
 	@PrimaryKeyJoinColumn(name = "creatorId", referencedColumnName = "id")
-	private PlayerRecord creator;
+	private CurrentPlayerRecord creator;
 
 	private Timestamp expiresAt;
+	@Id
+	private long id;
 
 	@ManyToOne(targetEntity = CurrentPlayerRecord.class, fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
 	@PrimaryKeyJoinColumn(name = "playerId", referencedColumnName = "id")
-	private PlayerRecord player;
+	private CurrentPlayerRecord player;
 
 	@NotNull
 	private String reason;
@@ -34,20 +36,26 @@ public class CurrentBanRecord extends SimpleRecord implements BanRecord {
 	 * @param state the state to match.
 	 * @return the BanRecords that match.
 	 */
-	public static Collection<CurrentBanRecord> find(EbeanServer database, State state) {
-		return database.find(CurrentBanRecord.class).where().eq("state", state.ordinal()).findList();
+	public static Collection<BanRecord> find(EbeanServer database, State state) {
+		List<BanRecord> records = new ArrayList<BanRecord>();
+		records.addAll(database.find(CurrentBanRecord.class).where().eq("state", state.ordinal()).findList());
+		return records;
 	}
 
 	public static int count(EbeanServer database) {
 		return database.find(CurrentBanRecord.class).findRowCount();
 	}
 
-	public static List<CurrentBanRecord> list(EbeanServer database) {
-		return database.find(CurrentBanRecord.class).findList();
+	public static List<BanRecord> list(EbeanServer database) {
+		List<BanRecord> records = new ArrayList<BanRecord>();
+		records.addAll(database.find(CurrentBanRecord.class).findList());
+		return records;
 	}
 
-	public static List<CurrentBanRecord> list(EbeanServer database, int count) {
-		return database.find(CurrentBanRecord.class).setMaxRows(count).findList();
+	public static List<BanRecord> list(EbeanServer database, int count) {
+		List<BanRecord> records = new ArrayList<BanRecord>();
+		records.addAll(database.find(CurrentBanRecord.class).setMaxRows(count).findList());
+		return records;
 	}
 
 	@Override public PlayerRecord getCreator() {
@@ -56,6 +64,14 @@ public class CurrentBanRecord extends SimpleRecord implements BanRecord {
 
 	@Override public Timestamp getExpiresAt() {
 		return expiresAt;
+	}
+
+	@Override public long getId() {
+		return id;
+	}
+
+	@Override public void setId(final long id) {
+
 	}
 
 	@Override public PlayerRecord getPlayer() {
@@ -122,7 +138,7 @@ public class CurrentBanRecord extends SimpleRecord implements BanRecord {
 
 
 	@Override public void setCreator(final PlayerRecord creator) {
-		this.creator = creator;
+		this.creator = (CurrentPlayerRecord) creator;
 	}
 
 	@Override public void setExpiresAt(final Timestamp expiresAt) {
@@ -130,7 +146,7 @@ public class CurrentBanRecord extends SimpleRecord implements BanRecord {
 	}
 
 	@Override public void setPlayer(final PlayerRecord player) {
-		this.player = player;
+		this.player = (CurrentPlayerRecord) player;
 	}
 
 	@Override public void setReason(final String reason) {

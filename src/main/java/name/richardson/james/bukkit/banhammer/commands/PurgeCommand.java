@@ -33,6 +33,7 @@ import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositionalArgument;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 
+import name.richardson.james.bukkit.banhammer.record.BanRecord;
 import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
 import name.richardson.james.bukkit.banhammer.record.CurrentPlayerRecord;
 import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
@@ -71,7 +72,7 @@ public class PurgeCommand extends AbstractCommand {
 	@Override
 	protected void execute() {
 		final Collection<String> playerNames = this.players.getStrings();
-		final Collection<CurrentBanRecord> records = new ArrayList<CurrentBanRecord>();
+		final Collection<BanRecord> records = new ArrayList<BanRecord>();
 		final CommandSender sender = getContext().getCommandSender();
 		final List<String> messages = new ArrayList<String>();
 		boolean own = sender.hasPermission(PERMISSION_OWN);
@@ -79,7 +80,7 @@ public class PurgeCommand extends AbstractCommand {
 		for (String playerName : playerNames) {
 			PlayerRecord record = CurrentPlayerRecord.find(database, playerName);
 			if (record != null) {
-				for (CurrentBanRecord ban : record.getBans()) {
+				for (BanRecord ban : record.getBans()) {
 					final boolean banCreatedBySender = (ban.getCreator().getUuid().compareTo(getCommandSenderUUID()) == 0);
 					if (banCreatedBySender && !own) continue;
 					if (!banCreatedBySender && !others) continue;
@@ -90,7 +91,7 @@ public class PurgeCommand extends AbstractCommand {
 			}
 			this.choiceFormatter.setArguments(records.size(), playerName);
 			messages.add(0, choiceFormatter.getMessage());
-			CurrentBanRecord.delete(database, records);
+			database.delete(records);
 			sender.sendMessage(messages.toArray(new String[messages.size()]));
 		}
 	}

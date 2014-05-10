@@ -29,9 +29,7 @@ import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositionalArgument;
 
-import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
-import name.richardson.james.bukkit.banhammer.record.CurrentPlayerRecord;
-import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.record.*;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
 
@@ -66,8 +64,9 @@ public class CheckCommand extends AbstractCommand {
 		for (String playerName : playerNames) {
 			PlayerRecord playerRecord = CurrentPlayerRecord.find(database, playerName);
 			if (playerRecord != null && playerRecord.isBanned()) {
-				CurrentBanRecord ban = playerRecord.getActiveBan();
-				messages.addAll(ban.getFormatter().getMessages());
+				BanRecord ban = playerRecord.getActiveBan();
+				BanRecordFormatter formatter = new BanRecordFormatter(ban);
+				messages.addAll(formatter.getMessages());
 			} else {
 				String message = PLAYER_NOT_BANNED.asInfoMessage(playerName);
 				messages.add(message);

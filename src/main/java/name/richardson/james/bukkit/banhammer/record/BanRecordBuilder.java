@@ -34,7 +34,7 @@ public final class BanRecordBuilder {
 	}
 
 	public void setCreator(UUID creatorUUID) {
-		final PlayerRecord record = CurrentPlayerRecord.create(database, creatorUUID);
+		final PlayerRecord record = CurrentPlayerRecord.findOrCreate(database, creatorUUID);
 		this.record.setCreator(record);
 	}
 
@@ -51,13 +51,12 @@ public final class BanRecordBuilder {
 	}
 
 	public void setPlayer(UUID playerUUID) {
-		CurrentPlayerRecord record = CurrentPlayerRecord.create(database, playerUUID);
-		record.updateName();
+		PlayerRecord record = CurrentPlayerRecord.findOrCreate(database, playerUUID);
 		this.record.setPlayer(record);
 	}
 
 	public void setPlayer(String playerName) {
-		PlayerRecord record = CurrentPlayerRecord.create(database, playerName);
+		PlayerRecord record = CurrentPlayerRecord.findOrCreate(database, playerName);
 		record.setLastKnownName(playerName);
 		this.record.setPlayer(record);
 	}

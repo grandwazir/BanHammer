@@ -21,6 +21,7 @@ import java.util.Collection;
 
 import org.bukkit.event.HandlerList;
 
+import name.richardson.james.bukkit.banhammer.record.BanRecord;
 import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
 
 /**
@@ -42,7 +43,7 @@ public class BanHammerPlayerPardonedEvent extends BanHammerPlayerEvent {
 	 * @param records the BanRecord associated with this event
 	 * @param silent if this event should be silent to players
 	 */
-	public BanHammerPlayerPardonedEvent(final Collection<CurrentBanRecord> records, final boolean silent, String source) {
+	public BanHammerPlayerPardonedEvent(final Collection<BanRecord> records, final boolean silent, String source) {
 		super(records, silent);
 		this.source = source;
 	}

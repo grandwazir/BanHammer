@@ -16,12 +16,12 @@ import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanH
 public class BanRecordFormatter {
 
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("d MMM yyyy HH:mm (z)");
-	private final CurrentBanRecord ban;
+	private final BanRecord ban;
 	private final TimeFormatter durationFormatter = new PreciseDurationTimeFormatter();
 	private final List<String> messages = new ArrayList<String>();
 	private final TimeFormatter timeFormatter = new ApproximateTimeFormatter();
 
-	public BanRecordFormatter(CurrentBanRecord ban) {
+	public BanRecordFormatter(BanRecord ban) {
 		this.ban = ban;
 		messages.add(getHeader());
 		messages.add(getReason());

@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import name.richardson.james.bukkit.banhammer.record.BanRecord;
 import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
 
 public final class AuditCommandSummary {
 
-	private final Collection<CurrentBanRecord> bans;
+	private final Collection<BanRecord> bans;
 	private int expiredBans;
 	private int normalBans;
 	private int pardonedBans;
@@ -18,7 +19,7 @@ public final class AuditCommandSummary {
 	private int temporaryBans;
 	private int total;
 
-	protected AuditCommandSummary(Collection<CurrentBanRecord> bans, int total) {
+	protected AuditCommandSummary(Collection<BanRecord> bans, int total) {
 		this.bans = bans;
 		this.total = total;
 		this.update();
@@ -85,7 +86,7 @@ public final class AuditCommandSummary {
 	}
 
 	private void update() {
-		for (CurrentBanRecord record : bans) {
+		for (BanRecord record : bans) {
 			switch (record.getType()) {
 				case PERMANENT:
 					permanentBans++;

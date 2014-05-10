@@ -7,6 +7,7 @@ import java.util.Map;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
+import name.richardson.james.bukkit.banhammer.record.BanRecord;
 import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
 
 public class KickPlayerTask implements Runnable {
@@ -14,9 +15,9 @@ public class KickPlayerTask implements Runnable {
 	private final Server server;
 	private final Map<String, String> players = new HashMap<String, String>();
 
-	public KickPlayerTask(Server server, Collection<CurrentBanRecord> records) {
+	public KickPlayerTask(Server server, Collection<BanRecord> records) {
 		this.server = server;
-		for (CurrentBanRecord record : records) {
+		for (BanRecord record : records) {
 			players.put(record.getPlayer().getLastKnownName(), PlayerListener.getKickMessage(record));
 		}
 	}

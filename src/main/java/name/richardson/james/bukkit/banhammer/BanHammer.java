@@ -144,7 +144,7 @@ public final class BanHammer extends JavaPlugin {
 		commands.add(command);
 		command = new UndoCommand(database, configuration.getUndoTime());
 		commands.add(command);
-		// create the invoker
+		// findOrCreate the invoker
 		command = new HelpCommand(commands, "bh");
 		CommandInvoker invoker = new FallthroughCommandInvoker(this, this.getServer().getScheduler(), command);
 		invoker.addCommands(commands);

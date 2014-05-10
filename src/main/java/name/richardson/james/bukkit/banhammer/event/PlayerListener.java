@@ -14,6 +14,7 @@ import name.richardson.james.bukkit.utilities.formatters.time.ApproximateTimeFor
 import name.richardson.james.bukkit.utilities.formatters.time.TimeFormatter;
 import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 
+import name.richardson.james.bukkit.banhammer.record.BanRecord;
 import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
 import name.richardson.james.bukkit.banhammer.record.CurrentPlayerRecord;
 import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
@@ -36,7 +37,7 @@ public final class PlayerListener extends AbstractListener {
 		this.database = database;
 	}
 
-	protected static String getKickMessage(CurrentBanRecord record) {
+	protected static String getKickMessage(BanRecord record) {
 		switch (record.getType()) {
 			case TEMPORARY: {
 				String time = TIME_FORMATTER.getHumanReadableDuration(record.getExpiresAt().getTime());
@@ -62,7 +63,7 @@ public final class PlayerListener extends AbstractListener {
 		PlayerRecord playerRecord = CurrentPlayerRecord.find(database, player.getUniqueId());
 		if (playerRecord != null) {
 			if (playerRecord.isBanned()) {
-				final CurrentBanRecord ban = playerRecord.getActiveBan();
+				final BanRecord ban = playerRecord.getActiveBan();
 				final String message = getKickMessage(ban);
 				event.disallow(PlayerLoginEvent.Result.KICK_BANNED, message);
 			}

@@ -1,6 +1,7 @@
 package name.richardson.james.bukkit.banhammer.record;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public interface PlayerRecord {
@@ -11,11 +12,11 @@ public interface PlayerRecord {
 		CREATOR
 	}
 
-	public CurrentBanRecord getActiveBan();
+	public BanRecord getActiveBan();
 
-	public List<CurrentBanRecord> getBans();
+	public List<BanRecord> getBans();
 
-	public List<CurrentBanRecord> getCreatedBans();
+	public List<BanRecord> getCreatedBans();
 
 	public String getLastKnownName();
 
@@ -23,9 +24,9 @@ public interface PlayerRecord {
 
 	public boolean isBanned();
 
-	public void setBans(List<CurrentBanRecord> bans);
+	public void setBans(Set<BanRecord> bans);
 
-	public void setCreatedBans(List<CurrentBanRecord> createdBans);
+	public void setCreatedBans(Set<BanRecord> createdBans);
 
 	public void setLastKnownName(String lastKnownName);
 

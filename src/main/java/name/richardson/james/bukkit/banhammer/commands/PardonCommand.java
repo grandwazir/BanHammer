@@ -78,10 +78,10 @@ public class PardonCommand extends AbstractCommand {
 		final List<String> messages = new ArrayList<String>();
 		final Collection<String> players = this.players.getStrings();
 		final CommandSender sender = getContext().getCommandSender();
-		final Collection<CurrentBanRecord> bans = new ArrayList<CurrentBanRecord>();
+		final Collection<BanRecord> bans = new ArrayList<BanRecord>();
 		for (String playerName : players) {
 			final PlayerRecord playerRecord = CurrentPlayerRecord.find(database, playerName);
-			final CurrentBanRecord ban = playerRecord.getActiveBan();
+			final BanRecord ban = playerRecord.getActiveBan();
 			if (ban != null) {
 				if (hasPermission(sender, ban.getCreator().getUuid())) {
 					ban.setState(BanRecord.State.PARDONED);
@@ -94,7 +94,7 @@ public class PardonCommand extends AbstractCommand {
 				messages.add(PLAYER_NOT_BANNED.asInfoMessage(playerName));
 			}
 		}
-		CurrentBanRecord.save(database, bans);
+		database.delete(bans);
 		new BanHammerPlayerPardonedEvent(bans, silent, sender.getName());
 		sender.sendMessage(messages.toArray(new String[messages.size()]));
 	}

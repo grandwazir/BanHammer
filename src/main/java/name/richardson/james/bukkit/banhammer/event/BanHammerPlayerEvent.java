@@ -22,6 +22,7 @@ import java.util.*;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+import name.richardson.james.bukkit.banhammer.record.BanRecord;
 import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
 
 /**
@@ -34,14 +35,14 @@ public abstract class BanHammerPlayerEvent extends Event {
 	 */
 	private static final HandlerList handlers = new HandlerList();
 
-	public Set<CurrentBanRecord> getRecords() {
+	public Set<BanRecord> getRecords() {
 		return Collections.unmodifiableSet(records);
 	}
 
 	/**
 	 * The ban record.
 	 */
-	private final Set<CurrentBanRecord> records = new HashSet<CurrentBanRecord>();
+	private final Set<BanRecord> records = new HashSet<BanRecord>();
 
 	/**
 	 * If this event is silent.
@@ -54,7 +55,7 @@ public abstract class BanHammerPlayerEvent extends Event {
 	 * @param records the BanRecord associated with this event
 	 * @param silent if this event should be silent to players
 	 */
-	public BanHammerPlayerEvent(final Collection<CurrentBanRecord> records, final boolean silent) {
+	public BanHammerPlayerEvent(final Collection<BanRecord> records, final boolean silent) {
 		this.records.addAll(records);
 		this.silent = silent;
 	}
