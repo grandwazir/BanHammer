@@ -14,10 +14,7 @@ import name.richardson.james.bukkit.utilities.formatters.time.ApproximateTimeFor
 import name.richardson.james.bukkit.utilities.formatters.time.TimeFormatter;
 import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 
-import name.richardson.james.bukkit.banhammer.record.BanRecord;
-import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
-import name.richardson.james.bukkit.banhammer.record.CurrentPlayerRecord;
-import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.record.*;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.LISTENER_PLAYER_BANNED_PERMANENTLY;
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.LISTENER_PLAYER_BANNED_TEMPORARILY;
@@ -60,7 +57,7 @@ public final class PlayerListener extends AbstractListener {
 		final Player player = event.getPlayer();
 		if (!server.getOnlineMode()) return;
 		if (event.getResult() == PlayerLoginEvent.Result.KICK_BANNED) return;
-		PlayerRecord playerRecord = CurrentPlayerRecord.find(database, player.getUniqueId());
+		PlayerRecord playerRecord = PlayerRecordFactory.find(database, player.getUniqueId());
 		if (playerRecord != null) {
 			if (playerRecord.isBanned()) {
 				final BanRecord ban = playerRecord.getActiveBan();

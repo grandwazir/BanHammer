@@ -30,7 +30,7 @@ import org.mcstats.Metrics;
 import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 
 import name.richardson.james.bukkit.banhammer.record.BanRecord;
-import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
+import name.richardson.james.bukkit.banhammer.record.BanRecordFactory;
 import name.richardson.james.bukkit.banhammer.event.BanHammerPlayerBannedEvent;
 import name.richardson.james.bukkit.banhammer.event.BanHammerPlayerPardonedEvent;
 
@@ -99,7 +99,7 @@ public class MetricsListener extends AbstractListener {
 	}
 
 	private void setInitialValues() {
-		for (BanRecord record : CurrentBanRecord.list(database)) {
+		for (BanRecord record : BanRecordFactory.list(database)) {
 			if (record.getState() == BanRecord.State.PARDONED) {
 			 	this.totalPardonedBans++;
 				continue;

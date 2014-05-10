@@ -34,10 +34,7 @@ import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositio
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 import name.richardson.james.bukkit.utilities.localisation.BukkitUtilities;
 
-import name.richardson.james.bukkit.banhammer.record.BanRecord;
-import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
-import name.richardson.james.bukkit.banhammer.record.CurrentPlayerRecord;
-import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.record.*;
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
 import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages;
 
@@ -82,7 +79,7 @@ public final class AuditCommand extends AbstractCommand {
 		if (all.isSet()) {
 			if (hasPermission(commandSender, null)) {
 				final String playerName = BanHammerMessages.AUDIT_ALL_NAME.asMessage();
-				final Collection<BanRecord> bans = CurrentBanRecord.list(database);
+				final Collection<BanRecord> bans = BanRecordFactory.list(database);
 				messages.addAll(getResponse(playerName, bans, bans.size()));
 			} else {
 				messages.add(BukkitUtilities.INVOKER_NO_PERMISSION.asErrorMessage());
@@ -93,10 +90,10 @@ public final class AuditCommand extends AbstractCommand {
 				String playerName = (this.playerName.getString() == null) ? commandSender.getName() : this.playerName.getString();
 				playerNames.add(playerName);
 			}
-			final int total = CurrentBanRecord.count(database);
+			final int total = BanRecordFactory.count(database);
 			for (String playerName : playerNames) {
 				if (hasPermission(commandSender, playerName)) {
-					PlayerRecord record = CurrentPlayerRecord.find(database, playerName);
+					PlayerRecord record = PlayerRecordFactory.find(database, playerName);
 					if (record != null) {
 						final List<BanRecord> bans = record.getCreatedBans();
 						messages.addAll(getResponse(playerName, bans, total));

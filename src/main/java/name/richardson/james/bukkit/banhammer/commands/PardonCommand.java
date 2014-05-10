@@ -35,10 +35,7 @@ import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositio
 import name.richardson.james.bukkit.utilities.command.argument.SilentSwitchArgument;
 
 import name.richardson.james.bukkit.banhammer.event.BanHammerPlayerPardonedEvent;
-import name.richardson.james.bukkit.banhammer.record.BanRecord;
-import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
-import name.richardson.james.bukkit.banhammer.record.CurrentPlayerRecord;
-import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.record.*;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
 
@@ -80,7 +77,7 @@ public class PardonCommand extends AbstractCommand {
 		final CommandSender sender = getContext().getCommandSender();
 		final Collection<BanRecord> bans = new ArrayList<BanRecord>();
 		for (String playerName : players) {
-			final PlayerRecord playerRecord = CurrentPlayerRecord.find(database, playerName);
+			final PlayerRecord playerRecord = PlayerRecordFactory.find(database, playerName);
 			final BanRecord ban = playerRecord.getActiveBan();
 			if (ban != null) {
 				if (hasPermission(sender, ban.getCreator().getUuid())) {

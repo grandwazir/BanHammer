@@ -29,10 +29,7 @@ import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.argument.BanCountOptionArgument;
 import name.richardson.james.bukkit.utilities.command.argument.IntegerMarshaller;
 
-import name.richardson.james.bukkit.banhammer.record.BanRecord;
-import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
-import name.richardson.james.bukkit.banhammer.record.BanRecordFormatter;
-import name.richardson.james.bukkit.banhammer.record.SimpleBanRecordFormatter;
+import name.richardson.james.bukkit.banhammer.record.*;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
 
@@ -63,7 +60,7 @@ public class RecentCommand extends AbstractCommand {
 	@Override
 	protected void execute() {
 		int count = this.count.getInteger();
-		final List<BanRecord> bans = CurrentBanRecord.list(database, count);
+		final List<BanRecord> bans = BanRecordFactory.list(database, count);
 		final List<String> messages = new ArrayList<String>();
 		if (bans.isEmpty()) {
 			messages.add(RECENT_NO_BANS.asInfoMessage());

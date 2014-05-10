@@ -31,6 +31,8 @@ public interface BanRecord extends Record {
 
 	public void setExpiresAt(Timestamp expiresAt);
 
+	public void setExpiryTime(long time);
+
 	public void setPlayer(PlayerRecord player);
 
 	public void setReason(String reason);
