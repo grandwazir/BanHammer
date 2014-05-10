@@ -21,6 +21,7 @@ public class CurrentPlayerRecord extends SimpleRecord implements PlayerRecord {
 	@OneToMany(mappedBy = "creator", targetEntity = CurrentBanRecord.class)
 	private List<CurrentBanRecord> createdBans;
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@NotNull
 	private long id;
 	@NotNull
@@ -31,12 +32,8 @@ public class CurrentPlayerRecord extends SimpleRecord implements PlayerRecord {
 
 	protected CurrentPlayerRecord(UUID uuid) {
 		final Timestamp now = new Timestamp(System.currentTimeMillis());
-		if (uuid != null) {
-			final String name = NameFetcher.getNameOf(uuid);
-			this.setLastKnownName(name);
-		}	else {
-			this.setLastKnownName("CONSOLE");
-		}
+		final String name = NameFetcher.getNameOf(uuid);
+		this.setLastKnownName(name);
 		this.setUuid(uuid);
 		this.setCreatedAt(now);
 	}

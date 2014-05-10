@@ -66,7 +66,7 @@ public final class PlayerListener extends AbstractListener {
 			}
 			if (playerRecord.getLastKnownName().equalsIgnoreCase(player.getName())) {
 				playerRecord.setLastKnownName(player.getName());
-				CurrentPlayerRecord.save(database, playerRecord);
+				database.save(playerRecord);
 			}
 		}
 	}

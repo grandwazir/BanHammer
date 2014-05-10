@@ -8,7 +8,7 @@ import java.util.UUID;
 import com.avaje.ebean.EbeanServer;
 import org.apache.commons.lang.Validate;
 
-public class PlayerRecordFactory {
+public final class PlayerRecordFactory {
 
 	private PlayerRecordFactory() {}
 

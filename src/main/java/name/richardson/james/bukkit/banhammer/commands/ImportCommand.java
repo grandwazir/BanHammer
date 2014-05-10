@@ -26,12 +26,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 
 import com.avaje.ebean.EbeanServer;
+import sun.net.www.content.text.plain;
 
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.ReasonPositionalArgument;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 
+import name.richardson.james.bukkit.banhammer.record.BanRecord;
+import name.richardson.james.bukkit.banhammer.record.BanRecordFactory;
+import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.record.PlayerRecordFactory;
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
@@ -71,14 +76,14 @@ public class ImportCommand extends AbstractCommand {
 		}
 	}
 
-	@Override @SuppressWarnings("deprecation")
-	protected void execute() {
+	@SuppressWarnings("deprecation") protected void execute() {
 		final String reason = (this.reason.getString() == null) ? IMPORT_DEFAULT_REASON.asMessage() : this.reason.getString();
 		final CommandSender commandSender = getContext().getCommandSender();
-		final UUID commandSenderUUID = getCommandSenderUUID();
+		final PlayerRecord creatorRecord = PlayerRecordFactory.findOrCreate(database, commandSender.getName());
 		for (OfflinePlayer player : this.server.getBannedPlayers()) {
-			BanRecordBuilder builder = new BanRecordBuilder(database, player.getName(), commandSenderUUID, reason);
-			builder.save();
+			PlayerRecord playerRecord = PlayerRecordFactory.findOrCreate(database, player.getName());
+			BanRecord banRecord = BanRecordFactory.create(playerRecord, creatorRecord, reason);
+			database.save(banRecord);
 			player.setBanned(false);
 		}
 		choiceFormatter.setArguments(this.server.getBannedPlayers().size());
