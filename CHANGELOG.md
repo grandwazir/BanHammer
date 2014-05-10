@@ -1,5 +1,7 @@
 # Changelog for BanHammer (v2.4.1-SNAPSHOT)
 
+2014-05-10 19:26:01 +0100    strategy shouldn't be necessary (James Richardson)  
+2014-05-10 19:16:10 +0100    fixed some bugs in the factories (James Richardson)  
 2014-05-10 19:00:54 +0100    added cahcing to UUIDFetcher (James Richardson)  
 2014-05-10 18:58:50 +0100    added caching to NameFetcher (James Richardson)  
 2014-05-10 18:23:26 +0100    switch to factory methods (James Richardson)  

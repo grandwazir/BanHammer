@@ -11,6 +11,7 @@ import com.avaje.ebean.validation.NotNull;
 import org.apache.commons.lang.Validate;
 
 import name.richardson.james.bukkit.banhammer.utilities.NameFetcher;
+import name.richardson.james.bukkit.banhammer.utilities.UUIDFetcher;
 
 @Entity
 @Table(name = "banhammer_players")
@@ -22,7 +23,6 @@ public class CurrentPlayerRecord extends SimpleRecord implements PlayerRecord {
 	private List<CurrentBanRecord> createdBans;
 	@Id
 	@GeneratedValue
-	@NotNull
 	private long id;
 	@NotNull
 	private String lastKnownName;
@@ -41,8 +41,8 @@ public class CurrentPlayerRecord extends SimpleRecord implements PlayerRecord {
 	protected CurrentPlayerRecord(String playerName) {
 		Validate.notNull(playerName);
 		final Timestamp now = new Timestamp(System.currentTimeMillis());
-		String name = NameFetcher.getNameOf(uuid);
-		this.setLastKnownName(name);
+		UUID uuid = UUIDFetcher.getUUIDOf(playerName);
+		this.setLastKnownName(playerName);
 		this.setUuid(uuid);
 		this.setCreatedAt(now);
 	}
