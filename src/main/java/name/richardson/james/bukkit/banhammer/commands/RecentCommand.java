@@ -29,8 +29,8 @@ import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.argument.BanCountOptionArgument;
 import name.richardson.james.bukkit.utilities.command.argument.IntegerMarshaller;
 
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
-import name.richardson.james.bukkit.banhammer.ban.BanRecordFormatter;
+import name.richardson.james.bukkit.banhammer.record.BanRecord;
+import name.richardson.james.bukkit.banhammer.record.BanRecordFormatter;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
 

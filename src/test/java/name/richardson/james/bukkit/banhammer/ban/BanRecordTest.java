@@ -5,6 +5,8 @@ import java.sql.Timestamp;
 import org.junit.Assert;
 import org.junit.Test;
 
+import name.richardson.james.bukkit.banhammer.record.BanRecord;
+
 public class BanRecordTest {
 
 	@Test

@@ -1,4 +1,4 @@
-package name.richardson.james.bukkit.banhammer.ban;
+package name.richardson.james.bukkit.banhammer.record;
 
 import java.sql.Timestamp;
 import java.util.UUID;

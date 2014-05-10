@@ -24,17 +24,18 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
+import com.avaje.ebean.EbeanServer;
 import org.mcstats.Metrics;
 
 import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 
-import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
-import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerBannedEvent;
-import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
+import name.richardson.james.bukkit.banhammer.record.BanRecord;
+import name.richardson.james.bukkit.banhammer.event.BanHammerPlayerBannedEvent;
+import name.richardson.james.bukkit.banhammer.event.BanHammerPlayerPardonedEvent;
 
 public class MetricsListener extends AbstractListener {
 
-	private final BanRecordManager banRecordManager;
+	private final EbeanServer database;
 	private final Metrics metrics;
 
 	/** The number of bans pardoned since the server started. */
@@ -55,9 +56,9 @@ public class MetricsListener extends AbstractListener {
 	/** The total number of temporary bans made by this server. */
 	private int totalTemporaryBans;
 
-	public MetricsListener(Plugin plugin, PluginManager pluginManager, BanRecordManager banRecordManager) throws IOException {
+	public MetricsListener(Plugin plugin, PluginManager pluginManager, EbeanServer database) throws IOException {
 		super(plugin, pluginManager);
-		this.banRecordManager = banRecordManager;
+		this.database = database;
 		this.metrics = new Metrics(plugin);
 		this.setInitialValues();
 		this.setupCustomMetrics();
@@ -66,35 +67,39 @@ public class MetricsListener extends AbstractListener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerBanned(final BanHammerPlayerBannedEvent event) {
-		switch (event.getRecord().getType()) {
-			case PERMANENT:
-				this.permenantBans++;
-				this.totalPermanentBans++;
-				break;
-			case TEMPORARY:
-				this.temporaryBans++;
-				this.totalTemporaryBans++;
-				break;
+		for (BanRecord record : event.getRecords()) {
+			switch (record.getType()) {
+				case PERMANENT:
+					this.permenantBans++;
+					this.totalPermanentBans++;
+					break;
+				case TEMPORARY:
+					this.temporaryBans++;
+					this.totalTemporaryBans++;
+					break;
+			}
 		}
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerPardoned(final BanHammerPlayerPardonedEvent event) {
-		this.pardonedBans++;
-		this.totalPardonedBans++;
-		switch (event.getRecord().getType()) {
-			case PERMANENT:
-				this.totalPermanentBans--;
-				break;
-			case TEMPORARY:
-				this.totalTemporaryBans--;
-				break;
+		for (BanRecord record : event.getRecords()) {
+			this.pardonedBans++;
+			this.totalPardonedBans++;
+			switch (record.getType()) {
+				case PERMANENT:
+					this.totalPermanentBans--;
+					break;
+				case TEMPORARY:
+					this.totalTemporaryBans--;
+					break;
+			}
 		}
 	}
 
 	private void setInitialValues() {
-		for (OldBanRecord record : banRecordManager.list()) {
-			if (record.getState() == OldBanRecord.State.PARDONED) {
+		for (BanRecord record : BanRecord.list(database)) {
+			if (record.getState() == BanRecord.State.PARDONED) {
 			 	this.totalPardonedBans++;
 				continue;
 			}

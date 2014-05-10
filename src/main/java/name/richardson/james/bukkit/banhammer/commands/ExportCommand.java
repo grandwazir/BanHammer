@@ -29,7 +29,7 @@ import com.avaje.ebean.EbeanServer;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;

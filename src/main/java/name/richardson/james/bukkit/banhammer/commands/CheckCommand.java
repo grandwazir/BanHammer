@@ -29,8 +29,8 @@ import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositionalArgument;
 
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.record.BanRecord;
+import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
 

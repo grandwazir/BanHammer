@@ -1,8 +1,6 @@
-package name.richardson.james.bukkit.banhammer.ban;
+package name.richardson.james.bukkit.banhammer.record;
 
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Version;
+import javax.persistence.*;
 import java.sql.Timestamp;
 
 import com.avaje.ebean.validation.NotNull;
@@ -11,19 +9,17 @@ import com.avaje.ebean.validation.NotNull;
 public abstract class Record {
 
 	@NotNull
+	@Temporal(TemporalType.TIMESTAMP)
 	private Timestamp createdAt;
-	@Id
-	private long id;
+
 	@Version
+	@Temporal(TemporalType.TIMESTAMP)
 	private Timestamp updatedAt;
 
 	public Timestamp getCreatedAt() {
 		return createdAt;
 	}
 
-	public long getId() {
-		return id;
-	}
 
 	public Timestamp getUpdatedAt() {
 		return updatedAt;
@@ -31,10 +27,6 @@ public abstract class Record {
 
 	public void setCreatedAt(final Timestamp createdAt) {
 		this.createdAt = createdAt;
-	}
-
-	public void setId(final long id) {
-		this.id = id;
 	}
 
 	public void setUpdatedAt(final Timestamp updatedAt) {

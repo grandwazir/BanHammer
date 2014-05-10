@@ -5,7 +5,6 @@ import java.util.UUID;
 import com.avaje.ebean.EbeanServer;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -13,6 +12,9 @@ import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import name.richardson.james.bukkit.banhammer.record.BanRecordBuilder;
+import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;

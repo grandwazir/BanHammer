@@ -1,15 +1,14 @@
-package name.richardson.james.bukkit.banhammer.ban;
+package name.richardson.james.bukkit.banhammer.record;
 
-import javax.persistence.CascadeType;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.*;
 
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.validation.NotNull;
 
+@Entity
+@Table(name = "banhammer_bans")
 public class BanRecord extends Record {
 
 	public enum State {

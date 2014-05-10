@@ -30,10 +30,10 @@ import com.avaje.ebean.EbeanServer;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.argument.*;
 
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
-import name.richardson.james.bukkit.banhammer.ban.BanRecordBuilder;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
-import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerBannedEvent;
+import name.richardson.james.bukkit.banhammer.record.BanRecord;
+import name.richardson.james.bukkit.banhammer.record.BanRecordBuilder;
+import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.event.BanHammerPlayerBannedEvent;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
 import static name.richardson.james.bukkit.utilities.localisation.BukkitUtilities.INVOKER_NO_PERMISSION;

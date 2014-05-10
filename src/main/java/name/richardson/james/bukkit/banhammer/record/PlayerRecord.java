@@ -1,9 +1,8 @@
-package name.richardson.james.bukkit.banhammer.ban;
+package name.richardson.james.bukkit.banhammer.record;
 
-import javax.persistence.CascadeType;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.*;
-import java.util.concurrent.ConcurrentSkipListMap;
 
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.validation.NotNull;
@@ -12,6 +11,8 @@ import org.apache.commons.lang.Validate;
 import name.richardson.james.bukkit.banhammer.utilities.NameFetcher;
 import name.richardson.james.bukkit.banhammer.utilities.UUIDFetcher;
 
+@Entity
+@Table(name = "banhammer_players")
 public class PlayerRecord extends Record {
 
 	public enum PlayerStatus {
@@ -20,17 +21,15 @@ public class PlayerRecord extends Record {
 		CREATOR
 	}
 
-	private static final Map<String, UUID> UUIDS = new ConcurrentSkipListMap<String, UUID>(String.CASE_INSENSITIVE_ORDER);
-
-	@OneToMany(mappedBy = "player", targetEntity = BanRecord.class, cascade = { CascadeType.REMOVE })
+	@OneToMany(mappedBy = "player", targetEntity = BanRecord.class, cascade = {CascadeType.REMOVE})
 	private List<BanRecord> bans;
-
 	@OneToMany(mappedBy = "creator", targetEntity = BanRecord.class)
 	private List<BanRecord> createdBans;
-
+	@Id
+	@NotNull
+	private long id;
 	@NotNull
 	private String lastKnownName;
-
 	private UUID uuid;
 
 	/**
@@ -47,11 +46,26 @@ public class PlayerRecord extends Record {
 			record.setUuid(uuid);
 			String playerName = NameFetcher.getNameOf(uuid);
 			record.setLastKnownName(playerName);
+			record.setCreatedAt(new Timestamp(System.currentTimeMillis()));
 			database.save(record);
 			record = PlayerRecord.find(database, uuid);
 		}
 		Validate.notNull(record);
 		return record;
+	}
+
+	/**
+	 * Create a PlayerRecord, if necessary, by providing a player name. If a record already exists that will be returned instead.
+	 *
+	 * This method is potentially blocking.
+	 *
+	 * @param database the database to use.
+	 * @param playerName the name to use.
+	 * @return a PlayerRecord for this player.
+	 */
+	public static PlayerRecord create(EbeanServer database, String playerName) {
+		UUID uuid = getUUIDOf(playerName);
+		return create(database, uuid);
 	}
 
 	/**
@@ -84,25 +98,6 @@ public class PlayerRecord extends Record {
 				}
 		}
 		return records;
-	}
-
-	public void updateName() {
-		String playerName = NameFetcher.getNameOf(uuid);
-		setLastKnownName(playerName);
-	}
-
-	/**
-	 * Create a PlayerRecord, if necessary, by providing a player name. If a record already exists that will be returned instead.
-	 *
-	 * This method is potentially blocking.
-	 *
-	 * @param database the database to use.
-	 * @param playerName the name to use.
-	 * @return a PlayerRecord for this player.
-	 */
-	public static PlayerRecord create(EbeanServer database, String playerName) {
-		UUID uuid = getUUIDOf(playerName);
-		return create(database, uuid);
 	}
 
 	/**
@@ -181,6 +176,13 @@ public class PlayerRecord extends Record {
 		return database.save(records);
 	}
 
+	public BanRecord getActiveBan() {
+		for (BanRecord record : this.getBans()) {
+			if (record.getState() == BanRecord.State.NORMAL) return record;
+		}
+		return null;
+	}
+
 	public List<BanRecord> getBans() {
 		return (bans == null) ? Collections.<BanRecord>emptyList() : bans;
 	}
@@ -189,16 +191,27 @@ public class PlayerRecord extends Record {
 		return (createdBans == null) ? Collections.<BanRecord>emptyList() : createdBans;
 	}
 
-	public String getLastKnownName() {
-		return lastKnownName;
-	}
-
 	public String getCurrentName() {
 		return PlayerRecord.getNameOf(uuid);
 	}
 
+	public long getId() {
+		return id;
+	}
+
+	public String getLastKnownName() {
+		return lastKnownName;
+	}
+
 	public UUID getUuid() {
 		return uuid;
+	}
+
+	public boolean isBanned() {
+		for (BanRecord record : this.getBans()) {
+			if (record.getState() == BanRecord.State.NORMAL) return true;
+		}
+		return false;
 	}
 
 	public void setBans(final List<BanRecord> bans) {
@@ -217,18 +230,9 @@ public class PlayerRecord extends Record {
 		this.uuid = uuid;
 	}
 
-	public BanRecord getActiveBan() {
-		for (BanRecord record : this.getBans()) {
-			if (record.getState() == BanRecord.State.NORMAL) return record;
-		}
-		return null;
-	}
-
-	public boolean isBanned() {
-		for (BanRecord record : this.getBans()) {
-			if (record.getState() == BanRecord.State.NORMAL) return true;
-		}
-		return false;
+	public void updateName() {
+		String playerName = NameFetcher.getNameOf(uuid);
+		setLastKnownName(playerName);
 	}
 
 }

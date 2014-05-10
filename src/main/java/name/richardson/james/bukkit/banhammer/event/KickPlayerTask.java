@@ -1,4 +1,4 @@
-package name.richardson.james.bukkit.banhammer.ban.event;
+package name.richardson.james.bukkit.banhammer.event;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -7,7 +7,7 @@ import java.util.Map;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.record.BanRecord;
 
 public class KickPlayerTask implements Runnable {
 

@@ -7,6 +7,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
+import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.*;
@@ -25,16 +27,15 @@ public class PlayerRecordTest {
 
 	@Test
 	public void whenFindingUsingUUIDReturnRecord() {
-		final UUID uuid = UUID.randomUUID();
 		final PlayerRecord playerRecord = new PlayerRecord();
-		when(database.find(PlayerRecord.class).where().eq("uuid", uuid).findUnique()).thenReturn(playerRecord);
-		assertSame("Returned record should be the same as the one supplied to mocked method!", playerRecord, PlayerRecord.find(database, uuid));
+		when(database.find(PlayerRecord.class).where().eq("uuid", PLAYER_UUID).findUnique()).thenReturn(playerRecord);
+		assertSame("Returned record should be the same as the one supplied to mocked method!", playerRecord, PlayerRecord.find(database, PLAYER_UUID));
 	}
 
 	@Test
 	public void whenFindingUsingNameReturnRecord() {
 		final PlayerRecord playerRecord = new PlayerRecord();
-		when(database.find(PlayerRecord.class).where().eq("uuid", PLAYER_UUID).findUnique()).thenReturn(playerRecord);
+		when(database.find(PlayerRecord.class).where().eq("lastKnownName", PLAYER_NAME).findUnique()).thenReturn(playerRecord);
 		assertSame("Returned record should be the same as the one supplied to mocked method!", playerRecord, PlayerRecord.find(database, PLAYER_NAME));
 	}
 

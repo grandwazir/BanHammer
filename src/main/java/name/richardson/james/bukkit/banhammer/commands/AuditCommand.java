@@ -34,7 +34,8 @@ import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositio
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 import name.richardson.james.bukkit.utilities.localisation.BukkitUtilities;
 
-import name.richardson.james.bukkit.banhammer.ban.*;
+import name.richardson.james.bukkit.banhammer.record.BanRecord;
+import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
 import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages;
 

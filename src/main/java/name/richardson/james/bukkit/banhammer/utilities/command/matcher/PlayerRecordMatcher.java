@@ -9,7 +9,7 @@ import com.avaje.ebean.EbeanServer;
 
 import name.richardson.james.bukkit.utilities.command.argument.suggester.Suggester;
 
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
 
 public class PlayerRecordMatcher implements Suggester {
 

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.record.BanRecord;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
 

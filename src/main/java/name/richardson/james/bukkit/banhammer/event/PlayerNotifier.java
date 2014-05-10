@@ -1,4 +1,4 @@
-package name.richardson.james.bukkit.banhammer.ban.event;
+package name.richardson.james.bukkit.banhammer.event;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,8 +13,8 @@ import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 import name.richardson.james.bukkit.utilities.logging.PluginLoggerFactory;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
-import name.richardson.james.bukkit.banhammer.ban.BanRecordFormatter;
+import name.richardson.james.bukkit.banhammer.record.BanRecord;
+import name.richardson.james.bukkit.banhammer.record.BanRecordFormatter;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.NOTIFY_PLAYER_BANNED;
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.NOTIFY_PLAYER_PARDONED;

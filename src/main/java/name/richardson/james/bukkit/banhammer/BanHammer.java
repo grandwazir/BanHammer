@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
@@ -40,17 +39,11 @@ import name.richardson.james.bukkit.utilities.persistence.database.DatabaseLoade
 import name.richardson.james.bukkit.utilities.updater.BukkitDevPluginUpdater;
 import name.richardson.james.bukkit.utilities.updater.PluginUpdater;
 
-import name.richardson.james.bukkit.alias.Alias;
-import name.richardson.james.bukkit.alias.persistence.PlayerNameRecordManager;
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
-import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
-import name.richardson.james.bukkit.banhammer.ban.OldPlayerRecord;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
-import name.richardson.james.bukkit.banhammer.ban.event.PlayerListener;
-import name.richardson.james.bukkit.banhammer.ban.event.PlayerNotifier;
+import name.richardson.james.bukkit.banhammer.record.BanRecord;
+import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.event.PlayerListener;
+import name.richardson.james.bukkit.banhammer.event.PlayerNotifier;
 import name.richardson.james.bukkit.banhammer.commands.*;
-
-import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.PLUGIN_UNABLE_TO_HOOK_ALIAS;
 
 public final class BanHammer extends JavaPlugin {
 

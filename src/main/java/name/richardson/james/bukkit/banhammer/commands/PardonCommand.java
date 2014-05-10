@@ -34,8 +34,9 @@ import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositionalArgument;
 import name.richardson.james.bukkit.utilities.command.argument.SilentSwitchArgument;
 
-import name.richardson.james.bukkit.banhammer.ban.*;
-import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
+import name.richardson.james.bukkit.banhammer.event.BanHammerPlayerPardonedEvent;
+import name.richardson.james.bukkit.banhammer.record.BanRecord;
+import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.*;
 
@@ -92,7 +93,7 @@ public class PardonCommand extends AbstractCommand {
 			}
 		}
 		BanRecord.save(database, bans);
-		new BanHammerPlayerPardonedEvent(bans, silent);
+		new BanHammerPlayerPardonedEvent(bans, silent, sender.getName());
 		sender.sendMessage(messages.toArray(new String[messages.size()]));
 	}
 

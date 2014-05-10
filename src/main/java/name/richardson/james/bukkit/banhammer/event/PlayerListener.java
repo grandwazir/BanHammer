@@ -1,4 +1,4 @@
-package name.richardson.james.bukkit.banhammer.ban.event;
+package name.richardson.james.bukkit.banhammer.event;
 
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -14,8 +14,8 @@ import name.richardson.james.bukkit.utilities.formatters.time.ApproximateTimeFor
 import name.richardson.james.bukkit.utilities.formatters.time.TimeFormatter;
 import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
-import name.richardson.james.bukkit.banhammer.ban.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.record.BanRecord;
+import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
 
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.LISTENER_PLAYER_BANNED_PERMANENTLY;
 import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages.LISTENER_PLAYER_BANNED_TEMPORARILY;

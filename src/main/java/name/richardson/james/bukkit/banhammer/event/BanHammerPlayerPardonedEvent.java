@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (c) 2012 James Richardson.
  * 
- * BanHammerPlayerBannedEvent.java is part of BanHammer.
+ * BanHammerPlayerPardonedEvent.java is part of BanHammer.
  * 
  * BanHammer is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -15,23 +15,26 @@
  * You should have received a copy of the GNU General Public License along with
  * BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.bukkit.banhammer.ban.event;
+package name.richardson.james.bukkit.banhammer.event;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.bukkit.event.HandlerList;
 
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
-import name.richardson.james.bukkit.banhammer.ban.OldBanRecord;
+import name.richardson.james.bukkit.banhammer.record.BanRecord;
 
 /**
- * This event is fired every time a player is banned using BanHammer.
+ * This event is fired every time a player is pardoned through BanHammer.
  */
-public class BanHammerPlayerBannedEvent extends BanHammerPlayerEvent {
+public class BanHammerPlayerPardonedEvent extends BanHammerPlayerEvent {
 
-	/** The Constant handlers. */
 	private static final HandlerList handlers = new HandlerList();
+
+	public String getSource() {
+		return source;
+	}
+
+	private final String source;
 
 	/**
 	 * Instantiates a new BanHammer player event.
@@ -39,17 +42,18 @@ public class BanHammerPlayerBannedEvent extends BanHammerPlayerEvent {
 	 * @param records the BanRecord associated with this event
 	 * @param silent if this event should be silent to players
 	 */
-	public BanHammerPlayerBannedEvent(final Collection<BanRecord> records, final boolean silent) {
+	public BanHammerPlayerPardonedEvent(final Collection<BanRecord> records, final boolean silent, String source) {
 		super(records, silent);
+		this.source = source;
 	}
 
 	public static HandlerList getHandlerList() {
-		return BanHammerPlayerBannedEvent.handlers;
+		return BanHammerPlayerPardonedEvent.handlers;
 	}
 
 	@Override
 	public HandlerList getHandlers() {
-		return BanHammerPlayerBannedEvent.handlers;
+		return BanHammerPlayerPardonedEvent.handlers;
 	}
 
 }
