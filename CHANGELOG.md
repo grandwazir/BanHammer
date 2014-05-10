@@ -1,5 +1,6 @@
 # Changelog for BanHammer (v2.4.1-SNAPSHOT)
 
+2014-05-10 20:19:55 +0100    fixed issue with banning non-existant accounts (James Richardson)  
 2014-05-10 19:28:54 +0100    logic mistake in CurrentPlayerRecord (James Richardson)  
 2014-05-10 19:26:01 +0100    strategy shouldn't be necessary (James Richardson)  
 2014-05-10 19:16:10 +0100    fixed some bugs in the factories (James Richardson)  

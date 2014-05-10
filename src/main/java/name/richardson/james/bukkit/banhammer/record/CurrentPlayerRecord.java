@@ -57,7 +57,7 @@ public class CurrentPlayerRecord extends SimpleRecord implements PlayerRecord {
 
 	@Override public List<BanRecord> getBans() {
 		List<BanRecord> bans = new ArrayList<BanRecord>();
-		if (this.bans != null) bans.addAll(bans);
+		if (this.bans != null) bans.addAll(this.bans);
 		return bans;
 	}
 
