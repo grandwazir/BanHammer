@@ -6,10 +6,6 @@ public interface Record {
 
 	public Timestamp getCreatedAt();
 
-	public long getId();
-
-	public void setId(long id);
-
 	public Timestamp getUpdatedAt();
 
 	public void setCreatedAt(Timestamp time);

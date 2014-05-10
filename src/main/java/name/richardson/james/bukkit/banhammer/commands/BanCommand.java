@@ -77,13 +77,15 @@ public class BanCommand extends AbstractCommand {
 		for (String playerName : playerNames) {
 			PlayerRecord playerRecord = PlayerRecordFactory.findOrCreate(database, playerName);
 			if (hasPermission(commandSender, playerName)) {
-				if (!playerRecord.isBanned()) {
+				if (playerRecord == null) {
+					messages.add(PLAYER_NOT_REGISTERED.asWarningMessage(playerName));
+				} else if (!playerRecord.isBanned()) {
 					final BanRecord record = BanRecordFactory.create(playerRecord, creatorRecord, reason.getString());
 					if (time > 0) record.setExpiryTime(time);
 					records.add(record);
-					if (silent) messages.add(PLAYER_BANNED.asInfoMessage(player));
+					if (silent) messages.add(PLAYER_BANNED.asInfoMessage(playerName));
 				} else {
-					messages.add(PLAYER_IS_ALREADY_BANNED.asWarningMessage(player));
+					messages.add(PLAYER_IS_ALREADY_BANNED.asWarningMessage(playerName));
 				}
 			} else {
 				messages.add(INVOKER_NO_PERMISSION.asErrorMessage());

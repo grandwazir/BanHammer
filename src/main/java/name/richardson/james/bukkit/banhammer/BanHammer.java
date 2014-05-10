@@ -44,6 +44,8 @@ import name.richardson.james.bukkit.banhammer.record.CurrentPlayerRecord;
 import name.richardson.james.bukkit.banhammer.event.PlayerListener;
 import name.richardson.james.bukkit.banhammer.event.PlayerNotifier;
 import name.richardson.james.bukkit.banhammer.commands.*;
+import name.richardson.james.bukkit.banhammer.record.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.record.PlayerRecordFactory;
 
 public final class BanHammer extends JavaPlugin {
 
@@ -113,6 +115,9 @@ public final class BanHammer extends JavaPlugin {
 		final DatabaseLoader loader = DatabaseLoaderFactory.getDatabaseLoader(configuration);
 		loader.initalise();
 		this.database = loader.getEbeanServer();
+		PlayerRecord record = PlayerRecordFactory.findOrCreate(database, "SYSTEM");
+		record.setUuid(null);
+		database.save(record);
 	}
 
 	private void registerCommands() {

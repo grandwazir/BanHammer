@@ -100,6 +100,7 @@ public enum BanHammerMessages implements Localised, MessageFormatter {
 	PLAYER_BANNED ("bancommand.player-banned"),
 	PLAYER_NOT_BANNED ("shared.player-is-not-banned"),
 	PLAYER_IS_ALREADY_BANNED ("bancommand.player-is-already-banned"),
+	PLAYER_NOT_REGISTERED ("bancommand.player-is-not-registered"),
 	PLUGIN_UNABLE_TO_HOOK_ALIAS ("alias.unable-to-hook-alias"),
 	EXPORT_SUMMARY ("exportcommand.summary"),
 	PLAYER_NEVER_BEEN_BANNED ("shared.player-has-never-been-banned"),

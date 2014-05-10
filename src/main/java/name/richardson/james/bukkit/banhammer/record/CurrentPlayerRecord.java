@@ -22,15 +22,15 @@ public class CurrentPlayerRecord extends SimpleRecord implements PlayerRecord {
 	@OneToMany(mappedBy = "creator", targetEntity = CurrentBanRecord.class)
 	private List<CurrentBanRecord> createdBans;
 	@Id
-	@GeneratedValue
-	private long id;
+	private int id;
 	@NotNull
 	private String lastKnownName;
 	private UUID uuid;
 
-	protected CurrentPlayerRecord() {}
+	public CurrentPlayerRecord () {}
 
 	protected CurrentPlayerRecord(UUID uuid) {
+		super();
 		final Timestamp now = new Timestamp(System.currentTimeMillis());
 		final String name = NameFetcher.getNameOf(uuid);
 		this.setLastKnownName(name);
@@ -39,6 +39,7 @@ public class CurrentPlayerRecord extends SimpleRecord implements PlayerRecord {
 	}
 
 	protected CurrentPlayerRecord(String playerName) {
+		super();
 		Validate.notNull(playerName);
 		final Timestamp now = new Timestamp(System.currentTimeMillis());
 		UUID uuid = UUIDFetcher.getUUIDOf(playerName);
@@ -66,7 +67,7 @@ public class CurrentPlayerRecord extends SimpleRecord implements PlayerRecord {
 		return bans;
 	}
 
-	@Override public long getId() {
+	public int getId() {
 		return id;
 	}
 
@@ -85,11 +86,19 @@ public class CurrentPlayerRecord extends SimpleRecord implements PlayerRecord {
 		return false;
 	}
 
+	public void setBans(final List<CurrentBanRecord> bans) {
+		this.bans = bans;
+	}
+
 	@Override public void setBans(final Set<BanRecord> bans) {
 		this.bans.clear();
 		for (BanRecord ban : bans) {
 			if (ban instanceof CurrentBanRecord) this.bans.add((CurrentBanRecord) ban);
 		}
+	}
+
+	public void setCreatedBans(final List<CurrentBanRecord> createdBans) {
+		this.createdBans = createdBans;
 	}
 
 	@Override public void setCreatedBans(final Set<BanRecord> createdBans) {
@@ -99,7 +108,7 @@ public class CurrentPlayerRecord extends SimpleRecord implements PlayerRecord {
 		}
 	}
 
-	@Override public void setId(long id) {
+	public void setId(final int id) {
 		this.id = id;
 	}
 

@@ -79,6 +79,7 @@ public final class PlayerRecordFactory {
 		PlayerRecord record = find(database, playerName);
 		if (record == null) {
 			record = new CurrentPlayerRecord(playerName);
+			if (record.getUuid() == null) return null;
 			database.save(record);
 			record = find(database, playerName);
 		}

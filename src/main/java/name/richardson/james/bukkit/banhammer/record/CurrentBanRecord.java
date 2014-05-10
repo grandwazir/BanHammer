@@ -2,9 +2,7 @@ package name.richardson.james.bukkit.banhammer.record;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.*;
 
-import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.validation.NotNull;
 
 @Entity
@@ -16,7 +14,6 @@ public class CurrentBanRecord extends SimpleRecord implements BanRecord {
 	private CurrentPlayerRecord creator;
 	private Timestamp expiresAt;
 	@Id
-	@GeneratedValue
 	private long id;
 	@ManyToOne(targetEntity = CurrentPlayerRecord.class, fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
 	@PrimaryKeyJoinColumn(name = "playerId", referencedColumnName = "id")
@@ -36,7 +33,7 @@ public class CurrentBanRecord extends SimpleRecord implements BanRecord {
 		this.setCreatedAt(new Timestamp(System.currentTimeMillis()));
 	}
 
-	@Override public PlayerRecord getCreator() {
+	@Override public CurrentPlayerRecord getCreator() {
 		return creator;
 	}
 
@@ -44,11 +41,11 @@ public class CurrentBanRecord extends SimpleRecord implements BanRecord {
 		return expiresAt;
 	}
 
-	@Override public long getId() {
+	public long getId() {
 		return id;
 	}
 
-	@Override public PlayerRecord getPlayer() {
+	@Override public CurrentPlayerRecord getPlayer() {
 		return player;
 	}
 
@@ -72,7 +69,7 @@ public class CurrentBanRecord extends SimpleRecord implements BanRecord {
 		this.expiresAt = expiresAt;
 	}
 
-	@Override public void setId(final long id) {
+	public void setId(final long id) {
 		this.id = id;
 	}
 
