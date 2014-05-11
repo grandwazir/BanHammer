@@ -16,7 +16,7 @@ import name.richardson.james.bukkit.banhammer.utilities.UUIDFetcher;
 @Table(name = "banhammer_players")
 public class CurrentPlayerRecord extends SimpleRecord implements PlayerRecord {
 
-	@OneToMany(mappedBy = "player", targetEntity = CurrentBanRecord.class, cascade = {CascadeType.REMOVE})
+	@OneToMany(mappedBy = "player", targetEntity = CurrentBanRecord.class)
 	private List<CurrentBanRecord> bans;
 	@OneToMany(mappedBy = "creator", targetEntity = CurrentBanRecord.class)
 	private List<CurrentBanRecord> createdBans;
@@ -25,8 +25,6 @@ public class CurrentPlayerRecord extends SimpleRecord implements PlayerRecord {
 	@NotNull
 	private String lastKnownName;
 	private UUID uuid;
-
-	public CurrentPlayerRecord () {}
 
 	protected CurrentPlayerRecord(UUID uuid) {
 		super();
@@ -54,10 +52,12 @@ public class CurrentPlayerRecord extends SimpleRecord implements PlayerRecord {
 		return null;
 	}
 
+	@OneToMany(targetEntity = CurrentBanRecord.class, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	@Override public List<CurrentBanRecord> getBans() {
 		return bans;
 	}
 
+	@OneToMany(targetEntity = CurrentBanRecord.class, fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	@Override public List<CurrentBanRecord> getCreatedBans() {
 		return createdBans;
 	}

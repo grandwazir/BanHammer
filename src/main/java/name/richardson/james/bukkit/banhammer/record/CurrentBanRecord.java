@@ -23,8 +23,6 @@ public class CurrentBanRecord extends SimpleRecord implements BanRecord {
 	@NotNull
 	private State state;
 
-	public CurrentBanRecord () {}
-
 	public CurrentBanRecord(final PlayerRecord player, final PlayerRecord creator, final String reason) {
 		super();
 		this.setPlayer(player);
