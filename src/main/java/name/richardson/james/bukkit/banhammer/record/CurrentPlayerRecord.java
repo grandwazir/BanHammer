@@ -2,7 +2,6 @@ package name.richardson.james.bukkit.banhammer.record;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -55,16 +54,12 @@ public class CurrentPlayerRecord extends SimpleRecord implements PlayerRecord {
 		return null;
 	}
 
-	@Override public List<BanRecord> getBans() {
-		List<BanRecord> bans = new ArrayList<BanRecord>();
-		if (this.bans != null) bans.addAll(this.bans);
+	@Override public List<CurrentBanRecord> getBans() {
 		return bans;
 	}
 
-	@Override public List<BanRecord> getCreatedBans() {
-		List<BanRecord> bans = new ArrayList<BanRecord>();
-		if (this.createdBans != null) bans.addAll(createdBans);
-		return bans;
+	@Override public List<CurrentBanRecord> getCreatedBans() {
+		return createdBans;
 	}
 
 	public int getId() {
@@ -80,10 +75,7 @@ public class CurrentPlayerRecord extends SimpleRecord implements PlayerRecord {
 	}
 
 	@Override public boolean isBanned() {
-		for (BanRecord record : this.getBans()) {
-			if (record.getState() == BanRecord.State.NORMAL) return true;
-		}
-		return false;
+		return (getActiveBan() != null);
 	}
 
 	public void setBans(final List<CurrentBanRecord> bans) {

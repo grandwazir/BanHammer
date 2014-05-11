@@ -14,9 +14,9 @@ public interface PlayerRecord {
 
 	public BanRecord getActiveBan();
 
-	public List<BanRecord> getBans();
+	public List<? extends BanRecord> getBans();
 
-	public List<BanRecord> getCreatedBans();
+	public List<? extends BanRecord> getCreatedBans();
 
 	public String getLastKnownName();
 

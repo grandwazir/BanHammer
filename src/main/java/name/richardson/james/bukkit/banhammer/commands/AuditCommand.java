@@ -95,7 +95,7 @@ public final class AuditCommand extends AbstractCommand {
 				if (hasPermission(commandSender, playerName)) {
 					PlayerRecord record = PlayerRecordFactory.find(database, playerName);
 					if (record != null) {
-						final List<BanRecord> bans = record.getCreatedBans();
+						final List<? extends BanRecord> bans = record.getCreatedBans();
 						messages.addAll(getResponse(playerName, bans, total));
 					} else {
 						messages.add(PLAYER_HAS_NEVER_MADE_ANY_BANS.asInfoMessage(playerName));
@@ -108,7 +108,7 @@ public final class AuditCommand extends AbstractCommand {
 		commandSender.sendMessage(messages.toArray(new String[messages.size()]));
 	}
 
-	private Collection<String> getResponse(String playerName, Collection<BanRecord> bans, int count) {
+	private Collection<String> getResponse(String playerName, Collection<? extends BanRecord> bans, int count) {
 		Collection<String> messages = new ArrayList<String>();
 		AuditCommandSummary summary = new AuditCommandSummary(bans, count);
 		choiceFormatter.setArguments(summary.getTotalBanCount(), playerName, summary.getTotalBanCountPercentage());

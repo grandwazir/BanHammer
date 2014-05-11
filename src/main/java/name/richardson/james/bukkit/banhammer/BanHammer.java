@@ -20,6 +20,7 @@ package name.richardson.james.bukkit.banhammer;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -115,7 +116,9 @@ public final class BanHammer extends JavaPlugin {
 		final DatabaseLoader loader = DatabaseLoaderFactory.getDatabaseLoader(configuration);
 		loader.initalise();
 		this.database = loader.getEbeanServer();
-		PlayerRecord record = PlayerRecordFactory.findOrCreate(database, "SYSTEM");
+		CurrentPlayerRecord record = new CurrentPlayerRecord();
+		record.setLastKnownName("SYSTEM");
+		record.setCreatedAt(new Timestamp(System.currentTimeMillis()));
 		record.setUuid(null);
 		database.save(record);
 	}

@@ -11,7 +11,7 @@ import static name.richardson.james.bukkit.banhammer.utilities.localisation.BanH
 
 public final class AuditCommandSummary {
 
-	private final Collection<BanRecord> bans;
+	private final Collection<? extends BanRecord> bans;
 	private int expiredBans;
 	private int normalBans;
 	private int pardonedBans;
@@ -19,7 +19,7 @@ public final class AuditCommandSummary {
 	private int temporaryBans;
 	private int total;
 
-	protected AuditCommandSummary(Collection<BanRecord> bans, int total) {
+	protected AuditCommandSummary(Collection<? extends BanRecord> bans, int total) {
 		this.bans = bans;
 		this.total = total;
 		this.update();

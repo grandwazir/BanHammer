@@ -67,7 +67,7 @@ public class HistoryCommand extends AbstractCommand {
 		if (hasPermission(sender, playerName)) {
 			PlayerRecord record = PlayerRecordFactory.find(database, playerName);
 			if (record != null && !record.getBans().isEmpty()) {
-				final List<BanRecord> bans = record.getBans();
+				final List<? extends BanRecord> bans = record.getBans();
 				for (BanRecord ban : bans) {
 					BanRecordFormatter formatter = new SimpleBanRecordFormatter(ban);
 					messages.addAll(formatter.getMessages());
