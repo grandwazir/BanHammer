@@ -23,6 +23,8 @@ public class CurrentBanRecord extends SimpleRecord implements BanRecord {
 	@NotNull
 	private State state;
 
+	public CurrentBanRecord() {}
+
 	public CurrentBanRecord(final PlayerRecord player, final PlayerRecord creator, final String reason) {
 		super();
 		this.setPlayer(player);
@@ -32,7 +34,9 @@ public class CurrentBanRecord extends SimpleRecord implements BanRecord {
 		this.setCreatedAt(new Timestamp(System.currentTimeMillis()));
 	}
 
-	@Override public CurrentPlayerRecord getCreator() {
+	@Override
+	@ManyToOne(targetEntity = CurrentPlayerRecord.class)
+	public CurrentPlayerRecord getCreator() {
 		return creator;
 	}
 
@@ -44,7 +48,9 @@ public class CurrentBanRecord extends SimpleRecord implements BanRecord {
 		return id;
 	}
 
-	@Override public CurrentPlayerRecord getPlayer() {
+	@Override
+	@ManyToOne(targetEntity = CurrentPlayerRecord.class)
+	public CurrentPlayerRecord getPlayer() {
 		return player;
 	}
 

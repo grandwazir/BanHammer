@@ -1,5 +1,7 @@
 # Changelog for BanHammer (v2.4.1-SNAPSHOT)
 
+2014-05-11 12:46:26 +0100    fix relationships not updating correctly (James Richardson)  
+2014-05-11 12:36:41 +0100    committing left overs from last night (James Richardson)  
 2014-05-10 20:25:21 +0100    fix misreference with getBans() (James Richardson)  
 2014-05-10 20:19:55 +0100    fixed issue with banning non-existant accounts (James Richardson)  
 2014-05-10 19:28:54 +0100    logic mistake in CurrentPlayerRecord (James Richardson)  

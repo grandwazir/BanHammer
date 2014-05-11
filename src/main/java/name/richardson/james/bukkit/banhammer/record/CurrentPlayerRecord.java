@@ -26,6 +26,8 @@ public class CurrentPlayerRecord extends SimpleRecord implements PlayerRecord {
 	private String lastKnownName;
 	private UUID uuid;
 
+	public CurrentPlayerRecord() {}
+
 	protected CurrentPlayerRecord(UUID uuid) {
 		super();
 		final Timestamp now = new Timestamp(System.currentTimeMillis());
