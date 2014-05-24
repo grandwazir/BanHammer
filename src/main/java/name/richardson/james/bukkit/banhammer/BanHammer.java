@@ -55,6 +55,7 @@ public final class BanHammer extends JavaPlugin {
 
 	private static final String CONFIG_NAME = "config.yml";
 	private static final String DATABASE_CONFIG_NAME = "database.yml";
+	public static final String TABLE_PREFIX = "bh_";
 
 	private final Logger logger = PluginLoggerFactory.getLogger(BanHammer.class);
 
