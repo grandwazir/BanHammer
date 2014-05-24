@@ -34,6 +34,7 @@ import name.richardson.james.bukkit.utilities.command.argument.PlayerNamePositio
 import name.richardson.james.bukkit.utilities.formatters.ChoiceFormatter;
 import name.richardson.james.bukkit.utilities.localisation.BukkitUtilities;
 
+import name.richardson.james.bukkit.banhammer.model.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.record.*;
 import name.richardson.james.bukkit.banhammer.utilities.formatters.BanCountChoiceFormatter;
 import name.richardson.james.bukkit.banhammer.utilities.localisation.BanHammerMessages;
@@ -54,7 +55,7 @@ public final class AuditCommand extends AbstractCommand {
 	public AuditCommand(EbeanServer database) {
 		super(AUDIT_COMMAND_NAME, AUDIT_COMMAND_DESC);
 		this.database = database;
-		this.playerName = PlayerNamePositionalArgument.getInstance(database, 0, false, PlayerRecord.PlayerStatus.CREATOR);
+		this.playerName = PlayerNamePositionalArgument.getInstance(database, 0, false, PlayerRecord.Status.CREATOR);
 		this.all = AllOptionArgument.getInstance();
 		addArgument(all);
 		addArgument(playerName);
