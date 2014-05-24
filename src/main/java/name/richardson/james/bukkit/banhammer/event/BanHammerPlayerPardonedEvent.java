@@ -19,33 +19,17 @@ package name.richardson.james.bukkit.banhammer.event;
 
 import java.util.Collection;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.event.HandlerList;
 
 import name.richardson.james.bukkit.banhammer.record.BanRecord;
-import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
 
-/**
- * This event is fired every time a player is pardoned through BanHammer.
- */
-public class BanHammerPlayerPardonedEvent extends BanHammerPlayerEvent {
+public final class BanHammerPlayerPardonedEvent extends AbstractBanHammerPlayerEvent {
 
 	private static final HandlerList handlers = new HandlerList();
 
-	public String getSource() {
-		return source;
-	}
-
-	private final String source;
-
-	/**
-	 * Instantiates a new BanHammer player event.
-	 *
-	 * @param records the BanRecord associated with this event
-	 * @param silent if this event should be silent to players
-	 */
-	public BanHammerPlayerPardonedEvent(final Collection<BanRecord> records, final boolean silent, String source) {
-		super(records, silent);
-		this.source = source;
+	public BanHammerPlayerPardonedEvent(final Collection<BanRecord> records, final CommandSender commandSender, final boolean silent) {
+		super(records, commandSender, silent);
 	}
 
 	public static HandlerList getHandlerList() {
