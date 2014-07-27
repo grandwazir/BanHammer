@@ -1,14 +1,17 @@
 package name.richardson.james.bukkit.banhammer.model;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
+import com.avaje.ebean.Ebean;
+import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.validation.NotNull;
 
-import name.richardson.james.bukkit.banhammer.BanHammer;
+import name.richardson.james.bukkit.utilities.persistence.AbstractRecord;
 
 @Entity
-@Table(name = BanHammer.TABLE_PREFIX + "comments")
+@Table(name = "banhammer_" + "comments")
 public class CommentRecord extends AbstractRecord {
 
 	public enum Type {
@@ -16,19 +19,41 @@ public class CommentRecord extends AbstractRecord {
 		BAN_REASON,
 		PARDON_REASON,
 	}
-	@ManyToMany(mappedBy = "comments")
-	private Set<BanRecord> bans;
+	@ManyToOne
+	@JoinColumn(name = "ban_id")
+	private BanRecord ban;
 	@NotNull
 	private String comment;
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "creator_id")
 	private PlayerRecord creator;
-	@ManyToMany(mappedBy = "comments")
-	private Set<PlayerRecord> players;
+	@ManyToOne
+	@JoinColumn(name = "player_id")
+	private PlayerRecord player;
 	private Type type;
 
-	public Set<BanRecord> getBans() {
-		return bans;
+	public static CommentRecord create(PlayerRecord creator, PlayerRecord target, String comment) {
+ 		CommentRecord record = create(creator, comment);
+		record.setPlayer(target);
+		return record;
+	}
+
+	private static CommentRecord create(PlayerRecord creator, String comment) {
+		CommentRecord record = new CommentRecord();
+		record.setType(Type.NORMAL);
+		record.setCreator(creator);
+		record.setComment(comment);
+		return record;
+	}
+
+	public static CommentRecord create(PlayerRecord creator, BanRecord target, String comment) {
+	 	CommentRecord record = create(creator, comment);
+		record.setBan(target);
+		return record;
+	}
+
+	public BanRecord getBan() {
+		return ban;
 	}
 
 	public String getComment() {
@@ -39,16 +64,16 @@ public class CommentRecord extends AbstractRecord {
 		return creator;
 	}
 
-	public Set<PlayerRecord> getPlayers() {
-		return players;
+	public PlayerRecord getPlayer() {
+		return player;
 	}
 
 	public Type getType() {
 		return type;
 	}
 
-	public void setBans(final Set<BanRecord> bans) {
-		this.bans = bans;
+	public void setBan(final BanRecord ban) {
+		this.ban = ban;
 	}
 
 	public void setComment(final String comment) {
@@ -59,12 +84,15 @@ public class CommentRecord extends AbstractRecord {
 		this.creator = creator;
 	}
 
-	public void setPlayers(final Set<PlayerRecord> players) {
-		this.players = players;
+	public void setPlayer(final PlayerRecord player) {
+		this.player = player;
 	}
 
 	public void setType(final Type type) {
 		this.type = type;
 	}
 
+	@Override protected EbeanServer getDatabase() {
+		return Ebean.getServer("BanHammer");
+	}
 }

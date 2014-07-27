@@ -9,12 +9,13 @@ import com.avaje.ebean.Ebean;
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.validation.NotNull;
 
-import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.banhammer.utilities.NameFetcher;
-import name.richardson.james.bukkit.banhammer.utilities.UUIDFetcher;
+import name.richardson.james.bukkit.utilities.persistence.AbstractRecord;
+
+import name.richardson.james.bukkit.banhammer.model.uuid.NameFetcher;
+import name.richardson.james.bukkit.banhammer.model.uuid.UUIDFetcher;
 
 @Entity
-@Table(name = BanHammer.TABLE_PREFIX + "players")
+@Table(name = "banhammer_" + "players")
 public class PlayerRecord extends AbstractRecord {
 
 	public enum Status {
@@ -22,28 +23,16 @@ public class PlayerRecord extends AbstractRecord {
 		BANNED,
 		ANY
 	}
-
-	private static EbeanServer getDatabase() {
-		return Ebean.getServer("BanHammerVersion3");
-	}
-
-	public static PlayerRecord find(UUID uuid) {
-		return getDatabase().find(PlayerRecord.class).where().eq("uuid", uuid).findUnique();
-	}
-
-	public static PlayerRecord find(String name) {
-		return getDatabase().find(PlayerRecord.class).where().ieq("name", name).findUnique();
-	}
-
-	public static Set<PlayerRecord> find(Status status) {
-		Set<PlayerRecord> records = getDatabase().find(PlayerRecord.class).findSet();
-		return filterPlayers(records, status);
-	}
-
-	public static Set<PlayerRecord> find(Status status, String name) {
-		Set<PlayerRecord> records = getDatabase().find(PlayerRecord.class).where().istartsWith("name", name).findSet();
-		return filterPlayers(records, status);
-	}
+	@OneToMany(mappedBy = "player", targetEntity = BanRecord.class)
+	private Set<BanRecord> bans;
+	@OneToMany(mappedBy = "creator", targetEntity = CommentRecord.class)
+	private Set<CommentRecord> comments;
+	@OneToMany(mappedBy = "creator", targetEntity = BanRecord.class)
+	private Set<BanRecord> createdBans;
+	@OneToMany(mappedBy = "creator", targetEntity = CommentRecord.class)
+	private Set<CommentRecord> createdComments;
+	@NotNull
+	private String name;
 
 	public static PlayerRecord create(UUID uuid)
 	throws PlayerNotFoundException {
@@ -75,10 +64,6 @@ public class PlayerRecord extends AbstractRecord {
 		return record;
 	}
 
-	private void save() {
-		getDatabase().save(this);
-	}
-
 	private static Set<PlayerRecord> filterPlayers(Set<PlayerRecord> records, Status status) {
 		Iterator<PlayerRecord> iterator = records.iterator();
 		switch (status) {
@@ -100,17 +85,31 @@ public class PlayerRecord extends AbstractRecord {
 		return records;
 	}
 
-	@OneToMany(mappedBy = "player", targetEntity = BanRecord.class)
-	private Set<BanRecord> bans;
-	@ManyToMany(targetEntity = CommentRecord.class)
-	@JoinTable(name = BanHammer.TABLE_PREFIX + "players_has_comments")
-	private Set<CommentRecord> comments;
-	@OneToMany(mappedBy = "creator", targetEntity = BanRecord.class)
-	private Set<BanRecord> createdBans;
-	@OneToMany(mappedBy = "creator", targetEntity = CommentRecord.class)
-	private Set<CommentRecord> createdComments;
-	@NotNull
-	private String name;
+	public static PlayerRecord find(UUID uuid) {
+		return getRecordDatabase().find(PlayerRecord.class).where().eq("id", uuid).findUnique();
+	}
+
+	public static PlayerRecord find(String name) {
+		return getRecordDatabase().find(PlayerRecord.class).where().ieq("name", name).findUnique();
+	}
+
+	public static Set<PlayerRecord> find(Status status) {
+		Set<PlayerRecord> records = getRecordDatabase().find(PlayerRecord.class).findSet();
+		return filterPlayers(records, status);
+	}
+
+	public static Set<PlayerRecord> find(Status status, String name) {
+		Set<PlayerRecord> records = getRecordDatabase().find(PlayerRecord.class).where().istartsWith("name", name).findSet();
+		return filterPlayers(records, status);
+	}
+
+	private static EbeanServer getRecordDatabase() {
+		return Ebean.getServer("BanHammer");
+	}
+
+	public BanRecord getActiveBan() {
+		return null;
+	}
 
 	public Set<BanRecord> getBans() {
 		return bans;
@@ -130,6 +129,10 @@ public class PlayerRecord extends AbstractRecord {
 
 	public String getName() {
 		return name;
+	}
+
+	public boolean isBanned() {
+		return true;
 	}
 
 	public void setBans(final Set<BanRecord> bans) {
@@ -152,8 +155,20 @@ public class PlayerRecord extends AbstractRecord {
 		this.name = name;
 	}
 
-	public boolean isBanned() {
-		return true;
+	@Override public String toString() {
+		final StringBuilder sb = new StringBuilder("PlayerRecord{");
+		sb.append("bans=").append(bans);
+		sb.append(", comments=").append(comments);
+		sb.append(", createdBans=").append(createdBans);
+		sb.append(", createdComments=").append(createdComments);
+		sb.append(", name='").append(name).append('\'');
+		sb.append(", ").append(super.toString());
+		sb.append('}');
+		return sb.toString();
+	}
+
+	protected EbeanServer getDatabase() {
+		return Ebean.getServer("BanHammer");
 	}
 
 }

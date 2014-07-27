@@ -1,5 +1,5 @@
 name: ${project.name}
-main: name.richardson.james.bukkit.banhammer.BanHammer
+main: name.richardson.james.bukkit.banhammer.excluded.BanHammer
 description: ${project.description}.
 version: ${project.version}
 commands:
@@ -13,7 +13,7 @@ commands:
     description: 'Pardons a specified player'
     usage: '/pardon [player]'
   bh:
-    description: 'Additional ban commands'
+    description: 'Additional ban command'
     usage: '/bh [check|history|purge|recent|reload]'
 permissions:
   banhammer:

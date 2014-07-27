@@ -12,7 +12,7 @@ import org.bukkit.plugin.PluginManager;
 import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 import name.richardson.james.bukkit.utilities.logging.PluginLoggerFactory;
 
-import name.richardson.james.bukkit.banhammer.BanHammer;
+import name.richardson.james.bukkit.banhammer.excluded.BanHammer;
 import name.richardson.james.bukkit.banhammer.record.BanRecord;
 import name.richardson.james.bukkit.banhammer.record.BanRecordFormatter;
 import name.richardson.james.bukkit.banhammer.record.SimpleBanRecordFormatter;
