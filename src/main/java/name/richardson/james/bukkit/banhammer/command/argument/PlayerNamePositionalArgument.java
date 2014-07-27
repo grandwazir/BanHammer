@@ -15,7 +15,6 @@ public class PlayerNamePositionalArgument {
 
 	public static final Messages MESSAGES = MessagesFactory.getMessages();
 
-
 	public static Argument getInstance(int position, boolean required, final PlayerRecord.Status playerStatus) {
 		ArgumentMetadata metadata = new SimpleArgumentMetadata(MESSAGES.playerNameArgumentId(), MESSAGES.playerNameArgumentName(), MESSAGES.playerNameArgumentDescription(), MESSAGES.playerNameArgumentError());
 		Suggester suggester = new PlayerRecordMatcher(playerStatus);

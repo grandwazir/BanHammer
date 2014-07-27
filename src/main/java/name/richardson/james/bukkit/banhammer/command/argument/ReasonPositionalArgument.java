@@ -9,7 +9,6 @@ public class ReasonPositionalArgument {
 
 	public static final Messages MESSAGES = MessagesFactory.getMessages();
 
-
 	public static Argument getInstance(int position, boolean required) {
 		ArgumentMetadata metadata = new SimpleArgumentMetadata(MESSAGES.reasonArgumentId(), MESSAGES.reasonArgumentName(), MESSAGES.reasonArgumentDescription(), MESSAGES.reasonArgumentInvalid());
 		if (required) {

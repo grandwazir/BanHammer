@@ -12,7 +12,7 @@ public class AllOptionArgument {
 	public static BooleanMarshaller getInstance() {
 		ArgumentMetadata metadata = new SimpleArgumentMetadata(MESSAGES.allOptionArgumentID(), MESSAGES.allOptionArgumentName(), MESSAGES.allOptionArgumentDescription());
 		final Argument argument = new SwitchArgument(metadata);
-		return new BooleanMarshaller(argument);
+		return new SimpleBooleanMarshaller(argument);
 	}
 
 }
