@@ -3,6 +3,10 @@ package name.richardson.james.bukkit.banhammer.model;
 import org.junit.Assert;
 import org.junit.Test;
 
+import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.comment.CommentRecord;
+import name.richardson.james.bukkit.banhammer.player.PlayerRecord;
+
 public class BanRecordTest {
 
 	@Test

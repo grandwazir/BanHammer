@@ -1,5 +1,8 @@
 package name.richardson.james.bukkit.banhammer.model;
 
+import name.richardson.james.bukkit.banhammer.comment.CommentRecord;
+import name.richardson.james.bukkit.banhammer.player.PlayerRecord;
+
 public class CommentRecordTest {
 
 	public static CommentRecord CommentRecord(String comment) {

@@ -7,6 +7,10 @@ import name.richardson.james.bukkit.utilities.persistence.DatabaseLoader;
 import name.richardson.james.bukkit.utilities.persistence.EntityPersistenceController;
 import name.richardson.james.bukkit.utilities.persistence.SQLiteDatabaseLoader;
 
+import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.comment.CommentRecord;
+import name.richardson.james.bukkit.banhammer.player.PlayerRecord;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

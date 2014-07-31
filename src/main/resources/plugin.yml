@@ -1,5 +1,5 @@
 name: ${project.name}
-main: name.richardson.james.bukkit.banhammer.excluded.BanHammer
+main: name.richardson.james.bukkit.banhammer.BanHammer
 description: ${project.description}.
 version: ${project.version}
 commands:

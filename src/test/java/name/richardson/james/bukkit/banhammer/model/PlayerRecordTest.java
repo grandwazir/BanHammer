@@ -1,13 +1,13 @@
 package name.richardson.james.bukkit.banhammer.model;
 
-import java.util.Random;
 import java.util.UUID;
 
 import com.avaje.ebean.ValidationException;
-import org.junit.Assert;
 import org.junit.Test;
 
 import name.richardson.james.bukkit.utilities.persistence.DatabaseLoader;
+
+import name.richardson.james.bukkit.banhammer.player.PlayerRecord;
 
 public class PlayerRecordTest {
 
