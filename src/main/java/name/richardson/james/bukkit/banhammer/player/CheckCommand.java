@@ -41,7 +41,7 @@ public class CheckCommand extends AbstractAsynchronousCommand {
 	private static final String PERMISSION_ALL = "banhammer.check";
 	private final Argument player;
 
-	protected CheckCommand(final Plugin plugin, final BukkitScheduler scheduler) {
+	public CheckCommand(final Plugin plugin, final BukkitScheduler scheduler) {
 		super(plugin, scheduler);
 		this.player = PlayerNamePositionalArgument.getInstance(0, true, PlayerRecord.Status.BANNED);
 		addArgument(player);

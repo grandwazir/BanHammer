@@ -27,6 +27,7 @@ import name.richardson.james.bukkit.utilities.command.argument.Argument;
 
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
+import name.richardson.james.bukkit.banhammer.PluginConfiguration;
 import name.richardson.james.bukkit.banhammer.argument.PlayerNamePositionalArgument;
 import name.richardson.james.bukkit.banhammer.player.PlayerRecord;
 
@@ -36,12 +37,12 @@ public class UndoCommand extends AbstractSynchronousCommand {
 	public static final String PERMISSION_OTHERS = "banhammer.undo.others";
 	public static final String PERMISSION_UNRESTRICTED = "banhammer.undo.unrestricted";
 	private static final Messages MESSAGES = MessagesFactory.getColouredMessages();
+	private final PluginConfiguration configuration;
 	private final Argument players;
-	private final long undoTime;
 
-	protected UndoCommand(final Plugin plugin, final BukkitScheduler scheduler, long undoTime) {
+	public UndoCommand(final Plugin plugin, final BukkitScheduler scheduler, PluginConfiguration configuration) {
 		super(plugin, scheduler);
-		this.undoTime = undoTime;
+		this.configuration = configuration;
 		this.players = PlayerNamePositionalArgument.getInstance(0, true, PlayerRecord.Status.BANNED);
 		addArgument(players);
 	}
@@ -85,7 +86,7 @@ public class UndoCommand extends AbstractSynchronousCommand {
 	}
 
 	private boolean withinTimeLimit(final long time) {
-		return isAuthorised(PERMISSION_UNRESTRICTED) || (System.currentTimeMillis() - time) <= this.undoTime;
+		return isAuthorised(PERMISSION_UNRESTRICTED) || (System.currentTimeMillis() - time) <= configuration.getUndoTime();
 	}
 
 }

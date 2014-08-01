@@ -40,7 +40,7 @@ public class PardonCommand extends AbstractAsynchronousCommand {
 	private final Argument players;
 	private final SilentSwitchArgument silent;
 
-	protected PardonCommand(final Plugin plugin, final BukkitScheduler scheduler) {
+	public PardonCommand(final Plugin plugin, final BukkitScheduler scheduler) {
 		super(plugin, scheduler);
 		this.silent = SilentSwitchArgument.getInstance();
 		this.players = PlayerNamePositionalArgument.getInstance(0, true, PlayerRecord.Status.BANNED);

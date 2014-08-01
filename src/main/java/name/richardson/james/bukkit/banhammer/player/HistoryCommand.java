@@ -40,7 +40,7 @@ public class HistoryCommand extends AbstractAsynchronousCommand {
 	public static final String PERMISSION_OTHERS = "banhammer.history.others";
 	private final Argument playerName;
 
-	protected HistoryCommand(final Plugin plugin, final BukkitScheduler scheduler) {
+	public HistoryCommand(final Plugin plugin, final BukkitScheduler scheduler) {
 		super(plugin, scheduler);
 		this.playerName = PlayerNamePositionalArgument.getInstance(0, false, PlayerRecord.Status.ANY);
 		addArgument(playerName);

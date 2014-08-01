@@ -20,47 +20,35 @@ package name.richardson.james.bukkit.banhammer;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Logger;
+import java.util.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.config.ServerConfig;
+import configuration.DatabaseConfiguration;
+import configuration.SimpleDatabaseConfiguration;
 
-import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.Command;
 import name.richardson.james.bukkit.utilities.command.CommandInvoker;
-import name.richardson.james.bukkit.utilities.logging.PluginLoggerFactory;
-import name.richardson.james.bukkit.utilities.logging.PrefixedLogger;
-import name.richardson.james.bukkit.utilities.persistence.configuration.DatabaseConfiguration;
-import name.richardson.james.bukkit.utilities.persistence.configuration.SimpleDatabaseConfiguration;
-import name.richardson.james.bukkit.utilities.persistence.database.DatabaseLoader;
-import name.richardson.james.bukkit.utilities.persistence.database.DatabaseLoaderFactory;
+import name.richardson.james.bukkit.utilities.command.RootCommandInvoker;
+import name.richardson.james.bukkit.utilities.command.SimpleCommandInvoker;
+import name.richardson.james.bukkit.utilities.persistence.DatabaseLoader;
+import name.richardson.james.bukkit.utilities.persistence.DatabaseLoaderFactory;
 import name.richardson.james.bukkit.utilities.updater.BukkitDevPluginUpdater;
 import name.richardson.james.bukkit.utilities.updater.PluginUpdater;
 
-import name.richardson.james.bukkit.banhammer.event.PlayerListener;
-import name.richardson.james.bukkit.banhammer.event.PlayerNotifier;
-import name.richardson.james.bukkit.banhammer.record.CurrentBanRecord;
-import name.richardson.james.bukkit.banhammer.record.CurrentPlayerRecord;
+import name.richardson.james.bukkit.banhammer.ban.*;
+import name.richardson.james.bukkit.banhammer.comment.CommentRecord;
+import name.richardson.james.bukkit.banhammer.player.*;
 
 public final class BanHammer extends JavaPlugin {
 
 	public static final String NOTIFY_PERMISSION_NAME = "banhammer.notify";
 	public static final int PROJECT_ID = 31269;
-
 	private static final String CONFIG_NAME = "config.yml";
 	private static final String DATABASE_CONFIG_NAME = "database.yml";
-	public static final String TABLE_PREFIX = "bh_";
-
-	private final Logger logger = PluginLoggerFactory.getLogger(BanHammer.class);
-
 	private PluginConfiguration configuration;
 	private EbeanServer database;
 
@@ -71,8 +59,9 @@ public final class BanHammer extends JavaPlugin {
 	@Override
 	public List<Class<?>> getDatabaseClasses() {
 		final List<Class<?>> classes = new LinkedList<Class<?>>();
-		classes.add(CurrentBanRecord.class);
-		classes.add(CurrentPlayerRecord.class);
+		classes.add(BanRecord.class);
+		classes.add(PlayerRecord.class);
+		classes.add(CommentRecord.class);
 		return classes;
 	}
 
@@ -90,21 +79,11 @@ public final class BanHammer extends JavaPlugin {
 		}
 	}
 
-	private void updatePlugin() {
-		if (!configuration.getAutomaticUpdaterState().equals(PluginUpdater.State.OFF)) {
-			PluginUpdater updater = new BukkitDevPluginUpdater(this.getDescription(), configuration.getAutomaticUpdaterBranch(), configuration.getAutomaticUpdaterState(), PROJECT_ID, this.getDataFolder(), Bukkit.getVersion());
-			this.getServer().getScheduler().runTaskAsynchronously(this, updater);
-			new name.richardson.james.bukkit.utilities.updater.PlayerNotifier(this, this.getServer().getPluginManager(), updater);
-		}
-	}
-
 	private void loadConfiguration()
 	throws IOException {
-		PrefixedLogger.setPrefix(this.getName());
 		final File file = new File(this.getDataFolder().getPath() + File.separatorChar + CONFIG_NAME);
 		final InputStream defaults = this.getResource(CONFIG_NAME);
 		this.configuration = new PluginConfiguration(file, defaults);
-		this.logger.setLevel(configuration.getLogLevel());
 	}
 
 	private void loadDatabase()
@@ -115,57 +94,57 @@ public final class BanHammer extends JavaPlugin {
 		serverConfig.setName(this.getName());
 		final File file = new File(this.getDataFolder().getPath() + File.separatorChar + DATABASE_CONFIG_NAME);
 		final InputStream defaults = this.getResource(DATABASE_CONFIG_NAME);
-		final DatabaseConfiguration configuration = new SimpleDatabaseConfiguration(file, defaults, serverConfig, this.getName());
+		final DatabaseConfiguration configuration = new SimpleDatabaseConfiguration(file, defaults, getName(), serverConfig);
 		final DatabaseLoader loader = DatabaseLoaderFactory.getDatabaseLoader(configuration);
 		loader.initalise();
+		PlayerRecord system = PlayerRecord.create(new UUID(0, 0), "SYSTEM");
 		this.database = loader.getEbeanServer();
-		CurrentPlayerRecord record = new CurrentPlayerRecord();
-		record.setLastKnownName("SYSTEM");
-		record.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-		record.setUuid(null);
-		database.save(record);
 	}
 
 	private void registerCommands() {
 		Set<Command> commands = new HashSet<Command>();
-		AbstractCommand command = new AuditCommand(getDatabase());
+		Command command = new AuditCommand(this, getServer().getScheduler());
 		commands.add(command);
-		command = new BanCommand(this.getServer(), this.getServer().getPluginManager(), database, configuration.getBanLimits(), configuration.getImmunePlayers());
+		command = new BanCommand(this, getServer().getScheduler(), configuration, getServer());
 		commands.add(command);
-		getCommand("ban").setExecutor(new FallthroughCommandInvoker(this, this.getServer().getScheduler(), command));
-		command = new CheckCommand(database);
+		getCommand("ban").setExecutor(new SimpleCommandInvoker(this, this.getServer().getScheduler(), command));
+		command = new CheckCommand(this, getServer().getScheduler());
 		commands.add(command);
-		command = new HistoryCommand(database);
+		command = new HistoryCommand(this, getServer().getScheduler());
 		commands.add(command);
-		command = new ExportCommand(database, getServer());
+		command = new ExportCommand(this, getServer().getScheduler(), getServer());
 		commands.add(command);
-		command = new ImportCommand(getServer(), database);
+		command = new ImportCommand(this, getServer().getScheduler(), getServer());
 		commands.add(command);
-		command = new KickCommand(getServer());
+		command = new KickCommand(this, getServer().getScheduler(), getServer());
 		commands.add(command);
-		getCommand("kick").setExecutor(new FallthroughCommandInvoker(this, this.getServer().getScheduler(), command));
-		command = new LimitsCommand(this.configuration);
+		getCommand("kick").setExecutor(new SimpleCommandInvoker(this, this.getServer().getScheduler(), command));
+		command = new LimitsCommand(this, getServer().getScheduler(), configuration);
 		commands.add(command);
-		command = new PardonCommand(getServer().getPluginManager(), database);
+		command = new PardonCommand(this, getServer().getScheduler());
 		commands.add(command);
-		getCommand("pardon").setExecutor(new FallthroughCommandInvoker(this, this.getServer().getScheduler(), command));
-		command = new PurgeCommand(database);
+		getCommand("pardon").setExecutor(new SimpleCommandInvoker(this, this.getServer().getScheduler(), command));
+		command = new PurgeCommand(this, getServer().getScheduler());
 		commands.add(command);
-		command = new RecentCommand(database);
+		command = new RecentCommand(this, getServer().getScheduler());
 		commands.add(command);
-		command = new UndoCommand(database, configuration.getUndoTime());
+		command = new UndoCommand(this, getServer().getScheduler(), configuration);
 		commands.add(command);
-		// findOrCreate the invoker
-		command = new HelpCommand(commands, "bh");
-		CommandInvoker invoker = new FallthroughCommandInvoker(this, this.getServer().getScheduler(), command);
-		invoker.addCommands(commands);
-		// bind invoker to plugin command
+		CommandInvoker invoker = new RootCommandInvoker(this, this.getServer().getScheduler(), commands, "bh");
 		getCommand("bh").setExecutor(invoker);
 	}
 
 	private void registerListeners() {
 		new PlayerListener(this, this.getServer().getPluginManager(), getServer(), database);
 		new PlayerNotifier(this, this.getServer().getPluginManager(), getServer());
+	}
+
+	private void updatePlugin() {
+		if (!configuration.getAutomaticUpdaterState().equals(PluginUpdater.State.OFF)) {
+			PluginUpdater updater = new BukkitDevPluginUpdater(this.getDescription(), configuration.getAutomaticUpdaterBranch(), configuration.getAutomaticUpdaterState(), PROJECT_ID, this.getDataFolder(), Bukkit.getVersion());
+			this.getServer().getScheduler().runTaskAsynchronously(this, updater);
+			new name.richardson.james.bukkit.utilities.updater.PlayerNotifier(this, this.getServer().getPluginManager(), updater);
+		}
 	}
 
 }

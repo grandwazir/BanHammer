@@ -43,7 +43,7 @@ public final class AuditCommand extends AbstractAsynchronousCommand {
 	private final BooleanMarshaller all;
 	private final Argument playerName;
 
-	protected AuditCommand(final Plugin plugin, final BukkitScheduler scheduler) {
+	public AuditCommand(final Plugin plugin, final BukkitScheduler scheduler) {
 		super(plugin, scheduler);
 		this.playerName = PlayerNamePositionalArgument.getInstance(0, false, PlayerRecord.Status.CREATOR);
 		this.all = AllOptionArgument.getInstance();

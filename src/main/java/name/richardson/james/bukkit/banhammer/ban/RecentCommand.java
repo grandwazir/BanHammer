@@ -40,7 +40,7 @@ public class RecentCommand extends AbstractAsynchronousCommand {
 	private static final String PERMISSION_ALL = "banhammer.recent";
 	private IntegerMarshaller count;
 
-	protected RecentCommand(final Plugin plugin, final BukkitScheduler scheduler) {
+	public RecentCommand(final Plugin plugin, final BukkitScheduler scheduler) {
 		super(plugin, scheduler);
 		count = BanCountOptionArgument.getInstance(DEFAULT_LIMIT);
 		addArgument((Argument) count);

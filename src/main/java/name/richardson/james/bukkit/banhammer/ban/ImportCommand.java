@@ -43,7 +43,7 @@ public class ImportCommand extends AbstractSynchronousCommand {
 	private final Argument reason;
 	private final Server server;
 
-	protected ImportCommand(final Plugin plugin, final BukkitScheduler scheduler, final Server server) {
+	public ImportCommand(final Plugin plugin, final BukkitScheduler scheduler, final Server server) {
 		super(plugin, scheduler);
 		this.server = server;
 		this.reason = ReasonPositionalArgument.getInstance(0, false);

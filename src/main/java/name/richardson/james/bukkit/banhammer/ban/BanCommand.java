@@ -48,7 +48,7 @@ public class BanCommand extends AbstractAsynchronousCommand {
 	private final SilentSwitchArgument silent;
 	private final TimeMarshaller time;
 
-	protected BanCommand(final Plugin plugin, final BukkitScheduler scheduler, PluginConfiguration configuration, Server server) {
+	public BanCommand(final Plugin plugin, final BukkitScheduler scheduler, PluginConfiguration configuration, Server server) {
 		super(plugin, scheduler);
 		this.configuration = configuration;
 		player = PlayerNamePositionalArgument.getInstance(server, 0, true);

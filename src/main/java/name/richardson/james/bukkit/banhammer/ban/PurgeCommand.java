@@ -38,7 +38,7 @@ public class PurgeCommand extends AbstractAsynchronousCommand {
 	private static final String PERMISSION_OTHERS = "banhammer.purge.others";
 	private final Argument players;
 
-	protected PurgeCommand(final Plugin plugin, final BukkitScheduler scheduler) {
+	public PurgeCommand(final Plugin plugin, final BukkitScheduler scheduler) {
 		super(plugin, scheduler);
 		this.players = PlayerNamePositionalArgument.getInstance(0, true, PlayerRecord.Status.ANY);
 		addArgument(players);

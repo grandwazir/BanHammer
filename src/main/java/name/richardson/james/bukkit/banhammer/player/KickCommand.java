@@ -45,7 +45,7 @@ public class KickCommand extends AbstractSynchronousCommand {
 	private final Argument reason;
 	private final SilentSwitchArgument silent;
 
-	protected KickCommand(final Plugin plugin, final BukkitScheduler scheduler, final Server server) {
+	public KickCommand(final Plugin plugin, final BukkitScheduler scheduler, final Server server) {
 		super(plugin, scheduler);
 		this.player = PlayerPositionalArgument.getInstance(server, 0, true);
 		this.reason = ReasonPositionalArgument.getInstance(1, false);

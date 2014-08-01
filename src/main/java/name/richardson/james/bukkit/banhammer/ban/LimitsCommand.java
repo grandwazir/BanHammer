@@ -41,7 +41,7 @@ public class LimitsCommand extends AbstractAsynchronousCommand {
 	private final PluginConfiguration configuration;
 	private TimeFormatter timeFormatter = new PreciseDurationTimeFormatter();
 
-	protected LimitsCommand(final Plugin plugin, final BukkitScheduler scheduler, PluginConfiguration configuration) {
+	public LimitsCommand(final Plugin plugin, final BukkitScheduler scheduler, PluginConfiguration configuration) {
 		super(plugin, scheduler);
 		this.configuration = configuration;
 	}

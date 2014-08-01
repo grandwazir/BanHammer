@@ -29,7 +29,7 @@ public class SimpleTimeMarshallerTest {
 	@Test
 	public void returnCorrectTimeWhenValidStringFormatProvided() {
 		when(argument.getString()).thenReturn("1m30s");
-		Assert.assertEquals("Parsed time should be 90 when provided value is incorrectly formatted!", 90, marshaller.getTime());
+		Assert.assertEquals("Parsed time should be 90 when provided value is incorrectly formatted!", 90000, marshaller.getTime());
 	}
 
 }
