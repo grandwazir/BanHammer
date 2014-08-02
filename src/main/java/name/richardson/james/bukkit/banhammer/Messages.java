@@ -118,6 +118,8 @@ public interface Messages {
 
 	@ColouredMessage(type = MessageType.ERROR) String playerBannedTemporarily(String reason, String creator, String bannedUntil);
 
+	@ColouredMessage(type = MessageType.HEADER) String playerHasBansOnRecord(String playerName, @PluralCount int size);
+
 	@ColouredMessage(type = MessageType.NOTICE) String playerHasMadeNoBans();
 
 	@ColouredMessage(type = MessageType.WARNING) String playerIsAlreadyBanned(String playerName);

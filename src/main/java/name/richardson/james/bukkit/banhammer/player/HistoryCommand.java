@@ -68,6 +68,7 @@ public class HistoryCommand extends AbstractAsynchronousCommand {
 				addMessage(MESSAGES.playerNeverBanned(playerName));
 			} else {
 				Set<BanRecord> bans = record.getBans();
+				addMessage(MESSAGES.playerHasBansOnRecord(playerName, bans.size()));
 				for (BanRecord ban : bans) {
 					BanRecordFormatter formatter = ban.getFormatter();
 					addMessages(formatter.getMessages());
