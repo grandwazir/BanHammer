@@ -1,5 +1,7 @@
 # Changelog for BanHammer (v3.0.0-SNAPSHOT)
 
+2014-08-02 19:41:42 +0100    add missing permission to set (James Richardson)  
+2014-08-02 19:40:30 +0100    allow banning of immune players if the player has banhammer.ban.permanent (James Richardson)  
 2014-08-02 04:44:12 +0100    fix some formatting issues with LimitCommand (James Richardson)  
 2014-08-02 04:41:26 +0100    fixed an issue where create() was not checking if a similar record exists. (James Richardson)  
 2014-08-02 04:34:20 +0100    translated all keys (James Richardson)  

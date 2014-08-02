@@ -148,7 +148,10 @@ public class PlayerRecord extends AbstractRecord {
 	}
 
 	public boolean isBanned() {
-		return true;
+		for (BanRecord ban : getBans()) {
+			if (ban.getState() == BanRecord.State.NORMAL) return true;
+		}
+		return false;
 	}
 
 	public void setBans(final Set<BanRecord> bans) {

@@ -121,11 +121,16 @@ public class BanRecord extends AbstractRecord {
 	}
 
 	public State getState() {
+		Timestamp now = new Timestamp(System.currentTimeMillis());
+		if (this.expiresAt != null && this.expiresAt.before(now) && this.state == State.NORMAL) {
+			setState(State.EXPIRED);
+		}
 		return state;
 	}
 
 	public Type getType() {
-		return null;
+		if (this.expiresAt != null) return Type.TEMPORARY;
+		return Type.PERMANENT;
 	}
 
 	public void setComments(final Set<CommentRecord> comments) {
