@@ -26,13 +26,13 @@ public interface Messages {
 
 	@ColouredMessage(type = MessageType.NOTICE) String auditPermanentBanPercentage(int permanentBanCount, float pardonedBanCountPercentage);
 
-	@ColouredMessage(type = MessageType.HEADER) String auditSummary(int totalBanCount, String playerName, float totalBanCountPercentage);
+	@ColouredMessage(type = MessageType.HEADER) String auditSummary(@PluralCount int totalBanCount, String playerName, float totalBanCountPercentage);
 
 	String auditSummaryAll();
 
 	@ColouredMessage(type = MessageType.HEADER) String auditSummaryStatus();
 
-	String auditSummaryType();
+	@ColouredMessage(type = MessageType.HEADER) String auditSummaryType();
 
 	@ColouredMessage(type = MessageType.NOTICE) String auditTemporaryBanPercentage(int temporaryBanCount, float temporaryBanCountPercentage);
 

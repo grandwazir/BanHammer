@@ -123,7 +123,7 @@ public class BanRecord extends AbstractRecord {
 	public State getState() {
 		Timestamp now = new Timestamp(System.currentTimeMillis());
 		if (this.expiresAt != null && this.expiresAt.before(now) && this.state == State.NORMAL) {
-			setState(State.EXPIRED);
+			this.state = State.EXPIRED;
 		}
 		return state;
 	}
@@ -141,7 +141,15 @@ public class BanRecord extends AbstractRecord {
 		this.creator = creator;
 	}
 
+	public void setExpiryDuration(final long duration) {
+		Timestamp now = new Timestamp(System.currentTimeMillis());
+		Timestamp expiry = new Timestamp(now.getTime() + duration);
+		this.setCreatedAt(now);
+		this.expiresAt = expiry;
+	}
+
 	public void setExpiresAt(final Timestamp expiresAt) {
+		Timestamp now = new Timestamp(System.currentTimeMillis());
 		this.expiresAt = expiresAt;
 	}
 

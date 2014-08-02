@@ -18,10 +18,7 @@
 package name.richardson.james.bukkit.banhammer.ban;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
@@ -76,7 +73,7 @@ public class BanCommand extends AbstractAsynchronousCommand {
 				} else if (isBanWithinLimit()) {
 					if (!playerRecord.isBanned()) {
 						final BanRecord record = BanRecord.create(creatorRecord, playerRecord, reason.getString());
-						if (time > 0) record.setExpiresAt((Timestamp) this.time.getDate());
+						if (time > 0) record.setExpiryDuration(this.time.getTime());
 						records.add(record);
 						record.save();
 						if (silent) addMessage(MESSAGES.playerBanned(playerName));
@@ -124,10 +121,10 @@ public class BanCommand extends AbstractAsynchronousCommand {
 		if (time.getTime() == 0 && isAuthorised(PERMISSION_PERMANENT)) {
 			return true;
 		} else {
-			for (final String limitName : this.configuration.getBanLimits().keySet()) {
-				String node = getPermissionFromLimit(limitName);
+			for (final Map.Entry<String, Long> limit : this.configuration.getBanLimits().entrySet()) {
+				String node = getPermissionFromLimit(limit.getKey());
 				if (!isAuthorised(node)) continue;
-				if (this.configuration.getBanLimits().get(limitName) >= this.time.getTime()) return true;
+				if (limit.getValue() >= this.time.getTime()) return true;
 			}
 		}
 		return false;
