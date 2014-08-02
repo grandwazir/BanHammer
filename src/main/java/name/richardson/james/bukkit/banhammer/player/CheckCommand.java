@@ -64,7 +64,6 @@ public class CheckCommand extends AbstractAsynchronousCommand {
 
 	@Override
 	protected void execute() {
-		final CommandSender commandSender = getContext().getCommandSender();
 		final Collection<String> playerNames = player.getStrings();
 		for (String playerName : playerNames) {
 			PlayerRecord playerRecord = PlayerRecord.find(playerName);
@@ -74,7 +73,7 @@ public class CheckCommand extends AbstractAsynchronousCommand {
 				addMessages(formatter.getMessages());
 			} else {
 				String message = MESSAGES.playerNotBanned(playerName);
-				commandSender.sendMessage(message);
+				addMessage(message);
 			}
 		}
 	}

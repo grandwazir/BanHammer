@@ -68,7 +68,7 @@ public final class AuditCommand extends AbstractAsynchronousCommand {
 	protected void execute() {
 		final CommandSender commandSender = getContext().getCommandSender();
 		if (all.isSet()) {
-			if (hasPermission(commandSender, null)) {
+			if (hasPermission(commandSender, PERMISSION_AUDIT_ALL)) {
 				final String playerName = MESSAGES.auditSummaryAll();
 				final Collection<BanRecord> bans = BanRecord.list();
 				addMessages(getResponse(playerName, bans, bans.size()));
