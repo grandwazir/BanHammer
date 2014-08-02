@@ -89,7 +89,7 @@ public interface Messages {
 
 	String limitCommandName();
 
-	String limitsFound(@PluralCount int size);
+	@ColouredMessage(type = MessageType.HEADER) String limitsFound(@PluralCount int size);
 
 	@ColouredMessage(type = MessageType.NOTICE)
 	String noBansMade();
