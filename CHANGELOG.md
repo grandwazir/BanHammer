@@ -1,5 +1,6 @@
 # Changelog for BanHammer (v3.0.0-SNAPSHOT)
 
+2014-08-02 19:56:13 +0100    swap creator and player (James Richardson)  
 2014-08-02 19:53:36 +0100    remember to set the state to normal when creating a new ban (James Richardson)  
 2014-08-02 19:53:08 +0100    complete stubbed methods (James Richardson)  
 2014-08-02 19:41:42 +0100    add missing permission to set (James Richardson)  

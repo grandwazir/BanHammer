@@ -3,6 +3,7 @@ package name.richardson.james.bukkit.banhammer;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
@@ -128,6 +129,7 @@ public class PlayerRecord extends AbstractRecord {
 	}
 
 	public Set<BanRecord> getBans() {
+		if (bans == null) return new HashSet<>();
 		return bans;
 	}
 
