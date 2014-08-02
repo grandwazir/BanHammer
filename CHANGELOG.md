@@ -1,5 +1,6 @@
 # Changelog for BanHammer (v3.0.0-SNAPSHOT)
 
+2014-08-02 20:26:25 +0100    fix a couple of bugs with ban creation (James Richardson)  
 2014-08-02 20:09:34 +0100    fix NPE in AuditCommand (James Richardson)  
 2014-08-02 20:03:19 +0100    complete method stub (James Richardson)  
 2014-08-02 19:57:21 +0100    return blank HashSet if no bans set yet. (James Richardson)  

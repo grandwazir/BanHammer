@@ -61,29 +61,26 @@ public class HistoryCommand extends AbstractAsynchronousCommand {
 
 	@Override
 	protected void execute() {
-		final CommandSender sender = getContext().getCommandSender();
-		final String playerName = (this.playerName.getString() == null) ? sender.getName() : this.playerName.getString();
-		final List<String> messages = new ArrayList<String>();
-		if (hasPermission(sender, playerName)) {
+		final String playerName = (this.playerName.getString() == null) ? getContext().getCommandSender().getName() : this.playerName.getString();
+		if (hasPermission(playerName)) {
 			PlayerRecord record = PlayerRecord.find(playerName);
-			Set<BanRecord> bans = record.getBans();
-			if (record != null && !bans.isEmpty()) {
+			if (record == null || record.getBans().isEmpty()) {
+				addMessage(MESSAGES.playerNeverBanned(playerName));
+			} else {
+				Set<BanRecord> bans = record.getBans();
 				for (BanRecord ban : bans) {
 					BanRecordFormatter formatter = ban.getFormatter();
-					messages.addAll(formatter.getMessages());
+					addMessages(formatter.getMessages());
 				}
-			} else {
-				messages.add(MESSAGES.playerNeverBanned(playerName));
 			}
 		} else {
-			messages.add(MESSAGES.notAllowedToAuditThatPlayer(playerName));
+			addMessage(MESSAGES.notAllowedToAuditThatPlayer(playerName));
 		}
-		sender.sendMessage(messages.toArray(new String[messages.size()]));
 	}
 
-	private boolean hasPermission(CommandSender sender, String playerName) {
-		final boolean isSenderTargetingSelf = playerName.equalsIgnoreCase(sender.getName());
-		return sender.hasPermission(PERMISSION_OWN) && isSenderTargetingSelf || sender.hasPermission(PERMISSION_OTHERS) && !isSenderTargetingSelf;
+	private boolean hasPermission(String playerName) {
+		final boolean isSenderTargetingSelf = playerName.equalsIgnoreCase(getContext().getCommandSender().getName());
+		return isAuthorised(PERMISSION_OWN) && isSenderTargetingSelf || isAuthorised(PERMISSION_OTHERS) && !isSenderTargetingSelf;
 	}
 
 }
