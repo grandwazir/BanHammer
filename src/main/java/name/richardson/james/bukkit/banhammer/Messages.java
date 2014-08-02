@@ -120,7 +120,7 @@ public interface Messages {
 
 	@ColouredMessage(type = MessageType.HEADER) String playerHasBansOnRecord(String playerName, @PluralCount int size);
 
-	@ColouredMessage(type = MessageType.NOTICE) String playerHasMadeNoBans();
+	@ColouredMessage(type = MessageType.NOTICE) String playerHasMadeNoBans(final String playerName);
 
 	@ColouredMessage(type = MessageType.WARNING) String playerIsAlreadyBanned(String playerName);
 

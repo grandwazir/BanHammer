@@ -66,48 +66,46 @@ public final class AuditCommand extends AbstractAsynchronousCommand {
 
 	@Override
 	protected void execute() {
-		final CommandSender commandSender = getContext().getCommandSender();
 		if (all.isSet()) {
-			if (hasPermission(commandSender, PERMISSION_AUDIT_ALL)) {
+			if (isAuthorised(PERMISSION_AUDIT_ALL)) {
 				final String playerName = MESSAGES.auditSummaryAll();
 				final Collection<BanRecord> bans = BanRecord.list();
-				addMessages(getResponse(playerName, bans, bans.size()));
+				AuditCommandSummary summary = new AuditCommandSummary(bans);
+				addMessage(MESSAGES.auditSummary(summary.getTotalBanCount(), playerName, summary.getTotalBanCountPercentage()));
+				addMessages(summary.getMessages());
 			} else {
 				addMessage(MESSAGES.noPermissionToAuditAllBans());
 			}
 		} else {
-			Collection<String> playerNames = new ArrayList<String>(this.playerName.getStrings());
-			if (playerNames.isEmpty()) {
-				String playerName = (this.playerName.getString() == null) ? commandSender.getName() : this.playerName.getString();
-				playerNames.add(playerName);
-			}
-			final int total = BanRecord.count();
-			for (String playerName : playerNames) {
-				if (hasPermission(commandSender, playerName)) {
-					PlayerRecord record = PlayerRecord.find(playerName);
-					if (record != null) {
-						final Set<BanRecord> bans = record.getCreatedBans();
-						addMessages(getResponse(playerName, bans, total));
-					} else {
-						addMessage(MESSAGES.playerHasMadeNoBans());
-					}
-				} else {
-					addMessage(MESSAGES.notAllowedToAuditThatPlayer(playerName));
+			if (playerName.getStrings().isEmpty()) {
+				String playerName = getContext().getCommandSender().getName();
+				createAuditSummary(playerName);
+			} else {
+				for (String playerName : this.playerName.getStrings()) {
+					createAuditSummary(playerName);
 				}
 			}
 		}
 	}
 
-	private Collection<String> getResponse(String playerName, Collection<BanRecord> bans, int count) {
-		Collection<String> messages = new ArrayList<String>();
-		AuditCommandSummary summary = new AuditCommandSummary(bans, count);
-		messages.add(MESSAGES.auditSummary(summary.getTotalBanCount(), playerName, summary.getTotalBanCountPercentage()));
-		messages.addAll(summary.getMessages());
-		return messages;
+	private void createAuditSummary(String playerName) {
+		PlayerRecord record = PlayerRecord.find(playerName);
+		if (hasPermission(playerName)) {
+			if (record != null) {
+			Set<BanRecord> bans = record.getCreatedBans();
+			AuditCommandSummary summary = new AuditCommandSummary(bans);
+			addMessage(MESSAGES.auditSummary(summary.getTotalBanCount(), playerName, summary.getTotalBanCountPercentage()));
+			addMessages(summary.getMessages());
+		} else {
+			addMessage(MESSAGES.playerHasMadeNoBans(playerName));
+			}
+		} else {
+			addMessage(MESSAGES.notAllowedToAuditThatPlayer(playerName));
+		}
 	}
 
-	private boolean hasPermission(final CommandSender sender, String targetName) {
-		final boolean isSenderCheckingSelf = targetName.equalsIgnoreCase(sender.getName());
+	private boolean hasPermission(String targetName) {
+		final boolean isSenderCheckingSelf = targetName.equalsIgnoreCase(getContext().getCommandSender().getName());
 		return this.all.isSet() && getContext().isAuthorised(PERMISSION_AUDIT_ALL) || (!all.isSet() && getContext().isAuthorised(PERMISSION_SELF) && isSenderCheckingSelf) || (!all.isSet() && getContext().isAuthorised(PERMISSION_OTHERS) && !isSenderCheckingSelf);
 	}
 

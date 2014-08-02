@@ -19,6 +19,12 @@ public final class AuditCommandSummary {
 	private int temporaryBans;
 	private int total;
 
+	protected AuditCommandSummary(Collection<BanRecord> bans) {
+		this.bans = bans;
+		this.total = BanRecord.count();
+		this.update();
+	}
+
 	protected AuditCommandSummary(Collection<BanRecord> bans, int total) {
 		this.bans = bans;
 		this.total = total;

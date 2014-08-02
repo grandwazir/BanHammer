@@ -96,7 +96,7 @@ public class BanHammer extends JavaPlugin {
 		CommentRecord.setRecordDatabase(loader.getEbeanServer());
 		PlayerRecord.setRecordDatabase(loader.getEbeanServer());
 		BanRecord.setRecordDatabase(loader.getEbeanServer());
-		PlayerRecord system = PlayerRecord.create(new UUID(0, 0), "SYSTEM");
+		PlayerRecord.create(new UUID(0, 0), "CONSOLE");
 	}
 
 	private void registerCommands() {
