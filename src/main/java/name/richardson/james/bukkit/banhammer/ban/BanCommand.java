@@ -116,7 +116,7 @@ public class BanCommand extends AbstractAsynchronousCommand {
 	}
 
 	private boolean isPlayerImmune(String playerName) {
-		return (configuration.getImmunePlayers().contains(playerName) || getContext().isAuthorised(PERMISSION_PERMANENT));
+		return (configuration.getImmunePlayers().contains(playerName) && !getContext().isAuthorised(PERMISSION_PERMANENT));
 	}
 
 	private boolean isBanWithinLimit() {

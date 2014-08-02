@@ -73,7 +73,7 @@ public class LimitsCommand extends AbstractAsynchronousCommand {
 			ChatColor colour = ChatColor.RED;
 			String limitName = limit.getKey();
 			if (getContext().isAuthorised(BanCommand.getPermissionFromLimit(limitName))) colour = ChatColor.GREEN;
-			addMessage(colour + "- " + limitName + "(" + time + ")");
+			addMessage(colour + "- " + limitName + " (" + time + ")");
 		}
 	}
 
