@@ -1,5 +1,6 @@
 # Changelog for BanHammer (v3.0.0-SNAPSHOT)
 
+2014-08-02 21:40:44 +0100    events are now responsible for registering themselves (James Richardson)  
 2014-08-02 21:02:29 +0100    fix a number of issues with the audit command (James Richardson)  
 2014-08-02 20:39:17 +0100    history command now supports multiple players (James Richardson)  
 2014-08-02 20:35:43 +0100    added additional headers when checking history of multiple players (James Richardson)  

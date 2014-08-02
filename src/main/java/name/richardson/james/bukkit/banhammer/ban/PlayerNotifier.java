@@ -39,7 +39,7 @@ public class PlayerNotifier extends AbstractListener {
 	public void onPlayerPardoned(final BanHammerPlayerPardonedEvent event) {
 		if (event.isSilent()) return;
 		for (BanRecord record : event.getRecords()) {
-			String message = MESSAGES.playerPardonedBy(record.getPlayer().getName(), event.getCommandSender());
+			String message = MESSAGES.playerPardonedBy(record.getPlayer().getName(), event.getCommandSender().getName());
 			server.broadcast(message, BanHammer.NOTIFY_PERMISSION_NAME);
 		}
 	}

@@ -148,7 +148,7 @@ public interface Messages {
 
 	@ColouredMessage(type = MessageType.NOTICE) String playerPardoned(String playerName);
 
-	@ColouredMessage(type = MessageType.NOTICE) String playerPardonedBy(String target, CommandSender pardonedBy);
+	@ColouredMessage(type = MessageType.NOTICE) String playerPardonedBy(String target, String pardonedBy);
 
 	@ColouredMessage(type = MessageType.NOTICE) String bansImported(@PluralCount int size);
 
