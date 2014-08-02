@@ -22,12 +22,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Event;
 
 import name.richardson.james.bukkit.banhammer.BanRecord;
 
-public abstract class AbstractBanHammerPlayerEvent extends Event implements BanHammerPlayerEvent{
+public abstract class AbstractBanHammerPlayerEvent extends Event implements BanHammerPlayerEvent {
 
 	private final CommandSender commandSender;
 	private final Set<BanRecord> records = new HashSet<BanRecord>();
@@ -37,6 +38,7 @@ public abstract class AbstractBanHammerPlayerEvent extends Event implements BanH
 		this.commandSender = commandSender;
 		this.records.addAll(records);
 		this.silent = silent;
+		Bukkit.getPluginManager().callEvent(this);
 	}
 
 	public CommandSender getCommandSender() {
