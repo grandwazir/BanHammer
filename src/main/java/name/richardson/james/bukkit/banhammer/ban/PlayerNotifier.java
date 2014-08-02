@@ -8,6 +8,7 @@ import org.bukkit.plugin.PluginManager;
 
 import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 
+import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
 import name.richardson.james.bukkit.banhammer.BanHammer;

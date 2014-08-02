@@ -14,7 +14,7 @@ public class PlayerPositionalArgument {
 	public static final Messages MESSAGES = MessagesFactory.getMessages();
 
 	public static PlayerMarshaller getInstance(Server server, int position, boolean required) {
-		ArgumentMetadata metadata = new SimpleArgumentMetadata(MESSAGES.playerArgumentID(), MESSAGES.playerArgumentName(), MESSAGES.playerArgumentDescription(), MESSAGES.playerArgumentInvalid());
+		ArgumentMetadata metadata = new SimpleArgumentMetadata(MESSAGES.playerArgumentId(), MESSAGES.playerArgumentName(), MESSAGES.playerArgumentDescription(), MESSAGES.playerArgumentInvalid());
 		Suggester suggester = new OnlinePlayerSuggester(server);
 		if (required) {
 			Argument argument = new RequiredPositionalArgument(metadata, suggester, position);

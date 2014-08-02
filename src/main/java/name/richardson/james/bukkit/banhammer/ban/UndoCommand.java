@@ -25,11 +25,10 @@ import org.bukkit.scheduler.BukkitScheduler;
 import name.richardson.james.bukkit.utilities.command.AbstractSynchronousCommand;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 
-import name.richardson.james.bukkit.banhammer.Messages;
-import name.richardson.james.bukkit.banhammer.MessagesFactory;
-import name.richardson.james.bukkit.banhammer.PluginConfiguration;
+import name.richardson.james.bukkit.banhammer.*;
 import name.richardson.james.bukkit.banhammer.argument.PlayerNamePositionalArgument;
-import name.richardson.james.bukkit.banhammer.player.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.BanRecord;
+import name.richardson.james.bukkit.banhammer.PlayerRecord;
 
 public class UndoCommand extends AbstractSynchronousCommand {
 

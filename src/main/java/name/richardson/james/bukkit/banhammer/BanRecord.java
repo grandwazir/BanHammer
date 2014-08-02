@@ -1,4 +1,4 @@
-package name.richardson.james.bukkit.banhammer.ban;
+package name.richardson.james.bukkit.banhammer;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -6,14 +6,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.avaje.ebean.Ebean;
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.validation.NotNull;
 
 import name.richardson.james.bukkit.utilities.persistence.AbstractRecord;
 
-import name.richardson.james.bukkit.banhammer.comment.CommentRecord;
-import name.richardson.james.bukkit.banhammer.player.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.ban.BanRecordFormatter;
+import name.richardson.james.bukkit.banhammer.ban.SimpleBanRecordFormatter;
 
 @Entity
 @Table(name = "banhammer_" + "bans")
@@ -29,6 +28,8 @@ public class BanRecord extends AbstractRecord {
 		PERMANENT,
 		TEMPORARY
 	}
+
+	private static EbeanServer database;
 	@OneToMany(cascade = CascadeType.ALL, targetEntity = CommentRecord.class)
 	@JoinColumn(name = "ban_id", referencedColumnName = "id")
 	private Set<CommentRecord> comments;
@@ -42,10 +43,14 @@ public class BanRecord extends AbstractRecord {
 	@NotNull
 	private State state;
 
-	public static EbeanServer getRecordDatabase() {
-		return Ebean.getServer("BanHammer");
+
+	protected static EbeanServer getRecordDatabase() {
+		return BanRecord.database;
 	}
 
+	protected static void setRecordDatabase(final EbeanServer database) {
+		BanRecord.database = database;
+	}
 	public static List<BanRecord> list() {
 		return getRecordDatabase().find(BanRecord.class).orderBy().desc("created_at").findList();
 	}

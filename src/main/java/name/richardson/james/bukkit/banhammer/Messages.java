@@ -10,7 +10,7 @@ public interface Messages {
 
 	String allOptionArgumentDescription();
 
-	String allOptionArgumentID();
+	String allOptionArgumentId();
 
 	String allOptionArgumentName();
 
@@ -22,19 +22,19 @@ public interface Messages {
 
 	@ColouredMessage(type = MessageType.NOTICE) String auditNormalBanPercentage(int normalBanCount, float normalBanCountPercentage);
 
-	@ColouredMessage(type = MessageType.NOTICE) String auditPardonedPercentage(int pardonedBanCount, float pardonedBanCountPercentage);
+	@ColouredMessage(type = MessageType.NOTICE) String auditPardonedBanPercentage(int pardonedBanCount, float pardonedBanCountPercentage);
 
-	@ColouredMessage(type = MessageType.NOTICE) String auditPermanentBanSummary(int permanentBanCount, float pardonedBanCountPercentage);
+	@ColouredMessage(type = MessageType.NOTICE) String auditPermanentBanPercentage(int permanentBanCount, float pardonedBanCountPercentage);
 
 	@ColouredMessage(type = MessageType.HEADER) String auditSummary(int totalBanCount, String playerName, float totalBanCountPercentage);
 
 	String auditSummaryAll();
 
-	String auditSummaryHeader();
-
 	@ColouredMessage(type = MessageType.HEADER) String auditSummaryStatus();
 
-	@ColouredMessage(type = MessageType.NOTICE) String auditTemporaryBansSummary(int temporaryBanCount, float temporaryBanCountPercentage);
+	String auditSummaryType();
+
+	@ColouredMessage(type = MessageType.NOTICE) String auditTemporaryBanPercentage(int temporaryBanCount, float temporaryBanCountPercentage);
 
 	String banCommandDescription();
 
@@ -58,13 +58,16 @@ public interface Messages {
 
 	String bansExported(@PluralCount int size);
 
+	@ColouredMessage(type = MessageType.HEADER)
+	String bansPurged(@PluralCount int count);
+
 	String checkCommandDescription();
 
 	String checkCommandName();
 
 	String defaultImportReason();
 
-	String defaultKickMessage();
+	String defaultKickReason();
 
 	String exportCommandDescription();
 
@@ -93,8 +96,6 @@ public interface Messages {
 
 	@ColouredMessage(type = MessageType.ERROR) String noPermissionToAuditAllBans();
 
-	@ColouredMessage(type = MessageType.ERROR) String noPermissionToAuditBans();
-
 	@ColouredMessage(type = MessageType.ERROR) String notAllowedToAuditThatPlayer(String playerName);
 
 	String pardonCommandDescription();
@@ -103,21 +104,23 @@ public interface Messages {
 
 	String playerArgumentDescription();
 
-	String playerArgumentID();
+	String playerArgumentId();
 
 	String playerArgumentInvalid();
 
 	String playerArgumentName();
 
-	@ColouredMessage(type = MessageType.NOTICE) String playerBannedBy(String target, String creator);
-
 	@ColouredMessage(type = MessageType.NOTICE) String playerBanned(String playerName);
+
+	@ColouredMessage(type = MessageType.NOTICE) String playerBannedBy(String target, String creator);
 
 	@ColouredMessage(type = MessageType.ERROR) String playerBannedPermanently(String reason, String creator);
 
 	@ColouredMessage(type = MessageType.ERROR) String playerBannedTemporarily(String reason, String creator, String bannedUntil);
 
 	@ColouredMessage(type = MessageType.NOTICE) String playerHasMadeNoBans();
+
+	@ColouredMessage(type = MessageType.WARNING) String playerIsAlreadyBanned(String playerName);
 
 	@ColouredMessage(type = MessageType.ERROR) String playerIsImmune(String playerName);
 
@@ -141,16 +144,11 @@ public interface Messages {
 
 	@ColouredMessage(type = MessageType.NOTICE) String playerNotBanned(String playerName);
 
-	@ColouredMessage(type = MessageType.HEADER)
-	String bansPurged(@PluralCount int count);
+	@ColouredMessage(type = MessageType.NOTICE) String playerPardoned(String playerName);
 
 	@ColouredMessage(type = MessageType.NOTICE) String playerPardonedBy(String target, CommandSender pardonedBy);
 
-	@ColouredMessage(type = MessageType.NOTICE) String playerPardoned(String playerName);
-
-	@ColouredMessage(type = MessageType.WARNING) String playerIsAlreadyBanned(String playerName);
-
-	@ColouredMessage(type = MessageType.NOTICE) String playersImported(@PluralCount int size);
+	@ColouredMessage(type = MessageType.NOTICE) String bansImported(@PluralCount int size);
 
 	String purgeCommandDescription();
 

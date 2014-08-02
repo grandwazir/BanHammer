@@ -31,7 +31,6 @@ import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 
 import name.richardson.james.bukkit.banhammer.ban.BanHammerPlayerBannedEvent;
 import name.richardson.james.bukkit.banhammer.ban.BanHammerPlayerPardonedEvent;
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
 
 public class MetricsListener extends AbstractListener {
 

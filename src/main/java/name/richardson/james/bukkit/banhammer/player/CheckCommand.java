@@ -31,8 +31,9 @@ import name.richardson.james.bukkit.utilities.command.argument.Argument;
 
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
+import name.richardson.james.bukkit.banhammer.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.argument.PlayerNamePositionalArgument;
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordFormatter;
 
 public class CheckCommand extends AbstractAsynchronousCommand {

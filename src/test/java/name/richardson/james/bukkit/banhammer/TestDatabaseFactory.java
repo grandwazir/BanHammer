@@ -1,15 +1,15 @@
-package name.richardson.james.bukkit.banhammer.model;
+package name.richardson.james.bukkit.banhammer;
 
 import com.avaje.ebean.config.ServerConfig;
-import configuration.DatabaseConfiguration;
 
 import name.richardson.james.bukkit.utilities.persistence.DatabaseLoader;
 import name.richardson.james.bukkit.utilities.persistence.EntityPersistenceController;
 import name.richardson.james.bukkit.utilities.persistence.SQLiteDatabaseLoader;
+import name.richardson.james.bukkit.utilities.persistence.configuration.DatabaseConfiguration;
 
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
-import name.richardson.james.bukkit.banhammer.comment.CommentRecord;
-import name.richardson.james.bukkit.banhammer.player.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.BanRecord;
+import name.richardson.james.bukkit.banhammer.CommentRecord;
+import name.richardson.james.bukkit.banhammer.PlayerRecord;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -36,6 +36,9 @@ public class TestDatabaseFactory {
 			when(configuration.getDataSourceConfig()).thenReturn(serverConfig.getDataSourceConfig());
 			SQLITE_DATABASE_LOADER = new SQLiteDatabaseLoader(configuration);
 			SQLITE_DATABASE_LOADER.initalise();
+			CommentRecord.setRecordDatabase(SQLITE_DATABASE_LOADER.getEbeanServer());
+			PlayerRecord.setRecordDatabase(SQLITE_DATABASE_LOADER.getEbeanServer());
+	    BanRecord.setRecordDatabase(SQLITE_DATABASE_LOADER.getEbeanServer());
 		}
 		return SQLITE_DATABASE_LOADER;
 	}

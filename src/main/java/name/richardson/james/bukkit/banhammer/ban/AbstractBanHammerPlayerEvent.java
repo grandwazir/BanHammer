@@ -25,6 +25,8 @@ import java.util.Set;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Event;
 
+import name.richardson.james.bukkit.banhammer.BanRecord;
+
 public abstract class AbstractBanHammerPlayerEvent extends Event implements BanHammerPlayerEvent{
 
 	private final CommandSender commandSender;

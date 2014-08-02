@@ -1,4 +1,4 @@
-package name.richardson.james.bukkit.banhammer.model;
+package name.richardson.james.bukkit.banhammer;
 
 import java.util.UUID;
 
@@ -7,11 +7,9 @@ import org.junit.Test;
 
 import name.richardson.james.bukkit.utilities.persistence.DatabaseLoader;
 
-import name.richardson.james.bukkit.banhammer.player.PlayerRecord;
-
 public class PlayerRecordTest {
 
-	private static final DatabaseLoader DATABASE_LOADER = TestDatabaseFactory.getSQLiteDatabaseLoader();
+	private static DatabaseLoader loader = TestDatabaseFactory.getSQLiteDatabaseLoader();
 
 	@Test(expected = ValidationException.class)
 	public void savingBlankRecordShouldFailValidation() {

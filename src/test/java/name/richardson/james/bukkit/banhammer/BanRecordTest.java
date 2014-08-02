@@ -1,13 +1,15 @@
-package name.richardson.james.bukkit.banhammer.model;
+package name.richardson.james.bukkit.banhammer;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
-import name.richardson.james.bukkit.banhammer.comment.CommentRecord;
-import name.richardson.james.bukkit.banhammer.player.PlayerRecord;
+import name.richardson.james.bukkit.utilities.persistence.DatabaseLoader;
 
+@PrepareForTest(BanHammer.class)
 public class BanRecordTest {
+
+	private static DatabaseLoader loader = TestDatabaseFactory.getSQLiteDatabaseLoader();
 
 	@Test
 	public void createPermanentBanSuccessfully() {

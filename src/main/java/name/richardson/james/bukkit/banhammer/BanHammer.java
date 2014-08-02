@@ -27,8 +27,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.config.ServerConfig;
-import configuration.DatabaseConfiguration;
-import configuration.SimpleDatabaseConfiguration;
 
 import name.richardson.james.bukkit.utilities.command.Command;
 import name.richardson.james.bukkit.utilities.command.CommandInvoker;
@@ -36,25 +34,22 @@ import name.richardson.james.bukkit.utilities.command.RootCommandInvoker;
 import name.richardson.james.bukkit.utilities.command.SimpleCommandInvoker;
 import name.richardson.james.bukkit.utilities.persistence.DatabaseLoader;
 import name.richardson.james.bukkit.utilities.persistence.DatabaseLoaderFactory;
+import name.richardson.james.bukkit.utilities.persistence.configuration.DatabaseConfiguration;
+import name.richardson.james.bukkit.utilities.persistence.configuration.SimpleDatabaseConfiguration;
 import name.richardson.james.bukkit.utilities.updater.BukkitDevPluginUpdater;
 import name.richardson.james.bukkit.utilities.updater.PluginUpdater;
 
 import name.richardson.james.bukkit.banhammer.ban.*;
-import name.richardson.james.bukkit.banhammer.comment.CommentRecord;
 import name.richardson.james.bukkit.banhammer.player.*;
 
-public final class BanHammer extends JavaPlugin {
+public class BanHammer extends JavaPlugin {
 
 	public static final String NOTIFY_PERMISSION_NAME = "banhammer.notify";
 	public static final int PROJECT_ID = 31269;
 	private static final String CONFIG_NAME = "config.yml";
 	private static final String DATABASE_CONFIG_NAME = "database.yml";
+	private static EbeanServer database;
 	private PluginConfiguration configuration;
-	private EbeanServer database;
-
-	public EbeanServer getDatabase() {
-		return database;
-	}
 
 	@Override
 	public List<Class<?>> getDatabaseClasses() {
@@ -92,13 +87,16 @@ public final class BanHammer extends JavaPlugin {
 		getServer().configureDbConfig(serverConfig);
 		serverConfig.setClasses(getDatabaseClasses());
 		serverConfig.setName(this.getName());
+		serverConfig.setRegister(true);
 		final File file = new File(this.getDataFolder().getPath() + File.separatorChar + DATABASE_CONFIG_NAME);
 		final InputStream defaults = this.getResource(DATABASE_CONFIG_NAME);
 		final DatabaseConfiguration configuration = new SimpleDatabaseConfiguration(file, defaults, getName(), serverConfig);
 		final DatabaseLoader loader = DatabaseLoaderFactory.getDatabaseLoader(configuration);
 		loader.initalise();
+		CommentRecord.setRecordDatabase(loader.getEbeanServer());
+		PlayerRecord.setRecordDatabase(loader.getEbeanServer());
+		BanRecord.setRecordDatabase(loader.getEbeanServer());
 		PlayerRecord system = PlayerRecord.create(new UUID(0, 0), "SYSTEM");
-		this.database = loader.getEbeanServer();
 	}
 
 	private void registerCommands() {

@@ -1,15 +1,11 @@
-package name.richardson.james.bukkit.banhammer.comment;
+package name.richardson.james.bukkit.banhammer;
 
 import javax.persistence.*;
 
-import com.avaje.ebean.Ebean;
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.validation.NotNull;
 
 import name.richardson.james.bukkit.utilities.persistence.AbstractRecord;
-
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
-import name.richardson.james.bukkit.banhammer.player.PlayerRecord;
 
 @Entity
 @Table(name = "banhammer_" + "comments")
@@ -20,6 +16,8 @@ public class CommentRecord extends AbstractRecord {
 		BAN_REASON,
 		PARDON_REASON,
 	}
+
+	private static EbeanServer database;
 	@ManyToOne
 	@JoinColumn(name = "ban_id")
 	private BanRecord ban;
@@ -32,6 +30,15 @@ public class CommentRecord extends AbstractRecord {
 	@JoinColumn(name = "player_id")
 	private PlayerRecord player;
 	private Type type;
+
+
+	protected static EbeanServer getRecordDatabase() {
+		return CommentRecord.database;
+	}
+
+	protected static void setRecordDatabase(final EbeanServer database) {
+		CommentRecord.database = database;
+	}
 
 	public static CommentRecord create(PlayerRecord creator, PlayerRecord target, String comment) {
  		CommentRecord record = create(creator, comment);
@@ -94,6 +101,8 @@ public class CommentRecord extends AbstractRecord {
 	}
 
 	@Override protected EbeanServer getDatabase() {
-		return Ebean.getServer("BanHammer");
+		return getRecordDatabase();
 	}
+
+
 }

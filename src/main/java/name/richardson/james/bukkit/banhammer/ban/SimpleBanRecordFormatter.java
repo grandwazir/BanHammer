@@ -9,6 +9,7 @@ import name.richardson.james.bukkit.utilities.time.ApproximateTimeFormatter;
 import name.richardson.james.bukkit.utilities.time.PreciseDurationTimeFormatter;
 import name.richardson.james.bukkit.utilities.time.TimeFormatter;
 
+import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
 
@@ -21,7 +22,7 @@ public class SimpleBanRecordFormatter implements BanRecordFormatter {
 	private final List<String> messages = new ArrayList<String>();
 	private final TimeFormatter timeFormatter = new ApproximateTimeFormatter();
 
-	protected SimpleBanRecordFormatter(BanRecord ban) {
+	public SimpleBanRecordFormatter(BanRecord ban) {
 		this.ban = ban;
 		messages.add(getHeader());
 		messages.add(getReason());

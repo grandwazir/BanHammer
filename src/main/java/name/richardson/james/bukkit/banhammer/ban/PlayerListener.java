@@ -14,9 +14,10 @@ import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 import name.richardson.james.bukkit.utilities.time.ApproximateTimeFormatter;
 import name.richardson.james.bukkit.utilities.time.TimeFormatter;
 
+import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
-import name.richardson.james.bukkit.banhammer.player.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.PlayerRecord;
 
 public final class PlayerListener extends AbstractListener {
 

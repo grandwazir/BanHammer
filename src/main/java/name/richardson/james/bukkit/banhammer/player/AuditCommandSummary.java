@@ -6,7 +6,7 @@ import java.util.List;
 
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.BanRecord;
 
 public final class AuditCommandSummary {
 
@@ -35,13 +35,13 @@ public final class AuditCommandSummary {
 
 	public List<String> getMessages() {
 		List<String> messages = new ArrayList<String>();
-		messages.add(MESSAGES.auditSummaryHeader());
-		messages.add(MESSAGES.auditPermanentBanSummary(getPermanentBanCount(), getPermanentBanCountPercentage()));
-		messages.add(MESSAGES.auditTemporaryBansSummary(getTemporaryBanCount(), getTemporaryBanCountPercentage()));
+		messages.add(MESSAGES.auditSummaryType());
+		messages.add(MESSAGES.auditPermanentBanPercentage(getPermanentBanCount(), getPermanentBanCountPercentage()));
+		messages.add(MESSAGES.auditTemporaryBanPercentage(getTemporaryBanCount(), getTemporaryBanCountPercentage()));
 		messages.add(MESSAGES.auditSummaryStatus());
 		messages.add(MESSAGES.auditNormalBanPercentage(getNormalBanCount(), getNormalBanCountPercentage()));
 		messages.add(MESSAGES.auditExpiredBanPercentage(getExpiredBanCount(), getExpiredBanCountPercentage()));
-		messages.add(MESSAGES.auditPardonedPercentage(getPardonedBanCount(), getPardonedBanCountPercentage()));
+		messages.add(MESSAGES.auditPardonedBanPercentage(getPardonedBanCount(), getPardonedBanCountPercentage()));
 		return messages;
 	}
 

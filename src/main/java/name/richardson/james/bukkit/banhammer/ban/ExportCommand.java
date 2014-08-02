@@ -31,7 +31,7 @@ import name.richardson.james.bukkit.utilities.command.AbstractSynchronousCommand
 
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
-import name.richardson.james.bukkit.banhammer.player.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.PlayerRecord;
 
 public class ExportCommand extends AbstractSynchronousCommand {
 

@@ -57,7 +57,7 @@ public class KickCommand extends AbstractSynchronousCommand {
 
 	@Override
 	protected void execute() {
-		final String reason = (this.reason.getString() == null) ? MESSAGES.defaultKickMessage() : this.reason.getString();
+		final String reason = (this.reason.getString() == null) ? MESSAGES.defaultKickReason() : this.reason.getString();
 		final boolean silent = this.silent.isSet();
 		final Set<Player> players = this.player.getPlayers();
 		final String senderName = getContext().getCommandSender().getName();

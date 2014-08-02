@@ -7,6 +7,8 @@ import java.util.TreeSet;
 
 import name.richardson.james.bukkit.utilities.command.argument.suggester.Suggester;
 
+import name.richardson.james.bukkit.banhammer.PlayerRecord;
+
 public class PlayerRecordMatcher implements Suggester {
 
 	public static int MINIMUM_ARGUMENT_LENGTH = 3;

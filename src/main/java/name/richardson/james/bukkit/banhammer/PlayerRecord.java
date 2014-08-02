@@ -1,4 +1,4 @@
-package name.richardson.james.bukkit.banhammer.player;
+package name.richardson.james.bukkit.banhammer;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -7,18 +7,20 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
 
-import com.avaje.ebean.Ebean;
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.validation.NotNull;
 
 import name.richardson.james.bukkit.utilities.persistence.AbstractRecord;
 
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
-import name.richardson.james.bukkit.banhammer.comment.CommentRecord;
+import name.richardson.james.bukkit.banhammer.player.NameFetcher;
+import name.richardson.james.bukkit.banhammer.player.PlayerNotFoundException;
+import name.richardson.james.bukkit.banhammer.player.UUIDFetcher;
 
 @Entity
 @Table(name = "banhammer_" + "players")
 public class PlayerRecord extends AbstractRecord {
+
+	private static EbeanServer database;
 
 	public enum Status {
 		CREATOR,
@@ -106,8 +108,12 @@ public class PlayerRecord extends AbstractRecord {
 		return filterPlayers(records, status);
 	}
 
-	private static EbeanServer getRecordDatabase() {
-		return Ebean.getServer("BanHammer");
+	protected static EbeanServer getRecordDatabase() {
+		return PlayerRecord.database;
+	}
+
+	protected static void setRecordDatabase(final EbeanServer database) {
+		PlayerRecord.database = database;
 	}
 
 	public void delete() {
@@ -175,7 +181,7 @@ public class PlayerRecord extends AbstractRecord {
 	}
 
 	protected EbeanServer getDatabase() {
-		return Ebean.getServer("BanHammer");
+		return getRecordDatabase();
 	}
 
 }

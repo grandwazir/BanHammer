@@ -29,9 +29,10 @@ import name.richardson.james.bukkit.utilities.command.argument.BooleanMarshaller
 
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
+import name.richardson.james.bukkit.banhammer.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.argument.AllOptionArgument;
 import name.richardson.james.bukkit.banhammer.argument.PlayerNamePositionalArgument;
-import name.richardson.james.bukkit.banhammer.ban.BanRecord;
+import name.richardson.james.bukkit.banhammer.BanRecord;
 
 public final class AuditCommand extends AbstractAsynchronousCommand {
 
@@ -91,7 +92,7 @@ public final class AuditCommand extends AbstractAsynchronousCommand {
 						addMessage(MESSAGES.playerHasMadeNoBans());
 					}
 				} else {
-					addMessage(MESSAGES.noPermissionToAuditBans());
+					addMessage(MESSAGES.notAllowedToAuditThatPlayer(playerName));
 				}
 			}
 		}

@@ -22,6 +22,8 @@ import java.util.Collection;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.HandlerList;
 
+import name.richardson.james.bukkit.banhammer.BanRecord;
+
 public final class BanHammerPlayerPardonedEvent extends AbstractBanHammerPlayerEvent {
 
 	private static final HandlerList handlers = new HandlerList();

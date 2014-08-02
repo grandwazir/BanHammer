@@ -1,80 +1,81 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>ban-hammer</artifactId>
-  <version>3.0.0-SNAPSHOT</version>
-  <name>BanHammer</name>
-  <description>Bans, kicks and records</description>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>ban-hammer</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
+    <name>BanHammer</name>
+    <description>Bans, kicks and records</description>
 
-  <properties>
-    <bukkitdevuploader.changeLog>Please see the [changelog](${project.url}wiki/Feature-changes) on GitHub.</bukkitdevuploader.changeLog>
-  </properties>
+    <properties>
+        <bukkitdevuploader.changeLog>Please see the [changelog](${project.url}wiki/Feature-changes) on GitHub.</bukkitdevuploader.changeLog>
+    </properties>
 
-  <parent>
-     <groupId>name.richardson.james.maven</groupId>
-     <artifactId>super-pom</artifactId>
-     <version>1.0.0</version>
-  </parent>
+    <parent>
+        <groupId>name.richardson.james.maven</groupId>
+        <artifactId>super-pom</artifactId>
+        <version>1.0.0</version>
+    </parent>
 
-  <repositories>
-      <!-- Bukkit can be found at the following repository -->
-      <repository>
-          <id>bukkit-repo</id>
-          <url>http://repo.bukkit.org/content/groups/public/</url>
-      </repository>
-    <repository>
-      <id>my-repo</id>
-      <url>http://repository.james.richardson.name/releases</url>
-    </repository>
-    <repository>
-       <id>Plugin Metrics</id>
-       <url>http://repo.mcstats.org/content/repositories/public</url>
-    </repository>
-  </repositories>
+    <repositories>
+        <!-- Bukkit can be found at the following repository -->
+        <repository>
+            <id>bukkit-repo</id>
+            <url>http://repo.bukkit.org/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>my-repo</id>
+            <url>http://repository.james.richardson.name/releases</url>
+        </repository>
+        <repository>
+            <id>Plugin Metrics</id>
+            <url>http://repo.mcstats.org/content/repositories/public</url>
+        </repository>
+    </repositories>
 
-  <dependencies>
-      <dependency>
-          <groupId>org.bukkit</groupId>
-          <artifactId>bukkit</artifactId>
-          <version>[1.6.4,)</version>
-          <scope>provided</scope>
-      </dependency>
-      <dependency>
-          <groupId>name.richardson.james.bukkit</groupId>
-          <artifactId>bukkit-utilities-core</artifactId>
-          <version>8.0.0-SNAPSHOT</version>
-          <scope>compile</scope>
-      </dependency>
-      <dependency>
-          <groupId>name.richardson.james.bukkit</groupId>
-          <artifactId>bukkit-utilities-persistence</artifactId>
-          <version>1.0.0-SNAPSHOT</version>
-          <scope>compile</scope>
-      </dependency>
-      <dependency>
-          <groupId>name.richardson.james.bukkit</groupId>
-          <artifactId>bukkit-utilities-time</artifactId>
-          <version>1.0.0-SNAPSHOT</version>
-          <scope>compile</scope>
-      </dependency>
-      <dependency>
-          <groupId>name.richardson.james.bukkit</groupId>
-          <artifactId>bukkit-utilities-commands</artifactId>
-          <version>1.0.0-SNAPSHOT</version>
-          <scope>compile</scope>
-      </dependency>
-      <dependency>
-          <groupId>org.mcstats.bukkit</groupId>
-          <artifactId>metrics</artifactId>
-          <version>R6</version>
-          <scope>compile</scope>
-      </dependency>
-      <dependency>
-          <groupId>org.powermock</groupId>
-          <artifactId>powermock-module-junit4</artifactId>
-          <version>1.5.4</version>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
+    <dependencies>
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>bukkit</artifactId>
+            <version>[1.6.4,)</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>name.richardson.james.bukkit</groupId>
+            <artifactId>bukkit-utilities-core</artifactId>
+            <version>8.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>name.richardson.james.bukkit</groupId>
+            <artifactId>bukkit-utilities-persistence</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>name.richardson.james.bukkit</groupId>
+            <artifactId>bukkit-utilities-time</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>name.richardson.james.bukkit</groupId>
+            <artifactId>bukkit-utilities-commands</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mcstats.bukkit</groupId>
+            <artifactId>metrics</artifactId>
+            <version>R6</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <version>1.5.4</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
           <groupId>org.powermock</groupId>
           <artifactId>powermock-api-mockito</artifactId>
           <version>1.5.4</version>
@@ -106,41 +107,42 @@
       </resources>
       <plugins>
           <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-shade-plugin</artifactId>
-              <!-- We want to bundle in BukkitUtilities -->
-              <version>2.2</version>
+              <groupId>org.fusesource.mvnplugins</groupId>
+              <artifactId>maven-uberize-plugin</artifactId>
+              <version>1.14</version>
               <executions>
                   <execution>
                       <phase>package</phase>
                       <goals>
-                          <goal>shade</goal>
+                          <goal>uberize</goal>
                       </goals>
                       <configuration>
-                          <shadedArtifactAttached>true</shadedArtifactAttached>
-                          <shadedClassifierName>shaded</shadedClassifierName>
-                          <transformers>
-                              <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                  <resource>localisation/Messages.properties</resource>
-                              </transformer>
-                          </transformers>
+                          <uberArtifactAttached>true</uberArtifactAttached>
+                          <uberClassifierName>shaded</uberClassifierName>
                           <artifactSet>
                               <includes>
-                                  <include>name.richardson.james.bukkit:bukkit-utilities</include>
+                                  <include>name.richardson.james.bukkit:bukkit-utilities-core</include>
+                                  <include>name.richardson.james.bukkit:bukkit-utilities-commands</include>
+                                  <include>name.richardson.james.bukkit:bukkit-utilities-localisation</include>
+                                  <include>name.richardson.james.bukkit:bukkit-utilities-persistence</include>
+                                  <include>name.richardson.james.bukkit:bukkit-utilities-time</include>
                                   <include>org.mcstats.bukkit:metrics</include>
                               </includes>
                           </artifactSet>
-                          <relocations>
-                              <relocation>
-                                  <pattern>name.richardson.james.bukkit.utilities</pattern>
-                                  <shadedPattern>name.richardson.james.bukkit.banhammer.utilities</shadedPattern>
-                              </relocation>
-                              <relocation>
-                                  <pattern>org.mcstats</pattern>
-                                  <shadedPattern>name.richardson.james.bukkit.banhammer.utilities.metrics</shadedPattern>
-                              </relocation>
-                          </relocations>
-                          <minimizeJar>true</minimizeJar>
+                          <transformers>
+                              <transformer implementation="org.fusesource.mvnplugins.uberize.transformer.ClassShader">
+                                  <relocations>
+                                      <relocation>
+                                          <pattern>name.richardson.james.bukkit.utilities.*</pattern>
+                                          <shadedPattern>name.richardson.james.bukkit.banhammer.utilities</shadedPattern>
+                                      </relocation>
+                                      <relocation>
+                                          <pattern>org.mcstats</pattern>
+                                          <shadedPattern>name.richardson.james.bukkit.banhammer.utilities.metrics</shadedPattern>
+                                      </relocation>
+                                  </relocations>
+                              </transformer>
+                          </transformers>
                       </configuration>
                   </execution>
               </executions>
