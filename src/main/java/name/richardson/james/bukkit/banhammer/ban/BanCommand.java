@@ -105,6 +105,7 @@ public class BanCommand extends AbstractAsynchronousCommand {
 		Set<String> limitNames = configuration.getBanLimits().keySet();
 		Set<String> permissions = new HashSet<>();
 		permissions.add(PERMISSION_ALL);
+		permissions.add(PERMISSION_PERMANENT);
 		for (String limit : limitNames) {
 			permissions.add(getPermissionFromLimit(limit));
 		}
