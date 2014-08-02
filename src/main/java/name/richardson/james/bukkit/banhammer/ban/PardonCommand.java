@@ -25,12 +25,10 @@ import org.bukkit.scheduler.BukkitScheduler;
 import name.richardson.james.bukkit.utilities.command.AbstractAsynchronousCommand;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 
-import name.richardson.james.bukkit.banhammer.BanRecord;
-import name.richardson.james.bukkit.banhammer.Messages;
-import name.richardson.james.bukkit.banhammer.MessagesFactory;
+import name.richardson.james.bukkit.banhammer.*;
 import name.richardson.james.bukkit.banhammer.argument.PlayerNamePositionalArgument;
+import name.richardson.james.bukkit.banhammer.argument.ReasonPositionalArgument;
 import name.richardson.james.bukkit.banhammer.argument.SilentSwitchArgument;
-import name.richardson.james.bukkit.banhammer.PlayerRecord;
 
 public class PardonCommand extends AbstractAsynchronousCommand {
 
@@ -39,14 +37,17 @@ public class PardonCommand extends AbstractAsynchronousCommand {
 	public static final String PERMISSION_OTHERS = "banhammer.pardon.others";
 	private static final Messages MESSAGES = MessagesFactory.getColouredMessages();
 	private final Argument players;
+	private final Argument reason;
 	private final SilentSwitchArgument silent;
 
 	public PardonCommand(final Plugin plugin, final BukkitScheduler scheduler) {
 		super(plugin, scheduler);
 		this.silent = SilentSwitchArgument.getInstance();
 		this.players = PlayerNamePositionalArgument.getInstance(0, true, PlayerRecord.Status.BANNED);
+		this.reason = ReasonPositionalArgument.getInstance(1, true);
 		addArgument(silent);
 		addArgument(players);
+		addArgument(reason);
 	}
 
 	@Override public String getDescription() {
@@ -70,6 +71,8 @@ public class PardonCommand extends AbstractAsynchronousCommand {
 			final BanRecord ban = playerRecord.getActiveBan();
 			if (ban != null) {
 				if (isAuthorised(ban.getCreator().getId())) {
+					CommentRecord comment = CommentRecord.create(ban.getCreator(), ban, this.reason.getString());
+					ban.setPardonReason(comment);
 					ban.setState(BanRecord.State.PARDONED);
 					ban.save();
 					bans.add(ban);

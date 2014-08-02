@@ -51,6 +51,8 @@ public interface Messages {
 	@ColouredMessage(type = MessageType.NOTICE)
 	String banLength(String duration);
 
+	@ColouredMessage(type = MessageType.NOTICE) String banPardonedBy(String creator);
+
 	@ColouredMessage(type = MessageType.NOTICE)
 	String banReason(String reason);
 

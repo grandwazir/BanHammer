@@ -28,6 +28,7 @@ public class SimpleBanRecordFormatter implements BanRecordFormatter {
 		messages.add(getReason());
 		messages.add(getLength());
 		if (ban.getType() != BanRecord.Type.PERMANENT && ban.getState() != BanRecord.State.PARDONED) messages.add(getExpiresAt());
+		if (ban.getState() == BanRecord.State.PARDONED) messages.add(MESSAGES.banPardonedBy(ban.getPardonReason().getCreator().getName()));
 	}
 
 	@Override public String getExpiresAt() {

@@ -157,6 +157,24 @@ public class BanRecord extends AbstractRecord {
 		this.player = player;
 	}
 
+	public void setPardonReason(CommentRecord record) {
+		record.setType(CommentRecord.Type.PARDON_REASON);
+		CommentRecord reason = getPardonReason();
+		if (reason != null) getComments().remove(reason);
+		addComment(record);
+	}
+
+	public CommentRecord getPardonReason() {
+		CommentRecord record = null;
+		for (CommentRecord comment : getComments()) {
+			if (comment.getType() == CommentRecord.Type.PARDON_REASON) {
+				record = comment;
+				break;
+			}
+		}
+		return record;
+	}
+
 	public void setReason(CommentRecord record) {
 		record.setType(CommentRecord.Type.BAN_REASON);
 		CommentRecord reason = getReason();
