@@ -1,5 +1,6 @@
 # Changelog for BanHammer (v3.0.0-SNAPSHOT)
 
+2014-08-02 04:34:20 +0100    translated all keys (James Richardson)  
 2014-08-01 16:42:32 +0100    now builds (yay) (James Richardson)  
 2014-08-01 00:03:18 +0100    massive update to bukkit-utilities (James Richardson)  
 2014-07-27 22:35:18 +0100    work against interfaces rather than classes (James Richardson)  

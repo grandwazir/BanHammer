@@ -62,10 +62,13 @@ public class PlayerRecord extends AbstractRecord {
 	}
 
 	public static PlayerRecord create(UUID uuid, String name) {
-		PlayerRecord record = new PlayerRecord();
-		record.setName(name);
-		record.setId(uuid);
-		record.save();
+		PlayerRecord record = find(uuid);
+		if (record == null) {
+			record = new PlayerRecord();
+			record.setName(name);
+			record.setId(uuid);
+			record.save();
+		}
 		return record;
 	}
 

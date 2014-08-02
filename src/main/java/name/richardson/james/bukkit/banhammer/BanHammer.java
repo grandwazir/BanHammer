@@ -128,7 +128,7 @@ public class BanHammer extends JavaPlugin {
 		commands.add(command);
 		command = new UndoCommand(this, getServer().getScheduler(), configuration);
 		commands.add(command);
-		CommandInvoker invoker = new RootCommandInvoker(this, this.getServer().getScheduler(), commands, "bh");
+		CommandInvoker invoker = new RootCommandInvoker(this, this.getServer().getScheduler(), commands, "/bh");
 		getCommand("bh").setExecutor(invoker);
 	}
 
