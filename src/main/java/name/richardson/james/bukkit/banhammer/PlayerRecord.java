@@ -125,6 +125,9 @@ public class PlayerRecord extends AbstractRecord {
 	}
 
 	public BanRecord getActiveBan() {
+		for (BanRecord ban : getBans()) {
+			if (ban.getState() == BanRecord.State.NORMAL) return ban;
+		}
 		return null;
 	}
 

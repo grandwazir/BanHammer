@@ -28,7 +28,6 @@ public class BanRecord extends AbstractRecord {
 		PERMANENT,
 		TEMPORARY
 	}
-
 	private static EbeanServer database;
 	@OneToMany(cascade = CascadeType.ALL, targetEntity = CommentRecord.class)
 	@JoinColumn(name = "ban_id", referencedColumnName = "id")
@@ -43,24 +42,8 @@ public class BanRecord extends AbstractRecord {
 	@NotNull
 	private State state;
 
-
-	protected static EbeanServer getRecordDatabase() {
-		return BanRecord.database;
-	}
-
-	protected static void setRecordDatabase(final EbeanServer database) {
-		BanRecord.database = database;
-	}
-	public static List<BanRecord> list() {
-		return getRecordDatabase().find(BanRecord.class).orderBy().desc("created_at").findList();
-	}
-
-	public static List<BanRecord> list(int limit) {
-		return getRecordDatabase().find(BanRecord.class).setMaxRows(limit).orderBy().desc("created_at").findList();
-	}
-
-	public static BanRecord create(PlayerRecord creator, PlayerRecord target, String reason) {
-		return create(creator, target, reason, null);
+	public static int count() {
+		return getRecordDatabase().find(BanRecord.class).findList().size();
 	}
 
 	public static BanRecord create(PlayerRecord creator, PlayerRecord target, String reason, Timestamp time) {
@@ -76,13 +59,29 @@ public class BanRecord extends AbstractRecord {
 		return record;
 	}
 
+	public static BanRecord create(PlayerRecord creator, PlayerRecord target, String reason) {
+		return create(creator, target, reason, null);
+	}
+
+	protected static EbeanServer getRecordDatabase() {
+		return BanRecord.database;
+	}
+
+	public static List<BanRecord> list(int limit) {
+		return getRecordDatabase().find(BanRecord.class).setMaxRows(limit).orderBy().desc("created_at").findList();
+	}
+
+	public static List<BanRecord> list() {
+		return getRecordDatabase().find(BanRecord.class).orderBy().desc("created_at").findList();
+	}
+
+	protected static void setRecordDatabase(final EbeanServer database) {
+		BanRecord.database = database;
+	}
+
 	public void addComment(CommentRecord record) {
 		getComments().add(record);
 		record.setBan(this);
-	}
-
-	public static int count() {
-		return getRecordDatabase().find(BanRecord.class).findList().size();
 	}
 
 	public void delete() {
@@ -102,6 +101,10 @@ public class BanRecord extends AbstractRecord {
 		return expiresAt;
 	}
 
+	public BanRecordFormatter getFormatter() {
+		return new SimpleBanRecordFormatter(this);
+	}
+
 	public PlayerRecord getPlayer() {
 		return player;
 	}
@@ -115,10 +118,6 @@ public class BanRecord extends AbstractRecord {
 			}
 		}
 		return record;
-	}
-
-	public BanRecordFormatter getFormatter() {
-		return new SimpleBanRecordFormatter(this);
 	}
 
 	public State getState() {
