@@ -61,7 +61,17 @@ public class HistoryCommand extends AbstractAsynchronousCommand {
 
 	@Override
 	protected void execute() {
-		final String playerName = (this.playerName.getString() == null) ? getContext().getCommandSender().getName() : this.playerName.getString();
+		if (this.playerName.getStrings().isEmpty()) {
+			final String playerName = getContext().getCommandSender().getName();
+			createPlayerHistory(playerName);
+		} else {
+			for (String playerName : this.playerName.getStrings()) {
+				createPlayerHistory(playerName);
+			}
+		}
+	}
+
+	private void createPlayerHistory(final String playerName) {
 		if (hasPermission(playerName)) {
 			PlayerRecord record = PlayerRecord.find(playerName);
 			if (record == null || record.getBans().isEmpty()) {

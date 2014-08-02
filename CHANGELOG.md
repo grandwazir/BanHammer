@@ -1,5 +1,6 @@
 # Changelog for BanHammer (v3.0.0-SNAPSHOT)
 
+2014-08-02 20:35:43 +0100    added additional headers when checking history of multiple players (James Richardson)  
 2014-08-02 20:32:58 +0100    fix NPE when looking up a player who has never been banned before (James Richardson)  
 2014-08-02 20:26:25 +0100    fix a couple of bugs with ban creation (James Richardson)  
 2014-08-02 20:09:34 +0100    fix NPE in AuditCommand (James Richardson)  
