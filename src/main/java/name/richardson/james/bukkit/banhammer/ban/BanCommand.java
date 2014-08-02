@@ -75,7 +75,7 @@ public class BanCommand extends AbstractAsynchronousCommand {
 					addMessage(MESSAGES.playerIsImmune(playerName));
 				} else if (isBanWithinLimit()) {
 					if (!playerRecord.isBanned()) {
-						final BanRecord record = BanRecord.create(playerRecord, creatorRecord, reason.getString());
+						final BanRecord record = BanRecord.create(creatorRecord, playerRecord, reason.getString());
 						if (time > 0) record.setExpiresAt((Timestamp) this.time.getDate());
 						records.add(record);
 						record.save();
