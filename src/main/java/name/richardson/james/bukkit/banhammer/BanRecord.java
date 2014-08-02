@@ -71,6 +71,7 @@ public class BanRecord extends AbstractRecord {
 		comment.setCreator(creator);
 		comment.setComment(reason);
 		record.setReason(comment);
+		record.setState(State.NORMAL);
 		if (time != null) record.setExpiresAt(time);
 		return record;
 	}
