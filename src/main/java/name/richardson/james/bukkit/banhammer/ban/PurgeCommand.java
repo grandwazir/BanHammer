@@ -52,8 +52,8 @@ public class PurgeCommand extends AbstractAsynchronousCommand {
 
 	public PurgeCommand(final Plugin plugin, final BukkitScheduler scheduler, final EbeanServer database) {
 		super(plugin, scheduler);
-		this.delete = DeleteCommentSwitchArgument.getInstance();
-		this.players = PlayerNamePositionalArgument.getInstance(0, true, PlayerRecord.Status.ANY);
+		delete = DeleteCommentSwitchArgument.getInstance();
+		players = PlayerNamePositionalArgument.getInstance(0, true, PlayerRecord.Status.ANY);
 		this.database = database;
 		addArgument((Argument) delete);
 		addArgument(players);
@@ -73,7 +73,7 @@ public class PurgeCommand extends AbstractAsynchronousCommand {
 
 	@Override
 	protected void execute() {
-		Collection<String> playerNames = this.players.getStrings();
+		Collection<String> playerNames = players.getStrings();
 		Collection<BanRecord> bans = new ArrayList<>();
 		Collection<CommentRecord> comments = new ArrayList<>();
 		boolean own = getContext().isAuthorised(PERMISSION_OWN);
@@ -82,14 +82,14 @@ public class PurgeCommand extends AbstractAsynchronousCommand {
 			PlayerRecord record = PlayerRecord.find(playerName);
 			if (record != null) {
 				for (BanRecord ban : record.getBans()) {
-					final boolean banCreatedBySender = (ban.getCreator().getId().compareTo(getContext().getCommandSenderUUID()) == 0);
+					boolean banCreatedBySender = (ban.getCreator().getId().compareTo(getContext().getCommandSenderUUID()) == 0);
 					if (banCreatedBySender && !own) continue;
 					if (!banCreatedBySender && !others) continue;
 					bans.add(ban);
 				}
-				if (this.delete.isSet()) {
+				if (delete.isSet()) {
 					for (CommentRecord comment : record.getComments()) {
-						final boolean banCreatedBySender = (comment.getCreator().getId().compareTo(getContext().getCommandSenderUUID()) == 0);
+						boolean banCreatedBySender = (comment.getCreator().getId().compareTo(getContext().getCommandSenderUUID()) == 0);
 						if (banCreatedBySender && !own) continue;
 						if (!banCreatedBySender && !others) continue;
 						comments.add(comment);

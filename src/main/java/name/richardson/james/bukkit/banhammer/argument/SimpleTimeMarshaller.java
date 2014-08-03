@@ -26,7 +26,7 @@ import name.richardson.james.bukkit.utilities.time.TimeFormatter;
 
 public class SimpleTimeMarshaller extends AbstractMarshaller implements TimeMarshaller {
 
-	private TimeFormatter formatter = new PreciseTimeFormatter();
+	private final TimeFormatter formatter = new PreciseTimeFormatter();
 
 	public SimpleTimeMarshaller(final Argument argument) {
 		super(argument);

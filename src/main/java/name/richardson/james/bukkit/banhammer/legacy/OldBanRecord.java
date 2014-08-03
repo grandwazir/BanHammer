@@ -30,6 +30,7 @@ import java.sql.Timestamp;
 
 import com.avaje.ebean.validation.NotNull;
 
+@SuppressWarnings("ALL")
 @Entity()
 @Table(name = "banhammer_bans")
 public class OldBanRecord {
@@ -116,7 +117,7 @@ public class OldBanRecord {
 	 * @return the created at
 	 */
 	public Timestamp getCreatedAt() {
-		return this.createdAt;
+		return createdAt;
 	}
 
 	/**
@@ -126,7 +127,7 @@ public class OldBanRecord {
 	 */
 	@ManyToOne(targetEntity = OldPlayerRecord.class)
 	public OldPlayerRecord getCreator() {
-		return this.creator;
+		return creator;
 	}
 
 	/**
@@ -135,7 +136,7 @@ public class OldBanRecord {
 	 * @return the expires at
 	 */
 	public Timestamp getExpiresAt() {
-		return this.expiresAt;
+		return expiresAt;
 	}
 
 	/**
@@ -144,7 +145,7 @@ public class OldBanRecord {
 	 * @return the id
 	 */
 	public int getId() {
-		return this.id;
+		return id;
 	}
 
 	/**
@@ -153,7 +154,7 @@ public class OldBanRecord {
 	 * @return the player
 	 */
 	public OldPlayerRecord getPlayer() {
-		return this.player;
+		return player;
 	}
 
 	/**
@@ -162,7 +163,7 @@ public class OldBanRecord {
 	 * @return the reason
 	 */
 	public String getReason() {
-		return this.reason;
+		return reason;
 	}
 
 	/**
@@ -171,8 +172,8 @@ public class OldBanRecord {
 	 * @return the state
 	 */
 	public State getState() {
-		if (this.state == State.NORMAL && this.hasExpired()) return State.EXPIRED;
-		return this.state;
+		if (state == State.NORMAL && hasExpired()) return State.EXPIRED;
+		return state;
 	}
 
 	/**
@@ -181,7 +182,7 @@ public class OldBanRecord {
 	 * @return the type
 	 */
 	public OldBanRecord.Type getType() {
-		return (this.expiresAt == null) ? OldBanRecord.Type.PERMANENT : OldBanRecord.Type.TEMPORARY;
+		return (expiresAt == null) ? OldBanRecord.Type.PERMANENT : OldBanRecord.Type.TEMPORARY;
 	}
 
 	/**
@@ -190,7 +191,7 @@ public class OldBanRecord {
 	 * @param time the new created at
 	 */
 	public void setCreatedAt(final Timestamp time) {
-		this.createdAt = time;
+		createdAt = time;
 	}
 
 	/**
@@ -261,8 +262,8 @@ public class OldBanRecord {
 	}
 
 	private boolean hasExpired() {
-		if (this.getType() == Type.TEMPORARY) {
-			return ((this.expiresAt.getTime() - System.currentTimeMillis()) < 0);
+		if (getType() == Type.TEMPORARY) {
+			return ((expiresAt.getTime() - System.currentTimeMillis()) < 0);
 		} else {
 			return false;
 		}

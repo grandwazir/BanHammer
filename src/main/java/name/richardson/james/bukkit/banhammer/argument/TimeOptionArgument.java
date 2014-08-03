@@ -25,7 +25,7 @@ import name.richardson.james.bukkit.utilities.command.argument.SimpleArgumentMet
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
 
-public class TimeOptionArgument {
+public final class TimeOptionArgument {
 
 	public static final Messages MESSAGES = MessagesFactory.getMessages();
 

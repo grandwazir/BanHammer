@@ -169,17 +169,17 @@ public class PlayerRecord extends AbstractRecord {
 	}
 
 	public Set<CommentRecord> getComments() {
-		if (comments == null) this.comments = new HashSet<>();
+		if (comments == null) comments = new HashSet<>();
 		return comments;
 	}
 
 	public Set<BanRecord> getCreatedBans() {
-		if (createdBans == null) this.createdBans = new HashSet<>();
+		if (createdBans == null) createdBans = new HashSet<>();
 		return createdBans;
 	}
 
 	public Set<CommentRecord> getCreatedComments() {
-		if (createdComments == null) this.createdComments = new HashSet<>();
+		if (createdComments == null) createdComments = new HashSet<>();
 		return createdComments;
 	}
 
@@ -215,7 +215,7 @@ public class PlayerRecord extends AbstractRecord {
 	}
 
 	@Override public String toString() {
-		final StringBuilder sb = new StringBuilder("PlayerRecord{");
+		StringBuilder sb = new StringBuilder("PlayerRecord{");
 		sb.append("bans=").append(bans);
 		sb.append(", comments=").append(comments);
 		sb.append(", createdBans=").append(createdBans);
@@ -226,7 +226,7 @@ public class PlayerRecord extends AbstractRecord {
 		return sb.toString();
 	}
 
-	protected EbeanServer getDatabase() {
+	@Override protected EbeanServer getDatabase() {
 		return getRecordDatabase();
 	}
 

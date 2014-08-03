@@ -9,7 +9,7 @@ import name.richardson.james.bukkit.utilities.persistence.DatabaseLoader;
 
 public class PlayerRecordTest {
 
-	private static DatabaseLoader loader = TestDatabaseFactory.getSQLiteDatabaseLoader();
+	private static final DatabaseLoader loader = TestDatabaseFactory.getSQLiteDatabaseLoader();
 
 	@Test(expected = ValidationException.class)
 	public void savingBlankRecordShouldFailValidation() {

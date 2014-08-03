@@ -44,7 +44,7 @@ public class HistoryCommand extends AbstractAsynchronousCommand {
 
 	public HistoryCommand(final Plugin plugin, final BukkitScheduler scheduler) {
 		super(plugin, scheduler);
-		this.playerName = PlayerNamePositionalArgument.getInstance(0, false, PlayerRecord.Status.ANY);
+		playerName = PlayerNamePositionalArgument.getInstance(0, false, PlayerRecord.Status.ANY);
 		addArgument(playerName);
 	}
 
@@ -62,8 +62,8 @@ public class HistoryCommand extends AbstractAsynchronousCommand {
 
 	@Override
 	protected void execute() {
-		if (this.playerName.getStrings().isEmpty()) {
-			final String playerName = getContext().getCommandSender().getName();
+		if (playerName.getStrings().isEmpty()) {
+			String playerName = getContext().getCommandSender().getName();
 			createPlayerHistory(playerName);
 		} else {
 			for (String playerName : this.playerName.getStrings()) {
@@ -91,7 +91,7 @@ public class HistoryCommand extends AbstractAsynchronousCommand {
 	}
 
 	private boolean hasPermission(String playerName) {
-		final boolean isSenderTargetingSelf = playerName.equalsIgnoreCase(getContext().getCommandSender().getName());
+		boolean isSenderTargetingSelf = playerName.equalsIgnoreCase(getContext().getCommandSender().getName());
 		return isAuthorised(PERMISSION_OWN) && isSenderTargetingSelf || isAuthorised(PERMISSION_OTHERS) && !isSenderTargetingSelf;
 	}
 

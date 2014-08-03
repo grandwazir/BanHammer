@@ -51,9 +51,9 @@ public class PardonCommand extends AbstractAsynchronousCommand {
 
 	public PardonCommand(final Plugin plugin, final BukkitScheduler scheduler) {
 		super(plugin, scheduler);
-		this.silent = SilentSwitchArgument.getInstance();
-		this.players = PlayerNamePositionalArgument.getInstance(0, true, PlayerRecord.Status.BANNED);
-		this.reason = ReasonPositionalArgument.getInstance(1, true);
+		silent = SilentSwitchArgument.getInstance();
+		players = PlayerNamePositionalArgument.getInstance(0, true, PlayerRecord.Status.BANNED);
+		reason = ReasonPositionalArgument.getInstance(1, true);
 		addArgument(silent);
 		addArgument(players);
 		addArgument(reason);
@@ -73,14 +73,14 @@ public class PardonCommand extends AbstractAsynchronousCommand {
 	@Override
 	protected void execute() {
 		boolean silent = this.silent.isSet();
-		final Collection<String> players = this.players.getStrings();
-		final Collection<BanRecord> bans = new ArrayList<BanRecord>();
+		Collection<String> players = this.players.getStrings();
+		Collection<BanRecord> bans = new ArrayList<BanRecord>();
 		for (String playerName : players) {
-			final PlayerRecord playerRecord = PlayerRecord.find(playerName);
+			PlayerRecord playerRecord = PlayerRecord.find(playerName);
 			if (playerRecord != null && playerRecord.getActiveBan() != null) {
-				final BanRecord ban = playerRecord.getActiveBan();
+				BanRecord ban = playerRecord.getActiveBan();
 				if (isAuthorised(ban.getCreator().getId())) {
-					CommentRecord comment = CommentRecord.create(ban.getCreator(), ban, this.reason.getString());
+					CommentRecord comment = CommentRecord.create(ban.getCreator(), ban, reason.getString());
 					comment.setType(CommentRecord.Type.PARDON_REASON);
 					ban.setState(BanRecord.State.PARDONED);
 					ban.setComment(comment);
@@ -98,7 +98,7 @@ public class PardonCommand extends AbstractAsynchronousCommand {
 	}
 
 	private boolean isAuthorised(UUID playerUUID) {
-		final boolean isSenderTargetingSelf = (getContext().getCommandSenderUUID().compareTo(playerUUID) == 0);
+		boolean isSenderTargetingSelf = (getContext().getCommandSenderUUID().compareTo(playerUUID) == 0);
 		return getContext().isAuthorised(PERMISSION_OWN) && isSenderTargetingSelf || getContext().isAuthorised(PERMISSION_OTHERS) && !isSenderTargetingSelf;
 	}
 

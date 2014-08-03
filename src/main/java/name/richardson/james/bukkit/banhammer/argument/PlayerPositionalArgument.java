@@ -33,7 +33,7 @@ import name.richardson.james.bukkit.utilities.command.argument.suggester.Suggest
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
 
-public class PlayerPositionalArgument {
+public final class PlayerPositionalArgument {
 
 	public static final Messages MESSAGES = MessagesFactory.getMessages();
 

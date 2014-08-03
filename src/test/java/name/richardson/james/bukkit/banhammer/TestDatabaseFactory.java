@@ -14,11 +14,11 @@ import name.richardson.james.bukkit.banhammer.PlayerRecord;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class TestDatabaseFactory {
+public final class TestDatabaseFactory {
 
 	private static SQLiteDatabaseLoader SQLITE_DATABASE_LOADER;
 
-	public synchronized static DatabaseLoader getSQLiteDatabaseLoader() {
+	public static synchronized DatabaseLoader getSQLiteDatabaseLoader() {
 		if (SQLITE_DATABASE_LOADER == null) {
 			ServerConfig serverConfig = new ServerConfig();
 			serverConfig.getDataSourceConfig().setUrl("jdbc:sqlite::memory:");

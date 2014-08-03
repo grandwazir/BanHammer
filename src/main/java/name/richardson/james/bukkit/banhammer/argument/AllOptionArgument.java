@@ -27,13 +27,13 @@ import name.richardson.james.bukkit.utilities.command.argument.SwitchArgument;
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
 
-public class AllOptionArgument {
+public final class AllOptionArgument {
 
 	public static final Messages MESSAGES = MessagesFactory.getMessages();
 
 	public static BooleanMarshaller getInstance() {
 		ArgumentMetadata metadata = new SimpleArgumentMetadata(MESSAGES.allOptionArgumentId(), MESSAGES.allOptionArgumentName(), MESSAGES.allOptionArgumentDescription());
-		final Argument argument = new SwitchArgument(metadata);
+		Argument argument = new SwitchArgument(metadata);
 		return new SimpleBooleanMarshaller(argument);
 	}
 

@@ -41,7 +41,7 @@ public abstract class AbstractBanHammerPlayerEvent extends Event implements BanH
 		Bukkit.getPluginManager().callEvent(this);
 	}
 
-	public CommandSender getCommandSender() {
+	@Override public final CommandSender getCommandSender() {
 		return commandSender;
 	}
 
@@ -50,7 +50,7 @@ public abstract class AbstractBanHammerPlayerEvent extends Event implements BanH
 	}
 
 	@Override public boolean isSilent() {
-		return this.silent;
+		return silent;
 	}
 
 }

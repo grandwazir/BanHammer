@@ -46,7 +46,7 @@ public class OldPlayerRecord {
 	private String name;
 
 	public OldBanRecord getActiveBan() {
-		for (final OldBanRecord ban : this.getBans()) {
+		for (final OldBanRecord ban : getBans()) {
 			if (ban.getState() == OldBanRecord.State.NORMAL) {
 				return ban;
 			}
@@ -56,24 +56,24 @@ public class OldPlayerRecord {
 
 	@OneToMany(targetEntity = OldBanRecord.class, fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
 	public List<OldBanRecord> getBans() {
-		return (this.bans == null) ? new LinkedList<OldBanRecord>() : this.bans;
+		return (bans == null) ? new LinkedList<OldBanRecord>() : bans;
 	}
 
 	public void setBans(final List<OldBanRecord> records) {
-		this.bans = records;
+		bans = records;
 	}
 
 	@OneToMany(targetEntity = OldBanRecord.class, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
 	public List<OldBanRecord> getCreatedBans() {
-		return (this.createdBans == null) ? new LinkedList<OldBanRecord>() : this.createdBans;
+		return (createdBans == null) ? new LinkedList<OldBanRecord>() : createdBans;
 	}
 
 	public void setCreatedBans(final List<OldBanRecord> records) {
-		this.createdBans = records;
+		createdBans = records;
 	}
 
 	public int getId() {
-		return this.id;
+		return id;
 	}
 
 	public void setId(final int id) {
@@ -81,7 +81,7 @@ public class OldPlayerRecord {
 	}
 
 	public String getName() {
-		return this.name;
+		return name;
 	}
 
 	public void setName(final String name) {
@@ -89,7 +89,7 @@ public class OldPlayerRecord {
 	}
 
 	public boolean isBanned() {
-		for (final OldBanRecord ban : this.getBans()) {
+		for (final OldBanRecord ban : getBans()) {
 			if (ban.getState() == OldBanRecord.State.NORMAL) {
 				return true;
 			}

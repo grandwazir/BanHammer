@@ -119,7 +119,7 @@ public class CommentRecord extends AbstractRecord {
 	}
 
 	@Override public String toString() {
-		final StringBuilder sb = new StringBuilder("CommentRecord{");
+		StringBuilder sb = new StringBuilder("CommentRecord{");
 		if (ban != null) sb.append("ban=").append(ban.getState());
 		sb.append(", comment='").append(comment).append('\'');
 		sb.append(", creator=").append(creator.getName());

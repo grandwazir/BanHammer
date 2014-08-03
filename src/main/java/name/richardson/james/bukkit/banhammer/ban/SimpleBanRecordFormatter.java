@@ -52,22 +52,22 @@ public class SimpleBanRecordFormatter implements BanRecordFormatter {
 		}
 	}
 
-	@Override public String getExpiresAt() {
+	@Override public final String getExpiresAt() {
 		long time = ban.getExpiresAt().getTime();
 		String duration = timeFormatter.getHumanReadableDuration(time);
 		return MESSAGES.banExpiresAt(duration);
 	}
 
-	@Override public String getHeader() {
-		final String date = DATE_FORMAT.format(ban.getCreatedAt());
+	@Override public final String getHeader() {
+		String date = DATE_FORMAT.format(ban.getCreatedAt());
 		return MESSAGES.banSummary(ban.getPlayer().getName(), ban.getCreator().getName(), date);
 	}
 
-	@Override public String getLength() {
+	@Override public final String getLength() {
 		if (ban.getType() == BanRecord.Type.PERMANENT) {
 			return MESSAGES.banLength(BanRecord.Type.PERMANENT.toString());
 		} else {
-			final long length = ban.getExpiresAt().getTime() - ban.getCreatedAt().getTime();
+			long length = ban.getExpiresAt().getTime() - ban.getCreatedAt().getTime();
 			return MESSAGES.banLength(durationFormatter.getHumanReadableDuration(length));
 		}
 	}
@@ -76,7 +76,7 @@ public class SimpleBanRecordFormatter implements BanRecordFormatter {
 		return messages;
 	}
 
-	@Override public String getReason() {
+	@Override public final String getReason() {
 		return MESSAGES.banReason(ban.getComment(CommentRecord.Type.BAN_REASON).getComment());
 	}
 

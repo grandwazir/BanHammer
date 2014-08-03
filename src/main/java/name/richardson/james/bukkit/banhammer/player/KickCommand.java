@@ -47,9 +47,9 @@ public class KickCommand extends AbstractSynchronousCommand {
 
 	public KickCommand(final Plugin plugin, final BukkitScheduler scheduler, final Server server) {
 		super(plugin, scheduler);
-		this.player = PlayerPositionalArgument.getInstance(server, 0, true);
-		this.reason = ReasonPositionalArgument.getInstance(1, false);
-		this.silent = SilentSwitchArgument.getInstance();
+		player = PlayerPositionalArgument.getInstance(server, 0, true);
+		reason = ReasonPositionalArgument.getInstance(1, false);
+		silent = SilentSwitchArgument.getInstance();
 		addArgument(silent);
 		addArgument((Argument) player);
 		addArgument(reason);
@@ -57,10 +57,10 @@ public class KickCommand extends AbstractSynchronousCommand {
 
 	@Override
 	protected void execute() {
-		final String reason = (this.reason.getString() == null) ? MESSAGES.defaultKickReason() : this.reason.getString();
-		final boolean silent = this.silent.isSet();
-		final Set<Player> players = this.player.getPlayers();
-		final String senderName = getContext().getCommandSender().getName();
+		String reason = (this.reason.getString() == null) ? MESSAGES.defaultKickReason() : this.reason.getString();
+		boolean silent = this.silent.isSet();
+		Set<Player> players = player.getPlayers();
+		String senderName = getContext().getCommandSender().getName();
 		for (Player player : players) {
 			if (silent) {
 				addMessage(MESSAGES.playerKicked(player.getName()));

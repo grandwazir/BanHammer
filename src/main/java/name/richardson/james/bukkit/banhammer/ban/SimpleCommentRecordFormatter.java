@@ -44,7 +44,7 @@ public class SimpleCommentRecordFormatter implements CommentRecordFormatter {
 	}
 
 	@Override public void removeComments(CommentRecord.Type type) {
-		Iterator<Map.Entry<Long, CommentRecord>> i = this.comments.entrySet().iterator();
+		Iterator<Map.Entry<Long, CommentRecord>> i = comments.entrySet().iterator();
 		while (i.hasNext()) {
 			Map.Entry<Long, CommentRecord> entry = i.next();
 			if (entry.getValue().getType() == type) i.remove();
@@ -53,8 +53,8 @@ public class SimpleCommentRecordFormatter implements CommentRecordFormatter {
 
 	@Override public final Collection<String> getMessages() {
 		Collection<String> messages = new ArrayList<>();
-		messages.add(MESSAGES.commentTotal(this.comments.size()));
-		for (CommentRecord comment : this.comments.values()) {
+		messages.add(MESSAGES.commentTotal(comments.size()));
+		for (CommentRecord comment : comments.values()) {
 			String date = DATE_FORMAT.format(comment.getCreatedAt());
 			String creatorName = comment.getCreator().getName();
 			String commentString = comment.getComment();

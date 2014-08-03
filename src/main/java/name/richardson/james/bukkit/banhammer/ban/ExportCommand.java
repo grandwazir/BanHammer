@@ -60,10 +60,10 @@ public class ExportCommand extends AbstractSynchronousCommand {
 	// The Bukkit Project uses deprecation annotations in a non-standard way
 	@Override @SuppressWarnings("deprecation")
 	protected void execute() {
-		final CommandSender commandSender = getContext().getCommandSender();
-		final Set<PlayerRecord> players = PlayerRecord.find(PlayerRecord.Status.BANNED);
+		CommandSender commandSender = getContext().getCommandSender();
+		Set<PlayerRecord> players = PlayerRecord.find(PlayerRecord.Status.BANNED);
 		for (PlayerRecord record : players) {
-			OfflinePlayer player = this.server.getOfflinePlayer(record.getName());
+			OfflinePlayer player = server.getOfflinePlayer(record.getName());
 			player.setBanned(true);
 		}
 		addMessage(MESSAGES.bansExported(players.size()));

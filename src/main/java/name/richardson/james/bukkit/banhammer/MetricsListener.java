@@ -34,17 +34,16 @@ import name.richardson.james.bukkit.banhammer.ban.BanHammerPlayerPardonedEvent;
 
 public class MetricsListener extends AbstractListener {
 
-	private final EbeanServer database;
 	private final Metrics metrics;
 
 	/** The number of bans pardoned since the server started. */
-	private int pardonedBans = 0;
+	private int pardonedBans;
 
 	/** The number of permenant bans made since the server started. */
-	private int permenantBans = 0;
+	private int permenantBans;
 
 	/** The number of temporary bans made since the server started. */
-	private int temporaryBans = 0;
+	private int temporaryBans;
 
 	/** The total number of pardoned bans made by this server. */
 	private int totalPardonedBans;
@@ -55,13 +54,12 @@ public class MetricsListener extends AbstractListener {
 	/** The total number of temporary bans made by this server. */
 	private int totalTemporaryBans;
 
-	public MetricsListener(Plugin plugin, PluginManager pluginManager, EbeanServer database) throws IOException {
+	public MetricsListener(Plugin plugin, PluginManager pluginManager) throws IOException {
 		super(plugin, pluginManager);
-		this.database = database;
-		this.metrics = new Metrics(plugin);
-		this.setInitialValues();
-		this.setupCustomMetrics();
-		this.metrics.start();
+		metrics = new Metrics(plugin);
+		setInitialValues();
+		setupCustomMetrics();
+		metrics.start();
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -69,12 +67,12 @@ public class MetricsListener extends AbstractListener {
 		for (BanRecord record : event.getRecords()) {
 			switch (record.getType()) {
 				case PERMANENT:
-					this.permenantBans++;
-					this.totalPermanentBans++;
+					permenantBans++;
+					totalPermanentBans++;
 					break;
 				case TEMPORARY:
-					this.temporaryBans++;
-					this.totalTemporaryBans++;
+					temporaryBans++;
+					totalTemporaryBans++;
 					break;
 			}
 		}
@@ -83,14 +81,14 @@ public class MetricsListener extends AbstractListener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerPardoned(final BanHammerPlayerPardonedEvent event) {
 		for (BanRecord record : event.getRecords()) {
-			this.pardonedBans++;
-			this.totalPardonedBans++;
+			pardonedBans++;
+			totalPardonedBans++;
 			switch (record.getType()) {
 				case PERMANENT:
-					this.totalPermanentBans--;
+					totalPermanentBans--;
 					break;
 				case TEMPORARY:
-					this.totalTemporaryBans--;
+					totalTemporaryBans--;
 					break;
 			}
 		}
@@ -99,15 +97,15 @@ public class MetricsListener extends AbstractListener {
 	private void setInitialValues() {
 		for (BanRecord record : BanRecord.list()) {
 			if (record.getState() == BanRecord.State.PARDONED) {
-			 	this.totalPardonedBans++;
+				totalPardonedBans++;
 				continue;
 			}
 			switch (record.getType()) {
 				case PERMANENT:
-					this.totalPermanentBans++;
+					totalPermanentBans++;
 					break;
 				case TEMPORARY:
-					this.totalTemporaryBans++;
+					totalTemporaryBans++;
 					break;
 			}
 		}
@@ -116,43 +114,43 @@ public class MetricsListener extends AbstractListener {
 	private void setupCustomMetrics() {
 
 		// Create a graph to show the total amount of kits issued.
-		final Metrics.Graph graph = this.metrics.createGraph("Realtime Ban Statistics");
+		Metrics.Graph graph = metrics.createGraph("Realtime Ban Statistics");
 		graph.addPlotter(new Metrics.Plotter("Permanent bans") {
 			@Override
 			public int getValue() {
-				return MetricsListener.this.permenantBans;
+				return permenantBans;
 			}
 		});
 		graph.addPlotter(new Metrics.Plotter("Temporary bans") {
 			@Override
 			public int getValue() {
-				return MetricsListener.this.temporaryBans;
+				return temporaryBans;
 			}
 		});
 		graph.addPlotter(new Metrics.Plotter("Pardoned bans") {
 			@Override
 			public int getValue() {
-				return MetricsListener.this.pardonedBans;
+				return pardonedBans;
 			}
 		});
 		// Create a graph to show total ban statistics
-		final Metrics.Graph graph2 = this.metrics.createGraph("Overall Ban Statistics");
+		Metrics.Graph graph2 = metrics.createGraph("Overall Ban Statistics");
 		graph2.addPlotter(new Metrics.Plotter("Permanent bans") {
 			@Override
 			public int getValue() {
-				return MetricsListener.this.totalPermanentBans;
+				return totalPermanentBans;
 			}
 		});
 		graph2.addPlotter(new Metrics.Plotter("Temporary bans") {
 			@Override
 			public int getValue() {
-				return MetricsListener.this.totalTemporaryBans;
+				return totalTemporaryBans;
 			}
 		});
 		graph2.addPlotter(new Metrics.Plotter("Pardoned bans") {
 			@Override
 			public int getValue() {
-				return MetricsListener.this.totalPardonedBans;
+				return totalPardonedBans;
 			}
 		});
 	}

@@ -82,9 +82,9 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
 
 	public static UUID getUUIDOf(String name) {
 		if (!CACHE.containsKey(name)) {
-			final UUIDFetcher UUIDFetcher = new UUIDFetcher(Arrays.asList(name));
+			UUIDFetcher fetcher = new UUIDFetcher(Arrays.asList(name));
 			try {
-				CACHE.putAll(UUIDFetcher.call());
+				CACHE.putAll(fetcher.call());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -107,7 +107,7 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
 		stream.close();
 	}
 
-	public Map<String, UUID> call()
+	@Override public Map<String, UUID> call()
 	throws Exception {
 		Map<String, UUID> uuidMap = new HashMap<String, UUID>();
 		int requests = (int) Math.ceil(names.size() / PROFILES_PER_REQUEST);

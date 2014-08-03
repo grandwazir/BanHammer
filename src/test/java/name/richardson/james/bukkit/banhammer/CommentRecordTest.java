@@ -4,7 +4,7 @@ import name.richardson.james.bukkit.utilities.persistence.DatabaseLoader;
 
 public class CommentRecordTest {
 
-	private static DatabaseLoader loader = TestDatabaseFactory.getSQLiteDatabaseLoader();
+	private static final DatabaseLoader loader = TestDatabaseFactory.getSQLiteDatabaseLoader();
 
 	public static CommentRecord CommentRecord(String comment) {
 		PlayerRecord player = PlayerRecordTest.createValidRecord();

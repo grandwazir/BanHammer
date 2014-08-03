@@ -26,7 +26,7 @@ import name.richardson.james.bukkit.utilities.command.argument.SimpleArgumentMet
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
 
-public class ReasonPositionalArgument {
+public final class ReasonPositionalArgument {
 
 	public static final Messages MESSAGES = MessagesFactory.getMessages();
 

@@ -67,7 +67,7 @@ public class CommentCommand extends AbstractAsynchronousCommand {
 			PlayerRecord creator = PlayerRecord.create(getContext().getCommandSender().getName());
 			for (String playerName : this.playerName.getStrings()) {
 				PlayerRecord player = PlayerRecord.create(playerName);
-				CommentRecord comment = CommentRecord.create(creator, player, this.reason.getString());
+				CommentRecord comment = CommentRecord.create(creator, player, reason.getString());
 				comment.setType(CommentRecord.Type.NORMAL);
 				player.addComment(comment);
 				player.save();

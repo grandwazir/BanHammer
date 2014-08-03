@@ -20,6 +20,7 @@ package name.richardson.james.bukkit.banhammer;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -31,7 +32,7 @@ import name.richardson.james.bukkit.utilities.configuration.SimplePluginConfigur
 import name.richardson.james.bukkit.utilities.time.PreciseDurationTimeFormatter;
 import name.richardson.james.bukkit.utilities.time.TimeFormatter;
 
-public final class PluginConfiguration extends SimplePluginConfiguration {
+public final class BanHammerPluginConfiguration extends SimplePluginConfiguration {
 
 	private static final String IMMUNE_PLAYERS_KEY = "immune-players";
 	private static final String UNDO_TIME_KEY = "undo-time";
@@ -40,31 +41,31 @@ public final class PluginConfiguration extends SimplePluginConfiguration {
 	private final Map<String, Long> limits = new LinkedHashMap<String, Long>();
 	private final TimeFormatter timeFormatter = new PreciseDurationTimeFormatter();
 
-	public PluginConfiguration(final File file, final InputStream defaults)
+	public BanHammerPluginConfiguration(final File file, final InputStream defaults)
 	throws IOException {
 		super(file, defaults);
 	}
 
 	public Map<String, Long> getBanLimits() {
-		this.limits.clear();
-		final ConfigurationSection section = this.getConfiguration().getConfigurationSection(LIMITS_KEY);
+		limits.clear();
+		ConfigurationSection section = getConfiguration().getConfigurationSection(LIMITS_KEY);
 		for (final String key : section.getKeys(false)) {
-			final Long length = timeFormatter.getDurationInMilliseconds(section.getString(key));
+			Long length = timeFormatter.getDurationInMilliseconds(section.getString(key));
 			if (length != 0) {
-				this.limits.put(key, length);
+				limits.put(key, length);
 			}
 		}
-		return this.limits;
+		return Collections.unmodifiableMap(this.limits);
 	}
 
 	public Set<String> getImmunePlayers() {
-		final Set<String> set = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
-		set.addAll(this.getConfiguration().getStringList(IMMUNE_PLAYERS_KEY));
+		Set<String> set = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+		set.addAll(getConfiguration().getStringList(IMMUNE_PLAYERS_KEY));
 		return set;
 	}
 
 	public long getUndoTime() {
-		return timeFormatter.getDurationInMilliseconds(this.getConfiguration().getString(UNDO_TIME_KEY, "1m"));
+		return timeFormatter.getDurationInMilliseconds(getConfiguration().getString(UNDO_TIME_KEY, "1m"));
 	}
 
 	@Override

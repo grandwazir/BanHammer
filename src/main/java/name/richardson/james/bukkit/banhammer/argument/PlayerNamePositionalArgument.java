@@ -32,7 +32,7 @@ import name.richardson.james.bukkit.banhammer.MessagesFactory;
 import name.richardson.james.bukkit.banhammer.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.player.PlayerRecordMatcher;
 
-public class PlayerNamePositionalArgument {
+public final class PlayerNamePositionalArgument {
 
 	public static final Messages MESSAGES = MessagesFactory.getMessages();
 

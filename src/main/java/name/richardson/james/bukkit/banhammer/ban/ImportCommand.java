@@ -47,7 +47,7 @@ public class ImportCommand extends AbstractSynchronousCommand {
 	public ImportCommand(final Plugin plugin, final BukkitScheduler scheduler, final Server server) {
 		super(plugin, scheduler);
 		this.server = server;
-		this.reason = ReasonPositionalArgument.getInstance(0, false);
+		reason = ReasonPositionalArgument.getInstance(0, false);
 	}
 
 	@Override public String getDescription() {
@@ -63,10 +63,10 @@ public class ImportCommand extends AbstractSynchronousCommand {
 		return new HashSet<>(Arrays.asList(PERMISSION_ALL));
 	}
 
-	protected void execute() {
-		final String reason = (this.reason.getString() == null) ? MESSAGES.defaultImportReason() : this.reason.getString();
-		final CommandSender commandSender = getContext().getCommandSender();
-		Set<OfflinePlayer> bannedPlayers = this.server.getBannedPlayers();
+	@Override protected void execute() {
+		String reason = (this.reason.getString() == null) ? MESSAGES.defaultImportReason() : this.reason.getString();
+		CommandSender commandSender = getContext().getCommandSender();
+		Set<OfflinePlayer> bannedPlayers = server.getBannedPlayers();
 		try {
 			PlayerRecord creatorRecord = PlayerRecord.create(commandSender.getName());
 			for (OfflinePlayer player : bannedPlayers) {

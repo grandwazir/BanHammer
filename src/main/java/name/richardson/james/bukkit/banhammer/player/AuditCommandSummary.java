@@ -34,18 +34,18 @@ public final class AuditCommandSummary {
 	private int pardonedBans;
 	private int permanentBans;
 	private int temporaryBans;
-	private int total;
+	private final int total;
 
 	protected AuditCommandSummary(Collection<BanRecord> bans) {
 		this.bans = bans;
-		this.total = BanRecord.count();
-		this.update();
+		total = BanRecord.count();
+		update();
 	}
 
 	protected AuditCommandSummary(Collection<BanRecord> bans, int total) {
 		this.bans = bans;
 		this.total = total;
-		this.update();
+		update();
 	}
 
 	public int getExpiredBanCount() {
@@ -53,7 +53,7 @@ public final class AuditCommandSummary {
 	}
 
 	public float getExpiredBanCountPercentage() {
-		return (float) expiredBans / this.bans.size();
+		return (float) expiredBans / bans.size();
 	}
 
 	public List<String> getMessages() {
@@ -73,7 +73,7 @@ public final class AuditCommandSummary {
 	}
 
 	public float getNormalBanCountPercentage() {
-		return (float) normalBans / this.bans.size();
+		return (float) normalBans / bans.size();
 	}
 
 	public int getPardonedBanCount() {
@@ -81,7 +81,7 @@ public final class AuditCommandSummary {
 	}
 
 	public float getPardonedBanCountPercentage() {
-		return (float) pardonedBans / this.bans.size();
+		return (float) pardonedBans / bans.size();
 	}
 
 	public int getPermanentBanCount() {
@@ -89,7 +89,7 @@ public final class AuditCommandSummary {
 	}
 
 	public float getPermanentBanCountPercentage() {
-		return (float) permanentBans / this.bans.size();
+		return (float) permanentBans / bans.size();
 	}
 
 	public int getTemporaryBanCount() {
@@ -97,15 +97,15 @@ public final class AuditCommandSummary {
 	}
 
 	public float getTemporaryBanCountPercentage() {
-		return (float) temporaryBans / this.bans.size();
+		return (float) temporaryBans / bans.size();
 	}
 
 	public int getTotalBanCount() {
-		return this.bans.size();
+		return bans.size();
 	}
 
 	public float getTotalBanCountPercentage() {
-		return (float) this.bans.size() / total;
+		return (float) bans.size() / total;
 	}
 
 	private void update() {

@@ -28,7 +28,7 @@ import name.richardson.james.bukkit.banhammer.PlayerRecord;
 
 public class PlayerRecordMatcher implements Suggester {
 
-	public static int MINIMUM_ARGUMENT_LENGTH = 3;
+	private static final int MINIMUM_ARGUMENT_LENGTH = 3;
 	private final PlayerRecord.Status mode;
 
 	public PlayerRecordMatcher(PlayerRecord.Status mode) {

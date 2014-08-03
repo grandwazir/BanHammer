@@ -57,11 +57,11 @@ public class BanHammer extends JavaPlugin {
 	private static final String CONFIG_NAME = "config.yml";
 	private static final String DATABASE_CONFIG_NAME = "database.yml";
 	private static EbeanServer database;
-	private PluginConfiguration configuration;
+	private BanHammerPluginConfiguration configuration;
 
 	@Override
 	public List<Class<?>> getDatabaseClasses() {
-		final List<Class<?>> classes = new LinkedList<Class<?>>();
+		List<Class<?>> classes = new LinkedList<Class<?>>();
 		classes.add(BanRecord.class);
 		classes.add(PlayerRecord.class);
 		classes.add(CommentRecord.class);
@@ -71,22 +71,23 @@ public class BanHammer extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		try {
-			this.loadConfiguration();
-			this.loadDatabase();
-			this.registerCommands();
-			this.registerListeners();
+			loadConfiguration();
+			loadDatabase();
+			registerCommands();
+			registerListeners();
 			// TODO: Reimplement this - this.setupMetrics();
-			this.updatePlugin();
+			updatePlugin();
 		} catch (final IOException e) {
-			e.printStackTrace();
+			getLogger().severe("There was an error enabling the plugin!");
+			getLogger().severe(e.getMessage());
 		}
 	}
 
 	private void loadConfiguration()
 	throws IOException {
-		final File file = new File(this.getDataFolder().getPath() + File.separatorChar + CONFIG_NAME);
-		final InputStream defaults = this.getResource(CONFIG_NAME);
-		this.configuration = new PluginConfiguration(file, defaults);
+		File file = new File(getDataFolder().getPath() + File.separatorChar + CONFIG_NAME);
+		InputStream defaults = getResource(CONFIG_NAME);
+		configuration = new BanHammerPluginConfiguration(file, defaults);
 	}
 
 	private void loadDatabase()
@@ -94,12 +95,12 @@ public class BanHammer extends JavaPlugin {
 		ServerConfig serverConfig = new ServerConfig();
 		getServer().configureDbConfig(serverConfig);
 		serverConfig.setClasses(getDatabaseClasses());
-		serverConfig.setName(this.getName());
+		serverConfig.setName(getName());
 		serverConfig.setRegister(true);
-		final File file = new File(this.getDataFolder().getPath() + File.separatorChar + DATABASE_CONFIG_NAME);
-		final InputStream defaults = this.getResource(DATABASE_CONFIG_NAME);
-		final DatabaseConfiguration configuration = new SimpleDatabaseConfiguration(file, defaults, getName(), serverConfig);
-		final DatabaseLoader loader = DatabaseLoaderFactory.getDatabaseLoader(configuration);
+		File file = new File(getDataFolder().getPath() + File.separatorChar + DATABASE_CONFIG_NAME);
+		InputStream defaults = getResource(DATABASE_CONFIG_NAME);
+		DatabaseConfiguration configuration = new SimpleDatabaseConfiguration(file, defaults, getName(), serverConfig);
+		DatabaseLoader loader = DatabaseLoaderFactory.getDatabaseLoader(configuration);
 		loader.initalise();
 		database = loader.getEbeanServer();
 		CommentRecord.setRecordDatabase(database);
@@ -118,7 +119,7 @@ public class BanHammer extends JavaPlugin {
 		commands.add(command);
 		command = new BanCommand(this, getServer().getScheduler(), configuration, getServer());
 		commands.add(command);
-		getCommand("ban").setExecutor(new SimpleCommandInvoker(this, this.getServer().getScheduler(), command));
+		getCommand("ban").setExecutor(new SimpleCommandInvoker(this, getServer().getScheduler(), command));
 		command = new CheckCommand(this, getServer().getScheduler());
 		commands.add(command);
 		command = new CommentCommand(this, getServer().getScheduler(), getServer());
@@ -131,32 +132,32 @@ public class BanHammer extends JavaPlugin {
 		commands.add(command);
 		command = new KickCommand(this, getServer().getScheduler(), getServer());
 		commands.add(command);
-		getCommand("kick").setExecutor(new SimpleCommandInvoker(this, this.getServer().getScheduler(), command));
+		getCommand("kick").setExecutor(new SimpleCommandInvoker(this, getServer().getScheduler(), command));
 		command = new LimitsCommand(this, getServer().getScheduler(), configuration);
 		commands.add(command);
 		command = new PardonCommand(this, getServer().getScheduler());
 		commands.add(command);
-		getCommand("pardon").setExecutor(new SimpleCommandInvoker(this, this.getServer().getScheduler(), command));
+		getCommand("pardon").setExecutor(new SimpleCommandInvoker(this, getServer().getScheduler(), command));
 		command = new PurgeCommand(this, getServer().getScheduler(), getDatabase());
 		commands.add(command);
 		command = new RecentCommand(this, getServer().getScheduler());
 		commands.add(command);
 		command = new UndoCommand(this, getServer().getScheduler(), configuration);
 		commands.add(command);
-		CommandInvoker invoker = new RootCommandInvoker(this, this.getServer().getScheduler(), commands, "/bh");
+		CommandInvoker invoker = new RootCommandInvoker(this, getServer().getScheduler(), commands, "/bh");
 		getCommand("bh").setExecutor(invoker);
 	}
 
 	private void registerListeners() {
-		new PlayerListener(this, this.getServer().getPluginManager(), getServer(), database);
-		new PlayerNotifier(this, this.getServer().getPluginManager(), getServer());
+		new PlayerListener(this, getServer().getPluginManager(), getServer(), database);
+		new PlayerNotifier(this, getServer().getPluginManager(), getServer());
 	}
 
 	private void updatePlugin() {
 		if (!configuration.getAutomaticUpdaterState().equals(PluginUpdater.State.OFF)) {
-			PluginUpdater updater = new BukkitDevPluginUpdater(this.getDescription(), configuration.getAutomaticUpdaterBranch(), configuration.getAutomaticUpdaterState(), PROJECT_ID, this.getDataFolder(), Bukkit.getVersion());
-			this.getServer().getScheduler().runTaskAsynchronously(this, updater);
-			new name.richardson.james.bukkit.utilities.updater.PlayerNotifier(this, this.getServer().getPluginManager(), updater);
+			PluginUpdater updater = new BukkitDevPluginUpdater(getDescription(), configuration.getAutomaticUpdaterBranch(), configuration.getAutomaticUpdaterState(), PROJECT_ID, getDataFolder(), Bukkit.getVersion());
+			getServer().getScheduler().runTaskAsynchronously(this, updater);
+			new name.richardson.james.bukkit.utilities.updater.PlayerNotifier(this, getServer().getPluginManager(), updater);
 		}
 	}
 

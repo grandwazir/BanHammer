@@ -47,8 +47,8 @@ public class CheckCommand extends AbstractAsynchronousCommand {
 
 	public CheckCommand(final Plugin plugin, final BukkitScheduler scheduler) {
 		super(plugin, scheduler);
-		this.player = PlayerNamePositionalArgument.getInstance(0, true, PlayerRecord.Status.BANNED);
-		this.showComments = ShowCommentSwitchArgument.getInstance();
+		player = PlayerNamePositionalArgument.getInstance(0, true, PlayerRecord.Status.BANNED);
+		showComments = ShowCommentSwitchArgument.getInstance();
 		addArgument(showComments);
 		addArgument(player);
 	}
@@ -69,7 +69,7 @@ public class CheckCommand extends AbstractAsynchronousCommand {
 
 	@Override
 	protected void execute() {
-		final Collection<String> playerNames = player.getStrings();
+		Collection<String> playerNames = player.getStrings();
 		for (String playerName : playerNames) {
 			PlayerRecord playerRecord = PlayerRecord.find(playerName);
 			if (playerRecord != null) {

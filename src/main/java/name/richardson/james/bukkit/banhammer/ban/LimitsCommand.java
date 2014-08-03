@@ -30,18 +30,18 @@ import name.richardson.james.bukkit.utilities.command.AbstractAsynchronousComman
 import name.richardson.james.bukkit.utilities.time.PreciseDurationTimeFormatter;
 import name.richardson.james.bukkit.utilities.time.TimeFormatter;
 
+import name.richardson.james.bukkit.banhammer.BanHammerPluginConfiguration;
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
-import name.richardson.james.bukkit.banhammer.PluginConfiguration;
 
 public class LimitsCommand extends AbstractAsynchronousCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.limits";
 	private static final Messages MESSAGES = MessagesFactory.getColouredMessages();
-	private final PluginConfiguration configuration;
-	private TimeFormatter timeFormatter = new PreciseDurationTimeFormatter();
+	private final BanHammerPluginConfiguration configuration;
+	private final TimeFormatter timeFormatter = new PreciseDurationTimeFormatter();
 
-	public LimitsCommand(final Plugin plugin, final BukkitScheduler scheduler, PluginConfiguration configuration) {
+	public LimitsCommand(final Plugin plugin, final BukkitScheduler scheduler, BanHammerPluginConfiguration configuration) {
 		super(plugin, scheduler);
 		this.configuration = configuration;
 	}
@@ -69,7 +69,7 @@ public class LimitsCommand extends AbstractAsynchronousCommand {
 		Map<String, Long> limits = configuration.getBanLimits();
 		addMessage(MESSAGES.limitsFound(limits.size()));
 		for (final Entry<String, Long> limit : limits.entrySet()) {
-			final String time = timeFormatter.getHumanReadableDuration(limit.getValue());
+			String time = timeFormatter.getHumanReadableDuration(limit.getValue());
 			ChatColor colour = ChatColor.RED;
 			String limitName = limit.getKey();
 			if (getContext().isAuthorised(BanCommand.getPermissionFromLimit(limitName))) colour = ChatColor.GREEN;

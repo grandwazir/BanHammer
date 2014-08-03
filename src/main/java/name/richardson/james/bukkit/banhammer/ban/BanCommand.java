@@ -30,11 +30,11 @@ import org.bukkit.scheduler.BukkitScheduler;
 import name.richardson.james.bukkit.utilities.command.AbstractAsynchronousCommand;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 
+import name.richardson.james.bukkit.banhammer.BanHammerPluginConfiguration;
 import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
 import name.richardson.james.bukkit.banhammer.PlayerRecord;
-import name.richardson.james.bukkit.banhammer.PluginConfiguration;
 import name.richardson.james.bukkit.banhammer.argument.PlayerNamePositionalArgument;
 import name.richardson.james.bukkit.banhammer.argument.ReasonPositionalArgument;
 import name.richardson.james.bukkit.banhammer.argument.SilentSwitchArgument;
@@ -47,13 +47,13 @@ public class BanCommand extends AbstractAsynchronousCommand {
 	public static final String PERMISSION_ALL = "banhammer.ban";
 	public static final String PERMISSION_PERMANENT = "banhammer.ban.permanent";
 	private static final Messages MESSAGES = MessagesFactory.getColouredMessages();
-	private final PluginConfiguration configuration;
+	private final BanHammerPluginConfiguration configuration;
 	private final Argument player;
 	private final Argument reason;
 	private final SilentSwitchArgument silent;
 	private final TimeMarshaller time;
 
-	public BanCommand(final Plugin plugin, final BukkitScheduler scheduler, PluginConfiguration configuration, Server server) {
+	public BanCommand(final Plugin plugin, final BukkitScheduler scheduler, BanHammerPluginConfiguration configuration, Server server) {
 		super(plugin, scheduler);
 		this.configuration = configuration;
 		player = PlayerNamePositionalArgument.getInstance(server, 0, true);
@@ -68,11 +68,11 @@ public class BanCommand extends AbstractAsynchronousCommand {
 
 	@Override
 	public void execute() {
-		final Collection<String> playerNames = player.getStrings();
-		final Collection<BanRecord> records = new ArrayList<BanRecord>();
-		final boolean silent = this.silent.isSet();
-		final long time = this.time.getTime();
-		final PlayerRecord creatorRecord;
+		Collection<String> playerNames = player.getStrings();
+		Collection<BanRecord> records = new ArrayList<BanRecord>();
+		boolean silent = this.silent.isSet();
+		long time = this.time.getTime();
+		PlayerRecord creatorRecord;
 		try {
 			creatorRecord = PlayerRecord.create(getContext().getCommandSenderUUID());
 			for (String playerName : playerNames) {
@@ -81,7 +81,7 @@ public class BanCommand extends AbstractAsynchronousCommand {
 					addMessage(MESSAGES.playerIsImmune(playerName));
 				} else if (isBanWithinLimit()) {
 					if (!playerRecord.isBanned()) {
-						final BanRecord record = BanRecord.create(creatorRecord, playerRecord, reason.getString());
+						BanRecord record = BanRecord.create(creatorRecord, playerRecord, reason.getString());
 						if (time > 0) record.setExpiryDuration(this.time.getTime());
 						records.add(record);
 						record.save();
@@ -130,10 +130,10 @@ public class BanCommand extends AbstractAsynchronousCommand {
 		if (time.getTime() == 0 && isAuthorised(PERMISSION_PERMANENT)) {
 			return true;
 		} else {
-			for (final Map.Entry<String, Long> limit : this.configuration.getBanLimits().entrySet()) {
+			for (final Map.Entry<String, Long> limit : configuration.getBanLimits().entrySet()) {
 				String node = getPermissionFromLimit(limit.getKey());
 				if (!isAuthorised(node)) continue;
-				if (limit.getValue() >= this.time.getTime()) return true;
+				if (limit.getValue() >= time.getTime()) return true;
 			}
 		}
 		return false;

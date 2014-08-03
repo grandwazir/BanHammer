@@ -33,15 +33,15 @@ public interface Messages {
 
 	String auditCommandName();
 
-	@ColouredMessage(type = MessageType.NOTICE) String auditExpiredBanPercentage(int expiredBanCount, float expiredBanCountPercentage);
+	@ColouredMessage(type = MessageType.NOTICE) String auditExpiredBanPercentage(int count, float percentage);
 
-	@ColouredMessage(type = MessageType.NOTICE) String auditNormalBanPercentage(int normalBanCount, float normalBanCountPercentage);
+	@ColouredMessage(type = MessageType.NOTICE) String auditNormalBanPercentage(int count, float percentage);
 
-	@ColouredMessage(type = MessageType.NOTICE) String auditPardonedBanPercentage(int pardonedBanCount, float pardonedBanCountPercentage);
+	@ColouredMessage(type = MessageType.NOTICE) String auditPardonedBanPercentage(int count, float percentage);
 
-	@ColouredMessage(type = MessageType.NOTICE) String auditPermanentBanPercentage(int permanentBanCount, float pardonedBanCountPercentage);
+	@ColouredMessage(type = MessageType.NOTICE) String auditPermanentBanPercentage(int count, float percentage);
 
-	@ColouredMessage(type = MessageType.HEADER) String auditSummary(@PluralCount int totalBanCount, String playerName, float totalBanCountPercentage);
+	@ColouredMessage(type = MessageType.HEADER) String auditSummary(@PluralCount int count, String playerName, float percentage);
 
 	String auditSummaryAll();
 

@@ -48,8 +48,8 @@ public final class AuditCommand extends AbstractAsynchronousCommand {
 
 	public AuditCommand(final Plugin plugin, final BukkitScheduler scheduler) {
 		super(plugin, scheduler);
-		this.playerName = PlayerNamePositionalArgument.getInstance(0, false, PlayerRecord.Status.CREATOR);
-		this.all = AllOptionArgument.getInstance();
+		playerName = PlayerNamePositionalArgument.getInstance(0, false, PlayerRecord.Status.CREATOR);
+		all = AllOptionArgument.getInstance();
 		addArgument((Argument) all);
 		addArgument(playerName);
 	}
@@ -70,8 +70,8 @@ public final class AuditCommand extends AbstractAsynchronousCommand {
 	protected void execute() {
 		if (all.isSet()) {
 			if (isAuthorised(PERMISSION_AUDIT_ALL)) {
-				final String playerName = MESSAGES.auditSummaryAll();
-				final Collection<BanRecord> bans = BanRecord.list();
+				String playerName = MESSAGES.auditSummaryAll();
+				Collection<BanRecord> bans = BanRecord.list();
 				AuditCommandSummary summary = new AuditCommandSummary(bans);
 				addMessage(MESSAGES.auditSummary(summary.getTotalBanCount(), playerName, summary.getTotalBanCountPercentage()));
 				addMessages(summary.getMessages());
@@ -107,8 +107,8 @@ public final class AuditCommand extends AbstractAsynchronousCommand {
 	}
 
 	private boolean hasPermission(String targetName) {
-		final boolean isSenderCheckingSelf = targetName.equalsIgnoreCase(getContext().getCommandSender().getName());
-		return this.all.isSet() && getContext().isAuthorised(PERMISSION_AUDIT_ALL) || (!all.isSet() && getContext().isAuthorised(PERMISSION_SELF) && isSenderCheckingSelf) || (!all.isSet() && getContext().isAuthorised(PERMISSION_OTHERS) && !isSenderCheckingSelf);
+		boolean isSenderCheckingSelf = targetName.equalsIgnoreCase(getContext().getCommandSender().getName());
+		return all.isSet() && getContext().isAuthorised(PERMISSION_AUDIT_ALL) || (!all.isSet() && getContext().isAuthorised(PERMISSION_SELF) && isSenderCheckingSelf) || (!all.isSet() && getContext().isAuthorised(PERMISSION_OTHERS) && !isSenderCheckingSelf);
 	}
 
 }
