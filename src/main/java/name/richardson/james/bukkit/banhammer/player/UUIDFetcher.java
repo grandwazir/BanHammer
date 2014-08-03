@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright (c) 2014 James Richardson.
+ Copyright (c) 2014 evilmidget38, James Richardson (my portions under the GPL).
 
  UUIDFetcher.java is part of BanHammer.
 
