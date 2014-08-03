@@ -51,7 +51,7 @@ public interface Messages {
 	@ColouredMessage(type = MessageType.NOTICE)
 	String banLength(String duration);
 
-	@ColouredMessage(type = MessageType.NOTICE) String banPardonedBy(String creator);
+	@ColouredMessage(type = MessageType.NOTICE) String banPardonedBy(String creator, final String comment);
 
 	@ColouredMessage(type = MessageType.NOTICE)
 	String banReason(String reason);
@@ -60,12 +60,30 @@ public interface Messages {
 
 	String bansExported(@PluralCount int size);
 
-	@ColouredMessage(type = MessageType.HEADER)
+	@ColouredMessage(type = MessageType.NOTICE)
 	String bansPurged(@PluralCount int count);
 
 	String checkCommandDescription();
 
 	String checkCommandName();
+
+	String commentArgumentDescription();
+
+	String commentArgumentId();
+
+	String commentArgumentName();
+
+	@ColouredMessage(type = MessageType.NOTICE) String commentAttached(String playerName);
+
+	String commentCommandDescription();
+
+	String commentCommandName();
+
+	@ColouredMessage(type = MessageType.NOTICE) String commentDetails(String date, String creatorName, String commentString);
+
+	@ColouredMessage(type = MessageType.HEADER) String commentTotal(@PluralCount int size);
+
+	@ColouredMessage(type = MessageType.NOTICE) String commentsPurged(@PluralCount int size);
 
 	String defaultImportReason();
 

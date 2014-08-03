@@ -12,7 +12,9 @@ import com.avaje.ebean.validation.NotNull;
 import name.richardson.james.bukkit.utilities.persistence.AbstractRecord;
 
 import name.richardson.james.bukkit.banhammer.ban.BanRecordFormatter;
+import name.richardson.james.bukkit.banhammer.ban.CommentRecordFormatter;
 import name.richardson.james.bukkit.banhammer.ban.SimpleBanRecordFormatter;
+import name.richardson.james.bukkit.banhammer.ban.SimpleCommentRecordFormatter;
 
 @Entity
 @Table(name = "banhammer_" + "bans")
@@ -52,6 +54,7 @@ public class BanRecord extends AbstractRecord {
 		ban.setPlayer(target);
 		ban.setState(State.NORMAL);
 		CommentRecord comment = CommentRecord.create(creator, ban, reason);
+		comment.setType(CommentRecord.Type.BAN_REASON);
 		ban.setComment(comment);
 		if (time != null) ban.setExpiresAt(time);
 		return ban;
@@ -101,6 +104,12 @@ public class BanRecord extends AbstractRecord {
 
 	public BanRecordFormatter getFormatter() {
 		return new SimpleBanRecordFormatter(this);
+	}
+
+	public CommentRecordFormatter getCommentFormatter() {
+		CommentRecordFormatter formatter = new SimpleCommentRecordFormatter(getComments());
+		formatter.removeComments(CommentRecord.Type.BAN_REASON);
+		return formatter;
 	}
 
 	public PlayerRecord getPlayer() {
@@ -165,8 +174,10 @@ public class BanRecord extends AbstractRecord {
 	public void setComment(CommentRecord comment) {
 		if (comment.getType() != CommentRecord.Type.NORMAL) {
 			CommentRecord record = getComment(comment.getType());
-			getComments().remove(record);
-			record.delete();
+			if (record != null) {
+				getComments().remove(record);
+				record.delete();
+			}
 		}
 		getComments().add(comment);
 	}

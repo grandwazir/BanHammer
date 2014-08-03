@@ -94,10 +94,24 @@ public class CommentRecord extends AbstractRecord {
 
 	public void setCreator(final PlayerRecord creator) {
 		this.creator = creator;
+		if (player != null) this.creator.getComments().add(this);
+	}
+
+	@Override public String toString() {
+		final StringBuilder sb = new StringBuilder("CommentRecord{");
+		if (ban != null) sb.append("ban=").append(ban.getState());
+		sb.append(", comment='").append(comment).append('\'');
+		sb.append(", creator=").append(creator.getName());
+		if (player != null) sb.append(", player=").append(player.getName());
+		sb.append(", type=").append(type);
+		sb.append(", ").append(super.toString());
+		sb.append('}');
+		return sb.toString();
 	}
 
 	public void setPlayer(final PlayerRecord player) {
 		this.player = player;
+		if (player != null) this.player.getComments().add(this);
 	}
 
 	public void setType(final Type type) {

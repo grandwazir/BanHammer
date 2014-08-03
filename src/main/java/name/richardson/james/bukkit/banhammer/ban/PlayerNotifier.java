@@ -8,10 +8,7 @@ import org.bukkit.plugin.PluginManager;
 
 import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 
-import name.richardson.james.bukkit.banhammer.BanRecord;
-import name.richardson.james.bukkit.banhammer.Messages;
-import name.richardson.james.bukkit.banhammer.MessagesFactory;
-import name.richardson.james.bukkit.banhammer.BanHammer;
+import name.richardson.james.bukkit.banhammer.*;
 
 public class PlayerNotifier extends AbstractListener {
 
@@ -41,7 +38,7 @@ public class PlayerNotifier extends AbstractListener {
 		for (BanRecord record : event.getRecords()) {
 			String message = MESSAGES.playerPardonedBy(record.getPlayer().getName(), event.getCommandSender().getName());
 			server.broadcast(message, BanHammer.NOTIFY_PERMISSION_NAME);
-			message = MESSAGES.banReason(record.getPardonReason().getComment());
+			message = MESSAGES.banReason(record.getComment(CommentRecord.Type.PARDON_REASON).getComment());
 			server.broadcast(message, BanHammer.NOTIFY_PERMISSION_NAME);
 		}
 	}

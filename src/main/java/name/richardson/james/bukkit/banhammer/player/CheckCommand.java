@@ -28,24 +28,30 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 import name.richardson.james.bukkit.utilities.command.AbstractAsynchronousCommand;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
+import name.richardson.james.bukkit.utilities.command.argument.SimpleBooleanMarshaller;
 
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
 import name.richardson.james.bukkit.banhammer.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.argument.CommentSwitchArgument;
 import name.richardson.james.bukkit.banhammer.argument.PlayerNamePositionalArgument;
 import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordFormatter;
+import name.richardson.james.bukkit.banhammer.ban.CommentRecordFormatter;
 
 public class CheckCommand extends AbstractAsynchronousCommand {
 
 	public static final Messages MESSAGES = MessagesFactory.getColouredMessages();
 	private static final String PERMISSION_ALL = "banhammer.check";
 	private final Argument player;
+	private final SimpleBooleanMarshaller showComments;
 
 	public CheckCommand(final Plugin plugin, final BukkitScheduler scheduler) {
 		super(plugin, scheduler);
 		this.player = PlayerNamePositionalArgument.getInstance(0, true, PlayerRecord.Status.BANNED);
+		this.showComments = CommentSwitchArgument.getInstance();
 		addArgument(player);
+		addArgument(showComments);
 	}
 
 	@Override
@@ -67,10 +73,19 @@ public class CheckCommand extends AbstractAsynchronousCommand {
 		final Collection<String> playerNames = player.getStrings();
 		for (String playerName : playerNames) {
 			PlayerRecord playerRecord = PlayerRecord.find(playerName);
-			if (playerRecord != null && playerRecord.isBanned()) {
+			if (playerRecord != null) {
 				BanRecord ban = playerRecord.getActiveBan();
-				BanRecordFormatter formatter = ban.getFormatter();
-				addMessages(formatter.getMessages());
+				if (ban != null) {
+					BanRecordFormatter formatter = ban.getFormatter();
+					addMessages(formatter.getMessages());
+				} else {
+					String message = MESSAGES.playerNotBanned(playerName);
+					addMessage(message);
+				}
+				if (showComments.isSet()) {
+					CommentRecordFormatter formatter = playerRecord.getCommentFormatter();
+					addMessages(formatter.getMessages());
+				}
 			} else {
 				String message = MESSAGES.playerNotBanned(playerName);
 				addMessage(message);

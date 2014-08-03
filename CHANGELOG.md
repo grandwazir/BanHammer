@@ -1,5 +1,7 @@
 # Changelog for BanHammer (v3.0.0-SNAPSHOT)
 
+2014-08-03 04:27:39 +0100    fix NPE in PardonCommand (James Richardson)  
+2014-08-03 04:26:43 +0100    fix bugs with pardon command (James Richardson)  
 2014-08-02 22:00:42 +0100    add missing localisation key (James Richardson)  
 2014-08-02 22:00:37 +0100    added ability to record the name of the person pardoning a ban and their reason for doing so (James Richardson)  
 2014-08-02 21:42:32 +0100    playerNotifier now correctly uses the commandSender's name (James Richardson)  

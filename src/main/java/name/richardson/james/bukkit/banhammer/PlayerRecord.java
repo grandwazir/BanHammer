@@ -1,5 +1,6 @@
 package name.richardson.james.bukkit.banhammer;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -13,6 +14,8 @@ import com.avaje.ebean.validation.NotNull;
 
 import name.richardson.james.bukkit.utilities.persistence.AbstractRecord;
 
+import name.richardson.james.bukkit.banhammer.ban.CommentRecordFormatter;
+import name.richardson.james.bukkit.banhammer.ban.SimpleCommentRecordFormatter;
 import name.richardson.james.bukkit.banhammer.player.NameFetcher;
 import name.richardson.james.bukkit.banhammer.player.PlayerNotFoundException;
 import name.richardson.james.bukkit.banhammer.player.UUIDFetcher;
@@ -29,13 +32,13 @@ public class PlayerRecord extends AbstractRecord {
 		ANY
 	}
 
-	@OneToMany(mappedBy = "player", targetEntity = BanRecord.class)
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "player", targetEntity = BanRecord.class)
 	private Set<BanRecord> bans;
-	@OneToMany(mappedBy = "creator", targetEntity = CommentRecord.class)
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "creator", targetEntity = CommentRecord.class)
 	private Set<CommentRecord> comments;
-	@OneToMany(mappedBy = "creator", targetEntity = BanRecord.class)
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "creator", targetEntity = BanRecord.class)
 	private Set<BanRecord> createdBans;
-	@OneToMany(mappedBy = "creator", targetEntity = CommentRecord.class)
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "creator", targetEntity = CommentRecord.class)
 	private Set<CommentRecord> createdComments;
 	@NotNull
 	private String name;
@@ -120,6 +123,14 @@ public class PlayerRecord extends AbstractRecord {
 		PlayerRecord.database = database;
 	}
 
+	public void addComment(final CommentRecord comment) {
+		getComments().add(comment);
+	}
+
+	public void addCreatedComment(final CommentRecord comment) {
+		getCreatedComments().add(comment);
+	}
+
 	public void delete() {
 		getDatabase().delete(this);
 	}
@@ -136,15 +147,22 @@ public class PlayerRecord extends AbstractRecord {
 		return bans;
 	}
 
+	public CommentRecordFormatter getCommentFormatter() {
+		return new SimpleCommentRecordFormatter(getComments());
+	}
+
 	public Set<CommentRecord> getComments() {
+		if (comments == null) this.comments = new HashSet<>();
 		return comments;
 	}
 
 	public Set<BanRecord> getCreatedBans() {
+		if (createdBans == null) this.createdBans = new HashSet<>();
 		return createdBans;
 	}
 
 	public Set<CommentRecord> getCreatedComments() {
+		if (createdComments == null) this.createdComments = new HashSet<>();
 		return createdComments;
 	}
 

@@ -88,15 +88,22 @@ public class BanHammer extends JavaPlugin {
 		serverConfig.setClasses(getDatabaseClasses());
 		serverConfig.setName(this.getName());
 		serverConfig.setRegister(true);
+		serverConfig.setLoggingToJavaLogger(true);
+		serverConfig.setDebugSql(true);
 		final File file = new File(this.getDataFolder().getPath() + File.separatorChar + DATABASE_CONFIG_NAME);
 		final InputStream defaults = this.getResource(DATABASE_CONFIG_NAME);
 		final DatabaseConfiguration configuration = new SimpleDatabaseConfiguration(file, defaults, getName(), serverConfig);
 		final DatabaseLoader loader = DatabaseLoaderFactory.getDatabaseLoader(configuration);
 		loader.initalise();
-		CommentRecord.setRecordDatabase(loader.getEbeanServer());
-		PlayerRecord.setRecordDatabase(loader.getEbeanServer());
-		BanRecord.setRecordDatabase(loader.getEbeanServer());
+		database = loader.getEbeanServer();
+		CommentRecord.setRecordDatabase(database);
+		PlayerRecord.setRecordDatabase(database);
+		BanRecord.setRecordDatabase(database);
 		PlayerRecord.create(new UUID(0, 0), "CONSOLE");
+	}
+
+	@Override public EbeanServer getDatabase() {
+		return database;
 	}
 
 	private void registerCommands() {
@@ -107,6 +114,8 @@ public class BanHammer extends JavaPlugin {
 		commands.add(command);
 		getCommand("ban").setExecutor(new SimpleCommandInvoker(this, this.getServer().getScheduler(), command));
 		command = new CheckCommand(this, getServer().getScheduler());
+		commands.add(command);
+		command = new CommentCommand(this, getServer().getScheduler(), getServer());
 		commands.add(command);
 		command = new HistoryCommand(this, getServer().getScheduler());
 		commands.add(command);
@@ -122,7 +131,7 @@ public class BanHammer extends JavaPlugin {
 		command = new PardonCommand(this, getServer().getScheduler());
 		commands.add(command);
 		getCommand("pardon").setExecutor(new SimpleCommandInvoker(this, this.getServer().getScheduler(), command));
-		command = new PurgeCommand(this, getServer().getScheduler());
+		command = new PurgeCommand(this, getServer().getScheduler(), getDatabase());
 		commands.add(command);
 		command = new RecentCommand(this, getServer().getScheduler());
 		commands.add(command);

@@ -27,7 +27,7 @@ public class BanRecordTest {
 		CommentRecord comment = new CommentRecord();
 		comment.setCreator(creator);
 		comment.setComment("Test");
-		ban.setReason(comment);
+		ban.setComment(comment);
 		return ban;
 	}
 
@@ -38,7 +38,7 @@ public class BanRecordTest {
 		CommentRecord comment = new CommentRecord();
 		comment.setCreator(record.getCreator());
 		comment.setComment("Another comment");
-		record.setReason(comment);
+		record.setComment(comment);
 		record.save();
 		Assert.assertEquals("Ban reason has not been replaced", comment.getComment(), record.getReason().getComment());
 	}
