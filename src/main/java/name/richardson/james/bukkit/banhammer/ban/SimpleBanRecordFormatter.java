@@ -10,6 +10,7 @@ import name.richardson.james.bukkit.utilities.time.PreciseDurationTimeFormatter;
 import name.richardson.james.bukkit.utilities.time.TimeFormatter;
 
 import name.richardson.james.bukkit.banhammer.BanRecord;
+import name.richardson.james.bukkit.banhammer.CommentRecord;
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
 
@@ -28,7 +29,7 @@ public class SimpleBanRecordFormatter implements BanRecordFormatter {
 		messages.add(getReason());
 		messages.add(getLength());
 		if (ban.getType() != BanRecord.Type.PERMANENT && ban.getState() != BanRecord.State.PARDONED) messages.add(getExpiresAt());
-		if (ban.getState() == BanRecord.State.PARDONED) messages.add(MESSAGES.banPardonedBy(ban.getPardonReason().getCreator().getName()));
+		if (ban.getState() == BanRecord.State.PARDONED) messages.add(MESSAGES.banPardonedBy(ban.getComment(CommentRecord.Type.PARDON_REASON).getCreator().getName()));
 	}
 
 	@Override public String getExpiresAt() {
@@ -56,7 +57,7 @@ public class SimpleBanRecordFormatter implements BanRecordFormatter {
 	}
 
 	@Override public String getReason() {
-		return MESSAGES.banReason(ban.getReason().getComment());
+		return MESSAGES.banReason(ban.getComment(CommentRecord.Type.BAN_REASON).getComment());
 	}
 
 }

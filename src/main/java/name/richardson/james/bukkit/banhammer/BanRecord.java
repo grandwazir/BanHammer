@@ -47,16 +47,14 @@ public class BanRecord extends AbstractRecord {
 	}
 
 	public static BanRecord create(PlayerRecord creator, PlayerRecord target, String reason, Timestamp time) {
-		BanRecord record = new BanRecord();
-		record.setCreator(creator);
-		record.setPlayer(target);
-		CommentRecord comment = new CommentRecord();
-		comment.setCreator(creator);
-		comment.setComment(reason);
-		record.setReason(comment);
-		record.setState(State.NORMAL);
-		if (time != null) record.setExpiresAt(time);
-		return record;
+		BanRecord ban = new BanRecord();
+		ban.setCreator(creator);
+		ban.setPlayer(target);
+		ban.setState(State.NORMAL);
+		CommentRecord comment = CommentRecord.create(creator, ban, reason);
+		ban.setComment(comment);
+		if (time != null) ban.setExpiresAt(time);
+		return ban;
 	}
 
 	public static BanRecord create(PlayerRecord creator, PlayerRecord target, String reason) {
@@ -157,29 +155,20 @@ public class BanRecord extends AbstractRecord {
 		this.player = player;
 	}
 
-	public void setPardonReason(CommentRecord record) {
-		record.setType(CommentRecord.Type.PARDON_REASON);
-		CommentRecord reason = getPardonReason();
-		if (reason != null) getComments().remove(reason);
-		addComment(record);
-	}
-
-	public CommentRecord getPardonReason() {
-		CommentRecord record = null;
+	public CommentRecord getComment(CommentRecord.Type type) {
 		for (CommentRecord comment : getComments()) {
-			if (comment.getType() == CommentRecord.Type.PARDON_REASON) {
-				record = comment;
-				break;
-			}
+			if (comment.getType() == type) return comment;
 		}
-		return record;
+		return null;
 	}
 
-	public void setReason(CommentRecord record) {
-		record.setType(CommentRecord.Type.BAN_REASON);
-		CommentRecord reason = getReason();
-		if (reason != null) getComments().remove(reason);
-		addComment(record);
+	public void setComment(CommentRecord comment) {
+		if (comment.getType() != CommentRecord.Type.NORMAL) {
+			CommentRecord record = getComment(comment.getType());
+			getComments().remove(record);
+			record.delete();
+		}
+		getComments().add(comment);
 	}
 
 	public void setState(final State state) {

@@ -60,6 +60,10 @@ public class CommentRecord extends AbstractRecord {
 		return record;
 	}
 
+	public void delete() {
+		getDatabase().delete(this);
+	}
+
 	public BanRecord getBan() {
 		return ban;
 	}

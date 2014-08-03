@@ -1,6 +1,7 @@
 # Changelog for BanHammer (v3.0.0-SNAPSHOT)
 
-2014-08-02 21:57:14 +0100    added ability to record the name of the person pardoning a ban and their reason for doing so (James Richardson)  
+2014-08-02 22:00:42 +0100    add missing localisation key (James Richardson)  
+2014-08-02 22:00:37 +0100    added ability to record the name of the person pardoning a ban and their reason for doing so (James Richardson)  
 2014-08-02 21:42:32 +0100    playerNotifier now correctly uses the commandSender's name (James Richardson)  
 2014-08-02 21:40:44 +0100    events are now responsible for registering themselves (James Richardson)  
 2014-08-02 21:02:29 +0100    fix a number of issues with the audit command (James Richardson)  
