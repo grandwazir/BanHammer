@@ -20,7 +20,11 @@ package name.richardson.james.bukkit.banhammer;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -40,7 +44,11 @@ import name.richardson.james.bukkit.utilities.updater.BukkitDevPluginUpdater;
 import name.richardson.james.bukkit.utilities.updater.PluginUpdater;
 
 import name.richardson.james.bukkit.banhammer.ban.*;
-import name.richardson.james.bukkit.banhammer.player.*;
+import name.richardson.james.bukkit.banhammer.player.AuditCommand;
+import name.richardson.james.bukkit.banhammer.player.CheckCommand;
+import name.richardson.james.bukkit.banhammer.player.CommentCommand;
+import name.richardson.james.bukkit.banhammer.player.HistoryCommand;
+import name.richardson.james.bukkit.banhammer.player.KickCommand;
 
 public class BanHammer extends JavaPlugin {
 

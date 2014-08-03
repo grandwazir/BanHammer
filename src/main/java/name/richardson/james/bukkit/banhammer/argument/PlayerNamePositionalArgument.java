@@ -19,7 +19,11 @@ package name.richardson.james.bukkit.banhammer.argument;
 
 import org.bukkit.Server;
 
-import name.richardson.james.bukkit.utilities.command.argument.*;
+import name.richardson.james.bukkit.utilities.command.argument.Argument;
+import name.richardson.james.bukkit.utilities.command.argument.ArgumentMetadata;
+import name.richardson.james.bukkit.utilities.command.argument.PositionalArgument;
+import name.richardson.james.bukkit.utilities.command.argument.RequiredPositionalArgument;
+import name.richardson.james.bukkit.utilities.command.argument.SimpleArgumentMetadata;
 import name.richardson.james.bukkit.utilities.command.argument.suggester.OnlinePlayerSuggester;
 import name.richardson.james.bukkit.utilities.command.argument.suggester.Suggester;
 

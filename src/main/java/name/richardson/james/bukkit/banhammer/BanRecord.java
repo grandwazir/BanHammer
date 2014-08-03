@@ -17,7 +17,12 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.List;

@@ -17,9 +17,11 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.player;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
@@ -27,12 +29,12 @@ import name.richardson.james.bukkit.utilities.command.AbstractAsynchronousComman
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.BooleanMarshaller;
 
+import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
 import name.richardson.james.bukkit.banhammer.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.argument.AllOptionArgument;
 import name.richardson.james.bukkit.banhammer.argument.PlayerNamePositionalArgument;
-import name.richardson.james.bukkit.banhammer.BanRecord;
 
 public final class AuditCommand extends AbstractAsynchronousCommand {
 

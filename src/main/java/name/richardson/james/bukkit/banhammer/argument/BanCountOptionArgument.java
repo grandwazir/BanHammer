@@ -17,7 +17,11 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.argument;
 
-import name.richardson.james.bukkit.utilities.command.argument.*;
+import name.richardson.james.bukkit.utilities.command.argument.ArgumentMetadata;
+import name.richardson.james.bukkit.utilities.command.argument.IntegerMarshaller;
+import name.richardson.james.bukkit.utilities.command.argument.OptionArgument;
+import name.richardson.james.bukkit.utilities.command.argument.SimpleArgumentMetadata;
+import name.richardson.james.bukkit.utilities.command.argument.SimpleIntegerMarshaller;
 
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;

@@ -19,7 +19,11 @@ package name.richardson.james.bukkit.banhammer.ban;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
 
 import name.richardson.james.bukkit.banhammer.CommentRecord;
 import name.richardson.james.bukkit.banhammer.Messages;

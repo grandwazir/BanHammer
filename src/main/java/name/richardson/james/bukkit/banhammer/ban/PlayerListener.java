@@ -26,7 +26,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
 import com.avaje.ebean.EbeanServer;
-import com.sun.org.apache.regexp.internal.recompile;
 
 import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 import name.richardson.james.bukkit.utilities.time.ApproximateTimeFormatter;

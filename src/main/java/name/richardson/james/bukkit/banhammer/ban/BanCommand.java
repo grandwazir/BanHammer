@@ -17,8 +17,11 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer.ban;
 
-import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
@@ -27,10 +30,16 @@ import org.bukkit.scheduler.BukkitScheduler;
 import name.richardson.james.bukkit.utilities.command.AbstractAsynchronousCommand;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 
-import name.richardson.james.bukkit.banhammer.*;
-import name.richardson.james.bukkit.banhammer.argument.*;
 import name.richardson.james.bukkit.banhammer.BanRecord;
+import name.richardson.james.bukkit.banhammer.Messages;
+import name.richardson.james.bukkit.banhammer.MessagesFactory;
 import name.richardson.james.bukkit.banhammer.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.PluginConfiguration;
+import name.richardson.james.bukkit.banhammer.argument.PlayerNamePositionalArgument;
+import name.richardson.james.bukkit.banhammer.argument.ReasonPositionalArgument;
+import name.richardson.james.bukkit.banhammer.argument.SilentSwitchArgument;
+import name.richardson.james.bukkit.banhammer.argument.TimeMarshaller;
+import name.richardson.james.bukkit.banhammer.argument.TimeOptionArgument;
 import name.richardson.james.bukkit.banhammer.player.PlayerNotFoundException;
 
 public class BanCommand extends AbstractAsynchronousCommand {

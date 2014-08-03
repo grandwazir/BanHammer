@@ -17,8 +17,6 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.banhammer;
 
-import org.bukkit.command.CommandSender;
-
 import name.richardson.james.bukkit.utilities.localisation.ColouredMessage;
 import name.richardson.james.bukkit.utilities.localisation.MessageType;
 import name.richardson.james.bukkit.utilities.localisation.PluralCount;
