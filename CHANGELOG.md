@@ -1,5 +1,6 @@
 # Changelog for BanHammer (v3.0.0-SNAPSHOT)
 
+2014-08-03 15:17:26 +0100    remove debugging and return ability to ban players (James Richardson)  
 2014-08-03 15:05:19 +0100    add ability to choose to delete comments attached to players as well (James Richardson)  
 2014-08-03 15:02:05 +0100    change localisation key (James Richardson)  
 2014-08-03 14:53:27 +0100    rearrange command arguments (James Richardson)  
