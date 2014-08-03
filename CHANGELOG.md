@@ -1,5 +1,9 @@
 # Changelog for BanHammer (v3.0.0-SNAPSHOT)
 
+2014-08-03 14:53:27 +0100    rearrange command arguments (James Richardson)  
+2014-08-03 06:33:52 +0100    remove stray debugging notice (James Richardson)  
+2014-08-03 06:29:08 +0100    forgot to add this file (James Richardson)  
+2014-08-03 06:28:18 +0100    closes [#103](https://github.com/grandwazir/BanHammer/ban-hammer/issues/103) - comment command now added (James Richardson)  
 2014-08-03 04:27:39 +0100    fix NPE in PardonCommand (James Richardson)  
 2014-08-03 04:26:43 +0100    fix bugs with pardon command (James Richardson)  
 2014-08-02 22:00:42 +0100    add missing localisation key (James Richardson)  
