@@ -79,6 +79,12 @@ public interface Messages {
 
 	String commentCommandName();
 
+	String commentDeleteArgumentDescription();
+
+	String commentDeleteArgumentId();
+
+	String commentDeleteArgumentName();
+
 	@ColouredMessage(type = MessageType.NOTICE) String commentDetails(String date, String creatorName, String commentString);
 
 	@ColouredMessage(type = MessageType.HEADER) String commentTotal(@PluralCount int size);

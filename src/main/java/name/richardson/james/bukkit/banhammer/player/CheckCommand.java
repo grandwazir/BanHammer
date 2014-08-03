@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
@@ -33,7 +32,7 @@ import name.richardson.james.bukkit.utilities.command.argument.SimpleBooleanMars
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
 import name.richardson.james.bukkit.banhammer.PlayerRecord;
-import name.richardson.james.bukkit.banhammer.argument.CommentSwitchArgument;
+import name.richardson.james.bukkit.banhammer.argument.ShowCommentSwitchArgument;
 import name.richardson.james.bukkit.banhammer.argument.PlayerNamePositionalArgument;
 import name.richardson.james.bukkit.banhammer.BanRecord;
 import name.richardson.james.bukkit.banhammer.ban.BanRecordFormatter;
@@ -49,7 +48,7 @@ public class CheckCommand extends AbstractAsynchronousCommand {
 	public CheckCommand(final Plugin plugin, final BukkitScheduler scheduler) {
 		super(plugin, scheduler);
 		this.player = PlayerNamePositionalArgument.getInstance(0, true, PlayerRecord.Status.BANNED);
-		this.showComments = CommentSwitchArgument.getInstance();
+		this.showComments = ShowCommentSwitchArgument.getInstance();
 		addArgument(showComments);
 		addArgument(player);
 	}

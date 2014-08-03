@@ -27,8 +27,10 @@ import com.avaje.ebean.EbeanServer;
 
 import name.richardson.james.bukkit.utilities.command.AbstractAsynchronousCommand;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
+import name.richardson.james.bukkit.utilities.command.argument.BooleanMarshaller;
 
 import name.richardson.james.bukkit.banhammer.*;
+import name.richardson.james.bukkit.banhammer.argument.DeleteCommentSwitchArgument;
 import name.richardson.james.bukkit.banhammer.argument.PlayerNamePositionalArgument;
 
 public class PurgeCommand extends AbstractAsynchronousCommand {
@@ -38,12 +40,15 @@ public class PurgeCommand extends AbstractAsynchronousCommand {
 	private static final String PERMISSION_OWN = "banhammer.purge.own";
 	private static final String PERMISSION_OTHERS = "banhammer.purge.others";
 	private final EbeanServer database;
+	private final BooleanMarshaller delete;
 	private final Argument players;
 
 	public PurgeCommand(final Plugin plugin, final BukkitScheduler scheduler, final EbeanServer database) {
 		super(plugin, scheduler);
+		this.delete = DeleteCommentSwitchArgument.getInstance();
 		this.players = PlayerNamePositionalArgument.getInstance(0, true, PlayerRecord.Status.ANY);
 		this.database = database;
+		addArgument((Argument) delete);
 		addArgument(players);
 	}
 
@@ -75,11 +80,13 @@ public class PurgeCommand extends AbstractAsynchronousCommand {
 					if (!banCreatedBySender && !others) continue;
 					bans.add(ban);
 				}
-				for (CommentRecord comment : record.getComments()) {
-					final boolean banCreatedBySender = (comment.getCreator().getId().compareTo(getContext().getCommandSenderUUID()) == 0);
-					if (banCreatedBySender && !own) continue;
-					if (!banCreatedBySender && !others) continue;
-					comments.add(comment);
+				if (this.delete.isSet()) {
+					for (CommentRecord comment : record.getComments()) {
+						final boolean banCreatedBySender = (comment.getCreator().getId().compareTo(getContext().getCommandSenderUUID()) == 0);
+						if (banCreatedBySender && !own) continue;
+						if (!banCreatedBySender && !others) continue;
+						comments.add(comment);
+					}
 				}
 			} else {
 				String message = MESSAGES.playerNotBanned(playerName);
@@ -94,7 +101,6 @@ public class PurgeCommand extends AbstractAsynchronousCommand {
 
 	private void deleteBans(Collection<BanRecord> bans) {
 		for (BanRecord ban : bans) {
-			System.out.print(ban);
 			database.refresh(ban);
 			database.delete(ban);
 		}
@@ -102,7 +108,6 @@ public class PurgeCommand extends AbstractAsynchronousCommand {
 
 	private void deleteComments(Collection<CommentRecord> comments) {
 		for (CommentRecord comment : comments) {
-			System.out.print(comment);
 			database.refresh(comment);
 			database.delete(comment);
 		}

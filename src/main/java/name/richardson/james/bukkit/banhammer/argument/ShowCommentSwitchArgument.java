@@ -8,16 +8,16 @@ import name.richardson.james.bukkit.utilities.command.argument.SwitchArgument;
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
 
-public class CommentSwitchArgument extends SimpleBooleanMarshaller {
+public class ShowCommentSwitchArgument extends SimpleBooleanMarshaller {
 
 	public static final Messages MESSAGES = MessagesFactory.getMessages();
 
-	public static CommentSwitchArgument getInstance() {
+	public static ShowCommentSwitchArgument getInstance() {
 		ArgumentMetadata metadata = new SimpleArgumentMetadata(MESSAGES.commentArgumentId(), MESSAGES.commentArgumentName(), MESSAGES.commentArgumentDescription());
-		return new CommentSwitchArgument(metadata);
+		return new ShowCommentSwitchArgument(metadata);
 	}
 
-	private CommentSwitchArgument(final ArgumentMetadata metadata) {
+	private ShowCommentSwitchArgument(final ArgumentMetadata metadata) {
 		super(new SwitchArgument(metadata));
 	}
 
