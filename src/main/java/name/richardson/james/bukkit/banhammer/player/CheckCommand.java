@@ -50,8 +50,8 @@ public class CheckCommand extends AbstractAsynchronousCommand {
 		super(plugin, scheduler);
 		this.player = PlayerNamePositionalArgument.getInstance(0, true, PlayerRecord.Status.BANNED);
 		this.showComments = CommentSwitchArgument.getInstance();
-		addArgument(player);
 		addArgument(showComments);
+		addArgument(player);
 	}
 
 	@Override
