@@ -55,7 +55,6 @@ public class CommentCommand extends AbstractAsynchronousCommand {
 				player.addComment(comment);
 				player.save();
 				addMessage(MESSAGES.commentAttached(playerName));
-				System.out.print(comment);
 			}
 		} catch (PlayerNotFoundException e) {
 			addMessage(MESSAGES.playerLookupException());
