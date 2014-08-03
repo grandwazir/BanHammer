@@ -68,8 +68,8 @@ public class PardonCommand extends AbstractAsynchronousCommand {
 		final Collection<BanRecord> bans = new ArrayList<BanRecord>();
 		for (String playerName : players) {
 			final PlayerRecord playerRecord = PlayerRecord.find(playerName);
-			final BanRecord ban = playerRecord.getActiveBan();
-			if (ban != null) {
+			if (playerRecord != null && playerRecord.getActiveBan() != null) {
+				final BanRecord ban = playerRecord.getActiveBan();
 				if (isAuthorised(ban.getCreator().getId())) {
 					CommentRecord comment = CommentRecord.create(ban.getCreator(), ban, this.reason.getString());
 					ban.setState(BanRecord.State.PARDONED);
