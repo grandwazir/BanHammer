@@ -88,8 +88,6 @@ public class BanHammer extends JavaPlugin {
 		serverConfig.setClasses(getDatabaseClasses());
 		serverConfig.setName(this.getName());
 		serverConfig.setRegister(true);
-		serverConfig.setLoggingToJavaLogger(true);
-		serverConfig.setDebugSql(true);
 		final File file = new File(this.getDataFolder().getPath() + File.separatorChar + DATABASE_CONFIG_NAME);
 		final InputStream defaults = this.getResource(DATABASE_CONFIG_NAME);
 		final DatabaseConfiguration configuration = new SimpleDatabaseConfiguration(file, defaults, getName(), serverConfig);

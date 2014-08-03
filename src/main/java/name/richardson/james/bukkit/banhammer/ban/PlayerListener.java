@@ -9,6 +9,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
 import com.avaje.ebean.EbeanServer;
+import com.sun.org.apache.regexp.internal.recompile;
 
 import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 import name.richardson.james.bukkit.utilities.time.ApproximateTimeFormatter;
@@ -24,12 +25,10 @@ public final class PlayerListener extends AbstractListener {
 	private static final Messages MESSAGES = MessagesFactory.getColouredMessages();
 	private static final TimeFormatter TIME_FORMATTER = new ApproximateTimeFormatter();
 	private final EbeanServer database;
-	private final Plugin plugin;
 	private final Server server;
 
 	public PlayerListener(Plugin plugin, PluginManager pluginManager, Server server, EbeanServer database) {
 		super(plugin, pluginManager);
-		this.plugin = plugin;
 		this.server = server;
 		this.database = database;
 	}
@@ -51,7 +50,11 @@ public final class PlayerListener extends AbstractListener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerBanned(final BanHammerPlayerBannedEvent event) {
-		// TODO: Implement Sync task to ban people when banned from Async command
+		for (BanRecord ban : event.getRecords()) {
+			String message = getKickMessage(ban);
+			Player player = server.getPlayer(ban.getPlayer().getId());
+			if (player != null && player.isOnline()) player.kickPlayer(message);
+		}
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
