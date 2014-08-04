@@ -36,9 +36,6 @@ public final class TestDatabaseFactory {
 			when(configuration.getDataSourceConfig()).thenReturn(serverConfig.getDataSourceConfig());
 			SQLITE_DATABASE_LOADER = new SQLiteDatabaseLoader(configuration);
 			SQLITE_DATABASE_LOADER.initalise();
-			CommentRecord.setRecordDatabase(SQLITE_DATABASE_LOADER.getEbeanServer());
-			PlayerRecord.setRecordDatabase(SQLITE_DATABASE_LOADER.getEbeanServer());
-	    BanRecord.setRecordDatabase(SQLITE_DATABASE_LOADER.getEbeanServer());
 		}
 		return SQLITE_DATABASE_LOADER;
 	}
