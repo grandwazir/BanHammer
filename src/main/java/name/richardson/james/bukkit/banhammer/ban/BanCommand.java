@@ -41,7 +41,7 @@ import name.richardson.james.bukkit.banhammer.argument.ReasonPositionalArgument;
 import name.richardson.james.bukkit.banhammer.argument.SilentSwitchArgument;
 import name.richardson.james.bukkit.banhammer.argument.TimeMarshaller;
 import name.richardson.james.bukkit.banhammer.argument.TimeOptionArgument;
-import name.richardson.james.bukkit.banhammer.player.PlayerNotFoundException;
+import name.richardson.james.bukkit.banhammer.model.PlayerNotFoundException;
 
 public class BanCommand extends AbstractAsynchronousCommand {
 

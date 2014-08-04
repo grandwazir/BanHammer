@@ -31,6 +31,7 @@ import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.banhammer.BanHammerMessages;
 import name.richardson.james.bukkit.banhammer.BanHammerMessagesCreator;
 import name.richardson.james.bukkit.banhammer.model.CommentRecord;
+import name.richardson.james.bukkit.banhammer.model.PlayerNotFoundException;
 import name.richardson.james.bukkit.banhammer.model.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.argument.PlayerNamePositionalArgument;
 import name.richardson.james.bukkit.banhammer.argument.ReasonPositionalArgument;

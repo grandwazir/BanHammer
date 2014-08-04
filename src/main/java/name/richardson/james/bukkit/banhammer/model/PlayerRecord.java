@@ -31,8 +31,6 @@ import com.avaje.ebean.validation.NotNull;
 
 import name.richardson.james.bukkit.utilities.persistence.AbstractRecord;
 
-import name.richardson.james.bukkit.banhammer.player.PlayerNotFoundException;
-
 @Entity
 @Table(name = "banhammer_" + "players")
 public class PlayerRecord extends AbstractRecord {

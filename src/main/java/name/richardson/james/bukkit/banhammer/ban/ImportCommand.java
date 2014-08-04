@@ -35,7 +35,7 @@ import name.richardson.james.bukkit.banhammer.BanHammerMessagesCreator;
 import name.richardson.james.bukkit.banhammer.model.BanRecord;
 import name.richardson.james.bukkit.banhammer.model.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.argument.ReasonPositionalArgument;
-import name.richardson.james.bukkit.banhammer.player.PlayerNotFoundException;
+import name.richardson.james.bukkit.banhammer.model.PlayerNotFoundException;
 
 public class ImportCommand extends AbstractSynchronousCommand {
 
