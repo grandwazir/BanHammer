@@ -28,6 +28,7 @@ import org.bukkit.Server;
 
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.config.ServerConfig;
+import org.apache.commons.lang.Validate;
 
 import name.richardson.james.bukkit.utilities.persistence.DatabaseLoader;
 import name.richardson.james.bukkit.utilities.persistence.DatabaseLoaderFactory;
@@ -43,6 +44,9 @@ public final class BanHammerDatabase {
 
 	public static DatabaseConfiguration configure(Server server, File file, InputStream defaults)
 	throws IOException {
+		Validate.notNull(server);
+		Validate.notNull(file);
+		Validate.notNull(defaults);
 		ServerConfig serverConfig = new ServerConfig();
 		server.configureDbConfig(serverConfig);
 		serverConfig.setClasses(getDatabaseClasses());
@@ -64,6 +68,7 @@ public final class BanHammerDatabase {
 	}
 
 	public static void initialise(DatabaseConfiguration configuration) {
+		Validate.notNull(configuration);
 		DatabaseLoader loader = DatabaseLoaderFactory.getDatabaseLoader(configuration);
 		loader.initalise();
 		database = loader.getEbeanServer();

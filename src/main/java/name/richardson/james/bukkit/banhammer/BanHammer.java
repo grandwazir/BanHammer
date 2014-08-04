@@ -87,7 +87,7 @@ public class BanHammer extends JavaPlugin {
 
 	private void loadDatabase()
 	throws IOException {
-		File file = new File(getDataFolder().getPath() + File.separatorChar + DATABASE_CONFIG_NAME);
+		File file = new File(getDataFolder().getPath(), DATABASE_CONFIG_NAME);
 		InputStream defaults = getResource(DATABASE_CONFIG_NAME);
 		DatabaseConfiguration configuration = BanHammerDatabase.configure(getServer(), file, defaults);
 		BanHammerDatabase.initialise(configuration);
