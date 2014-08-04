@@ -22,7 +22,7 @@ import java.util.Collection;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.HandlerList;
 
-import name.richardson.james.bukkit.banhammer.BanRecord;
+import name.richardson.james.bukkit.banhammer.model.BanRecord;
 
 public final class BanHammerPlayerPardonedEvent extends AbstractBanHammerPlayerEvent {
 

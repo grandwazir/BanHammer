@@ -7,9 +7,9 @@ import name.richardson.james.bukkit.utilities.persistence.EntityPersistenceContr
 import name.richardson.james.bukkit.utilities.persistence.SQLiteDatabaseLoader;
 import name.richardson.james.bukkit.utilities.persistence.configuration.DatabaseConfiguration;
 
-import name.richardson.james.bukkit.banhammer.BanRecord;
-import name.richardson.james.bukkit.banhammer.CommentRecord;
-import name.richardson.james.bukkit.banhammer.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.model.BanRecord;
+import name.richardson.james.bukkit.banhammer.model.CommentRecord;
+import name.richardson.james.bukkit.banhammer.model.PlayerRecord;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

@@ -6,6 +6,10 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import name.richardson.james.bukkit.utilities.persistence.DatabaseLoader;
 
+import name.richardson.james.bukkit.banhammer.model.BanRecord;
+import name.richardson.james.bukkit.banhammer.model.CommentRecord;
+import name.richardson.james.bukkit.banhammer.model.PlayerRecord;
+
 @PrepareForTest(BanHammer.class)
 public class BanRecordTest {
 

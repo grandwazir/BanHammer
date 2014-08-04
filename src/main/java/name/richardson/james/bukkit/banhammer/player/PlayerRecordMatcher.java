@@ -24,7 +24,7 @@ import java.util.TreeSet;
 
 import name.richardson.james.bukkit.utilities.command.argument.suggester.Suggester;
 
-import name.richardson.james.bukkit.banhammer.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.model.PlayerRecord;
 
 public class PlayerRecordMatcher implements Suggester {
 

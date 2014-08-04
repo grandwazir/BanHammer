@@ -31,22 +31,20 @@ import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 import name.richardson.james.bukkit.utilities.time.ApproximateTimeFormatter;
 import name.richardson.james.bukkit.utilities.time.TimeFormatter;
 
-import name.richardson.james.bukkit.banhammer.BanRecord;
+import name.richardson.james.bukkit.banhammer.model.BanRecord;
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
-import name.richardson.james.bukkit.banhammer.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.model.PlayerRecord;
 
 public final class PlayerListener extends AbstractListener {
 
 	private static final Messages MESSAGES = MessagesFactory.getColouredMessages();
 	private static final TimeFormatter TIME_FORMATTER = new ApproximateTimeFormatter();
-	private final EbeanServer database;
 	private final Server server;
 
-	public PlayerListener(Plugin plugin, PluginManager pluginManager, Server server, EbeanServer database) {
+	public PlayerListener(Plugin plugin, PluginManager pluginManager, Server server) {
 		super(plugin, pluginManager);
 		this.server = server;
-		this.database = database;
 	}
 
 	protected static String getKickMessage(BanRecord record) {
@@ -87,7 +85,7 @@ public final class PlayerListener extends AbstractListener {
 			}
 			if (!playerRecord.getName().equalsIgnoreCase(player.getName())) {
 				playerRecord.setName(player.getName());
-				database.save(playerRecord);
+				playerRecord.save();
 			}
 		}
 	}

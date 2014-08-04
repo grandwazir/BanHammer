@@ -15,7 +15,7 @@
  You should have received a copy of the GNU General Public License along with
  BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.bukkit.banhammer;
+package name.richardson.james.bukkit.banhammer.model;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -40,8 +40,6 @@ import name.richardson.james.bukkit.banhammer.player.UUIDFetcher;
 @Entity
 @Table(name = "banhammer_" + "players")
 public class PlayerRecord extends AbstractRecord {
-
-	private static EbeanServer database;
 
 	public enum Status {
 		CREATOR,
@@ -132,12 +130,8 @@ public class PlayerRecord extends AbstractRecord {
 		return filterPlayers(records, status);
 	}
 
-	protected static EbeanServer getRecordDatabase() {
-		return PlayerRecord.database;
-	}
-
-	protected static void setRecordDatabase(final EbeanServer database) {
-		PlayerRecord.database = database;
+	private static EbeanServer getRecordDatabase() {
+		return BanHammerDatabase.getDatabase();
 	}
 
 	public void addComment(final CommentRecord comment) {

@@ -21,7 +21,7 @@ import java.util.Set;
 
 import org.bukkit.command.CommandSender;
 
-import name.richardson.james.bukkit.banhammer.BanRecord;
+import name.richardson.james.bukkit.banhammer.model.BanRecord;
 
 public interface BanHammerPlayerEvent {
 

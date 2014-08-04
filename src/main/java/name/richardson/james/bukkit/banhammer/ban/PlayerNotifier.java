@@ -26,8 +26,8 @@ import org.bukkit.plugin.PluginManager;
 import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 
 import name.richardson.james.bukkit.banhammer.BanHammer;
-import name.richardson.james.bukkit.banhammer.BanRecord;
-import name.richardson.james.bukkit.banhammer.CommentRecord;
+import name.richardson.james.bukkit.banhammer.model.BanRecord;
+import name.richardson.james.bukkit.banhammer.model.CommentRecord;
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
 

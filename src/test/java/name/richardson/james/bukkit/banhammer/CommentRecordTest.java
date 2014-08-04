@@ -2,6 +2,9 @@ package name.richardson.james.bukkit.banhammer;
 
 import name.richardson.james.bukkit.utilities.persistence.DatabaseLoader;
 
+import name.richardson.james.bukkit.banhammer.model.CommentRecord;
+import name.richardson.james.bukkit.banhammer.model.PlayerRecord;
+
 public class CommentRecordTest {
 
 	private static final DatabaseLoader loader = TestDatabaseFactory.getSQLiteDatabaseLoader();

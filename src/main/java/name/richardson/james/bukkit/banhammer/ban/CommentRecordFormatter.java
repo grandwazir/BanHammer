@@ -19,7 +19,7 @@ package name.richardson.james.bukkit.banhammer.ban;
 
 import java.util.Collection;
 
-import name.richardson.james.bukkit.banhammer.CommentRecord;
+import name.richardson.james.bukkit.banhammer.model.CommentRecord;
 
 /**
  * Created by james on 03/08/14.

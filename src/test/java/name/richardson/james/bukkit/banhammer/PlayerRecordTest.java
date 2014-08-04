@@ -7,6 +7,8 @@ import org.junit.Test;
 
 import name.richardson.james.bukkit.utilities.persistence.DatabaseLoader;
 
+import name.richardson.james.bukkit.banhammer.model.PlayerRecord;
+
 public class PlayerRecordTest {
 
 	private static final DatabaseLoader loader = TestDatabaseFactory.getSQLiteDatabaseLoader();

@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import name.richardson.james.bukkit.banhammer.CommentRecord;
+import name.richardson.james.bukkit.banhammer.model.CommentRecord;
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
 

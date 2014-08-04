@@ -26,8 +26,8 @@ import name.richardson.james.bukkit.utilities.time.ApproximateTimeFormatter;
 import name.richardson.james.bukkit.utilities.time.PreciseDurationTimeFormatter;
 import name.richardson.james.bukkit.utilities.time.TimeFormatter;
 
-import name.richardson.james.bukkit.banhammer.BanRecord;
-import name.richardson.james.bukkit.banhammer.CommentRecord;
+import name.richardson.james.bukkit.banhammer.model.BanRecord;
+import name.richardson.james.bukkit.banhammer.model.CommentRecord;
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
 

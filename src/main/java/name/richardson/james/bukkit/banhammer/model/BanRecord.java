@@ -15,7 +15,7 @@
  You should have received a copy of the GNU General Public License along with
  BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.bukkit.banhammer;
+package name.richardson.james.bukkit.banhammer.model;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -52,7 +52,6 @@ public class BanRecord extends AbstractRecord {
 		PERMANENT,
 		TEMPORARY
 	}
-	private static EbeanServer database;
 	@OneToMany(cascade = CascadeType.ALL, targetEntity = CommentRecord.class)
 	@JoinColumn(name = "ban_id", referencedColumnName = "id")
 	private Set<CommentRecord> comments;
@@ -87,7 +86,7 @@ public class BanRecord extends AbstractRecord {
 	}
 
 	protected static EbeanServer getRecordDatabase() {
-		return BanRecord.database;
+		return BanHammerDatabase.getDatabase();
 	}
 
 	public static List<BanRecord> list(int limit) {
@@ -98,10 +97,6 @@ public class BanRecord extends AbstractRecord {
 		return getRecordDatabase().find(BanRecord.class).orderBy().desc("created_at").findList();
 	}
 
-	protected static void setRecordDatabase(final EbeanServer database) {
-		BanRecord.database = database;
-	}
-
 	public void addComment(CommentRecord record) {
 		getComments().add(record);
 		record.setBan(this);
@@ -109,6 +104,19 @@ public class BanRecord extends AbstractRecord {
 
 	public void delete() {
 		getDatabase().delete(this);
+	}
+
+	public CommentRecord getComment(CommentRecord.Type type) {
+		for (CommentRecord comment : getComments()) {
+			if (comment.getType() == type) return comment;
+		}
+		return null;
+	}
+
+	public CommentRecordFormatter getCommentFormatter() {
+		CommentRecordFormatter formatter = new SimpleCommentRecordFormatter(getComments());
+		formatter.removeComments(CommentRecord.Type.BAN_REASON);
+		return formatter;
 	}
 
 	public Set<CommentRecord> getComments() {
@@ -126,12 +134,6 @@ public class BanRecord extends AbstractRecord {
 
 	public BanRecordFormatter getFormatter() {
 		return new SimpleBanRecordFormatter(this);
-	}
-
-	public CommentRecordFormatter getCommentFormatter() {
-		CommentRecordFormatter formatter = new SimpleCommentRecordFormatter(getComments());
-		formatter.removeComments(CommentRecord.Type.BAN_REASON);
-		return formatter;
 	}
 
 	public PlayerRecord getPlayer() {
@@ -162,37 +164,6 @@ public class BanRecord extends AbstractRecord {
 		return Type.PERMANENT;
 	}
 
-	public void setComments(final Set<CommentRecord> comments) {
-		this.comments = comments;
-	}
-
-	public void setCreator(final PlayerRecord creator) {
-		this.creator = creator;
-	}
-
-	public void setExpiryDuration(final long duration) {
-		Timestamp now = new Timestamp(System.currentTimeMillis());
-		Timestamp expiry = new Timestamp(now.getTime() + duration);
-		this.setCreatedAt(now);
-		this.expiresAt = expiry;
-	}
-
-	public void setExpiresAt(final Timestamp expiresAt) {
-		Timestamp now = new Timestamp(System.currentTimeMillis());
-		this.expiresAt = expiresAt;
-	}
-
-	public void setPlayer(final PlayerRecord player) {
-		this.player = player;
-	}
-
-	public CommentRecord getComment(CommentRecord.Type type) {
-		for (CommentRecord comment : getComments()) {
-			if (comment.getType() == type) return comment;
-		}
-		return null;
-	}
-
 	public void setComment(CommentRecord comment) {
 		if (comment.getType() != CommentRecord.Type.NORMAL) {
 			CommentRecord record = getComment(comment.getType());
@@ -202,6 +173,30 @@ public class BanRecord extends AbstractRecord {
 			}
 		}
 		getComments().add(comment);
+	}
+
+	public void setComments(final Set<CommentRecord> comments) {
+		this.comments = comments;
+	}
+
+	public void setCreator(final PlayerRecord creator) {
+		this.creator = creator;
+	}
+
+	public void setExpiresAt(final Timestamp expiresAt) {
+		Timestamp now = new Timestamp(System.currentTimeMillis());
+		this.expiresAt = expiresAt;
+	}
+
+	public void setExpiryDuration(final long duration) {
+		Timestamp now = new Timestamp(System.currentTimeMillis());
+		Timestamp expiry = new Timestamp(now.getTime() + duration);
+		this.setCreatedAt(now);
+		this.expiresAt = expiry;
+	}
+
+	public void setPlayer(final PlayerRecord player) {
+		this.player = player;
 	}
 
 	public void setState(final State state) {

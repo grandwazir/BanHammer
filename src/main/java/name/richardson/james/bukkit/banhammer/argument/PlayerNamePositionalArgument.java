@@ -29,7 +29,7 @@ import name.richardson.james.bukkit.utilities.command.argument.suggester.Suggest
 
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
-import name.richardson.james.bukkit.banhammer.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.model.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.player.PlayerRecordMatcher;
 
 public final class PlayerNamePositionalArgument {

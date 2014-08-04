@@ -24,26 +24,25 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.avaje.ebean.EbeanServer;
-import com.avaje.ebean.config.ServerConfig;
 
 import name.richardson.james.bukkit.utilities.command.Command;
 import name.richardson.james.bukkit.utilities.command.CommandInvoker;
 import name.richardson.james.bukkit.utilities.command.RootCommandInvoker;
 import name.richardson.james.bukkit.utilities.command.SimpleCommandInvoker;
-import name.richardson.james.bukkit.utilities.persistence.DatabaseLoader;
-import name.richardson.james.bukkit.utilities.persistence.DatabaseLoaderFactory;
 import name.richardson.james.bukkit.utilities.persistence.configuration.DatabaseConfiguration;
-import name.richardson.james.bukkit.utilities.persistence.configuration.SimpleDatabaseConfiguration;
 import name.richardson.james.bukkit.utilities.updater.BukkitDevPluginUpdater;
 import name.richardson.james.bukkit.utilities.updater.PluginUpdater;
 
 import name.richardson.james.bukkit.banhammer.ban.*;
+import name.richardson.james.bukkit.banhammer.model.BanHammerDatabase;
+import name.richardson.james.bukkit.banhammer.model.BanRecord;
+import name.richardson.james.bukkit.banhammer.model.CommentRecord;
+import name.richardson.james.bukkit.banhammer.model.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.player.AuditCommand;
 import name.richardson.james.bukkit.banhammer.player.CheckCommand;
 import name.richardson.james.bukkit.banhammer.player.CommentCommand;
@@ -56,17 +55,7 @@ public class BanHammer extends JavaPlugin {
 	public static final int PROJECT_ID = 31269;
 	private static final String CONFIG_NAME = "config.yml";
 	private static final String DATABASE_CONFIG_NAME = "database.yml";
-	private static EbeanServer database;
 	private BanHammerPluginConfiguration configuration;
-
-	@Override
-	public List<Class<?>> getDatabaseClasses() {
-		List<Class<?>> classes = new LinkedList<Class<?>>();
-		classes.add(BanRecord.class);
-		classes.add(PlayerRecord.class);
-		classes.add(CommentRecord.class);
-		return classes;
-	}
 
 	@Override
 	public void onEnable() {
@@ -92,25 +81,10 @@ public class BanHammer extends JavaPlugin {
 
 	private void loadDatabase()
 	throws IOException {
-		ServerConfig serverConfig = new ServerConfig();
-		getServer().configureDbConfig(serverConfig);
-		serverConfig.setClasses(getDatabaseClasses());
-		serverConfig.setName(getName());
-		serverConfig.setRegister(true);
 		File file = new File(getDataFolder().getPath() + File.separatorChar + DATABASE_CONFIG_NAME);
 		InputStream defaults = getResource(DATABASE_CONFIG_NAME);
-		DatabaseConfiguration configuration = new SimpleDatabaseConfiguration(file, defaults, getName(), serverConfig);
-		DatabaseLoader loader = DatabaseLoaderFactory.getDatabaseLoader(configuration);
-		loader.initalise();
-		database = loader.getEbeanServer();
-		CommentRecord.setRecordDatabase(database);
-		PlayerRecord.setRecordDatabase(database);
-		BanRecord.setRecordDatabase(database);
-		PlayerRecord.create(new UUID(0, 0), "CONSOLE");
-	}
-
-	@Override public EbeanServer getDatabase() {
-		return database;
+		DatabaseConfiguration configuration = BanHammerDatabase.configure(getServer(), file, defaults);
+		BanHammerDatabase.initialise(configuration);
 	}
 
 	private void registerCommands() {
@@ -149,7 +123,7 @@ public class BanHammer extends JavaPlugin {
 	}
 
 	private void registerListeners() {
-		new PlayerListener(this, getServer().getPluginManager(), getServer(), database);
+		new PlayerListener(this, getServer().getPluginManager(), getServer());
 		new PlayerNotifier(this, getServer().getPluginManager(), getServer());
 	}
 

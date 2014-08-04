@@ -26,7 +26,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Event;
 
-import name.richardson.james.bukkit.banhammer.BanRecord;
+import name.richardson.james.bukkit.banhammer.model.BanRecord;
 
 public abstract class AbstractBanHammerPlayerEvent extends Event implements BanHammerPlayerEvent {
 

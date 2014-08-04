@@ -32,11 +32,11 @@ import name.richardson.james.bukkit.utilities.command.AbstractAsynchronousComman
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.BooleanMarshaller;
 
-import name.richardson.james.bukkit.banhammer.BanRecord;
-import name.richardson.james.bukkit.banhammer.CommentRecord;
+import name.richardson.james.bukkit.banhammer.model.BanRecord;
+import name.richardson.james.bukkit.banhammer.model.CommentRecord;
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
-import name.richardson.james.bukkit.banhammer.PlayerRecord;
+import name.richardson.james.bukkit.banhammer.model.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.argument.DeleteCommentSwitchArgument;
 import name.richardson.james.bukkit.banhammer.argument.PlayerNamePositionalArgument;
 
@@ -46,7 +46,6 @@ public class PurgeCommand extends AbstractAsynchronousCommand {
 	private static final String PERMISSION_ALL = "banhammer.purge";
 	private static final String PERMISSION_OWN = "banhammer.purge.own";
 	private static final String PERMISSION_OTHERS = "banhammer.purge.others";
-	private final EbeanServer database;
 	private final BooleanMarshaller delete;
 	private final Argument players;
 
@@ -54,7 +53,6 @@ public class PurgeCommand extends AbstractAsynchronousCommand {
 		super(plugin, scheduler);
 		delete = DeleteCommentSwitchArgument.getInstance();
 		players = PlayerNamePositionalArgument.getInstance(0, true, PlayerRecord.Status.ANY);
-		this.database = database;
 		addArgument((Argument) delete);
 		addArgument(players);
 	}
@@ -108,15 +106,13 @@ public class PurgeCommand extends AbstractAsynchronousCommand {
 
 	private void deleteBans(Collection<BanRecord> bans) {
 		for (BanRecord ban : bans) {
-			database.refresh(ban);
-			database.delete(ban);
+			ban.delete();
 		}
 	}
 
 	private void deleteComments(Collection<CommentRecord> comments) {
 		for (CommentRecord comment : comments) {
-			database.refresh(comment);
-			database.delete(comment);
+			comment.delete();
 		}
 	}
 

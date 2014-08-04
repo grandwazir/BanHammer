@@ -15,7 +15,7 @@
  You should have received a copy of the GNU General Public License along with
  BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.bukkit.banhammer;
+package name.richardson.james.bukkit.banhammer.model;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -37,8 +37,6 @@ public class CommentRecord extends AbstractRecord {
 		BAN_REASON,
 		PARDON_REASON,
 	}
-
-	private static EbeanServer database;
 	@ManyToOne
 	@JoinColumn(name = "ban_id")
 	private BanRecord ban;
@@ -53,12 +51,8 @@ public class CommentRecord extends AbstractRecord {
 	private Type type;
 
 
-	protected static EbeanServer getRecordDatabase() {
-		return CommentRecord.database;
-	}
-
-	protected static void setRecordDatabase(final EbeanServer database) {
-		CommentRecord.database = database;
+	private static EbeanServer getRecordDatabase() {
+		return BanHammerDatabase.getDatabase();
 	}
 
 	public static CommentRecord create(PlayerRecord creator, PlayerRecord target, String comment) {

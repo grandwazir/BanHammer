@@ -24,13 +24,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
-import com.avaje.ebean.EbeanServer;
 import org.mcstats.Metrics;
 
 import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 
 import name.richardson.james.bukkit.banhammer.ban.BanHammerPlayerBannedEvent;
 import name.richardson.james.bukkit.banhammer.ban.BanHammerPlayerPardonedEvent;
+import name.richardson.james.bukkit.banhammer.model.BanRecord;
 
 public class MetricsListener extends AbstractListener {
 
