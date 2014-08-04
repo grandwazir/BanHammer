@@ -15,7 +15,7 @@
  You should have received a copy of the GNU General Public License along with
  BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.bukkit.banhammer.legacy;
+package name.richardson.james.bukkit.banhammer.model.legacy;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
