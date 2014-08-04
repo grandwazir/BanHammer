@@ -31,9 +31,7 @@ import com.avaje.ebean.validation.NotNull;
 
 import name.richardson.james.bukkit.utilities.persistence.AbstractRecord;
 
-import name.richardson.james.bukkit.banhammer.player.NameFetcher;
 import name.richardson.james.bukkit.banhammer.player.PlayerNotFoundException;
-import name.richardson.james.bukkit.banhammer.player.UUIDFetcher;
 
 @Entity
 @Table(name = "banhammer_" + "players")
