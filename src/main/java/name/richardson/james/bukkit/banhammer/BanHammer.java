@@ -35,6 +35,7 @@ import name.richardson.james.bukkit.utilities.updater.BukkitDevPluginUpdater;
 import name.richardson.james.bukkit.utilities.updater.PluginUpdater;
 
 import name.richardson.james.bukkit.banhammer.ban.*;
+import name.richardson.james.bukkit.banhammer.ban.event.MetricsListener;
 import name.richardson.james.bukkit.banhammer.ban.event.PlayerListener;
 import name.richardson.james.bukkit.banhammer.ban.event.PlayerNotifier;
 import name.richardson.james.bukkit.banhammer.model.BanHammerDatabase;
@@ -59,11 +60,21 @@ public class BanHammer extends JavaPlugin {
 			loadDatabase();
 			registerCommands();
 			registerListeners();
-			// TODO: Reimplement this - this.setupMetrics();
+			registerMetrics();
 			updatePlugin();
 		} catch (final IOException e) {
 			getLogger().severe("There was an error enabling the plugin!");
 			getLogger().severe(e.getMessage());
+		}
+	}
+
+	private void registerMetrics() {
+		if (configuration.isCollectingStats()) {
+			try {
+				new MetricsListener(this, this.getServer().getPluginManager());
+			} catch (IOException e) {
+				getLogger().warning("Unable to initialise plugin metrics.");
+			}
 		}
 	}
 
