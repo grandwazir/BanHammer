@@ -29,9 +29,9 @@ import name.richardson.james.bukkit.utilities.command.AbstractAsynchronousComman
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.SimpleBooleanMarshaller;
 
+import name.richardson.james.bukkit.banhammer.BanHammerMessages;
+import name.richardson.james.bukkit.banhammer.BanHammerMessagesCreator;
 import name.richardson.james.bukkit.banhammer.model.BanRecord;
-import name.richardson.james.bukkit.banhammer.Messages;
-import name.richardson.james.bukkit.banhammer.MessagesFactory;
 import name.richardson.james.bukkit.banhammer.model.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.argument.PlayerNamePositionalArgument;
 import name.richardson.james.bukkit.banhammer.argument.ShowCommentSwitchArgument;
@@ -40,7 +40,7 @@ import name.richardson.james.bukkit.banhammer.model.CommentRecordFormatter;
 
 public class CheckCommand extends AbstractAsynchronousCommand {
 
-	public static final Messages MESSAGES = MessagesFactory.getColouredMessages();
+	public static final BanHammerMessages MESSAGES = BanHammerMessagesCreator.getColouredMessages();
 	private static final String PERMISSION_ALL = "banhammer.check";
 	private final Argument player;
 	private final SimpleBooleanMarshaller showComments;

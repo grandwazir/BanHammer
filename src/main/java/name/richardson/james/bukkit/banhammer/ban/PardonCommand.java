@@ -30,11 +30,11 @@ import org.bukkit.scheduler.BukkitScheduler;
 import name.richardson.james.bukkit.utilities.command.AbstractAsynchronousCommand;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 
+import name.richardson.james.bukkit.banhammer.BanHammerMessages;
+import name.richardson.james.bukkit.banhammer.BanHammerMessagesCreator;
 import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
 import name.richardson.james.bukkit.banhammer.model.BanRecord;
 import name.richardson.james.bukkit.banhammer.model.CommentRecord;
-import name.richardson.james.bukkit.banhammer.Messages;
-import name.richardson.james.bukkit.banhammer.MessagesFactory;
 import name.richardson.james.bukkit.banhammer.model.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.argument.PlayerNamePositionalArgument;
 import name.richardson.james.bukkit.banhammer.argument.ReasonPositionalArgument;
@@ -45,7 +45,7 @@ public class PardonCommand extends AbstractAsynchronousCommand {
 	public static final String PERMISSION_ALL = "banhammer.pardon";
 	public static final String PERMISSION_OWN = "banhammer.pardon.own";
 	public static final String PERMISSION_OTHERS = "banhammer.pardon.others";
-	private static final Messages MESSAGES = MessagesFactory.getColouredMessages();
+	private static final BanHammerMessages MESSAGES = BanHammerMessagesCreator.getColouredMessages();
 	private final Argument players;
 	private final Argument reason;
 	private final SilentSwitchArgument silent;

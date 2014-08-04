@@ -21,13 +21,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import name.richardson.james.bukkit.banhammer.BanHammerMessages;
+import name.richardson.james.bukkit.banhammer.BanHammerMessagesCreator;
 import name.richardson.james.bukkit.banhammer.model.BanRecord;
-import name.richardson.james.bukkit.banhammer.Messages;
-import name.richardson.james.bukkit.banhammer.MessagesFactory;
 
 public final class AuditCommandSummary {
 
-	private static final Messages MESSAGES = MessagesFactory.getColouredMessages();
+	private static final BanHammerMessages MESSAGES = BanHammerMessagesCreator.getColouredMessages();
 	private final Collection<BanRecord> bans;
 	private int expiredBans;
 	private int normalBans;

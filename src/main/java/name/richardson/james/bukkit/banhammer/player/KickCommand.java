@@ -30,15 +30,15 @@ import name.richardson.james.bukkit.utilities.command.AbstractSynchronousCommand
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.PlayerMarshaller;
 
-import name.richardson.james.bukkit.banhammer.Messages;
-import name.richardson.james.bukkit.banhammer.MessagesFactory;
+import name.richardson.james.bukkit.banhammer.BanHammerMessages;
+import name.richardson.james.bukkit.banhammer.BanHammerMessagesCreator;
 import name.richardson.james.bukkit.banhammer.argument.PlayerPositionalArgument;
 import name.richardson.james.bukkit.banhammer.argument.ReasonPositionalArgument;
 import name.richardson.james.bukkit.banhammer.argument.SilentSwitchArgument;
 
 public class KickCommand extends AbstractSynchronousCommand {
 
-	private static final Messages MESSAGES = MessagesFactory.getColouredMessages();
+	private static final BanHammerMessages MESSAGES = BanHammerMessagesCreator.getColouredMessages();
 	public static final String PERMISSION_ALL = "banhammer.kick";
 
 	private final PlayerMarshaller player;

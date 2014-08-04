@@ -22,12 +22,12 @@ import name.richardson.james.bukkit.utilities.command.argument.ArgumentMetadata;
 import name.richardson.james.bukkit.utilities.command.argument.OptionArgument;
 import name.richardson.james.bukkit.utilities.command.argument.SimpleArgumentMetadata;
 
-import name.richardson.james.bukkit.banhammer.Messages;
-import name.richardson.james.bukkit.banhammer.MessagesFactory;
+import name.richardson.james.bukkit.banhammer.BanHammerMessages;
+import name.richardson.james.bukkit.banhammer.BanHammerMessagesCreator;
 
 public final class TimeOptionArgument {
 
-	public static final Messages MESSAGES = MessagesFactory.getMessages();
+	public static final BanHammerMessages MESSAGES = BanHammerMessagesCreator.getMessages();
 
 	public static Argument getInstance() {
 		ArgumentMetadata metadata = new SimpleArgumentMetadata(MESSAGES.timeArgumentId(), MESSAGES.timeArgumentName(), MESSAGES.timeArgumentDescription());

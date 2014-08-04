@@ -29,13 +29,13 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 import name.richardson.james.bukkit.utilities.command.AbstractSynchronousCommand;
 
-import name.richardson.james.bukkit.banhammer.Messages;
-import name.richardson.james.bukkit.banhammer.MessagesFactory;
+import name.richardson.james.bukkit.banhammer.BanHammerMessages;
+import name.richardson.james.bukkit.banhammer.BanHammerMessagesCreator;
 import name.richardson.james.bukkit.banhammer.model.PlayerRecord;
 
 public class ExportCommand extends AbstractSynchronousCommand {
 
-	private static final Messages MESSAGES = MessagesFactory.getColouredMessages();
+	private static final BanHammerMessages MESSAGES = BanHammerMessagesCreator.getColouredMessages();
 	public static final String PERMISSION_ALL = "banhammer.export";
 	private final Server server;
 

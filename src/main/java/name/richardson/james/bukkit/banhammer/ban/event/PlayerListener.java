@@ -29,14 +29,14 @@ import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 import name.richardson.james.bukkit.utilities.time.ApproximateTimeFormatter;
 import name.richardson.james.bukkit.utilities.time.TimeFormatter;
 
+import name.richardson.james.bukkit.banhammer.BanHammerMessages;
+import name.richardson.james.bukkit.banhammer.BanHammerMessagesCreator;
 import name.richardson.james.bukkit.banhammer.model.BanRecord;
-import name.richardson.james.bukkit.banhammer.Messages;
-import name.richardson.james.bukkit.banhammer.MessagesFactory;
 import name.richardson.james.bukkit.banhammer.model.PlayerRecord;
 
 public final class PlayerListener extends AbstractListener {
 
-	private static final Messages MESSAGES = MessagesFactory.getColouredMessages();
+	private static final BanHammerMessages MESSAGES = BanHammerMessagesCreator.getColouredMessages();
 	private static final TimeFormatter TIME_FORMATTER = new ApproximateTimeFormatter();
 	private final Server server;
 

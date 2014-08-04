@@ -29,10 +29,10 @@ import org.bukkit.scheduler.BukkitScheduler;
 import name.richardson.james.bukkit.utilities.command.AbstractSynchronousCommand;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 
+import name.richardson.james.bukkit.banhammer.BanHammerMessages;
+import name.richardson.james.bukkit.banhammer.BanHammerMessagesCreator;
 import name.richardson.james.bukkit.banhammer.BanHammerPluginConfiguration;
 import name.richardson.james.bukkit.banhammer.model.BanRecord;
-import name.richardson.james.bukkit.banhammer.Messages;
-import name.richardson.james.bukkit.banhammer.MessagesFactory;
 import name.richardson.james.bukkit.banhammer.model.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.argument.PlayerNamePositionalArgument;
 
@@ -41,7 +41,7 @@ public class UndoCommand extends AbstractSynchronousCommand {
 	public static final String PERMISSION_OWN = "banhammer.undo.own";
 	public static final String PERMISSION_OTHERS = "banhammer.undo.others";
 	public static final String PERMISSION_UNRESTRICTED = "banhammer.undo.unrestricted";
-	private static final Messages MESSAGES = MessagesFactory.getColouredMessages();
+	private static final BanHammerMessages MESSAGES = BanHammerMessagesCreator.getColouredMessages();
 	private final BanHammerPluginConfiguration configuration;
 	private final Argument players;
 

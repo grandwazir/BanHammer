@@ -29,15 +29,15 @@ import name.richardson.james.bukkit.utilities.command.AbstractAsynchronousComman
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.IntegerMarshaller;
 
+import name.richardson.james.bukkit.banhammer.BanHammerMessages;
+import name.richardson.james.bukkit.banhammer.BanHammerMessagesCreator;
 import name.richardson.james.bukkit.banhammer.model.BanRecord;
-import name.richardson.james.bukkit.banhammer.Messages;
-import name.richardson.james.bukkit.banhammer.MessagesFactory;
 import name.richardson.james.bukkit.banhammer.argument.BanCountOptionArgument;
 import name.richardson.james.bukkit.banhammer.model.BanRecordFormatter;
 
 public class RecentCommand extends AbstractAsynchronousCommand {
 
-	private static final Messages MESSAGES = MessagesFactory.getColouredMessages();
+	private static final BanHammerMessages MESSAGES = BanHammerMessagesCreator.getColouredMessages();
 	private static final int DEFAULT_LIMIT = 5;
 	private static final String PERMISSION_ALL = "banhammer.recent";
 	private IntegerMarshaller count;

@@ -1,7 +1,7 @@
 /*******************************************************************************
  Copyright (c) 2014 James Richardson.
 
- Messages.java is part of BanHammer.
+ BanHammerMessages.java is part of BanHammer.
 
  BanHammer is free software: you can redistribute it and/or modify it
  under the terms of the GNU General Public License as published by the Free
@@ -21,7 +21,7 @@ import name.richardson.james.bukkit.utilities.localisation.ColouredMessage;
 import name.richardson.james.bukkit.utilities.localisation.MessageType;
 import name.richardson.james.bukkit.utilities.localisation.PluralCount;
 
-public interface Messages {
+public interface BanHammerMessages {
 
 	String allOptionArgumentDescription();
 

@@ -32,17 +32,17 @@ import name.richardson.james.bukkit.utilities.command.AbstractAsynchronousComman
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 import name.richardson.james.bukkit.utilities.command.argument.BooleanMarshaller;
 
+import name.richardson.james.bukkit.banhammer.BanHammerMessages;
+import name.richardson.james.bukkit.banhammer.BanHammerMessagesCreator;
 import name.richardson.james.bukkit.banhammer.model.BanRecord;
 import name.richardson.james.bukkit.banhammer.model.CommentRecord;
-import name.richardson.james.bukkit.banhammer.Messages;
-import name.richardson.james.bukkit.banhammer.MessagesFactory;
 import name.richardson.james.bukkit.banhammer.model.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.argument.DeleteCommentSwitchArgument;
 import name.richardson.james.bukkit.banhammer.argument.PlayerNamePositionalArgument;
 
 public class PurgeCommand extends AbstractAsynchronousCommand {
 
-	private static final Messages MESSAGES = MessagesFactory.getColouredMessages();
+	private static final BanHammerMessages MESSAGES = BanHammerMessagesCreator.getColouredMessages();
 	private static final String PERMISSION_ALL = "banhammer.purge";
 	private static final String PERMISSION_OWN = "banhammer.purge.own";
 	private static final String PERMISSION_OTHERS = "banhammer.purge.others";

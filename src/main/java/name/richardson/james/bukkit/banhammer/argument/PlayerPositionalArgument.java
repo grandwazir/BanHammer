@@ -30,12 +30,12 @@ import name.richardson.james.bukkit.utilities.command.argument.SimplePlayerMarsh
 import name.richardson.james.bukkit.utilities.command.argument.suggester.OnlinePlayerSuggester;
 import name.richardson.james.bukkit.utilities.command.argument.suggester.Suggester;
 
-import name.richardson.james.bukkit.banhammer.Messages;
-import name.richardson.james.bukkit.banhammer.MessagesFactory;
+import name.richardson.james.bukkit.banhammer.BanHammerMessages;
+import name.richardson.james.bukkit.banhammer.BanHammerMessagesCreator;
 
 public final class PlayerPositionalArgument {
 
-	public static final Messages MESSAGES = MessagesFactory.getMessages();
+	public static final BanHammerMessages MESSAGES = BanHammerMessagesCreator.getMessages();
 
 	public static PlayerMarshaller getInstance(Server server, int position, boolean required) {
 		ArgumentMetadata metadata = new SimpleArgumentMetadata(MESSAGES.playerArgumentId(), MESSAGES.playerArgumentName(), MESSAGES.playerArgumentDescription(), MESSAGES.playerArgumentInvalid());

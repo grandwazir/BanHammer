@@ -23,12 +23,12 @@ import name.richardson.james.bukkit.utilities.command.argument.JoinedPositionalA
 import name.richardson.james.bukkit.utilities.command.argument.RequiredJoinedPositionalArgument;
 import name.richardson.james.bukkit.utilities.command.argument.SimpleArgumentMetadata;
 
-import name.richardson.james.bukkit.banhammer.Messages;
-import name.richardson.james.bukkit.banhammer.MessagesFactory;
+import name.richardson.james.bukkit.banhammer.BanHammerMessages;
+import name.richardson.james.bukkit.banhammer.BanHammerMessagesCreator;
 
 public final class ReasonPositionalArgument {
 
-	public static final Messages MESSAGES = MessagesFactory.getMessages();
+	public static final BanHammerMessages MESSAGES = BanHammerMessagesCreator.getMessages();
 
 	public static Argument getInstance(int position, boolean required) {
 		ArgumentMetadata metadata = new SimpleArgumentMetadata(MESSAGES.reasonArgumentId(), MESSAGES.reasonArgumentName(), MESSAGES.reasonArgumentDescription(), MESSAGES.reasonArgumentInvalid());

@@ -28,16 +28,16 @@ import org.bukkit.scheduler.BukkitScheduler;
 import name.richardson.james.bukkit.utilities.command.AbstractAsynchronousCommand;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 
+import name.richardson.james.bukkit.banhammer.BanHammerMessages;
+import name.richardson.james.bukkit.banhammer.BanHammerMessagesCreator;
 import name.richardson.james.bukkit.banhammer.model.CommentRecord;
-import name.richardson.james.bukkit.banhammer.Messages;
-import name.richardson.james.bukkit.banhammer.MessagesFactory;
 import name.richardson.james.bukkit.banhammer.model.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.argument.PlayerNamePositionalArgument;
 import name.richardson.james.bukkit.banhammer.argument.ReasonPositionalArgument;
 
 public class CommentCommand extends AbstractAsynchronousCommand {
 
-	public static final Messages MESSAGES = MessagesFactory.getColouredMessages();
+	public static final BanHammerMessages MESSAGES = BanHammerMessagesCreator.getColouredMessages();
 	private static final String PERMISSION_ALL = "banhammer.comment";
 	private final Argument playerName;
 	private final Argument reason;

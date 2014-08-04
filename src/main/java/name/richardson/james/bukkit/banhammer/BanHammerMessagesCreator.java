@@ -1,7 +1,7 @@
 /*******************************************************************************
  Copyright (c) 2014 James Richardson.
 
- MessagesFactory.java is part of BanHammer.
+ BanHammerMessagesCreator.java is part of BanHammer.
 
  BanHammer is free software: you can redistribute it and/or modify it
  under the terms of the GNU General Public License as published by the Free
@@ -23,19 +23,19 @@ import java.util.ResourceBundle;
 import name.richardson.james.bukkit.utilities.localisation.BasicMessageHandler;
 import name.richardson.james.bukkit.utilities.localisation.ColouredMessageHandler;
 
-public final class MessagesFactory {
+public final class BanHammerMessagesCreator {
 
 	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("banhammer");
-	private static final Messages PLAIN_MESSAGES = (Messages) Proxy.newProxyInstance(Messages.class.getClassLoader(), new Class[]{Messages.class}, new BasicMessageHandler(RESOURCE_BUNDLE));
-	private static final Messages COLOURED_MESSAGES = (Messages) Proxy.newProxyInstance(Messages.class.getClassLoader(), new Class[]{Messages.class}, new ColouredMessageHandler(RESOURCE_BUNDLE));
+	private static final BanHammerMessages PLAIN_MESSAGES = (BanHammerMessages) Proxy.newProxyInstance(BanHammerMessages.class.getClassLoader(), new Class[]{BanHammerMessages.class}, new BasicMessageHandler(RESOURCE_BUNDLE));
+	private static final BanHammerMessages COLOURED_MESSAGES = (BanHammerMessages) Proxy.newProxyInstance(BanHammerMessages.class.getClassLoader(), new Class[]{BanHammerMessages.class}, new ColouredMessageHandler(RESOURCE_BUNDLE));
 
-	private MessagesFactory() {}
+	private BanHammerMessagesCreator() {}
 
-	public static Messages getColouredMessages() {
+	public static BanHammerMessages getColouredMessages() {
 		return COLOURED_MESSAGES;
 	}
 
-	public static Messages getMessages() {
+	public static BanHammerMessages getMessages() {
 		return PLAIN_MESSAGES;
 	}
 }

@@ -24,12 +24,12 @@ import name.richardson.james.bukkit.utilities.command.argument.SimpleArgumentMet
 import name.richardson.james.bukkit.utilities.command.argument.SimpleBooleanMarshaller;
 import name.richardson.james.bukkit.utilities.command.argument.SwitchArgument;
 
-import name.richardson.james.bukkit.banhammer.Messages;
-import name.richardson.james.bukkit.banhammer.MessagesFactory;
+import name.richardson.james.bukkit.banhammer.BanHammerMessages;
+import name.richardson.james.bukkit.banhammer.BanHammerMessagesCreator;
 
 public final class AllOptionArgument {
 
-	public static final Messages MESSAGES = MessagesFactory.getMessages();
+	public static final BanHammerMessages MESSAGES = BanHammerMessagesCreator.getMessages();
 
 	public static BooleanMarshaller getInstance() {
 		ArgumentMetadata metadata = new SimpleArgumentMetadata(MESSAGES.allOptionArgumentId(), MESSAGES.allOptionArgumentName(), MESSAGES.allOptionArgumentDescription());

@@ -25,13 +25,13 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import name.richardson.james.bukkit.banhammer.Messages;
-import name.richardson.james.bukkit.banhammer.MessagesFactory;
+import name.richardson.james.bukkit.banhammer.BanHammerMessages;
+import name.richardson.james.bukkit.banhammer.BanHammerMessagesCreator;
 
 public class SimpleCommentRecordFormatter implements CommentRecordFormatter {
 
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MMM d");
-	public static final Messages MESSAGES = MessagesFactory.getColouredMessages();
+	public static final BanHammerMessages MESSAGES = BanHammerMessagesCreator.getColouredMessages();
 
 	private final Map<Long, CommentRecord> comments;
 

@@ -26,12 +26,12 @@ import name.richardson.james.bukkit.utilities.time.ApproximateTimeFormatter;
 import name.richardson.james.bukkit.utilities.time.PreciseDurationTimeFormatter;
 import name.richardson.james.bukkit.utilities.time.TimeFormatter;
 
-import name.richardson.james.bukkit.banhammer.Messages;
-import name.richardson.james.bukkit.banhammer.MessagesFactory;
+import name.richardson.james.bukkit.banhammer.BanHammerMessages;
+import name.richardson.james.bukkit.banhammer.BanHammerMessagesCreator;
 
 public class SimpleBanRecordFormatter implements BanRecordFormatter {
 
-	private static final Messages MESSAGES = MessagesFactory.getColouredMessages();
+	private static final BanHammerMessages MESSAGES = BanHammerMessagesCreator.getColouredMessages();
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("d MMM yyyy HH:mm (z)");
 	private final BanRecord ban;
 	private final TimeFormatter durationFormatter = new PreciseDurationTimeFormatter();

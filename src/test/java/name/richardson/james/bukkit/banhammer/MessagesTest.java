@@ -37,7 +37,7 @@ public class MessagesTest {
 
 	@Test public void checkAllMessagesHaveBeenTranslated() throws Exception {
 		Collection<String> untranslatedKeys = new ArrayList<>();
-		Iterable<Method> interfaceMethods = new HashSet<>(Arrays.asList(Messages.class.getMethods()));
+		Iterable<Method> interfaceMethods = new HashSet<>(Arrays.asList(BanHammerMessages.class.getMethods()));
 		for (Method method : interfaceMethods) {
 			String key = methodNameToBundleKey(method.getName());
 			if (!RESOURCE_BUNDLE.containsKey(key)) untranslatedKeys.add(key);

@@ -30,14 +30,14 @@ import name.richardson.james.bukkit.utilities.command.AbstractAsynchronousComman
 import name.richardson.james.bukkit.utilities.time.PreciseDurationTimeFormatter;
 import name.richardson.james.bukkit.utilities.time.TimeFormatter;
 
+import name.richardson.james.bukkit.banhammer.BanHammerMessages;
+import name.richardson.james.bukkit.banhammer.BanHammerMessagesCreator;
 import name.richardson.james.bukkit.banhammer.BanHammerPluginConfiguration;
-import name.richardson.james.bukkit.banhammer.Messages;
-import name.richardson.james.bukkit.banhammer.MessagesFactory;
 
 public class LimitsCommand extends AbstractAsynchronousCommand {
 
 	public static final String PERMISSION_ALL = "banhammer.limits";
-	private static final Messages MESSAGES = MessagesFactory.getColouredMessages();
+	private static final BanHammerMessages MESSAGES = BanHammerMessagesCreator.getColouredMessages();
 	private final BanHammerPluginConfiguration configuration;
 	private final TimeFormatter timeFormatter = new PreciseDurationTimeFormatter();
 
