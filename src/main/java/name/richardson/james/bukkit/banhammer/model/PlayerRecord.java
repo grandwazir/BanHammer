@@ -31,8 +31,6 @@ import com.avaje.ebean.validation.NotNull;
 
 import name.richardson.james.bukkit.utilities.persistence.AbstractRecord;
 
-import name.richardson.james.bukkit.banhammer.ban.CommentRecordFormatter;
-import name.richardson.james.bukkit.banhammer.ban.SimpleCommentRecordFormatter;
 import name.richardson.james.bukkit.banhammer.player.NameFetcher;
 import name.richardson.james.bukkit.banhammer.player.PlayerNotFoundException;
 import name.richardson.james.bukkit.banhammer.player.UUIDFetcher;

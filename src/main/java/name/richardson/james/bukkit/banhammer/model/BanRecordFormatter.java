@@ -1,7 +1,7 @@
 /*******************************************************************************
  Copyright (c) 2014 James Richardson.
 
- CommentRecordFormatter.java is part of BanHammer.
+ BanRecordFormatter.java is part of BanHammer.
 
  BanHammer is free software: you can redistribute it and/or modify it
  under the terms of the GNU General Public License as published by the Free
@@ -15,18 +15,19 @@
  You should have received a copy of the GNU General Public License along with
  BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.bukkit.banhammer.ban;
+package name.richardson.james.bukkit.banhammer.model;
 
-import java.util.Collection;
+import java.util.List;
 
-import name.richardson.james.bukkit.banhammer.model.CommentRecord;
+public interface BanRecordFormatter {
 
-/**
- * Created by james on 03/08/14.
- */
-public interface CommentRecordFormatter {
+	String getExpiresAt();
 
-	Collection<String> getMessages();
+	String getHeader();
 
-	void removeComments(CommentRecord.Type type);
+	String getLength();
+
+	List<String> getMessages();
+
+	String getReason();
 }

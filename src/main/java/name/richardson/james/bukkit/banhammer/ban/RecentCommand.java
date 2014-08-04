@@ -33,6 +33,7 @@ import name.richardson.james.bukkit.banhammer.model.BanRecord;
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;
 import name.richardson.james.bukkit.banhammer.argument.BanCountOptionArgument;
+import name.richardson.james.bukkit.banhammer.model.BanRecordFormatter;
 
 public class RecentCommand extends AbstractAsynchronousCommand {
 
