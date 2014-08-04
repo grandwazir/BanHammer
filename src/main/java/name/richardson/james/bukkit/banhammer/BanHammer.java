@@ -21,14 +21,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import com.avaje.ebean.EbeanServer;
 
 import name.richardson.james.bukkit.utilities.command.Command;
 import name.richardson.james.bukkit.utilities.command.CommandInvoker;
@@ -39,10 +35,9 @@ import name.richardson.james.bukkit.utilities.updater.BukkitDevPluginUpdater;
 import name.richardson.james.bukkit.utilities.updater.PluginUpdater;
 
 import name.richardson.james.bukkit.banhammer.ban.*;
+import name.richardson.james.bukkit.banhammer.ban.event.PlayerListener;
+import name.richardson.james.bukkit.banhammer.ban.event.PlayerNotifier;
 import name.richardson.james.bukkit.banhammer.model.BanHammerDatabase;
-import name.richardson.james.bukkit.banhammer.model.BanRecord;
-import name.richardson.james.bukkit.banhammer.model.CommentRecord;
-import name.richardson.james.bukkit.banhammer.model.PlayerRecord;
 import name.richardson.james.bukkit.banhammer.player.AuditCommand;
 import name.richardson.james.bukkit.banhammer.player.CheckCommand;
 import name.richardson.james.bukkit.banhammer.player.CommentCommand;

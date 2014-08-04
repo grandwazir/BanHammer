@@ -28,8 +28,8 @@ import org.mcstats.Metrics;
 
 import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 
-import name.richardson.james.bukkit.banhammer.ban.BanHammerPlayerBannedEvent;
-import name.richardson.james.bukkit.banhammer.ban.BanHammerPlayerPardonedEvent;
+import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerBannedEvent;
+import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
 import name.richardson.james.bukkit.banhammer.model.BanRecord;
 
 public class MetricsListener extends AbstractListener {

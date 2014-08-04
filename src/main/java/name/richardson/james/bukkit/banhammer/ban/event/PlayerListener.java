@@ -15,7 +15,7 @@
  You should have received a copy of the GNU General Public License along with
  BanHammer. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package name.richardson.james.bukkit.banhammer.ban;
+package name.richardson.james.bukkit.banhammer.ban.event;
 
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -24,8 +24,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
-
-import com.avaje.ebean.EbeanServer;
 
 import name.richardson.james.bukkit.utilities.listener.AbstractListener;
 import name.richardson.james.bukkit.utilities.time.ApproximateTimeFormatter;

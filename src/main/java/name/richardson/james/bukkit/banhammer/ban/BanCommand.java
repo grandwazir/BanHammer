@@ -31,6 +31,7 @@ import name.richardson.james.bukkit.utilities.command.AbstractAsynchronousComman
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 
 import name.richardson.james.bukkit.banhammer.BanHammerPluginConfiguration;
+import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerBannedEvent;
 import name.richardson.james.bukkit.banhammer.model.BanRecord;
 import name.richardson.james.bukkit.banhammer.Messages;
 import name.richardson.james.bukkit.banhammer.MessagesFactory;

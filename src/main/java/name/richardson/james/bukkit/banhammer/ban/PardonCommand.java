@@ -30,6 +30,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 import name.richardson.james.bukkit.utilities.command.AbstractAsynchronousCommand;
 import name.richardson.james.bukkit.utilities.command.argument.Argument;
 
+import name.richardson.james.bukkit.banhammer.ban.event.BanHammerPlayerPardonedEvent;
 import name.richardson.james.bukkit.banhammer.model.BanRecord;
 import name.richardson.james.bukkit.banhammer.model.CommentRecord;
 import name.richardson.james.bukkit.banhammer.Messages;
