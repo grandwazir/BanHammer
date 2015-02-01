@@ -1,5 +1,6 @@
 # Changelog for BanHammer (v3.0.0-SNAPSHOT)
 
+2014-08-04 18:08:53 +0100    added some guard code (James Richardson)  
 2014-08-04 17:53:44 +0100    delete tests as they were not working correctly anyway (James Richardson)  
 2014-08-04 17:51:30 +0100    setup and start metrics (James Richardson)  
 2014-08-04 17:48:02 +0100    PlayerNotFoundException lives with PlayerRecord (James Richardson)  

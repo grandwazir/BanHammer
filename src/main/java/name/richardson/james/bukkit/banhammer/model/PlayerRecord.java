@@ -31,8 +31,10 @@ import com.avaje.ebean.validation.NotNull;
 
 import name.richardson.james.bukkit.utilities.persistence.AbstractRecord;
 
+import name.richardson.james.bukkit.banhammer.model.legacy.OldPlayerRecord;
+
 @Entity
-@Table(name = "banhammer_" + "players")
+@Table(name = "bh_" + "players")
 public class PlayerRecord extends AbstractRecord {
 
 	public enum Status {

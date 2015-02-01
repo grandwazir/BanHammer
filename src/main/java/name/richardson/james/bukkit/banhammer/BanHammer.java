@@ -30,6 +30,7 @@ import name.richardson.james.bukkit.utilities.command.Command;
 import name.richardson.james.bukkit.utilities.command.CommandInvoker;
 import name.richardson.james.bukkit.utilities.command.RootCommandInvoker;
 import name.richardson.james.bukkit.utilities.command.SimpleCommandInvoker;
+import name.richardson.james.bukkit.utilities.persistence.DatabaseLoader;
 import name.richardson.james.bukkit.utilities.persistence.configuration.DatabaseConfiguration;
 import name.richardson.james.bukkit.utilities.updater.BukkitDevPluginUpdater;
 import name.richardson.james.bukkit.utilities.updater.PluginUpdater;
@@ -61,7 +62,7 @@ public class BanHammer extends JavaPlugin {
 			registerCommands();
 			registerListeners();
 			registerMetrics();
-			updatePlugin();
+			// updatePlugin();
 		} catch (final IOException e) {
 			getLogger().severe("There was an error enabling the plugin!");
 			getLogger().severe(e.getMessage());
@@ -89,8 +90,10 @@ public class BanHammer extends JavaPlugin {
 	throws IOException {
 		File file = new File(getDataFolder().getPath(), DATABASE_CONFIG_NAME);
 		InputStream defaults = getResource(DATABASE_CONFIG_NAME);
-		DatabaseConfiguration configuration = BanHammerDatabase.configure(getServer(), file, defaults);
-		BanHammerDatabase.initialise(configuration);
+		DatabaseConfiguration currentConfiguration = BanHammerDatabase.configure(getServer(), file, defaults);
+		DatabaseLoader currentLoader = BanHammerDatabaseLoaderFactory.getDatabaseLoader(currentConfiguration);
+		currentLoader.initalise();
+		BanHammerDatabase.initialise(currentLoader);
 	}
 
 	private void registerCommands() {

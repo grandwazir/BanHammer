@@ -4,6 +4,7 @@
     <artifactId>ban-hammer</artifactId>
     <version>3.0.0-SNAPSHOT</version>
     <name>BanHammer</name>
+    <groupId>name.richardson.james.bukkit</groupId>
     <description>Bans, kicks and records</description>
 
     <properties>
@@ -126,6 +127,7 @@
                                   <include>name.richardson.james.bukkit:bukkit-utilities-localisation</include>
                                   <include>name.richardson.james.bukkit:bukkit-utilities-persistence</include>
                                   <include>name.richardson.james.bukkit:bukkit-utilities-time</include>
+                                  <include>org.ocpsoft.prettytime:prettytime</include>
                                   <include>org.mcstats.bukkit:metrics</include>
                               </includes>
                           </artifactSet>

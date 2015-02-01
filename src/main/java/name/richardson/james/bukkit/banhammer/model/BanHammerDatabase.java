@@ -35,6 +35,9 @@ import name.richardson.james.bukkit.utilities.persistence.DatabaseLoaderFactory;
 import name.richardson.james.bukkit.utilities.persistence.configuration.DatabaseConfiguration;
 import name.richardson.james.bukkit.utilities.persistence.configuration.SimpleDatabaseConfiguration;
 
+import name.richardson.james.bukkit.banhammer.model.legacy.OldBanRecord;
+import name.richardson.james.bukkit.banhammer.model.legacy.OldPlayerRecord;
+
 public final class BanHammerDatabase {
 
 	private static final String DATABASE_NAME = "BanHammer";
@@ -64,14 +67,13 @@ public final class BanHammerDatabase {
 		classes.add(BanRecord.class);
 		classes.add(PlayerRecord.class);
 		classes.add(CommentRecord.class);
+		classes.add(OldPlayerRecord.class);
+		classes.add(OldBanRecord.class);
 		return classes;
 	}
 
-	public static void initialise(DatabaseConfiguration configuration) {
-		Validate.notNull(configuration);
-		DatabaseLoader loader = DatabaseLoaderFactory.getDatabaseLoader(configuration);
-		loader.initalise();
-		database = loader.getEbeanServer();
+	public static void initialise(DatabaseLoader databaseLoader) {
+		database = databaseLoader.getEbeanServer();
 		PlayerRecord.create(new UUID(0, 0), "CONSOLE");
 	}
 

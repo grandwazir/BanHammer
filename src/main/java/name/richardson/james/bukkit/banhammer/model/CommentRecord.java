@@ -29,7 +29,7 @@ import com.avaje.ebean.validation.NotNull;
 import name.richardson.james.bukkit.utilities.persistence.AbstractRecord;
 
 @Entity
-@Table(name = "banhammer_" + "comments")
+@Table(name = "bh_" + "comments")
 public class CommentRecord extends AbstractRecord {
 
 	public enum Type {

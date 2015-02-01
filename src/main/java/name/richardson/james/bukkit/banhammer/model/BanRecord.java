@@ -27,14 +27,18 @@ import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
+import java.util.logging.LogManager;
 
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.validation.NotNull;
 
 import name.richardson.james.bukkit.utilities.persistence.AbstractRecord;
 
+import name.richardson.james.bukkit.banhammer.model.legacy.OldBanRecord;
+
 @Entity
-@Table(name = "banhammer_" + "bans")
+@Table(name = "bh_" + "bans")
 public class BanRecord extends AbstractRecord {
 
 	public enum State {
@@ -62,6 +66,45 @@ public class BanRecord extends AbstractRecord {
 
 	public static int count() {
 		return getRecordDatabase().find(BanRecord.class).findList().size();
+	}
+
+	@Override public String toString() {
+		final StringBuilder sb = new StringBuilder("BanRecord{");
+		sb.append("comments=").append(comments);
+		sb.append(", creator=").append(creator);
+		sb.append(", expiresAt=").append(expiresAt);
+		sb.append(", player=").append(player);
+		sb.append(", state=").append(state);
+		sb.append(", ").append(super.toString());
+		sb.append('}');
+		return sb.toString();
+	}
+
+	public static void migrate(OldBanRecord record) {
+		String player = record.getPlayer().getName();
+		String creator = record.getCreator().getName();
+		String reason = record.getReason();
+		BanRecord ban = new BanRecord();
+		PlayerRecord creatorRecord = PlayerRecord.find(creator);
+		PlayerRecord playerRecord = PlayerRecord.find(player);
+		// No UUID for this player, ban no longer valid
+		if (playerRecord == null) return;
+		// Creator has changed his name, assign to CONSOLE instead.
+		if (creatorRecord == null) {
+			creatorRecord = PlayerRecord.create(new UUID(0, 0), "CONSOLE");
+		}
+		ban.setCreator(creatorRecord);
+		ban.setPlayer(playerRecord);
+		ban.setCreatedAt(record.getCreatedAt());
+		ban.setExpiresAt(record.getExpiresAt());
+		ban.setState(State.valueOf(record.getState().toString()));
+		CommentRecord comment = CommentRecord.create(ban.getCreator(), ban, reason);
+		comment.setType(CommentRecord.Type.BAN_REASON);
+		ban.setComment(comment);
+		ban.save();
+		// FIXME: This is a ugly workaround to fix a problem where abstract record updates createdAt even when it is already set. This leads to situations where ban lengths are reported wrong on imported bans.
+		ban.setCreatedAt(record.getCreatedAt());
+		ban.save();
 	}
 
 	public static BanRecord create(PlayerRecord creator, PlayerRecord target, String reason, Timestamp time) {
@@ -179,7 +222,6 @@ public class BanRecord extends AbstractRecord {
 	}
 
 	public void setExpiresAt(final Timestamp expiresAt) {
-		Timestamp now = new Timestamp(System.currentTimeMillis());
 		this.expiresAt = expiresAt;
 	}
 
