@@ -37,7 +37,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 public class UUIDFetcher implements Callable<Map<String, UUID>> {
-
+    
 	private static final Map<String, UUID> CACHE = Collections.synchronizedMap(new WeakHashMap<String, UUID>());
 	private static final double PROFILES_PER_REQUEST = 100;
 	private static final String PROFILE_URL = "https://api.mojang.com/profiles/minecraft";
@@ -81,7 +81,7 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
 	}
 
 	public static UUID getUUIDOf(String name) {
-		if (!CACHE.containsKey(name)) {
+		if (!CACHE.containsKey(name.toLowerCase())) {
 			UUIDFetcher fetcher = new UUIDFetcher(Arrays.asList(name));
 			try {
 				CACHE.putAll(fetcher.call());
@@ -89,7 +89,7 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
 				e.printStackTrace();
 			}
 		}
-		return CACHE.get(name);
+		return CACHE.get(name.toLowerCase());
 	}
 
 	public static byte[] toBytes(UUID uuid) {
@@ -119,7 +119,7 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
 			for (Object profile : array) {
 				JSONObject jsonProfile = (JSONObject) profile;
 				String id = (String) jsonProfile.get("id");
-				String name = (String) jsonProfile.get("name");
+				String name = (String) jsonProfile.get("name").toString().toLowerCase();
 				UUID uuid = UUIDFetcher.getUUID(id);
 				uuidMap.put(name, uuid);
 			}
