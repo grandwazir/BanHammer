@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
@@ -138,9 +139,10 @@ public class BanCommand extends AbstractAsynchronousCommand {
 	}
 
 	private boolean isBanWithinLimit() {
-		if (time.getTime() == 0 && isAuthorised(PERMISSION_PERMANENT)) {
-			return true;
-		} else {
+		if (time.getTime() == 0 && isAuthorised(PERMISSION_PERMANENT)) {       
+                    return true;
+		}
+                if(time.getTime() != 0) {
 			for (final Map.Entry<String, Long> limit : configuration.getBanLimits().entrySet()) {
 				String node = getPermissionFromLimit(limit.getKey());
 				if (!isAuthorised(node)) continue;
