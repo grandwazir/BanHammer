@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
@@ -42,6 +43,7 @@ import name.richardson.james.bukkit.banhammer.argument.SilentSwitchArgument;
 import name.richardson.james.bukkit.banhammer.argument.TimeMarshaller;
 import name.richardson.james.bukkit.banhammer.argument.TimeOptionArgument;
 import name.richardson.james.bukkit.banhammer.model.PlayerNotFoundException;
+import org.bukkit.Bukkit;
 
 public class BanCommand extends AbstractAsynchronousCommand {
 
@@ -53,9 +55,13 @@ public class BanCommand extends AbstractAsynchronousCommand {
 	private final Argument reason;
 	private final SilentSwitchArgument silent;
 	private final TimeMarshaller time;
-
+        private final Plugin plugin;
+        private final BukkitScheduler scheduler;
+        
 	public BanCommand(final Plugin plugin, final BukkitScheduler scheduler, BanHammerPluginConfiguration configuration, Server server) {
 		super(plugin, scheduler);
+                this.plugin = plugin;
+                this.scheduler = scheduler;
 		this.configuration = configuration;
 		player = PlayerNamePositionalArgument.getInstance(server, 0, true);
 		time = (TimeMarshaller) TimeOptionArgument.getInstance();
@@ -70,8 +76,8 @@ public class BanCommand extends AbstractAsynchronousCommand {
 	@Override
 	public void execute() {
 		Collection<String> playerNames = player.getStrings();
-		Collection<BanRecord> records = new ArrayList<BanRecord>();
-		boolean silent = this.silent.isSet();
+		final Collection<BanRecord> records = new ArrayList<BanRecord>();
+		final boolean silent = this.silent.isSet();
 		long time = this.time.getTime();
 		PlayerRecord creatorRecord;
 		try {
@@ -94,8 +100,13 @@ public class BanCommand extends AbstractAsynchronousCommand {
 					addMessage(MESSAGES.unableToBanForThatLong(playerName));
 				}
 			}
-			new BanHammerPlayerBannedEvent(records, getContext().getCommandSender(), silent);
-		} catch (PlayerNotFoundException e) {
+                       this.scheduler.scheduleSyncDelayedTask(this.plugin, new Runnable() {
+                        @Override
+                        public void run() {
+                            new BanHammerPlayerBannedEvent(records, getContext().getCommandSender(), silent);
+                                }
+                        }, 0L);
+                        } catch (PlayerNotFoundException e) {
 			addMessage(MESSAGES.playerLookupException());
 		}
 	}
@@ -128,9 +139,10 @@ public class BanCommand extends AbstractAsynchronousCommand {
 	}
 
 	private boolean isBanWithinLimit() {
-		if (time.getTime() == 0 && isAuthorised(PERMISSION_PERMANENT)) {
-			return true;
-		} else {
+		if (isAuthorised(PERMISSION_PERMANENT)) {       
+                    return true;
+		}
+                if(time.getTime() != 0) {
 			for (final Map.Entry<String, Long> limit : configuration.getBanLimits().entrySet()) {
 				String node = getPermissionFromLimit(limit.getKey());
 				if (!isAuthorised(node)) continue;
