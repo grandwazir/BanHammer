@@ -72,7 +72,7 @@ public final class PlayerListener extends AbstractListener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onPlayerLogin(final PlayerLoginEvent event) {
 		Player player = event.getPlayer();
-		if (!server.getOnlineMode()) return;
+		//if (!server.getOnlineMode()) return;
 		if (event.getResult() == PlayerLoginEvent.Result.KICK_BANNED) return;
 		PlayerRecord playerRecord = PlayerRecord.find(player.getUniqueId());
 		if (playerRecord != null) {
