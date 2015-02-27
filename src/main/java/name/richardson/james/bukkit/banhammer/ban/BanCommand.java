@@ -139,7 +139,7 @@ public class BanCommand extends AbstractAsynchronousCommand {
 	}
 
 	private boolean isBanWithinLimit() {
-		if (time.getTime() == 0 && isAuthorised(PERMISSION_PERMANENT)) {       
+		if (isAuthorised(PERMISSION_PERMANENT)) {       
                     return true;
 		}
                 if(time.getTime() != 0) {
