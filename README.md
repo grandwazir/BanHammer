@@ -1,13 +1,13 @@
 BanHammer: bans, kicks and records.
 ====================================
 
-BanHammer is a plugin for the Minecraft wrapper [Bukkit](http://bukkit.org/) that allows adminstrators and other trusted users to ban and kick players. The basic idea is to have a lightweight banning solution that includes all the features you help manage your server. Additionally the plugin stores all bans using the Bukkit persistance system, using permissions for all commands and is simple to configure.
+BanHammer is a plugin for the Minecraft wrapper [Bukkit](http://bukkit.org/) that allows administrators and other trusted users to ban and kick players. The basic idea is to have a lightweight banning solution that includes all the features you help manage your server. Additionally the plugin stores all bans using the Bukkit persistance system, using permissions for all commands and is simple to configure.
 
 ## Features
 
 - Simple and easy to configure.
 - Ban offline and online players.
-- Supports permenant as well as temporary bans.
+- Supports permeant as well as temporary bans.
 - Ability to pardon bans without removing the record itself.
 - Supports setting a list of players who are immune to banning.
 - Custom configurable limits to prevent moderators banning for too long.
